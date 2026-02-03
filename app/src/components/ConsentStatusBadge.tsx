@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { ConsentDecision, consentScopeLabels, ConsentScope } from '../types/consent.types';
 
 interface ConsentStatusBadgeProps {
@@ -30,29 +31,33 @@ export function ConsentStatusBadge({
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200',
       textColor: 'text-green-800',
+      iconColor: '#166534',
       label: 'Data Reuse Active',
-      icon: '✓',
+      iconName: 'checkmark-circle' as const,
     },
     pending: {
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
       textColor: 'text-blue-800',
+      iconColor: '#1E40AF',
       label: 'Consent Pending',
-      icon: '⏳',
+      iconName: 'time' as const,
     },
     denied: {
       bgColor: 'bg-gray-50',
       borderColor: 'border-gray-200',
       textColor: 'text-gray-600',
+      iconColor: '#4B5563',
       label: 'Data Reuse Declined',
-      icon: '✕',
+      iconName: 'close-circle' as const,
     },
     withdrawn: {
       bgColor: 'bg-yellow-50',
       borderColor: 'border-yellow-200',
       textColor: 'text-yellow-800',
+      iconColor: '#92400E',
       label: 'Consent Withdrawn',
-      icon: '↩',
+      iconName: 'arrow-undo-circle' as const,
     },
   };
 
@@ -63,7 +68,12 @@ export function ConsentStatusBadge({
       className={`${config.bgColor} border ${config.borderColor} rounded-lg p-3`}
     >
       <View className="flex-row items-center">
-        <Text className={`${config.textColor} text-lg mr-2`}>{config.icon}</Text>
+        <Ionicons
+          name={config.iconName}
+          size={18}
+          color={config.iconColor}
+          style={{ marginRight: 8 }}
+        />
         <Text className={`${config.textColor} font-medium text-sm`}>
           {config.label}
         </Text>

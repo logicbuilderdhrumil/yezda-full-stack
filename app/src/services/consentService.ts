@@ -131,9 +131,10 @@ export async function submitConsent(
     });
   } catch (error) {
     if (error instanceof ConsentApiError) {
+      // Preserve original error message for debugging context
       throw new ConsentApiError(
         error.code,
-        consentErrorMessages.submitFailed,
+        error.message || consentErrorMessages.submitFailed,
         error.status
       );
     }

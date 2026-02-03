@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { PrefillDisclosure, consentCopy } from '../types/consent.types';
 
 interface PrefillDisclosureBadgeProps {
@@ -32,12 +33,14 @@ export function PrefillDisclosureBadge({
         compact ? 'px-2 py-1' : 'px-3 py-2'
       } bg-amber-50 border border-amber-200 rounded-lg`}
     >
-      {/* Icon placeholder */}
-      <View
-        className={`${
-          compact ? 'w-3 h-3' : 'w-4 h-4'
-        } bg-amber-400 rounded-full mr-2`}
-      />
+      {/* Prefill indicator icon */}
+      <View className="mr-2">
+        <Ionicons
+          name="refresh-circle"
+          size={compact ? 14 : 18}
+          color="#F59E0B"
+        />
+      </View>
       <View className="flex-1">
         <Text
           className={`text-amber-800 font-medium ${compact ? 'text-xs' : 'text-sm'}`}

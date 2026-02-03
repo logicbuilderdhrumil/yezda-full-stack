@@ -227,6 +227,53 @@ describe('getConsentStatus', () => {
   });
 });
 
+describe('getConsentById', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  it('returns single consent by ID', async () => {
+    const mockConsent = {
+      id: 'consent-123',
+      candidateId: 'candidate-1',
+      applicationId: 'app-123',
+      sourceApplicationId: 'app-456',
+      scopes: ['personal_info', 'employment_history'],
+      status: 'granted',
+      grantedAt: Date.now(),
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockConsent),
+    });
+
+    const { getConsentById } = await import('../services/consentService');
+    const result = await getConsentById('consent-123');
+
+    expect(result.id).toBe('consent-123');
+    expect(result.scopes).toEqual(['personal_info', 'employment_history']);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/v1/consent/consent-123'),
+      expect.objectContaining({
+        method: 'GET',
+      })
+    );
+  });
+
+  it('throws ConsentApiError when consent not found', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      json: () => Promise.resolve({ code: 'NOT_FOUND', message: 'Consent not found' }),
+    });
+
+    const { getConsentById } = await import('../services/consentService');
+
+    await expect(getConsentById('invalid-id')).rejects.toThrow(ConsentApiError);
+  });
+});
+
 describe('updateConsent', () => {
   beforeEach(() => {
     mockFetch.mockReset();

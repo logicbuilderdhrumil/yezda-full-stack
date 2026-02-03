@@ -273,18 +273,22 @@ function ConsentCard({
       {/* Scopes */}
       <View className="mb-3">
         <Text className="text-sm text-gray-500 mb-2">Shared data:</Text>
-        <View className="flex-row flex-wrap gap-2">
-          {consent.scopes.map((scope: ConsentScope) => (
-            <View
-              key={scope}
-              className="bg-gray-100 px-2 py-1 rounded"
-            >
-              <Text className="text-xs text-gray-700">
-                {consentScopeLabels[scope]}
-              </Text>
-            </View>
-          ))}
-        </View>
+        {consent.scopes.length > 0 ? (
+          <View className="flex-row flex-wrap gap-2">
+            {consent.scopes.map((scope: ConsentScope) => (
+              <View
+                key={scope}
+                className="bg-gray-100 px-2 py-1 rounded"
+              >
+                <Text className="text-xs text-gray-700">
+                  {consentScopeLabels[scope]}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text className="text-xs text-gray-500 italic">No data shared</Text>
+        )}
       </View>
 
       {/* Withdraw Button (only for active consents) */}

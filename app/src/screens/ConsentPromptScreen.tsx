@@ -3,7 +3,7 @@
  * Task 1.2: Implement consent prompt and decision capture.
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -49,15 +49,19 @@ export function ConsentPromptScreen({
   const submitConsentDecision = useConsentStore((state) => state.submitConsentDecision);
   const clearError = useConsentStore((state) => state.clearError);
 
+  // Use ref to avoid stale closure and prevent infinite loop if parent doesn't memoize onSkip
+  const onSkipRef = useRef(onSkip);
+  onSkipRef.current = onSkip;
+
   useEffect(() => {
     async function checkForPrompt() {
       const hasPrompt = await loadConsentPrompt(applicationId);
       if (!hasPrompt) {
-        onSkip();
+        onSkipRef.current();
       }
     }
     checkForPrompt();
-  }, [applicationId, loadConsentPrompt, onSkip]);
+  }, [applicationId, loadConsentPrompt]);
 
   const handleAccept = useCallback(async () => {
     if (selectedScopes.length === 0) {

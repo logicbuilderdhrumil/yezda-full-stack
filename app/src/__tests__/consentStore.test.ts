@@ -352,6 +352,64 @@ describe('useConsentStore', () => {
     });
   });
 
+  describe('updateConsentScopes', () => {
+    beforeEach(() => {
+      useConsentStore.setState({
+        consents: [
+          {
+            id: 'consent-123',
+            candidateId: 'candidate-1',
+            applicationId: 'app-123',
+            sourceApplicationId: 'app-456',
+            scopes: ['personal_info', 'employment_history'] as ConsentScope[],
+            status: 'granted',
+          },
+        ],
+      });
+    });
+
+    it('updates scopes for existing consent', async () => {
+      const updatedConsent: ConsentDecision = {
+        id: 'consent-123',
+        candidateId: 'candidate-1',
+        applicationId: 'app-123',
+        sourceApplicationId: 'app-456',
+        scopes: ['personal_info'] as ConsentScope[],
+        status: 'granted',
+      };
+
+      mockUpdateConsent.mockResolvedValueOnce(updatedConsent);
+
+      let result: boolean | undefined;
+      await act(async () => {
+        result = await useConsentStore.getState().updateConsentScopes('consent-123', ['personal_info'] as ConsentScope[]);
+      });
+
+      expect(result).toBe(true);
+      expect(mockUpdateConsent).toHaveBeenCalledWith({
+        consentId: 'consent-123',
+        scopes: ['personal_info'],
+      });
+      expect(useConsentStore.getState().consents[0].scopes).toEqual(['personal_info']);
+      expect(useConsentStore.getState().screenState).toBe('success');
+    });
+
+    it('handles update failure gracefully', async () => {
+      mockUpdateConsent.mockRejectedValueOnce(
+        new ConsentApiError('UPDATE_FAILED', 'Update failed', 500)
+      );
+
+      let result: boolean | undefined;
+      await act(async () => {
+        result = await useConsentStore.getState().updateConsentScopes('consent-123', ['personal_info'] as ConsentScope[]);
+      });
+
+      expect(result).toBe(false);
+      expect(useConsentStore.getState().screenState).toBe('error');
+      expect(useConsentStore.getState().error).toBe('Update failed');
+    });
+  });
+
   describe('prefillDisclosures', () => {
     it('sets prefill disclosures', () => {
       const disclosures = [
