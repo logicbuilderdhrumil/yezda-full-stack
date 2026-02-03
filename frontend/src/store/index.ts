@@ -16,6 +16,6 @@ export {
   useRouteKeyStore,
   selectCurrentRouteKey,
   selectPreviousRouteKey,
-  selectIsForwardNavigation,
+  selectHasNavigated,
 } from './routeKeyStore';
 export { resetAllStores, handleLogout, handleLogin } from './storeUtils';

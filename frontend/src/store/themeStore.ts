@@ -1,12 +1,16 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, subscribeWithSelector } from 'zustand/middleware';
 import type { ThemeMode, ThemeState } from '@/@types/stores';
 
 const STORAGE_KEY = 'yezda-theme';
 
-/** Resolves the actual theme based on mode and system preference. */
+/**
+ * Resolves the actual theme based on mode and system preference.
+ * Includes SSR guard for window.matchMedia.
+ */
 function resolveTheme(mode: ThemeMode): 'light' | 'dark' {
   if (mode === 'system') {
+    if (typeof window === 'undefined') return 'light';
     return window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
@@ -17,7 +21,11 @@ function resolveTheme(mode: ThemeMode): 'light' | 'dark' {
 interface ThemeStore extends ThemeState {
   /** Set the theme mode. */
   setMode: (mode: ThemeMode) => void;
-  /** Toggle between light and dark modes. */
+  /**
+   * Toggle between light and dark modes.
+   * When in 'system' mode, toggles to explicit 'light' or 'dark' based on the
+   * current resolved theme—exiting system mode.
+   */
   toggle: () => void;
   /** Refresh resolved theme based on system preference. */
   refreshResolved: () => void;
@@ -35,7 +43,8 @@ const initialState: ThemeState = {
  * Supports light, dark, and system modes.
  */
 export const useThemeStore = create<ThemeStore>()(
-  persist(
+  subscribeWithSelector(
+    persist(
     (set, get) => ({
       ...initialState,
 
@@ -47,11 +56,11 @@ export const useThemeStore = create<ThemeStore>()(
       },
 
       toggle: () => {
-        const { mode } = get();
-        const nextMode: ThemeMode = mode === 'dark' ? 'light' : 'dark';
+        const { resolvedTheme } = get();
+        const nextMode: ThemeMode = resolvedTheme === 'dark' ? 'light' : 'dark';
         set({
           mode: nextMode,
-          resolvedTheme: resolveTheme(nextMode),
+          resolvedTheme: nextMode,
         });
       },
 
@@ -79,8 +88,30 @@ export const useThemeStore = create<ThemeStore>()(
         }
       },
     }
-  )
+  ))
 );
+
+/**
+ * Subscribe to system color scheme changes.
+ * When in 'system' mode, automatically updates the resolved theme.
+ */
+function initSystemThemeListener(): void {
+  if (typeof window === 'undefined') return;
+
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  const handleChange = (): void => {
+    const { mode, refreshResolved } = useThemeStore.getState();
+    if (mode === 'system') {
+      refreshResolved();
+    }
+  };
+
+  mediaQuery.addEventListener('change', handleChange);
+}
+
+// Initialize the listener on module load (browser-only)
+initSystemThemeListener();
 
 /** Selector for theme mode. */
 export const selectThemeMode = (state: ThemeStore): ThemeMode => state.mode;

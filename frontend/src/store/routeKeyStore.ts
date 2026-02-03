@@ -50,6 +50,6 @@ export const selectCurrentRouteKey = (state: RouteKeyStore): string | null =>
 export const selectPreviousRouteKey = (state: RouteKeyStore): string | null =>
   state.previousKey;
 
-/** Selector for whether navigating forward. */
-export const selectIsForwardNavigation = (state: RouteKeyStore): boolean =>
+/** Selector for whether navigation has occurred (keys differ). */
+export const selectHasNavigated = (state: RouteKeyStore): boolean =>
   state.previousKey !== null && state.currentKey !== state.previousKey;
