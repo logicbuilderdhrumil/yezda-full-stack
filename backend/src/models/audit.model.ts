@@ -2,6 +2,7 @@
  * Audit Event Models
  * Task 1.7: Authentication audit logging models
  * Socket audit events added for socket infrastructure
+ * OAuth audit events added for OAuth integration
  */
 
 export type AuditEventType =
@@ -46,7 +47,15 @@ export type AuditEventType =
   | 'NOTIFICATION_LIST_ACCESSED'
   | 'NOTIFICATION_READ'
   | 'NOTIFICATION_UNREAD'
-  | 'NOTIFICATION_BATCH_READ';
+  | 'NOTIFICATION_BATCH_READ'
+  // OAuth-related audit events
+  | 'OAUTH_AUTHORIZE_INITIATED'
+  | 'OAUTH_CALLBACK_SUCCESS'
+  | 'OAUTH_CALLBACK_FAILURE'
+  | 'OAUTH_TOKEN_REFRESH_SUCCESS'
+  | 'OAUTH_TOKEN_REFRESH_FAILURE'
+  | 'OAUTH_INTEGRATION_DISCONNECTED'
+  | 'OAUTH_INVALID_STATE';
 
 export interface AuditEvent {
   id: string;
