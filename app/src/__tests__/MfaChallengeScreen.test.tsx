@@ -5,8 +5,12 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { MfaChallengeScreen } from '../screens/MfaChallengeScreen';
 import { useAuthStore } from '../store/authStore';
+
+// Mock Alert
+jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
 
 // Mock the auth store
 jest.mock('../store/authStore', () => ({
@@ -149,6 +153,34 @@ describe('MfaChallengeScreen', () => {
     });
   });
 
+  it('does not auto-submit when there is an error', async () => {
+    mockUseAuthStore.mockImplementation((selector) => {
+      const state = {
+        verifyMfa: mockVerifyMfa,
+        signOut: mockSignOut,
+        clearError: mockClearError,
+        isLoading: false,
+        error: 'Invalid code',
+        pendingMfaChallenge: defaultPendingMfa,
+      };
+      return typeof selector === 'function' ? selector(state) : state;
+    });
+
+    const { getByLabelText } = render(<MfaChallengeScreen />);
+
+    const input = getByLabelText('Verification code');
+    fireEvent.changeText(input, '123456');
+
+    // Give time for any potential auto-submit
+    await waitFor(() => {
+      // clearError should be called when typing
+      expect(mockClearError).toHaveBeenCalled();
+    });
+
+    // verifyMfa should NOT have been called due to error guard
+    expect(mockVerifyMfa).not.toHaveBeenCalled();
+  });
+
   it('displays error banner with accessibilityRole alert', () => {
     mockUseAuthStore.mockImplementation((selector) => {
       const state = {
@@ -260,6 +292,13 @@ describe('MfaChallengeScreen', () => {
     const { getByText, queryByText } = render(<MfaChallengeScreen />);
 
     fireEvent.press(getByText('Resend code'));
+
+    // Verify Alert was shown
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Code Requested',
+      'Resend functionality is not yet available. Please wait a moment for your original code to arrive, or contact support if you continue to have issues.',
+      [{ text: 'OK' }]
+    );
 
     expect(getByText('Resend code in 60s')).toBeTruthy();
 

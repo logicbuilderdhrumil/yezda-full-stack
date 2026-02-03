@@ -45,6 +45,29 @@ export const AUTH_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 100,
 } as const;
 
+// SLO targets for route guards
+export const GUARD_SLOS = {
+  // Latency SLOs
+  GUARD_CHECK_LATENCY_P99_MS: 50,
+  GUARD_CHECK_LATENCY_P95_MS: 20,
+
+  // Availability SLOs
+  GUARD_AVAILABILITY_RATE: 99.99,
+
+  // Error rate SLOs
+  MAX_AUTH_DENIED_RATE_PER_MINUTE: 100,
+  MAX_ROLE_DENIED_RATE_PER_MINUTE: 50,
+} as const;
+
+// Metric names for guard operations
+export const GUARD_METRICS = {
+  AUTH_DENIED: 'guard_auth_denied_total',
+  ROLE_DENIED: 'guard_role_denied_total',
+  ACCESS_GRANTED: 'guard_access_granted_total',
+  CHECK_LATENCY: 'guard_check_latency_ms',
+  RATE_LIMITED: 'guard_rate_limited_total',
+} as const;
+
 export class MetricsService {
   /**
    * Record a counter metric
@@ -169,6 +192,69 @@ export class MetricsService {
     if (p99Latency > AUTH_SLOS.SIGN_IN_LATENCY_P99_MS) {
       violations.push(
         `Sign-in P99 latency ${p99Latency}ms exceeds SLO ${AUTH_SLOS.SIGN_IN_LATENCY_P99_MS}ms`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  /**
+   * Get guard P99 latency
+   */
+  getGuardP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === GUARD_METRICS.CHECK_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get guard denial count
+   */
+  getGuardDenialCount(windowMs = 60000): { auth: number; role: number } {
+    const recentMetrics = this.getMetrics(windowMs);
+    const authDenials = recentMetrics.filter(
+      (m) => m.name === GUARD_METRICS.AUTH_DENIED
+    ).length;
+    const roleDenials = recentMetrics.filter(
+      (m) => m.name === GUARD_METRICS.ROLE_DENIED
+    ).length;
+
+    return { auth: authDenials, role: roleDenials };
+  }
+
+  /**
+   * Check if guard SLOs are met
+   */
+  checkGuardSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getGuardP99Latency();
+    if (p99Latency > GUARD_SLOS.GUARD_CHECK_LATENCY_P99_MS) {
+      violations.push(
+        `Guard check P99 latency ${p99Latency}ms exceeds SLO ${GUARD_SLOS.GUARD_CHECK_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const denials = this.getGuardDenialCount();
+    if (denials.auth > GUARD_SLOS.MAX_AUTH_DENIED_RATE_PER_MINUTE) {
+      violations.push(
+        `Auth denied rate ${denials.auth}/min exceeds SLO ${GUARD_SLOS.MAX_AUTH_DENIED_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    if (denials.role > GUARD_SLOS.MAX_ROLE_DENIED_RATE_PER_MINUTE) {
+      violations.push(
+        `Role denied rate ${denials.role}/min exceeds SLO ${GUARD_SLOS.MAX_ROLE_DENIED_RATE_PER_MINUTE}/min`
       );
     }
 

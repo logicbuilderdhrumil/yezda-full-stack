@@ -5,8 +5,12 @@
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { LoginScreen } from '../screens/LoginScreen';
 import { useAuthStore } from '../store/authStore';
+
+// Mock Alert
+jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
 
 // Mock the auth store
 jest.mock('../store/authStore', () => ({
@@ -179,5 +183,18 @@ describe('LoginScreen', () => {
     const { toJSON } = render(<LoginScreen />);
 
     expect(toJSON()).toBeNull();
+  });
+
+  it('shows alert when forgot password is pressed', () => {
+    const { getByLabelText } = render(<LoginScreen />);
+
+    const forgotPasswordLink = getByLabelText('Forgot your password');
+    fireEvent.press(forgotPasswordLink);
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Forgot Password',
+      'Password reset is not yet available. Please contact support for assistance.',
+      [{ text: 'OK' }]
+    );
   });
 });
