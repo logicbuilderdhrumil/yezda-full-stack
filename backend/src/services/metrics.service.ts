@@ -26,6 +26,7 @@ export const AUTH_METRICS = {
   MFA_ENROLLMENT: 'auth_mfa_enrollment_total',
   RATE_LIMIT_HIT: 'auth_rate_limit_hit_total',
   ACCOUNT_LOCKOUT: 'auth_account_lockout_total',
+  REDIS_ERROR: 'redis_error_total',
 } as const;
 
 // SLO targets for auth endpoints
@@ -103,6 +104,13 @@ export class MetricsService {
    */
   recordLockout(userType: 'user' | 'candidate'): void {
     this.incrementCounter(AUTH_METRICS.ACCOUNT_LOCKOUT, { userType });
+  }
+
+  /**
+   * Record Redis error (for monitoring connection issues)
+   */
+  recordRedisError(operation: string): void {
+    this.incrementCounter(AUTH_METRICS.REDIS_ERROR, { operation });
   }
 
   /**

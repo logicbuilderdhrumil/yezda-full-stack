@@ -117,9 +117,14 @@ describe('Persistence-Backed Auth Flows', () => {
       });
 
       const { token } = await authService.requestPasswordReset('reset-complete@example.com', 'user');
-      await authService.completePasswordReset(token!, 'NewSecureP@ss456!');
+      const result = await authService.completePasswordReset(token!, 'NewSecureP@ss456!');
 
-      expect(passwordResetRepository.delete).toHaveBeenCalled();
+      // Password reset should succeed
+      expect(result.success).toBe(true);
+      
+      // Reusing the same token should fail (token was deleted in transaction)
+      const reuseResult = await authService.completePasswordReset(token!, 'AnotherP@ss789!');
+      expect(reuseResult.success).toBe(false);
     });
   });
 
@@ -131,20 +136,11 @@ describe('Persistence-Backed Auth Flows', () => {
     });
 
     it('should mark enrollment verified', async () => {
-      const { enrollmentId, secret } = await mfaService.startEnrollment('user-456', 'user', 'verify@example.com');
+      const { enrollmentId } = await mfaService.startEnrollment('user-456', 'user', 'verify@example.com');
       
-      // Get the enrollment to simulate TOTP verification
-      const enrollment = await mfaEnrollmentRepository.findById(enrollmentId);
-      if (enrollment) {
-        // Manually set the result since we can't generate real TOTP codes in tests
-        vi.mocked(mfaEnrollmentRepository.findById).mockResolvedValueOnce({
-          ...(enrollment as object),
-          secret,
-          verified: false,
-        } as never);
-      }
-
-      // This would fail with a real TOTP code check, but we're testing repository calls
+      // The enrollment is stored with encrypted secret by startEnrollment
+      // verifyEnrollment will decrypt it before verification
+      // We can't verify with a real TOTP code in tests, so just test the flow
       await mfaService.verifyEnrollment(enrollmentId, '000000');
 
       // The repository method should have been called (even if verification fails with bad code)

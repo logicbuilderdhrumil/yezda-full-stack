@@ -16,6 +16,7 @@ import { auditService } from './audit.service.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { passwordResetRepository } from '../repositories/password-reset.repository.js';
 import { storeMfaSession, consumeMfaSession } from '../db/redis.js';
+import { getClient } from '../db/postgres.js';
 import { config } from '../config/index.js';
 
 /**
@@ -335,6 +336,7 @@ export class AuthService {
 
   /**
    * Complete password reset (Task 1.3)
+   * Uses a transaction to ensure atomicity of password update and token deletion
    */
   async completePasswordReset(
     token: string,
@@ -368,22 +370,41 @@ export class AuthService {
       return { success: false, error: strengthResult.errors.join('; ') };
     }
 
-    // Find user and update password
+    // Find user
     const entity = await userRepository.findEntityById(resetTokenData.userId, resetTokenData.userType);
     if (!entity) {
       return { success: false, error: 'User not found' };
     }
 
-    entity.passwordHash = await passwordService.hash(newPassword);
-    entity.updatedAt = new Date();
-    entity.failedAttempts = 0;
-    entity.lockedUntil = undefined;
-    await userRepository.updateEntity(entity, resetTokenData.userType);
+    // Hash new password
+    const newPasswordHash = await passwordService.hash(newPassword);
 
-    // Mark token as used and delete
-    await passwordResetRepository.delete(resetTokenData.id);
+    // Use transaction for atomicity
+    const client = await getClient();
+    try {
+      await client.query('BEGIN');
 
-    // Revoke all existing sessions for security
+      // Update user password
+      await client.query(
+        `UPDATE ${resetTokenData.userType === 'user' ? 'users' : 'candidates'}
+         SET password_hash = $1, updated_at = NOW(), failed_attempts = 0, locked_until = NULL
+         WHERE id = $2`,
+        [newPasswordHash, entity.id]
+      );
+
+      // Delete reset token
+      await client.query('DELETE FROM password_reset_tokens WHERE id = $1', [resetTokenData.id]);
+
+      await client.query('COMMIT');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('[AuthService] Password reset transaction failed:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    // Revoke all existing sessions for security (outside transaction - can fail independently)
     await tokenService.revokeAllUserSessions(entity.id, resetTokenData.userType);
 
     auditService.logPasswordResetSuccess({

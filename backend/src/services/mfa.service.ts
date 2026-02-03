@@ -3,6 +3,7 @@
  * Task 1.4: TOTP enrollment and verification
  * 
  * Uses Postgres for MFA enrollment persistence.
+ * Encrypts MFA secrets at rest using AES-256-GCM.
  */
 
 import { authenticator } from 'otplib';
@@ -10,11 +11,14 @@ import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 import type { MfaEnrollment } from '../models/auth.model.js';
 import { mfaEnrollmentRepository } from '../repositories/mfa-enrollment.repository.js';
+import { backupCodeRepository, type BackupCode } from '../repositories/backup-code.repository.js';
+import { encrypt, decrypt, hashBackupCode } from './crypto.service.js';
 import { config } from '../config/index.js';
 
 export class MfaService {
   /**
    * Start MFA enrollment - generate secret and QR code
+   * Secret is encrypted before storage
    */
   async startEnrollment(
     userId: string,
@@ -25,11 +29,14 @@ export class MfaService {
     const otpauthUrl = authenticator.keyuri(email, config.security.mfaIssuer, secret);
     const qrCodeUrl = await QRCode.toDataURL(otpauthUrl);
 
+    // Encrypt secret before storing
+    const encryptedSecret = encrypt(secret);
+
     const enrollment: MfaEnrollment = {
       id: uuidv4(),
       userId,
       userType,
-      secret,
+      secret: encryptedSecret,
       verified: false,
       createdAt: new Date(),
     };
@@ -38,7 +45,7 @@ export class MfaService {
 
     return {
       enrollmentId: enrollment.id,
-      secret,
+      secret, // Return plaintext to user (for manual entry if QR fails)
       qrCodeUrl,
       otpauthUrl,
     };
@@ -46,8 +53,12 @@ export class MfaService {
 
   /**
    * Complete MFA enrollment by verifying a TOTP code
+   * Also generates and persists backup codes
    */
-  async verifyEnrollment(enrollmentId: string, code: string): Promise<{ success: boolean; secret?: string }> {
+  async verifyEnrollment(
+    enrollmentId: string,
+    code: string
+  ): Promise<{ success: boolean; secret?: string; backupCodes?: string[] }> {
     const enrollment = await mfaEnrollmentRepository.findById(enrollmentId);
     if (!enrollment) {
       return { success: false };
@@ -57,21 +68,49 @@ export class MfaService {
       return { success: false };
     }
 
-    const isValid = authenticator.verify({ token: code, secret: enrollment.secret });
+    // Decrypt secret for verification
+    const decryptedSecret = decrypt(enrollment.secret);
+
+    const isValid = authenticator.verify({ token: code, secret: decryptedSecret });
     if (!isValid) {
       return { success: false };
     }
 
     await mfaEnrollmentRepository.markVerified(enrollmentId);
 
-    return { success: true, secret: enrollment.secret };
+    // Generate and persist backup codes
+    const backupCodes = this.generateBackupCodes(10);
+    await this.saveBackupCodes(enrollment.userId, enrollment.userType, backupCodes);
+
+    // Return encrypted secret (for storage in user record)
+    return { success: true, secret: enrollment.secret, backupCodes };
   }
 
   /**
-   * Verify a TOTP code against a user's secret
+   * Verify a TOTP code against a user's encrypted secret
    */
-  verifyCode(secret: string, code: string): boolean {
+  verifyCode(encryptedSecret: string, code: string): boolean {
+    const secret = decrypt(encryptedSecret);
     return authenticator.verify({ token: code, secret });
+  }
+
+  /**
+   * Verify a backup code and mark it as used if valid
+   */
+  async verifyBackupCodeForUser(
+    userId: string,
+    userType: 'user' | 'candidate',
+    code: string
+  ): Promise<boolean> {
+    const codeHash = hashBackupCode(code.toUpperCase().replace(/[-\s]/g, ''));
+    const backupCode = await backupCodeRepository.findUnusedByHash(userId, userType, codeHash);
+    
+    if (!backupCode) {
+      return false;
+    }
+    
+    await backupCodeRepository.markUsed(backupCode.id);
+    return true;
   }
 
   /**
@@ -84,6 +123,51 @@ export class MfaService {
       codes.push(uuidv4().replace(/-/g, '').substring(0, 8).toUpperCase());
     }
     return codes;
+  }
+
+  /**
+   * Save backup codes to database (hashed)
+   */
+  private async saveBackupCodes(
+    userId: string,
+    userType: 'user' | 'candidate',
+    codes: string[]
+  ): Promise<void> {
+    // Delete any existing codes first
+    await backupCodeRepository.deleteAllForUser(userId, userType);
+
+    const now = new Date();
+    const backupCodes: BackupCode[] = codes.map((code) => ({
+      id: uuidv4(),
+      userId,
+      userType,
+      codeHash: hashBackupCode(code),
+      createdAt: now,
+    }));
+
+    await backupCodeRepository.createBatch(backupCodes);
+  }
+
+  /**
+   * Regenerate backup codes (replaces existing)
+   */
+  async regenerateBackupCodes(
+    userId: string,
+    userType: 'user' | 'candidate'
+  ): Promise<string[]> {
+    const codes = this.generateBackupCodes(10);
+    await this.saveBackupCodes(userId, userType, codes);
+    return codes;
+  }
+
+  /**
+   * Get count of remaining unused backup codes
+   */
+  async getRemainingBackupCodesCount(
+    userId: string,
+    userType: 'user' | 'candidate'
+  ): Promise<number> {
+    return backupCodeRepository.countUnused(userId, userType);
   }
 
   /**

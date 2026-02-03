@@ -5,6 +5,71 @@
 
 import { vi, beforeAll, beforeEach, afterAll } from 'vitest';
 
+// In-memory stores for mocking repositories
+const users = new Map<string, unknown>();
+const candidates = new Map<string, unknown>();
+const sessions = new Map<string, unknown>();
+const passwordResetTokens = new Map<string, unknown>();
+const mfaEnrollments = new Map<string, unknown>();
+const backupCodes = new Map<string, unknown>();
+const auditLogs: unknown[] = [];
+
+// Mock Postgres module for transactions
+vi.mock('../src/db/postgres.js', () => {
+  // Create a mock client for transaction support
+  const createMockClient = () => ({
+    query: vi.fn(async (text: string, params?: unknown[]) => {
+      // Handle transaction commands
+      if (text === 'BEGIN' || text === 'COMMIT' || text === 'ROLLBACK') {
+        return { rows: [], rowCount: 0 };
+      }
+      
+      // Handle password update in transaction
+      if (text.includes('UPDATE') && text.includes('password_hash')) {
+        const userId = params?.[1] as string;
+        const passwordHash = params?.[0] as string;
+        const isUser = text.includes('UPDATE users');
+        const store = isUser ? users : candidates;
+        const entity = store.get(userId) as Record<string, unknown> | undefined;
+        if (entity) {
+          entity.passwordHash = passwordHash;
+          entity.updatedAt = new Date();
+          entity.failedAttempts = 0;
+          entity.lockedUntil = undefined;
+        }
+        return { rows: [], rowCount: 1 };
+      }
+      
+      // Handle password reset token deletion
+      if (text.includes('DELETE FROM password_reset_tokens')) {
+        const id = params?.[0] as string;
+        for (const [hash, token] of passwordResetTokens.entries()) {
+          if ((token as { id: string }).id === id) {
+            passwordResetTokens.delete(hash);
+            break;
+          }
+        }
+        return { rows: [], rowCount: 1 };
+      }
+      
+      return { rows: [], rowCount: 0 };
+    }),
+    release: vi.fn(),
+  });
+
+  return {
+    getPool: vi.fn(() => ({
+      query: vi.fn().mockResolvedValue({ rows: [], rowCount: 0 }),
+      connect: vi.fn().mockResolvedValue(createMockClient()),
+      end: vi.fn().mockResolvedValue(undefined),
+    })),
+    query: vi.fn().mockResolvedValue({ rows: [], rowCount: 0 }),
+    getClient: vi.fn().mockImplementation(async () => createMockClient()),
+    closePool: vi.fn().mockResolvedValue(undefined),
+    healthCheck: vi.fn().mockResolvedValue(true),
+  };
+});
+
 // Mock Redis module
 vi.mock('../src/db/redis.js', () => {
   const mfaSessions = new Map<string, { userId: string; userType: string; expiresAt: number }>();
@@ -75,14 +140,6 @@ vi.mock('../src/db/redis.js', () => {
     },
   };
 });
-
-// In-memory stores for mocking repositories
-const users = new Map<string, unknown>();
-const candidates = new Map<string, unknown>();
-const sessions = new Map<string, unknown>();
-const passwordResetTokens = new Map<string, unknown>();
-const mfaEnrollments = new Map<string, unknown>();
-const auditLogs: unknown[] = [];
 
 // Mock User Repository
 vi.mock('../src/repositories/user.repository.js', () => ({
@@ -298,6 +355,64 @@ vi.mock('../src/repositories/audit-log.repository.js', () => ({
   AuditLogRepository: vi.fn(),
 }));
 
+// Mock Backup Code Repository
+vi.mock('../src/repositories/backup-code.repository.js', () => ({
+  backupCodeRepository: {
+    createBatch: vi.fn(async (codes: { id: string; userId: string; userType: string; codeHash: string }[]) => {
+      for (const code of codes) {
+        backupCodes.set(code.id, code);
+      }
+    }),
+    findUnusedByUser: vi.fn(async (userId: string, userType: string) => {
+      const result: unknown[] = [];
+      for (const code of backupCodes.values()) {
+        const c = code as { userId: string; userType: string; usedAt?: Date };
+        if (c.userId === userId && c.userType === userType && !c.usedAt) {
+          result.push(code);
+        }
+      }
+      return result;
+    }),
+    findUnusedByHash: vi.fn(async (userId: string, userType: string, codeHash: string) => {
+      for (const code of backupCodes.values()) {
+        const c = code as { userId: string; userType: string; codeHash: string; usedAt?: Date };
+        if (c.userId === userId && c.userType === userType && c.codeHash === codeHash && !c.usedAt) {
+          return code;
+        }
+      }
+      return undefined;
+    }),
+    markUsed: vi.fn(async (id: string) => {
+      const code = backupCodes.get(id) as { usedAt?: Date } | undefined;
+      if (code) {
+        code.usedAt = new Date();
+      }
+    }),
+    deleteAllForUser: vi.fn(async (userId: string, userType: string) => {
+      let count = 0;
+      for (const [id, code] of backupCodes.entries()) {
+        const c = code as { userId: string; userType: string };
+        if (c.userId === userId && c.userType === userType) {
+          backupCodes.delete(id);
+          count++;
+        }
+      }
+      return count;
+    }),
+    countUnused: vi.fn(async (userId: string, userType: string) => {
+      let count = 0;
+      for (const code of backupCodes.values()) {
+        const c = code as { userId: string; userType: string; usedAt?: Date };
+        if (c.userId === userId && c.userType === userType && !c.usedAt) {
+          count++;
+        }
+      }
+      return count;
+    }),
+  },
+  BackupCodeRepository: vi.fn(),
+}));
+
 // Clear all stores before each test
 beforeEach(() => {
   vi.clearAllMocks();
@@ -306,7 +421,8 @@ beforeEach(() => {
   sessions.clear();
   passwordResetTokens.clear();
   mfaEnrollments.clear();
+  backupCodes.clear();
   auditLogs.length = 0;
 });
 
-export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, auditLogs };
+export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, auditLogs };

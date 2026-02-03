@@ -17,6 +17,7 @@ export interface AuthConfig {
     lockoutDurationMinutes: number;
     passwordResetTtlMinutes: number;
     mfaIssuer: string;
+    mfaEncryptionKey: string;
   };
   rateLimit: {
     windowMs: number;
@@ -51,6 +52,7 @@ const MIN_JWT_SECRET_LENGTH = 32;
 const WEAK_SECRETS = [
   'dev-access-secret-change-in-production',
   'dev-refresh-secret-change-in-production',
+  'dev-mfa-encryption-key-change-in-production',
   'secret',
   'password',
   'changeme',
@@ -94,9 +96,12 @@ function validateJwtSecret(secret: string, name: string): void {
 const accessTokenSecret = getEnvOrDefault('JWT_ACCESS_SECRET', 'dev-access-secret-change-in-production');
 const refreshTokenSecret = getEnvOrDefault('JWT_REFRESH_SECRET', 'dev-refresh-secret-change-in-production');
 
+const mfaEncryptionKey = getEnvOrDefault('MFA_ENCRYPTION_KEY', 'dev-mfa-encryption-key-change-in-production');
+
 // Validate secrets at module load
 validateJwtSecret(accessTokenSecret, 'JWT_ACCESS_SECRET');
 validateJwtSecret(refreshTokenSecret, 'JWT_REFRESH_SECRET');
+validateJwtSecret(mfaEncryptionKey, 'MFA_ENCRYPTION_KEY');
 
 export const config: AuthConfig = {
   jwt: {
@@ -112,6 +117,7 @@ export const config: AuthConfig = {
     lockoutDurationMinutes: getEnvIntOrDefault('AUTH_LOCKOUT_DURATION_MINUTES', 30),
     passwordResetTtlMinutes: getEnvIntOrDefault('AUTH_PASSWORD_RESET_TTL_MINUTES', 60),
     mfaIssuer: getEnvOrDefault('MFA_ISSUER', 'Yezda'),
+    mfaEncryptionKey,
   },
   rateLimit: {
     windowMs: getEnvIntOrDefault('RATE_LIMIT_WINDOW_MS', 60000), // 1 minute
