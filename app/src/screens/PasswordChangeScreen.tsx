@@ -13,10 +13,12 @@ import {
 
 interface PasswordChangeScreenProps {
   onBackPress?: () => void;
+  onContinue?: () => void;
 }
 
 export function PasswordChangeScreen({
   onBackPress,
+  onContinue,
 }: PasswordChangeScreenProps) {
   return (
     <ScrollView
@@ -90,7 +92,9 @@ export function PasswordChangeScreen({
       {/* Action Buttons */}
       <View className="px-6 mt-6 space-y-3">
         <TouchableOpacity
+          testID="continue-password-change-button"
           className="bg-blue-600 py-4 rounded-lg"
+          onPress={onContinue}
           accessibilityRole="button"
           accessibilityLabel="Continue to change password"
         >

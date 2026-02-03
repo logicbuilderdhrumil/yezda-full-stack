@@ -4,7 +4,7 @@
  * Task 1.5: Integrate profile update API call with optimistic feedback.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,10 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
-import {
-  useProfileStore,
-  selectProfile,
-  selectProfileScreenState,
-  selectProfileError,
-  selectProfileSuccess,
-} from '../store/profileStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useProfileStore } from '../store/profileStore';
 import { ProfileFormValues, ProfileFormErrors } from '../types/profile.types';
 import {
   validateProfileField,
@@ -39,13 +35,25 @@ export function ProfileEditScreen({
   onSaveSuccess,
   onCancel,
 }: ProfileEditScreenProps) {
-  const profile = useProfileStore(selectProfile);
-  const screenState = useProfileStore(selectProfileScreenState);
-  const error = useProfileStore(selectProfileError);
-  const successMessage = useProfileStore(selectProfileSuccess);
-  const updateProfile = useProfileStore((state) => state.updateProfile);
-  const clearError = useProfileStore((state) => state.clearError);
-  const clearSuccess = useProfileStore((state) => state.clearSuccess);
+  const {
+    profile,
+    screenState,
+    error,
+    successMessage,
+    updateProfile,
+    clearError,
+    clearSuccess,
+  } = useProfileStore(
+    useShallow((state) => ({
+      profile: state.profile,
+      screenState: state.screenState,
+      error: state.error,
+      successMessage: state.successMessage,
+      updateProfile: state.updateProfile,
+      clearError: state.clearError,
+      clearSuccess: state.clearSuccess,
+    }))
+  );
 
   const [formValues, setFormValues] = useState<ProfileFormValues>(() =>
     profileToFormValues(profile ?? {})
@@ -128,6 +136,27 @@ export function ProfileEditScreen({
     const updateData = formValuesToProfileUpdate(formValues);
     await updateProfile(updateData);
   }, [formValues, updateProfile, isSaving]);
+
+  // Check if form has unsaved changes
+  const isDirty = useMemo(() => {
+    const original = profileToFormValues(profile ?? {});
+    return JSON.stringify(original) !== JSON.stringify(formValues);
+  }, [profile, formValues]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty) {
+      Alert.alert(
+        'Discard changes?',
+        'You have unsaved changes. Are you sure you want to leave?',
+        [
+          { text: 'Keep Editing', style: 'cancel' },
+          { text: 'Discard', style: 'destructive', onPress: onCancel },
+        ]
+      );
+    } else {
+      onCancel?.();
+    }
+  }, [isDirty, onCancel]);
 
   return (
     <KeyboardAvoidingView
@@ -294,7 +323,7 @@ export function ProfileEditScreen({
 
           <TouchableOpacity
             className="py-4 rounded-lg mt-3 bg-gray-100"
-            onPress={onCancel}
+            onPress={handleCancel}
             disabled={isSaving}
             accessibilityRole="button"
             accessibilityLabel="Cancel editing"

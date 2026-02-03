@@ -12,7 +12,12 @@ import {
   profileErrorMessages,
 } from '../types/profile.types';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+  throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
+}
+
 const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 /**

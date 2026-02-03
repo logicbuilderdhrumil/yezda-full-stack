@@ -3,7 +3,7 @@
  * Task 1.7: Add tests for profile view, edit, and validation flows.
  */
 
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-native';
 import { useProfileStore } from '../store/profileStore';
 import * as profileService from '../services/profileService';
 import { useAuthStore } from '../store/authStore';

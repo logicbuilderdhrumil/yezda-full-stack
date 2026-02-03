@@ -148,6 +148,7 @@ export function ProfileOverviewScreen({
       {/* Edit Profile Button */}
       <View className="px-6 mt-6">
         <TouchableOpacity
+          testID="edit-profile-button"
           className="bg-blue-600 py-4 rounded-lg"
           onPress={onEditPress}
           accessibilityRole="button"
@@ -166,6 +167,7 @@ export function ProfileOverviewScreen({
         </Text>
 
         <TouchableOpacity
+          testID="change-password-button"
           className="flex-row justify-between items-center py-4 border-b border-gray-100"
           onPress={onSecurityPress}
           accessibilityRole="button"

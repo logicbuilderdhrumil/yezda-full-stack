@@ -60,10 +60,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (error) {
-      const isProfileError =
-        error instanceof Error &&
-        (error.name === 'ProfileApiError' || ('code' in error && 'status' in error));
-      const message = isProfileError
+      const message = error instanceof ProfileApiError
         ? error.message
         : 'Unable to load profile. Please try again.';
 
@@ -113,10 +110,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       return true;
     } catch (error) {
       // Rollback on failure
-      const isProfileError =
-        error instanceof Error &&
-        (error.name === 'ProfileApiError' || ('code' in error && 'status' in error));
-      const message = isProfileError
+      const message = error instanceof ProfileApiError
         ? error.message
         : 'Unable to save changes. Please try again.';
 
