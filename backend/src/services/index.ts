@@ -11,3 +11,5 @@ export * from './state-store-metrics.service.js';
 export * from './shell.service.js';
 export * from './socket.service.js';
 export * from './socket-metrics.service.js';
+export * from './firebase-admin.service.js';
+export * from './firebase-device-token.service.js';
