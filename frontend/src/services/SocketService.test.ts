@@ -25,7 +25,7 @@ vi.mock('socket.io-client', () => ({
 }));
 
 // Import after mock setup
-import { SocketService } from '../SocketService';
+import { SocketService } from './SocketService';
 
 describe('SocketService', () => {
   let service: SocketService;
@@ -96,6 +96,37 @@ describe('SocketService', () => {
   describe('emit', () => {
     it('should reject when not connected', async () => {
       await expect(service.emit('test:event', {})).rejects.toThrow('Socket not connected');
+    });
+
+    it('should clear timeout on successful response and not double-resolve', async () => {
+      // Set up connected state
+      mockSocket.connected = true;
+      await service.connect();
+
+      // Track if emit was called and capture callback
+      let ackCallback: ((response: unknown) => void) | undefined;
+      mockSocket.emit.mockImplementation(
+        (
+          _event: string,
+          _data: unknown,
+          callback: (response: unknown) => void
+        ) => {
+          ackCallback = callback;
+        }
+      );
+
+      const promise = service.emit('test:event', { data: 'test' });
+
+      // Simulate server response before timeout
+      expect(ackCallback).toBeDefined();
+      ackCallback!({ success: true });
+
+      const result = await promise;
+      expect(result).toEqual({ success: true });
+
+      // Ensure the promise settled only once (no additional rejections)
+      // If there was a double-resolve bug, this would fail
+      await expect(Promise.race([promise, Promise.resolve('first')])).resolves.toEqual({ success: true });
     });
   });
 

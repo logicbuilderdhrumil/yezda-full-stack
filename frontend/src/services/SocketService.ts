@@ -134,15 +134,22 @@ export class SocketService {
         return;
       }
 
+      let settled = false;
+      const timeoutId = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          reject(new Error(`Emit timeout for event: ${event}`));
+        }
+      }, 10000);
+
       // Use acknowledgment callback for response
       this.socket.emit(event, data, (response: T) => {
-        resolve(response);
+        if (!settled) {
+          settled = true;
+          clearTimeout(timeoutId);
+          resolve(response);
+        }
       });
-
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        reject(new Error(`Emit timeout for event: ${event}`));
-      }, 10000);
     });
   }
 
