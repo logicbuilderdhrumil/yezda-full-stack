@@ -7,43 +7,43 @@ import {
   CandidateResetPasswordView,
   TotpVerifyView,
 } from '@/views/auth';
-import { RequireGuest } from '@/components/auth';
+import { PublicRoute } from '@/components/route';
 
 /**
  * Auth routes configuration.
- * All routes are wrapped with RequireGuest to redirect authenticated users.
+ * All routes are wrapped with PublicRoute to redirect authenticated users.
  */
 export const authRoutes: RouteObject[] = [
   {
     path: '/sign-in',
     element: (
-      <RequireGuest>
+      <PublicRoute>
         <SignInView />
-      </RequireGuest>
+      </PublicRoute>
     ),
   },
   {
     path: '/sign-up',
     element: (
-      <RequireGuest>
+      <PublicRoute>
         <SignUpView />
-      </RequireGuest>
+      </PublicRoute>
     ),
   },
   {
     path: '/forgot-password',
     element: (
-      <RequireGuest>
+      <PublicRoute>
         <ForgotPasswordView />
-      </RequireGuest>
+      </PublicRoute>
     ),
   },
   {
     path: '/reset-password',
     element: (
-      <RequireGuest>
+      <PublicRoute>
         <ResetPasswordView />
-      </RequireGuest>
+      </PublicRoute>
     ),
   },
   {

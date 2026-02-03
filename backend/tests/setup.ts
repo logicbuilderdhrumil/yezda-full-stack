@@ -12,6 +12,7 @@ const sessions = new Map<string, unknown>();
 const passwordResetTokens = new Map<string, unknown>();
 const mfaEnrollments = new Map<string, unknown>();
 const backupCodes = new Map<string, unknown>();
+const stateStore = new Map<string, unknown>();
 const auditLogs: unknown[] = [];
 
 // Mock Postgres module for transactions
@@ -413,6 +414,81 @@ vi.mock('../src/repositories/backup-code.repository.js', () => ({
   BackupCodeRepository: vi.fn(),
 }));
 
+// Mock State Store Repository
+vi.mock('../src/repositories/state-store.repository.js', () => ({
+  stateStoreRepository: {
+    upsert: vi.fn(async (entry: { tenantId: string; userId: string; userType: string; key: string; value: string; expiresAt?: Date }) => {
+      const storeKey = `${entry.tenantId}:${entry.userId}:${entry.userType}:${entry.key}`;
+      const now = new Date();
+      const storedEntry = {
+        id: `state-${Date.now()}`,
+        ...entry,
+        createdAt: now,
+        updatedAt: now,
+      };
+      stateStore.set(storeKey, storedEntry);
+      return storedEntry;
+    }),
+    findByKey: vi.fn(async (tenantId: string, userId: string, userType: string, key: string) => {
+      const storeKey = `${tenantId}:${userId}:${userType}:${key}`;
+      const entry = stateStore.get(storeKey) as { expiresAt?: Date } | undefined;
+      if (entry && entry.expiresAt && entry.expiresAt < new Date()) {
+        stateStore.delete(storeKey);
+        return undefined;
+      }
+      return entry;
+    }),
+    findAllByUser: vi.fn(async (tenantId: string, userId: string, userType: string) => {
+      const results: unknown[] = [];
+      for (const [key, entry] of stateStore.entries()) {
+        if (key.startsWith(`${tenantId}:${userId}:${userType}:`)) {
+          const e = entry as { expiresAt?: Date };
+          if (!e.expiresAt || e.expiresAt > new Date()) {
+            results.push(entry);
+          }
+        }
+      }
+      return results;
+    }),
+    delete: vi.fn(async (tenantId: string, userId: string, userType: string, key: string) => {
+      const storeKey = `${tenantId}:${userId}:${userType}:${key}`;
+      return stateStore.delete(storeKey);
+    }),
+    deleteAllByUser: vi.fn(async (tenantId: string, userId: string, userType: string) => {
+      let count = 0;
+      for (const key of stateStore.keys()) {
+        if (key.startsWith(`${tenantId}:${userId}:${userType}:`)) {
+          stateStore.delete(key);
+          count++;
+        }
+      }
+      return count;
+    }),
+    cleanupExpired: vi.fn(async () => {
+      let count = 0;
+      const now = new Date();
+      for (const [key, entry] of stateStore.entries()) {
+        const e = entry as { expiresAt?: Date };
+        if (e.expiresAt && e.expiresAt < now) {
+          stateStore.delete(key);
+          count++;
+        }
+      }
+      return count;
+    }),
+    verifyTenantOwnership: vi.fn(async (entryId: string, tenantId: string) => {
+      for (const entry of stateStore.values()) {
+        const e = entry as { id: string; tenantId: string };
+        if (e.id === entryId && e.tenantId === tenantId) {
+          return true;
+        }
+      }
+      return false;
+    }),
+  },
+  StateStoreRepository: vi.fn(),
+}));
+
 // Clear all stores before each test
 beforeEach(() => {
   vi.clearAllMocks();
@@ -422,7 +498,8 @@ beforeEach(() => {
   passwordResetTokens.clear();
   mfaEnrollments.clear();
   backupCodes.clear();
+  stateStore.clear();
   auditLogs.length = 0;
 });
 
-export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, auditLogs };
+export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, auditLogs };

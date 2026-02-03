@@ -1,1 +1,1 @@
-export { RequireAuth, RequireGuest } from './RouteGuards';
+export { RequireAuth, RequireGuest, RequireAuthority } from './RouteGuards';

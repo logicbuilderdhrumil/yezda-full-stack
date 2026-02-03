@@ -1,6 +1,55 @@
 /**
  * Crypto Service
- * AES-256-GCM encryption for sensitive data at rest (MFA secrets, backup codes)
+ * AES-256-GCM encryption for sensitive data at rest (MFA secrets, backup codes, state store)
+ * 
+ * ## Encryption Key Rotation Strategy
+ * 
+ * ### Current Implementation
+ * The encryption key is derived from `STATE_ENCRYPTION_KEY` environment variable.
+ * Each encrypted value includes a unique salt, so the same plaintext produces
+ * different ciphertext each time.
+ * 
+ * ### Key Rotation Procedure
+ * 
+ * **IMPORTANT: Key rotation requires a coordinated migration process.**
+ * 
+ * 1. **Pre-rotation:**
+ *    - Schedule a maintenance window (minimal downtime expected)
+ *    - Backup the current encryption key securely
+ *    - Generate a new 32-byte encryption key
+ * 
+ * 2. **Migration steps:**
+ *    a. Set `STATE_ENCRYPTION_KEY_OLD` to the current key
+ *    b. Set `STATE_ENCRYPTION_KEY` to the new key
+ *    c. Run migration script that:
+ *       - Reads all encrypted state entries
+ *       - Decrypts with OLD key (fallback on failure)
+ *       - Re-encrypts with NEW key
+ *       - Updates the database entry
+ *    d. Validate all entries are re-encrypted
+ *    e. Remove `STATE_ENCRYPTION_KEY_OLD` after confirmation
+ * 
+ * 3. **Rollback:**
+ *    - If migration fails, revert `STATE_ENCRYPTION_KEY` to the old value
+ *    - All data remains readable with the original key
+ * 
+ * ### Future Improvements (Not Yet Implemented)
+ * - Add key version tracking in encrypted values:
+ *   ```typescript
+ *   interface EncryptedValue {
+ *     keyVersion: number;  // 1, 2, etc.
+ *     iv: string;
+ *     authTag: string;
+ *     ciphertext: string;
+ *   }
+ *   ```
+ * - Support automatic decryption fallback to older key versions
+ * - Automated re-encryption background job
+ * 
+ * ### Operational Notes
+ * - Decryption failures are logged but don't crash—users get empty state
+ * - Monitor `STATE_DECRYPTION_ERROR` logs after key changes
+ * - Test key rotation in staging before production
  */
 
 import crypto from 'crypto';

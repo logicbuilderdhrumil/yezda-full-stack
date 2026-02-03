@@ -93,27 +93,32 @@ export function ThemePreview() {
                 <div
                   className="h-6 w-6 rounded"
                   style={{ backgroundColor: preset.tokens.colors.primary }}
-                  title="Primary"
+                  role="img"
+                  aria-label="Primary color"
                 />
                 <div
                   className="h-6 w-6 rounded"
                   style={{ backgroundColor: preset.tokens.colors.secondary }}
-                  title="Secondary"
+                  role="img"
+                  aria-label="Secondary color"
                 />
                 <div
                   className="h-6 w-6 rounded"
                   style={{ backgroundColor: preset.tokens.colors.success }}
-                  title="Success"
+                  role="img"
+                  aria-label="Success color"
                 />
                 <div
                   className="h-6 w-6 rounded"
                   style={{ backgroundColor: preset.tokens.colors.warning }}
-                  title="Warning"
+                  role="img"
+                  aria-label="Warning color"
                 />
                 <div
                   className="h-6 w-6 rounded"
                   style={{ backgroundColor: preset.tokens.colors.destructive }}
-                  title="Destructive"
+                  role="img"
+                  aria-label="Destructive color"
                 />
               </div>
 

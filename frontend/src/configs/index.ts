@@ -17,3 +17,4 @@ export {
   defaultSpacing,
   defaultRadius,
 } from './theme.config';
+export { iconMap, navConfig } from './navigation.config';

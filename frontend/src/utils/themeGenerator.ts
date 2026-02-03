@@ -157,8 +157,6 @@ export function previewTheme(theme: 'light' | 'dark'): () => void {
   applyThemeToDocument(theme);
 
   return () => {
-    if (previousTheme) {
-      applyThemeToDocument(previousTheme);
-    }
+    applyThemeToDocument(previousTheme ?? 'light');
   };
 }

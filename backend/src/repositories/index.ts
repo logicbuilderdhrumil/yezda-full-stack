@@ -8,3 +8,4 @@ export * from './password-reset.repository.js';
 export * from './mfa-enrollment.repository.js';
 export * from './backup-code.repository.js';
 export * from './audit-log.repository.js';
+export * from './state-store.repository.js';

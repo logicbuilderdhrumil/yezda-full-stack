@@ -6,3 +6,6 @@ export * from './audit.service.js';
 export * from './metrics.service.js';
 export * from './crypto.service.js';
 export * from './api-client.service.js';
+export * from './state-store.service.js';
+export * from './state-store-metrics.service.js';
+export * from './shell.service.js';

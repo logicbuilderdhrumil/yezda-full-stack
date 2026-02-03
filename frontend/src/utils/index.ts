@@ -21,3 +21,4 @@ export {
   generateCustomTheme,
   previewTheme,
 } from './themeGenerator';
+export { cn } from './cn';
