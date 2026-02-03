@@ -1,4 +1,11 @@
+# ========================
+# Git Worktrees
+# ========================
+.worktrees/
+
+# ========================
 # Logs
+# ========================
 logs
 *.log
 npm-debug.log*
@@ -101,12 +108,141 @@ dist
 # vitepress build output
 **/.vitepress/dist
 
-# vitepress cache directory
+# Vitepress cache directory
 **/.vitepress/cache
 
 # Docusaurus cache and generated files
 .docusaurus
 
+# ========================
+# Build Outputs
+# ========================
+# Frontend/Backend builds
+build/
+dist/
+out/
+.output/
+*.js.map
+*.d.ts.map
+
+# ========================
+# React Native / Expo
+# ========================
+# Expo
+.expo/
+.expo-shared/
+expo-env.d.ts
+
+# React Native
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro bundler
+.metro-health-check*
+
+# iOS
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+ios/Pods/
+*.xcworkspace
+!default.xcworkspace
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.xcode.env.local
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+.gradle/
+local.properties
+*.iml
+.idea/
+.cxx/
+*.jks
+*.keystore
+!debug.keystore
+android/app/debug
+android/app/release
+
+# ========================
+# IDEs and Editors
+# ========================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ========================
+# Operating Systems
+# ========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ========================
 # Serverless directories
 .serverless/
 
