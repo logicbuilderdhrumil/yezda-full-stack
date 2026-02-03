@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import {
   useAuthStore,
@@ -107,17 +108,24 @@ export function MfaChallengeScreen() {
     [error, clearError]
   );
 
-  // Auto-submit when all 6 digits are entered
+  // Auto-submit when all 6 digits are entered (guarded by no prior error)
   useEffect(() => {
-    if (code.length === CODE_LENGTH && pendingMfa && !isLoading && !isSubmitting) {
+    if (code.length === CODE_LENGTH && pendingMfa && !isLoading && !isSubmitting && !error) {
       handleSubmit();
     }
-  }, [code, pendingMfa, isLoading, isSubmitting, handleSubmit]);
+  }, [code, pendingMfa, isLoading, isSubmitting, error, handleSubmit]);
 
   const handleResendCode = useCallback(async () => {
     if (resendCooldown > 0 || !pendingMfa) return;
 
-    // Start cooldown timer (60 seconds)
+    // Resend API not yet available - inform user and start cooldown
+    Alert.alert(
+      'Code Requested',
+      'Resend functionality is not yet available. Please wait a moment for your original code to arrive, or contact support if you continue to have issues.',
+      [{ text: 'OK' }]
+    );
+
+    // Start cooldown timer (60 seconds) to prevent spamming
     setResendCooldown(60);
     cooldownIntervalRef.current = setInterval(() => {
       setResendCooldown((prev) => {
@@ -131,9 +139,6 @@ export function MfaChallengeScreen() {
         return prev - 1;
       });
     }, 1000);
-
-    // TODO: Call resend API when backend adds support
-    // For now, just show the cooldown timer
   }, [resendCooldown, pendingMfa]);
 
   const handleCancel = useCallback(async () => {
