@@ -179,17 +179,18 @@ export class NotificationRepository {
 
   /**
    * Update notification status
+   * Returns the updated notification atomically using RETURNING
    */
   async updateStatus(
     id: string,
     status: NotificationStatus
-  ): Promise<boolean> {
+  ): Promise<Notification | undefined> {
     const readAt = status === 'read' ? new Date() : null;
-    const result = await query(
-      `UPDATE notifications SET status = $1, read_at = $2 WHERE id = $3`,
+    const result = await query<NotificationRow>(
+      `UPDATE notifications SET status = $1, read_at = $2 WHERE id = $3 RETURNING *`,
       [status, readAt, id]
     );
-    return (result.rowCount ?? 0) > 0;
+    return result.rows[0] ? rowToNotification(result.rows[0]) : undefined;
   }
 
   /**

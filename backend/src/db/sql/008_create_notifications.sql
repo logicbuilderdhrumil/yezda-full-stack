@@ -15,10 +15,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     metadata JSONB,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     read_at TIMESTAMP WITH TIME ZONE,
-    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    
-    -- Index for efficient querying by user
-    CONSTRAINT fk_notifications_user_type CHECK (user_type IN ('user', 'candidate'))
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- Index for fetching notifications by user in reverse chronological order

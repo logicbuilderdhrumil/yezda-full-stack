@@ -1,6 +1,7 @@
 /**
  * Rate Limiting Middleware
  * Task 1.6: Rate limiting and abuse protection for auth endpoints
+ * Task 1.7 (Firebase): Rate limiting for Firebase integration endpoints
  * 
  * Uses Redis for distributed rate limiting across multiple instances.
  * Falls back to in-memory limiting on Redis errors.
@@ -9,6 +10,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { checkRateLimit } from '../db/redis.js';
 import { config } from '../config/index.js';
+import { firebaseRateLimitConfig } from '../config/firebase.config.js';
 import { auditService } from '../services/audit.service.js';
 import { metricsService } from '../services/metrics.service.js';
 
@@ -201,4 +203,54 @@ export const shellConfigRateLimiter = createRateLimiter({
   max: config.rateLimit.maxRequests * 2, // Higher limit for config endpoints
   keyPrefix: 'rl:shell-config',
   message: { error: 'Too many requests, please try again later', code: 'RATE_LIMITED' },
+});
+
+/**
+ * Rate limiter for Firebase token registration endpoints
+ */
+export const firebaseTokenRateLimiter = createRateLimiter({
+  windowMs: firebaseRateLimitConfig.windowMs,
+  max: firebaseRateLimitConfig.maxTokenRegistrations,
+  keyPrefix: 'rl:firebase-token',
+  message: { error: 'Too many token registration attempts, please try again later', code: 'FIREBASE_RATE_LIMITED' },
+  onLimitHit: (req) => {
+    const ip = req.ip || req.socket.remoteAddress;
+    
+    auditService.logAnomaly({
+      description: 'Excessive Firebase token registration attempts',
+      channel: 'api',
+      ipAddress: ip,
+      metadata: {
+        endpoint: req.path,
+        method: req.method,
+      },
+    });
+
+    metricsService.recordFirebaseRateLimitHit(req.path);
+  },
+});
+
+/**
+ * Rate limiter for Firebase notification dispatch endpoints
+ */
+export const firebaseDispatchRateLimiter = createRateLimiter({
+  windowMs: firebaseRateLimitConfig.windowMs,
+  max: firebaseRateLimitConfig.maxNotificationDispatch,
+  keyPrefix: 'rl:firebase-dispatch',
+  message: { error: 'Too many notification dispatch attempts, please try again later', code: 'FIREBASE_DISPATCH_RATE_LIMITED' },
+  onLimitHit: (req) => {
+    const ip = req.ip || req.socket.remoteAddress;
+    
+    auditService.logAnomaly({
+      description: 'Excessive Firebase notification dispatch attempts',
+      channel: 'api',
+      ipAddress: ip,
+      metadata: {
+        endpoint: req.path,
+        method: req.method,
+      },
+    });
+
+    metricsService.recordFirebaseRateLimitHit(req.path);
+  },
 });

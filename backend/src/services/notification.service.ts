@@ -20,6 +20,18 @@ import {
 } from '../models/notification.model.js';
 
 /**
+ * Notification-specific audit event types for proper log filtering/analysis
+ */
+type NotificationAuditEventType =
+  | 'NOTIFICATION_CREATED'
+  | 'NOTIFICATION_ACCESSED'
+  | 'NOTIFICATION_ACCESS_DENIED'
+  | 'NOTIFICATION_LIST_ACCESSED'
+  | 'NOTIFICATION_READ'
+  | 'NOTIFICATION_UNREAD'
+  | 'NOTIFICATION_BATCH_READ';
+
+/**
  * Request context for audit logging
  */
 interface RequestContext {
@@ -118,7 +130,7 @@ export class NotificationService {
         };
       }
 
-      this.logNotificationEvent('NOTIFICATION_DETAIL_ACCESSED', {
+      this.logNotificationEvent('NOTIFICATION_ACCESSED', {
         tenantId,
         userId,
         userType,
@@ -273,9 +285,9 @@ export class NotificationService {
         };
       }
 
-      const updated = await notificationRepository.updateStatus(id, status);
+      const notification = await notificationRepository.updateStatus(id, status);
 
-      if (!updated) {
+      if (!notification) {
         return {
           success: false,
           error: 'Failed to update notification status',
@@ -295,9 +307,6 @@ export class NotificationService {
       });
 
       notificationMetricsService.recordStatusUpdate(true, Date.now() - start);
-
-      // Fetch updated notification
-      const notification = await notificationRepository.findById(id);
 
       return { success: true, data: notification };
     } catch (_error) {
@@ -332,7 +341,7 @@ export class NotificationService {
         ids
       );
 
-      this.logNotificationEvent('NOTIFICATION_BATCH_MARKED_READ', {
+      this.logNotificationEvent('NOTIFICATION_BATCH_READ', {
         tenantId,
         userId,
         userType,
@@ -399,9 +408,10 @@ export class NotificationService {
 
   /**
    * Log notification audit event
+   * Uses dedicated notification audit event types for proper filtering/analysis
    */
   private logNotificationEvent(
-    eventType: string,
+    eventType: NotificationAuditEventType,
     params: {
       tenantId: string;
       userId: string;
@@ -416,13 +426,8 @@ export class NotificationService {
       channel: 'web' | 'mobile' | 'api';
     }
   ): void {
-    // Map to existing audit event types for compatibility
-    const mappedEventType = params.success
-      ? 'SHELL_CONFIG_ACCESSED'
-      : 'AUTH_ANOMALY_DETECTED';
-
     auditService.log({
-      eventType: mappedEventType,
+      eventType,
       actorId: params.userId,
       actorType: params.userType,
       targetId: params.notificationId,
@@ -431,7 +436,6 @@ export class NotificationService {
       ipAddress: params.ipAddress,
       userAgent: params.userAgent,
       metadata: {
-        notificationEventType: eventType,
         tenantId: params.tenantId,
         notificationType: params.notificationType,
         ...params.metadata,

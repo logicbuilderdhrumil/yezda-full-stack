@@ -386,6 +386,149 @@ export class AuditService {
       success: true,
     });
   }
+
+  /**
+   * Log Firebase device token registration
+   */
+  logFirebaseTokenRegistered(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    deviceToken: string;
+    platform: string;
+    deviceId?: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FIREBASE_TOKEN_REGISTERED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        tenantId: params.tenantId,
+        deviceToken: params.deviceToken,
+        platform: params.platform,
+        deviceId: params.deviceId,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log Firebase device token unregistration
+   */
+  logFirebaseTokenUnregistered(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    deviceToken: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FIREBASE_TOKEN_UNREGISTERED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        deviceToken: params.deviceToken,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log Firebase token registration denied (cross-tenant attempt)
+   */
+  logFirebaseTokenRegistrationDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    attemptedTenantId: string;
+    actualTenantId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FIREBASE_TOKEN_REGISTRATION_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        attemptedTenantId: params.attemptedTenantId,
+        actualTenantId: params.actualTenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log Firebase notification dispatched
+   */
+  logFirebaseNotificationDispatched(params: {
+    actorId?: string;
+    actorType: 'user' | 'candidate' | 'system';
+    tenantId?: string;
+    deviceToken: string;
+    messageId: string;
+    notificationType: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    success: boolean;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FIREBASE_NOTIFICATION_DISPATCHED',
+      actorId: params.actorId,
+      actorType: params.actorType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        deviceToken: params.deviceToken,
+        messageId: params.messageId,
+        notificationType: params.notificationType,
+      },
+      success: params.success,
+    });
+  }
+
+  /**
+   * Log Firebase notification failed
+   */
+  logFirebaseNotificationFailed(params: {
+    actorId?: string;
+    actorType: 'user' | 'candidate' | 'system';
+    tenantId?: string;
+    deviceToken: string;
+    notificationType: string;
+    errorMessage: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FIREBASE_NOTIFICATION_FAILED',
+      actorId: params.actorId,
+      actorType: params.actorType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        deviceToken: params.deviceToken,
+        notificationType: params.notificationType,
+      },
+      success: false,
+      errorMessage: params.errorMessage,
+    });
+  }
 }
 
 export const auditService = new AuditService();

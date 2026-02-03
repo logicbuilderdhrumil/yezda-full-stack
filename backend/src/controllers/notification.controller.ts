@@ -21,11 +21,13 @@ function getClientInfo(req: Request) {
 }
 
 /**
- * Extract tenant ID from authenticated request
- * Default to user ID if no explicit tenant (single-tenant mode)
+ * Extract tenant ID from authenticated user context.
+ * Tenant must come from verified auth claims, never client headers.
+ * Uses user ID as tenant for single-tenant/per-user isolation.
  */
 function getTenantId(req: AuthenticatedRequest): string {
-  return (req.headers['x-tenant-id'] as string) || req.user?.sub || 'default';
+  // Security: tenant ID derived exclusively from authenticated user context
+  return req.user?.sub ?? 'default';
 }
 
 /**

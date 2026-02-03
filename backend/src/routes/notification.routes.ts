@@ -12,6 +12,7 @@ import { notificationRateLimiter } from '../middleware/notification-rate-limit.m
 import {
   validateQuery,
   validateBody,
+  validateParams,
 } from '../middleware/validation.middleware.js';
 import { z } from 'zod';
 
@@ -31,6 +32,10 @@ const listNotificationsQuerySchema = z.object({
 
 const markManyAsReadSchema = z.object({
   ids: z.array(z.string().uuid()).optional(),
+});
+
+const idParamSchema = z.object({
+  id: z.string().uuid(),
 });
 
 // All notification endpoints require authentication
@@ -60,19 +65,19 @@ router.get('/unread-count', notificationController.getUnreadCount);
  * GET /api/v1/notifications/:id
  * Get a specific notification
  */
-router.get('/:id', notificationController.getNotification);
+router.get('/:id', validateParams(idParamSchema), notificationController.getNotification);
 
 /**
  * PATCH /api/v1/notifications/:id/read
  * Mark a notification as read
  */
-router.patch('/:id/read', notificationController.markAsRead);
+router.patch('/:id/read', validateParams(idParamSchema), notificationController.markAsRead);
 
 /**
  * PATCH /api/v1/notifications/:id/unread
  * Mark a notification as unread
  */
-router.patch('/:id/unread', notificationController.markAsUnread);
+router.patch('/:id/unread', validateParams(idParamSchema), notificationController.markAsUnread);
 
 /**
  * POST /api/v1/notifications/mark-read

@@ -95,19 +95,17 @@ export async function notificationRateLimiter(
 
   let result: { allowed: boolean; remaining: number; resetAt: number };
 
-  // Check circuit breaker
-  if (redisCircuitOpen) {
-    if (Date.now() > circuitResetAt) {
-      redisCircuitOpen = false;
-      redisErrorCount = 0;
-    } else {
-      result = memoryLimiter.check(key, limit, NOTIFICATION_RATE_LIMIT.windowMs);
-      res.setHeader('X-RateLimit-Fallback', 'memory');
-    }
+  // Check circuit breaker - reset if timeout elapsed
+  if (redisCircuitOpen && Date.now() > circuitResetAt) {
+    redisCircuitOpen = false;
+    redisErrorCount = 0;
   }
 
-  // Try Redis if circuit is closed
-  if (!redisCircuitOpen) {
+  // Use memory fallback if circuit is open
+  if (redisCircuitOpen) {
+    result = memoryLimiter.check(key, limit, NOTIFICATION_RATE_LIMIT.windowMs);
+    res.setHeader('X-RateLimit-Fallback', 'memory');
+  } else {
     try {
       result = await checkRateLimit(key, limit, NOTIFICATION_RATE_LIMIT.windowMs);
       redisErrorCount = 0;
