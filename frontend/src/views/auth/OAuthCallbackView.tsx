@@ -6,7 +6,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthLayout } from './AuthLayout';
-import { LoadingSpinner, toastSuccess, toastError } from '@/components/ui';
+import { LoadingSpinner, Button, toastSuccess, toastError } from '@/components/ui';
 import { OAuthService } from '@/services';
 import type { OAuthCallbackResult, OAuthProvider } from '@/@types/oauth';
 
@@ -102,6 +102,7 @@ export function OAuthCallbackView(): ReactNode {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -116,12 +117,9 @@ export function OAuthCallbackView(): ReactNode {
               </h2>
               <p className="mt-1 text-sm text-gray-600">{status.message}</p>
             </div>
-            <button
-              onClick={handleContinue}
-              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
+            <Button onClick={handleContinue}>
               {t('oauth.continue')}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -134,6 +132,7 @@ export function OAuthCallbackView(): ReactNode {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -148,12 +147,9 @@ export function OAuthCallbackView(): ReactNode {
               </h2>
               <p className="mt-1 text-sm text-gray-600">{status.message}</p>
             </div>
-            <button
-              onClick={handleRetry}
-              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
+            <Button onClick={handleRetry}>
               {t('oauth.tryAgain')}
-            </button>
+            </Button>
           </div>
         )}
       </div>

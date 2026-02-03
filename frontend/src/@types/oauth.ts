@@ -6,12 +6,6 @@
 /** Supported OAuth providers */
 export type OAuthProvider = 'google' | 'microsoft' | 'slack' | 'github';
 
-/** OAuth authorization request */
-export interface OAuthAuthorizeRequest {
-  provider: OAuthProvider;
-  redirectUrl?: string;
-}
-
 /** OAuth authorization response */
 export interface OAuthAuthorizeResponse {
   authorizationUrl: string;
@@ -38,14 +32,6 @@ export interface OAuthCallbackResult {
   error?: string | undefined;
   errorCode?: string | undefined;
   redirectUrl?: string | undefined;
-}
-
-/** OAuth callback query params */
-export interface OAuthCallbackParams {
-  code?: string;
-  state?: string;
-  error?: string;
-  error_description?: string;
 }
 
 /** OAuth provider info */
