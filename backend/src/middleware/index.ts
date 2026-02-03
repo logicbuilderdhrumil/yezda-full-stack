@@ -15,3 +15,4 @@ export {
   type AuthenticatedUserPayload,
   type UserRole,
 } from './route-guards.middleware.js';
+export * from './state-store-rate-limit.middleware.js';
