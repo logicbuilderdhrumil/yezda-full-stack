@@ -1,6 +1,7 @@
 /**
  * Audit Event Models
  * Task 1.7: Authentication audit logging models
+ * Socket audit events added for socket infrastructure
  */
 
 export type AuditEventType =
@@ -23,7 +24,15 @@ export type AuditEventType =
   | 'GUARD_ACCESS_GRANTED'
   | 'SHELL_PREFERENCE_UPDATED'
   | 'SHELL_NAVIGATION_POLICY_UPDATED'
-  | 'SHELL_CONFIG_ACCESSED';
+  | 'SHELL_CONFIG_ACCESSED'
+  // Socket-related audit events
+  | 'SOCKET_CONNECTED'
+  | 'SOCKET_DISCONNECTED'
+  | 'SOCKET_AUTH_SUCCESS'
+  | 'SOCKET_AUTH_FAILURE'
+  | 'SOCKET_SUBSCRIPTION_GRANTED'
+  | 'SOCKET_SUBSCRIPTION_DENIED'
+  | 'SOCKET_RATE_LIMITED';
 
 export interface AuditEvent {
   id: string;
@@ -32,7 +41,7 @@ export interface AuditEvent {
   actorType?: 'user' | 'candidate' | 'system';
   targetId?: string;
   targetType?: string;
-  channel: 'web' | 'mobile' | 'api';
+  channel: 'web' | 'mobile' | 'api' | 'socket';
   ipAddress?: string;
   userAgent?: string;
   metadata?: Record<string, unknown>;

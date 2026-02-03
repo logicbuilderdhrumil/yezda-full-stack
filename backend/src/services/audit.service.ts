@@ -19,7 +19,7 @@ export class AuditService {
     actorType?: 'user' | 'candidate' | 'system';
     targetId?: string;
     targetType?: string;
-    channel: 'web' | 'mobile' | 'api';
+    channel: 'web' | 'mobile' | 'api' | 'socket';
     ipAddress?: string;
     userAgent?: string;
     metadata?: Record<string, unknown>;
