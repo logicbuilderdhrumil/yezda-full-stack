@@ -4,3 +4,6 @@
 
 export { LoginScreen } from './LoginScreen';
 export { MfaChallengeScreen } from './MfaChallengeScreen';
+export { ProfileOverviewScreen } from './ProfileOverviewScreen';
+export { ProfileEditScreen } from './ProfileEditScreen';
+export { PasswordChangeScreen } from './PasswordChangeScreen';
