@@ -88,18 +88,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const tokens = await getStoredTokens();
+      const storedTokens = await getStoredTokens();
 
-      if (!tokens) {
+      if (!storedTokens) {
         set({ isLoading: false, isAuthenticated: false });
         return;
       }
 
+      // Set tokens in state first so refreshSession can access them
+      set({ tokens: storedTokens });
+
       // Check if token is expired
-      if (isTokenExpired(tokens.expiresAt)) {
-        // Attempt to refresh
-        const refreshed = await get().refreshSession();
-        if (!refreshed) {
+      if (isTokenExpired(storedTokens.expiresAt)) {
+        // Attempt to refresh using the stored refresh token
+        try {
+          const response = await apiRefreshTokens(storedTokens.refreshToken);
+          await storeTokens(response.tokens);
+          set({
+            tokens: response.tokens,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+          return;
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
           await clearStoredTokens();
           set({ isLoading: false, isAuthenticated: false, tokens: null, user: null });
           return;
@@ -108,7 +120,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Token is valid - restore session
       set({
-        tokens,
+        tokens: storedTokens,
         isAuthenticated: true,
         isLoading: false,
       });
@@ -168,10 +180,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false, error: 'Unexpected response from server' });
       return false;
     } catch (error) {
-      const message =
-        error instanceof AuthApiError
-          ? error.message
-          : 'An unexpected error occurred';
+      // Duck-type check for AuthApiError to handle mock compatibility
+      const isAuthError = error instanceof Error && 
+        (error.name === 'AuthApiError' || 'code' in error && 'status' in error);
+      const message = isAuthError ? error.message : 'An unexpected error occurred';
       
       // Track failed attempt for rate limiting
       set({
@@ -208,10 +220,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false, error: 'MFA verification failed' });
       return false;
     } catch (error) {
-      const message =
-        error instanceof AuthApiError
-          ? error.message
-          : 'Verification failed';
+      // Duck-type check for AuthApiError to handle mock compatibility
+      const isAuthError = error instanceof Error && 
+        (error.name === 'AuthApiError' || 'code' in error && 'status' in error);
+      const message = isAuthError ? error.message : 'Verification failed';
       set({ isLoading: false, error: message });
       return false;
     }

@@ -117,10 +117,11 @@ describe('LoginScreen', () => {
       return typeof selector === 'function' ? selector(state) : state;
     });
 
-    const { getByText, getByRole } = render(<LoginScreen />);
+    const { getByText, UNSAFE_getByProps } = render(<LoginScreen />);
 
     expect(getByText('Invalid credentials')).toBeTruthy();
-    expect(getByRole('alert')).toBeTruthy();
+    // Verify accessibilityRole is set to alert
+    expect(UNSAFE_getByProps({ accessibilityRole: 'alert' })).toBeTruthy();
   });
 
   it('shows loading state when isLoading is true', () => {

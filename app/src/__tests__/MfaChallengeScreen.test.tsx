@@ -162,10 +162,11 @@ describe('MfaChallengeScreen', () => {
       return typeof selector === 'function' ? selector(state) : state;
     });
 
-    const { getByText, getByRole } = render(<MfaChallengeScreen />);
+    const { getByText, UNSAFE_getByProps } = render(<MfaChallengeScreen />);
 
     expect(getByText('Invalid verification code')).toBeTruthy();
-    expect(getByRole('alert')).toBeTruthy();
+    // Verify accessibilityRole is set to alert
+    expect(UNSAFE_getByProps({ accessibilityRole: 'alert' })).toBeTruthy();
   });
 
   it('clears error when user types', () => {

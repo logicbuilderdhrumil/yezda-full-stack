@@ -8,6 +8,9 @@ import { useAuthStore } from '../store/authStore';
 import * as authService from '../services/authService';
 import * as secureStorage from '../utils/secureStorage';
 
+// Get real AuthApiError class before mocking
+const { AuthApiError: RealAuthApiError } = jest.requireActual('../services/authService');
+
 // Mock dependencies
 jest.mock('../services/authService');
 jest.mock('../utils/secureStorage');
@@ -144,7 +147,7 @@ describe('useAuthStore', () => {
 
     it('sets error on failure', async () => {
       mockAuthService.signIn.mockRejectedValue(
-        new authService.AuthApiError('INVALID', 'Invalid credentials', 401)
+        new RealAuthApiError('INVALID', 'Invalid credentials', 401)
       );
 
       const { result } = renderHook(() => useAuthStore());
