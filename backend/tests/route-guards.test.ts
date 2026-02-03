@@ -25,6 +25,9 @@ vi.mock('../src/services/token.service.js', () => ({
 vi.mock('../src/services/audit.service.js', () => ({
   auditService: {
     log: vi.fn(),
+    logGuardAuthDenied: vi.fn(),
+    logGuardRoleDenied: vi.fn(),
+    logGuardAccessGranted: vi.fn(),
   },
 }));
 
@@ -32,6 +35,20 @@ vi.mock('../src/services/metrics.service.js', () => ({
   metricsService: {
     incrementCounter: vi.fn(),
     recordLatency: vi.fn(),
+  },
+  GUARD_SLOS: {
+    GUARD_CHECK_LATENCY_P99_MS: 50,
+    GUARD_CHECK_LATENCY_P95_MS: 20,
+    GUARD_AVAILABILITY_RATE: 99.99,
+    MAX_AUTH_DENIED_RATE_PER_MINUTE: 100,
+    MAX_ROLE_DENIED_RATE_PER_MINUTE: 50,
+  },
+  GUARD_METRICS: {
+    AUTH_DENIED: 'guard_auth_denied_total',
+    ROLE_DENIED: 'guard_role_denied_total',
+    ACCESS_GRANTED: 'guard_access_granted_total',
+    CHECK_LATENCY: 'guard_check_latency_ms',
+    RATE_LIMITED: 'guard_rate_limited_total',
   },
 }));
 
@@ -41,6 +58,10 @@ vi.mock('../src/db/redis.js', () => ({
     remaining: 19,
     resetAt: Date.now() + 60000,
   }),
+}));
+
+vi.mock('../src/utils/ip.util.js', () => ({
+  getClientIp: vi.fn().mockReturnValue('127.0.0.1'),
 }));
 
 import { tokenService } from '../src/services/token.service.js';
@@ -103,7 +124,7 @@ describe('Route Guards', () => {
         code: 'UNAUTHORIZED',
       });
       expect(mockNext).not.toHaveBeenCalled();
-      expect(auditService.log).toHaveBeenCalled();
+      expect(auditService.logGuardAuthDenied).toHaveBeenCalled();
       expect(metricsService.incrementCounter).toHaveBeenCalled();
     });
 
@@ -456,6 +477,53 @@ describe('Route Guards', () => {
       expect(statusSpy).toHaveBeenCalledWith(401);
       expect(mockNext).not.toHaveBeenCalled();
     });
+
+    it('should propagate errors from guard via next callback', async () => {
+      const testError = new Error('Guard error');
+      const failingGuard = async (_req: AuthenticatedRoleRequest, _res: Response, next: NextFunction) => {
+        next(testError);
+      };
+
+      const composedGuard = composeGuards(failingGuard);
+
+      await composedGuard(
+        mockReq as AuthenticatedRoleRequest,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalledWith(testError);
+    });
+
+    it('should catch async errors from recursive runNext', async () => {
+      mockReq.headers = { authorization: 'Bearer valid-token' };
+      vi.mocked(tokenService.validateAccessToken).mockResolvedValue({
+        sub: 'user-123',
+        type: 'user',
+        iat: Date.now(),
+        exp: Date.now() + 3600000,
+        jti: 'jti-123',
+        roles: ['admin'],
+      });
+
+      const asyncError = new Error('Async guard error');
+      const asyncFailingGuard = async () => {
+        throw asyncError;
+      };
+
+      const composedGuard = composeGuards(
+        requireAuthGuard,
+        asyncFailingGuard
+      );
+
+      await composedGuard(
+        mockReq as AuthenticatedRoleRequest,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalledWith(asyncError);
+    });
   });
 
   describe('Audit Logging', () => {
@@ -466,10 +534,12 @@ describe('Route Guards', () => {
         mockNext
       );
 
-      expect(auditService.log).toHaveBeenCalledWith(
+      expect(auditService.logGuardAuthDenied).toHaveBeenCalledWith(
         expect.objectContaining({
-          eventType: 'GUARD_AUTH_DENIED',
-          success: false,
+          route: '/api/v1/test',
+          method: 'GET',
+          reason: 'Authentication required',
+          channel: 'api',
         })
       );
     });
@@ -491,14 +561,15 @@ describe('Route Guards', () => {
         mockNext
       );
 
-      expect(auditService.log).toHaveBeenCalledWith(
+      expect(auditService.logGuardRoleDenied).toHaveBeenCalledWith(
         expect.objectContaining({
-          eventType: 'GUARD_ROLE_DENIED',
-          actorId: 'user-123',
-          metadata: expect.objectContaining({
-            route: '/api/v1/test',
-            method: 'GET',
-          }),
+          userId: 'user-123',
+          userType: 'user',
+          route: '/api/v1/test',
+          method: 'GET',
+          requiredRole: 'admin',
+          actualRoles: ['viewer'],
+          channel: 'api',
         })
       );
     });
@@ -529,12 +600,55 @@ describe('Route Guards', () => {
         mockNext
       );
 
-      expect(auditService.log).toHaveBeenCalledWith(
+      expect(auditService.logGuardAccessGranted).toHaveBeenCalledWith(
         expect.objectContaining({
-          eventType: 'GUARD_ACCESS_GRANTED',
-          success: true,
+          userId: 'user-123',
+          userType: 'user',
+          route: '/api/v1/test',
+          method: 'GET',
         })
       );
+    });
+  });
+
+  describe('Redis Fallback', () => {
+    it('should use in-memory limiter when Redis fails', async () => {
+      // Make Redis fail
+      vi.mocked(checkRateLimit).mockRejectedValue(new Error('Redis connection failed'));
+
+      // First request should still work (in-memory limiter allows it)
+      await requireAuthGuard(
+        mockReq as AuthenticatedRoleRequest,
+        mockRes as Response,
+        mockNext
+      );
+
+      // Should get 401 unauthorized (not 500 error) - proving fallback worked
+      expect(statusSpy).toHaveBeenCalledWith(401);
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: 'Authorization header required',
+        code: 'UNAUTHORIZED',
+      });
+      expect(auditService.logGuardAuthDenied).toHaveBeenCalled();
+    });
+
+    it('should rate limit via in-memory fallback after many failures', async () => {
+      // Make Redis fail
+      vi.mocked(checkRateLimit).mockRejectedValue(new Error('Redis connection failed'));
+
+      // Simulate many requests by mocking the fallback limiter behavior via multiple calls
+      // The in-memory limiter is internal but we can test that requests eventually get rate limited
+      // by making many requests in sequence
+      for (let i = 0; i < 21; i++) {
+        await requireAuthGuard(
+          { ...mockReq, ip: '192.168.1.1' } as AuthenticatedRoleRequest,
+          mockRes as Response,
+          mockNext
+        );
+      }
+
+      // After 20 failures, the 21st should be rate limited
+      expect(statusSpy).toHaveBeenCalledWith(429);
     });
   });
 

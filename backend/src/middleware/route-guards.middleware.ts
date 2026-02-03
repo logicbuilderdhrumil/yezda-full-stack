@@ -6,16 +6,14 @@
 import type { Request, Response, NextFunction } from 'express';
 import { tokenService } from '../services/token.service.js';
 import { auditService } from '../services/audit.service.js';
-import { metricsService } from '../services/metrics.service.js';
+import { metricsService, GUARD_SLOS, GUARD_METRICS } from '../services/metrics.service.js';
 import { checkRateLimit } from '../db/redis.js';
+import { getClientIp } from '../utils/ip.util.js';
 import type { AccessTokenPayload } from '../models/auth.model.js';
+import type { AuthenticatedRequest } from './auth.middleware.js';
 
-/**
- * Extended request with authenticated user info
- */
-export interface AuthenticatedRequest extends Request {
-  user?: AccessTokenPayload;
-}
+// Re-export for consumers that import from route-guards
+export type { AuthenticatedRequest };
 
 /**
  * Role types for authorization
@@ -33,28 +31,8 @@ export interface AuthenticatedRoleRequest extends Request {
   user?: AuthenticatedUserPayload;
 }
 
-// SLO targets for route guards
-export const GUARD_SLOS = {
-  // Latency SLOs
-  GUARD_CHECK_LATENCY_P99_MS: 50,
-  GUARD_CHECK_LATENCY_P95_MS: 20,
-
-  // Availability SLOs
-  GUARD_AVAILABILITY_RATE: 99.99,
-
-  // Error rate SLOs
-  MAX_AUTH_DENIED_RATE_PER_MINUTE: 100,
-  MAX_ROLE_DENIED_RATE_PER_MINUTE: 50,
-} as const;
-
-// Metric names for guard operations
-export const GUARD_METRICS = {
-  AUTH_DENIED: 'guard_auth_denied_total',
-  ROLE_DENIED: 'guard_role_denied_total',
-  ACCESS_GRANTED: 'guard_access_granted_total',
-  CHECK_LATENCY: 'guard_check_latency_ms',
-  RATE_LIMITED: 'guard_rate_limited_total',
-} as const;
+// Re-export for backwards compatibility
+export { GUARD_SLOS, GUARD_METRICS };
 
 // In-memory fallback rate limiter for guard denials
 class GuardDenialLimiter {
@@ -62,7 +40,9 @@ class GuardDenialLimiter {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
+    // Use unref() to prevent the interval from keeping Node.js alive during shutdown
     this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
+    this.cleanupInterval.unref();
   }
 
   check(
@@ -131,30 +111,38 @@ async function checkGuardDenialRateLimit(ip: string): Promise<{
  * Log guard denial to audit service
  */
 function logGuardDenial(
-  req: Request,
+  req: AuthenticatedRoleRequest,
   reason: 'auth' | 'role',
   userId?: string,
   userType?: 'user' | 'candidate',
-  requiredRole?: string
+  requiredRole?: string,
+  actualRoles?: string[]
 ): void {
-  const ip = req.ip || req.socket.remoteAddress;
+  const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'];
 
-  auditService.log({
-    eventType: reason === 'auth' ? 'GUARD_AUTH_DENIED' : 'GUARD_ROLE_DENIED',
-    actorId: userId,
-    actorType: userType,
-    channel: 'api',
-    ipAddress: ip,
-    userAgent,
-    success: false,
-    errorMessage: reason === 'auth' ? 'Authentication required' : `Missing required role: ${requiredRole}`,
-    metadata: {
+  if (reason === 'auth') {
+    auditService.logGuardAuthDenied({
       route: req.path,
       method: req.method,
-      requiredRole,
-    },
-  });
+      reason: 'Authentication required',
+      channel: 'api',
+      ipAddress: ip,
+      userAgent,
+    });
+  } else {
+    auditService.logGuardRoleDenied({
+      userId: userId || 'unknown',
+      userType: userType || 'user',
+      route: req.path,
+      method: req.method,
+      requiredRole: requiredRole || 'unknown',
+      actualRoles: actualRoles || [],
+      channel: 'api',
+      ipAddress: ip,
+      userAgent,
+    });
+  }
 }
 
 /**
@@ -164,22 +152,18 @@ function logGuardAccessGranted(
   req: AuthenticatedRoleRequest,
   requiredRole?: string
 ): void {
-  const ip = req.ip || req.socket.remoteAddress;
+  const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'];
 
-  auditService.log({
-    eventType: 'GUARD_ACCESS_GRANTED',
-    actorId: req.user?.sub,
-    actorType: req.user?.type,
+  auditService.logGuardAccessGranted({
+    userId: req.user?.sub || 'unknown',
+    userType: req.user?.type || 'user',
+    route: req.path,
+    method: req.method,
+    grantedRole: requiredRole,
     channel: 'api',
     ipAddress: ip,
     userAgent,
-    success: true,
-    metadata: {
-      route: req.path,
-      method: req.method,
-      requiredRole,
-    },
   });
 }
 
@@ -192,7 +176,7 @@ export async function requireAuthGuard(
   next: NextFunction
 ): Promise<void> {
   const startTime = Date.now();
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const ip = getClientIp(req);
 
   const authHeader = req.headers.authorization;
 
@@ -241,6 +225,7 @@ export async function requireAuthGuard(
 
   req.user = payload as AuthenticatedUserPayload;
   metricsService.incrementCounter(GUARD_METRICS.ACCESS_GRANTED, { type: 'auth' });
+  logGuardAccessGranted(req);
   metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'granted' });
 
   next();
@@ -252,7 +237,7 @@ export async function requireAuthGuard(
 export function requireUserTypeGuard(type: 'user' | 'candidate') {
   return async (req: AuthenticatedRoleRequest, res: Response, next: NextFunction): Promise<void> => {
     const startTime = Date.now();
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const ip = getClientIp(req);
 
     if (!req.user) {
       metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'no_user' });
@@ -276,7 +261,7 @@ export function requireUserTypeGuard(type: 'user' | 'candidate') {
       }
 
       metricsService.incrementCounter(GUARD_METRICS.ROLE_DENIED, { required: type, actual: req.user.type });
-      logGuardDenial(req, 'role', req.user.sub, req.user.type, type);
+      logGuardDenial(req, 'role', req.user.sub, req.user.type, type, [req.user.type]);
       metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
 
       res.status(403).json({ error: 'Access denied', code: 'FORBIDDEN' });
@@ -298,7 +283,7 @@ export function requireUserTypeGuard(type: 'user' | 'candidate') {
 export function requireRoleGuard(...requiredRoles: UserRole[]) {
   return async (req: AuthenticatedRoleRequest, res: Response, next: NextFunction): Promise<void> => {
     const startTime = Date.now();
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const ip = getClientIp(req);
 
     if (!req.user) {
       metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'no_user' });
@@ -328,7 +313,7 @@ export function requireRoleGuard(...requiredRoles: UserRole[]) {
         required: requiredRoles.join(','),
         actual: userRoles.join(','),
       });
-      logGuardDenial(req, 'role', req.user.sub, req.user.type, requiredRoles.join(','));
+      logGuardDenial(req, 'role', req.user.sub, req.user.type, requiredRoles.join(','), userRoles);
       metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
 
       res.status(403).json({
@@ -356,7 +341,7 @@ export function requireRoleOrOwnerGuard(
 ) {
   return async (req: AuthenticatedRoleRequest, res: Response, next: NextFunction): Promise<void> => {
     const startTime = Date.now();
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const ip = getClientIp(req);
 
     if (!req.user) {
       metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'no_user' });
@@ -391,7 +376,7 @@ export function requireRoleOrOwnerGuard(
         actual: userRoles.join(','),
         isOwner: 'false',
       });
-      logGuardDenial(req, 'role', req.user.sub, req.user.type, `${requiredRoles.join(',')} or owner`);
+      logGuardDenial(req, 'role', req.user.sub, req.user.type, `${requiredRoles.join(',')} or owner`, userRoles);
       metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
 
       res.status(403).json({
@@ -427,14 +412,18 @@ export function composeGuards(
       }
 
       const guard = guards[index++];
-      await guard(req, res, (err?: unknown) => {
+      await guard(req, res, async (err?: unknown) => {
         if (err) {
           next(err);
           return;
         }
         // Only continue if response hasn't been sent
         if (!res.headersSent) {
-          runNext();
+          try {
+            await runNext();
+          } catch (runErr) {
+            next(runErr);
+          }
         }
       });
     };
