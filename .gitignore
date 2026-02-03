@@ -273,3 +273,7 @@ $RECYCLE.BIN/
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Extra files
+
+.github/agents/orchestrator/
