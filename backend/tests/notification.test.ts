@@ -117,9 +117,9 @@ vi.mock('../src/repositories/notification.repository.js', () => {
         if (notification) {
           notification.status = status;
           notification.readAt = status === 'read' ? new Date() : undefined;
-          return true;
+          return notification;
         }
-        return false;
+        return undefined;
       }),
 
       markManyAsRead: vi.fn(async (
