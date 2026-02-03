@@ -182,7 +182,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       // Duck-type check for AuthApiError to handle mock compatibility
       const isAuthError = error instanceof Error && 
-        (error.name === 'AuthApiError' || 'code' in error && 'status' in error);
+        (error.name === 'AuthApiError' || ('code' in error && 'status' in error));
       const message = isAuthError ? error.message : 'An unexpected error occurred';
       
       // Track failed attempt for rate limiting
@@ -222,7 +222,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       // Duck-type check for AuthApiError to handle mock compatibility
       const isAuthError = error instanceof Error && 
-        (error.name === 'AuthApiError' || 'code' in error && 'status' in error);
+        (error.name === 'AuthApiError' || ('code' in error && 'status' in error));
       const message = isAuthError ? error.message : 'Verification failed';
       set({ isLoading: false, error: message });
       return false;

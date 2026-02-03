@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { useAuthStore, selectIsLoading, selectError, selectPendingMfa } from '../store/authStore';
 import {
@@ -196,6 +197,11 @@ export function LoginScreen() {
           {/* Help Link */}
           <TouchableOpacity
             className="mt-4"
+            onPress={() => Alert.alert(
+              'Forgot Password',
+              'Password reset is not yet available. Please contact support for assistance.',
+              [{ text: 'OK' }]
+            )}
             accessibilityRole="link"
             accessibilityLabel="Forgot your password"
           >
