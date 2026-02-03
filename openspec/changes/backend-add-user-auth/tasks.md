@@ -1,0 +1,11 @@
+## 1. Implementation
+- [ ] 1.1 Define auth token and session models.
+- [ ] 1.2 Implement sign-in, sign-up, and token refresh endpoints.
+- [ ] 1.3 Implement password reset and recovery endpoints.
+- [ ] 1.4 Implement TOTP enrollment and verification endpoints.
+- [ ] 1.5 Add tests for authentication flows.
+- [ ] 1.6 Add rate limiting, lockout, and anomaly detection for auth endpoints.
+- [ ] 1.7 Add audit logging for authentication and recovery events.
+- [ ] 1.8 Implement token rotation and revocation controls.
+- [ ] 1.9 Define auth endpoint SLOs and add metrics/alerts.
+- [ ] 1.10 Add security/compliance tests for auth flows.
