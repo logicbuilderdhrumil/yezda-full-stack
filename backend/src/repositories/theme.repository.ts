@@ -1,19 +1,39 @@
 /**
  * Theme Repository
  * Task 1.3: Persist and retrieve theme preferences
+ * Uses PostgreSQL for durable persistence
  */
 
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
+import { query } from '../db/postgres.js';
 import type { ThemePreference, ThemePresetId, CustomThemeTokens } from '../models/theme.model.js';
 
-// In-memory storage for preferences (use proper DB in production)
-const preferences = new Map<string, ThemePreference>();
+/** Database row type for theme_preferences table */
+interface ThemePreferenceRow {
+  id: string;
+  tenant_id: string;
+  user_id: string;
+  user_type: 'user' | 'candidate';
+  preset_id: ThemePresetId;
+  custom_tokens: CustomThemeTokens | null;
+  created_at: Date;
+  updated_at: Date;
+}
 
 /**
- * Generate composite key for preference lookup
+ * Convert database row to ThemePreference model
  */
-function getPreferenceKey(tenantId: string, userId: string, userType: 'user' | 'candidate'): string {
-  return `${tenantId}:${userId}:${userType}`;
+function rowToThemePreference(row: ThemePreferenceRow): ThemePreference {
+  return {
+    id: row.id,
+    tenantId: row.tenant_id,
+    userId: row.user_id,
+    userType: row.user_type,
+    presetId: row.preset_id,
+    customTokens: row.custom_tokens ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 export class ThemeRepository {
@@ -25,8 +45,12 @@ export class ThemeRepository {
     userId: string,
     userType: 'user' | 'candidate'
   ): Promise<ThemePreference | null> {
-    const key = getPreferenceKey(tenantId, userId, userType);
-    return preferences.get(key) || null;
+    const result = await query<ThemePreferenceRow>(
+      `SELECT * FROM theme_preferences 
+       WHERE tenant_id = $1 AND user_id = $2 AND user_type = $3`,
+      [tenantId, userId, userType]
+    );
+    return result.rows[0] ? rowToThemePreference(result.rows[0]) : null;
   }
 
   /**
@@ -39,51 +63,56 @@ export class ThemeRepository {
     presetId: ThemePresetId;
     customTokens?: CustomThemeTokens;
   }): Promise<ThemePreference> {
-    const key = getPreferenceKey(params.tenantId, params.userId, params.userType);
-    const existing = preferences.get(key);
-    const now = new Date();
-
-    const preference: ThemePreference = {
-      id: existing?.id || uuidv4(),
-      tenantId: params.tenantId,
-      userId: params.userId,
-      userType: params.userType,
-      presetId: params.presetId,
-      customTokens: params.customTokens,
-      createdAt: existing?.createdAt || now,
-      updatedAt: now,
-    };
-
-    preferences.set(key, preference);
-    return preference;
+    const id = randomUUID();
+    const result = await query<ThemePreferenceRow>(
+      `INSERT INTO theme_preferences (id, tenant_id, user_id, user_type, preset_id, custom_tokens, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+       ON CONFLICT (tenant_id, user_id, user_type)
+       DO UPDATE SET 
+         preset_id = EXCLUDED.preset_id,
+         custom_tokens = EXCLUDED.custom_tokens,
+         updated_at = NOW()
+       RETURNING *`,
+      [
+        id,
+        params.tenantId,
+        params.userId,
+        params.userType,
+        params.presetId,
+        params.customTokens ? JSON.stringify(params.customTokens) : null,
+      ]
+    );
+    return rowToThemePreference(result.rows[0]);
   }
 
   /**
    * Delete a theme preference
    */
   async delete(tenantId: string, userId: string, userType: 'user' | 'candidate'): Promise<boolean> {
-    const key = getPreferenceKey(tenantId, userId, userType);
-    return preferences.delete(key);
+    const result = await query(
+      `DELETE FROM theme_preferences 
+       WHERE tenant_id = $1 AND user_id = $2 AND user_type = $3`,
+      [tenantId, userId, userType]
+    );
+    return (result.rowCount ?? 0) > 0;
   }
 
   /**
    * Get all preferences for a tenant (admin use)
    */
   async findByTenant(tenantId: string): Promise<ThemePreference[]> {
-    const result: ThemePreference[] = [];
-    for (const pref of preferences.values()) {
-      if (pref.tenantId === tenantId) {
-        result.push(pref);
-      }
-    }
-    return result;
+    const result = await query<ThemePreferenceRow>(
+      `SELECT * FROM theme_preferences WHERE tenant_id = $1 ORDER BY user_id`,
+      [tenantId]
+    );
+    return result.rows.map(rowToThemePreference);
   }
 
   /**
-   * Clear all preferences (test use only)
+   * Clear all preferences (test use only - truncates table)
    */
   async clear(): Promise<void> {
-    preferences.clear();
+    await query('TRUNCATE TABLE theme_preferences');
   }
 }
 

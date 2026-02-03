@@ -13,6 +13,7 @@ const passwordResetTokens = new Map<string, unknown>();
 const mfaEnrollments = new Map<string, unknown>();
 const backupCodes = new Map<string, unknown>();
 const stateStore = new Map<string, unknown>();
+const themePreferences = new Map<string, unknown>();
 const auditLogs: unknown[] = [];
 
 // Mock Postgres module for transactions
@@ -489,6 +490,51 @@ vi.mock('../src/repositories/state-store.repository.js', () => ({
   StateStoreRepository: vi.fn(),
 }));
 
+// Mock Theme Repository
+vi.mock('../src/repositories/theme.repository.js', () => ({
+  themeRepository: {
+    findByUser: vi.fn(async (tenantId: string, userId: string, userType: string) => {
+      const key = `${tenantId}:${userId}:${userType}`;
+      return themePreferences.get(key) ?? null;
+    }),
+    upsert: vi.fn(async (params: { tenantId: string; userId: string; userType: string; presetId: string; customTokens?: unknown }) => {
+      const key = `${params.tenantId}:${params.userId}:${params.userType}`;
+      const existing = themePreferences.get(key) as { id: string; createdAt: Date } | undefined;
+      const now = new Date();
+      const preference = {
+        id: existing?.id ?? `theme-${Date.now()}`,
+        tenantId: params.tenantId,
+        userId: params.userId,
+        userType: params.userType,
+        presetId: params.presetId,
+        customTokens: params.customTokens,
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+      };
+      themePreferences.set(key, preference);
+      return preference;
+    }),
+    delete: vi.fn(async (tenantId: string, userId: string, userType: string) => {
+      const key = `${tenantId}:${userId}:${userType}`;
+      return themePreferences.delete(key);
+    }),
+    findByTenant: vi.fn(async (tenantId: string) => {
+      const results: unknown[] = [];
+      for (const pref of themePreferences.values()) {
+        const p = pref as { tenantId: string };
+        if (p.tenantId === tenantId) {
+          results.push(pref);
+        }
+      }
+      return results;
+    }),
+    clear: vi.fn(async () => {
+      themePreferences.clear();
+    }),
+  },
+  ThemeRepository: vi.fn(),
+}));
+
 // Clear all stores before each test
 beforeEach(() => {
   vi.clearAllMocks();
@@ -499,7 +545,8 @@ beforeEach(() => {
   mfaEnrollments.clear();
   backupCodes.clear();
   stateStore.clear();
+  themePreferences.clear();
   auditLogs.length = 0;
 });
 
-export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, auditLogs };
+export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, themePreferences, auditLogs };
