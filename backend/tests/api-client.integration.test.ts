@@ -11,6 +11,7 @@ import {
   createApiClient,
   maskUrlSecrets,
   isPrivateIP,
+  validateResolvedIP,
   type ApiClientConfig,
   type OutboundSecurityConfig,
 } from '../src/services/api-client.service.js';
@@ -299,6 +300,40 @@ describe('DNS Rebinding Protection', () => {
       expect(isPrivateIP('fe80::1')).toBe(true);
     });
 
+    it('should identify Unique Local Addresses (ULA) fc00::/7', () => {
+      expect(isPrivateIP('fc00::1')).toBe(true);
+      expect(isPrivateIP('fcff::1')).toBe(true);
+      expect(isPrivateIP('fd00::1')).toBe(true);
+      expect(isPrivateIP('fdab:cdef::1')).toBe(true);
+    });
+
+    it('should identify multicast addresses ff00::/8', () => {
+      expect(isPrivateIP('ff00::1')).toBe(true);
+      expect(isPrivateIP('ff02::1')).toBe(true);
+    });
+
+    it('should identify documentation prefix 2001:db8::/32', () => {
+      expect(isPrivateIP('2001:db8::1')).toBe(true);
+    });
+
+    it('should identify unspecified address', () => {
+      expect(isPrivateIP('::')).toBe(true);
+    });
+
+    it('should identify link-local hostname patterns', () => {
+      expect(isPrivateIP('myhost.local')).toBe(true);
+      expect(isPrivateIP('server.internal')).toBe(true);
+    });
+
+    it('should identify link-local IPv4', () => {
+      expect(isPrivateIP('169.254.1.1')).toBe(true);
+    });
+
+    it('should identify CGN range', () => {
+      expect(isPrivateIP('100.64.0.1')).toBe(true);
+      expect(isPrivateIP('100.127.255.255')).toBe(true);
+    });
+
     it('should identify IPv4-mapped IPv6 addresses', () => {
       expect(isPrivateIP('::ffff:127.0.0.1')).toBe(true);
       expect(isPrivateIP('::ffff:192.168.1.1')).toBe(true);
@@ -309,6 +344,20 @@ describe('DNS Rebinding Protection', () => {
       expect(isPrivateIP('8.8.8.8')).toBe(false);
       expect(isPrivateIP('1.1.1.1')).toBe(false);
       expect(isPrivateIP('203.0.113.1')).toBe(false);
+    });
+  });
+
+  describe('validateResolvedIP', () => {
+    it('should return true for public IP addresses', () => {
+      expect(validateResolvedIP('8.8.8.8')).toBe(true);
+      expect(validateResolvedIP('1.1.1.1')).toBe(true);
+    });
+
+    it('should throw for private IP addresses (DNS rebinding protection)', () => {
+      expect(() => validateResolvedIP('10.0.0.1')).toThrow('DNS rebinding detected');
+      expect(() => validateResolvedIP('192.168.1.1')).toThrow('DNS rebinding detected');
+      expect(() => validateResolvedIP('127.0.0.1')).toThrow('DNS rebinding detected');
+      expect(() => validateResolvedIP('::1')).toThrow('DNS rebinding detected');
     });
   });
 });

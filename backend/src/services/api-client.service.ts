@@ -27,7 +27,12 @@ export interface ApiClientConfig {
   circuitBreaker?: CircuitBreakerConfig;
   /** Integration name for logging and metrics */
   integrationName: string;
+  /** Maximum response body size in bytes (default: 10MB) */
+  maxResponseSizeBytes?: number;
 }
+
+/** Default maximum response size: 10MB */
+const DEFAULT_MAX_RESPONSE_SIZE_BYTES = 10 * 1024 * 1024;
 
 export interface RetryConfig {
   /** Maximum number of retry attempts */
@@ -110,6 +115,7 @@ export type ApiErrorCode =
   | 'CLIENT_ERROR'
   | 'SERVER_ERROR'
   | 'PARSE_ERROR'
+  | 'RESPONSE_TOO_LARGE'
   | 'UNKNOWN';
 
 // ============================================================================
@@ -163,33 +169,93 @@ const DEFAULT_SECURITY_CONFIG: OutboundSecurityConfig = {
 };
 
 // Private IP patterns for hostname validation
-const PRIVATE_IP_PATTERNS = [
-  /^10\./,
-  /^172\.(1[6-9]|2[0-9]|3[01])\./,
-  /^192\.168\./,
-  /^127\./,
-  /^0\./,
+const PRIVATE_IPV4_PATTERNS = [
+  /^10\./,                              // 10.0.0.0/8 (Class A private)
+  /^172\.(1[6-9]|2[0-9]|3[01])\./,      // 172.16.0.0/12 (Class B private)
+  /^192\.168\./,                        // 192.168.0.0/16 (Class C private)
+  /^127\./,                             // 127.0.0.0/8 (loopback)
+  /^0\./,                               // 0.0.0.0/8 ("this" network)
+  /^169\.254\./,                        // 169.254.0.0/16 (link-local)
+  /^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\./,  // 100.64.0.0/10 (CGN)
+];
+
+const PRIVATE_IPV6_PATTERNS = [
+  /^::1$/i,                             // ::1/128 (loopback)
+  /^fe80:/i,                            // fe80::/10 (link-local)
+  /^fc[0-9a-f]{2}:/i,                   // fc00::/7 (unique local address - ULA)
+  /^fd[0-9a-f]{2}:/i,                   // fd00::/8 (unique local address - ULA)
+  /^ff[0-9a-f]{2}:/i,                   // ff00::/8 (multicast)
+  /^::$/,                               // :: (unspecified address)
+  /^2001:db8:/i,                        // 2001:db8::/32 (documentation)
+  /^100::/i,                            // 100::/64 (discard prefix)
+  /^64:ff9b:/i,                         // 64:ff9b::/96 (IPv4/IPv6 translation)
+];
+
+const PRIVATE_HOSTNAME_PATTERNS = [
   /^localhost$/i,
-  /^::1$/,
-  /^fe80:/i,
+  /\.local$/i,                          // .local TLD (mDNS)
+  /\.internal$/i,                       // .internal TLD
+  /\.localdomain$/i,                    // .localdomain TLD
 ];
 
 /**
- * Check if an IP address is private/internal.
- * Used for post-DNS resolution validation to prevent DNS rebinding attacks.
+ * Check if an IP address or hostname is private/internal.
+ * Used for pre-request validation and post-DNS resolution validation
+ * to prevent SSRF and DNS rebinding attacks.
+ * 
+ * @param ip - IPv4 address, IPv6 address, or hostname to check
+ * @returns true if the address is private/internal and should be blocked
  */
 export function isPrivateIP(ip: string): boolean {
-  for (const pattern of PRIVATE_IP_PATTERNS) {
+  // Check private hostnames
+  for (const pattern of PRIVATE_HOSTNAME_PATTERNS) {
     if (pattern.test(ip)) {
       return true;
     }
   }
-  // Additional check for IPv4-mapped IPv6 addresses
-  if (ip.startsWith('::ffff:')) {
-    const ipv4Part = ip.slice(7);
-    return isPrivateIP(ipv4Part);
+
+  // Check IPv4 patterns
+  for (const pattern of PRIVATE_IPV4_PATTERNS) {
+    if (pattern.test(ip)) {
+      return true;
+    }
   }
+
+  // Check IPv6 patterns
+  for (const pattern of PRIVATE_IPV6_PATTERNS) {
+    if (pattern.test(ip)) {
+      return true;
+    }
+  }
+
+  // Additional check for IPv4-mapped IPv6 addresses (::ffff:x.x.x.x)
+  const ipv4MappedMatch = ip.match(/^::ffff:(.+)$/i);
+  if (ipv4MappedMatch) {
+    return isPrivateIP(ipv4MappedMatch[1]);
+  }
+
+  // Check for IPv4-compatible IPv6 addresses (::x.x.x.x) - deprecated but still valid
+  const ipv4CompatMatch = ip.match(/^::([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)$/i);
+  if (ipv4CompatMatch) {
+    return isPrivateIP(ipv4CompatMatch[1]);
+  }
+
   return false;
+}
+
+/**
+ * Validate a resolved IP address after DNS lookup.
+ * Call this after DNS resolution to detect DNS rebinding attacks.
+ * 
+ * @param resolvedIP - The IP address returned by DNS resolution
+ * @returns true if the IP is safe to connect to
+ * @throws Error if the resolved IP is private/internal
+ */
+export function validateResolvedIP(resolvedIP: string): boolean {
+  if (isPrivateIP(resolvedIP)) {
+    throw new Error(`DNS rebinding detected: resolved to private IP ${resolvedIP}`);
+  }
+  return true;
 }
 
 // Sensitive query parameter keys to mask in URLs
@@ -308,6 +374,7 @@ export class ApiClient {
   private readonly retryConfig: RetryConfig;
   private readonly circuitBreakerConfig: CircuitBreakerConfig;
   private readonly securityConfig: OutboundSecurityConfig;
+  private readonly maxResponseSizeBytes: number;
   private circuitState: CircuitBreakerState;
   private readonly auditLogger: (event: OutboundAuditEvent) => void;
 
@@ -320,6 +387,7 @@ export class ApiClient {
     this.retryConfig = { ...DEFAULT_RETRY_CONFIG, ...config.retry };
     this.circuitBreakerConfig = { ...DEFAULT_CIRCUIT_BREAKER_CONFIG, ...config.circuitBreaker };
     this.securityConfig = { ...DEFAULT_SECURITY_CONFIG, ...securityConfig };
+    this.maxResponseSizeBytes = config.maxResponseSizeBytes ?? DEFAULT_MAX_RESPONSE_SIZE_BYTES;
     this.circuitState = {
       state: 'closed',
       failures: 0,
@@ -582,17 +650,54 @@ export class ApiClient {
         responseHeaders[key.toLowerCase()] = value;
       });
 
-      // Parse response body
+      // Response size limit guard
+      // Check Content-Length header first for efficiency (avoid streaming large responses)
+      const contentLengthHeader = responseHeaders['content-length'];
+      if (contentLengthHeader) {
+        const contentLength = parseInt(contentLengthHeader, 10);
+        if (!isNaN(contentLength) && contentLength > this.maxResponseSizeBytes) {
+          throw this.createError(
+            'RESPONSE_TOO_LARGE',
+            `Response size ${contentLength} bytes exceeds limit of ${this.maxResponseSizeBytes} bytes`,
+            requestId,
+            response.status
+          );
+        }
+      }
+
+      // Parse response body with size limit enforcement
       let data: T;
       const contentType = responseHeaders['content-type'] ?? '';
       if (contentType.includes('application/json')) {
         try {
-          data = (await response.json()) as T;
-        } catch {
+          // For JSON, we need to read the text first to check size
+          const text = await response.text();
+          if (text.length > this.maxResponseSizeBytes) {
+            throw this.createError(
+              'RESPONSE_TOO_LARGE',
+              `Response size ${text.length} bytes exceeds limit of ${this.maxResponseSizeBytes} bytes`,
+              requestId,
+              response.status
+            );
+          }
+          data = JSON.parse(text) as T;
+        } catch (e) {
+          if ((e as ApiClientError).code === 'RESPONSE_TOO_LARGE') {
+            throw e;
+          }
           throw this.createError('PARSE_ERROR', 'Failed to parse JSON response', requestId, response.status);
         }
       } else {
-        data = (await response.text()) as unknown as T;
+        const text = await response.text();
+        if (text.length > this.maxResponseSizeBytes) {
+          throw this.createError(
+            'RESPONSE_TOO_LARGE',
+            `Response size ${text.length} bytes exceeds limit of ${this.maxResponseSizeBytes} bytes`,
+            requestId,
+            response.status
+          );
+        }
+        data = text as unknown as T;
       }
 
       // Handle error statuses

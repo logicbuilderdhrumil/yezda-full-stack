@@ -11,6 +11,8 @@ import {
   maskSecrets,
   maskUrlSecrets,
   isPrivateIP,
+  validateResolvedIP,
+  OUTBOUND_SLOS,
   type ApiClientConfig,
   type OutboundSecurityConfig,
   type ApiClientError,
@@ -75,7 +77,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => responseData,
+        text: async () => JSON.stringify(responseData),
       });
 
       const response = await client.get<typeof responseData>('/users/1');
@@ -94,7 +96,7 @@ describe('ApiClient', () => {
         status: 201,
         statusText: 'Created',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => responseData,
+        text: async () => JSON.stringify(responseData),
       });
 
       const response = await client.post<typeof responseData>('/users', requestBody);
@@ -116,7 +118,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => [],
+        text: async () => '[]',
       });
 
       await client.get('/users', { page: 1, limit: 10, active: true });
@@ -137,7 +139,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({}),
+        text: async () => '{}',
       });
 
       await client.get('/test', undefined, {
@@ -170,7 +172,7 @@ describe('ApiClient', () => {
         status: 404,
         statusText: 'Not Found',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Not found' }),
+        text: async () => '{"error": "Not found"}',
       });
 
       await expect(noRetryClient.get('/not-found')).rejects.toMatchObject({
@@ -187,21 +189,21 @@ describe('ApiClient', () => {
           status: 500,
           statusText: 'Internal Server Error',
           headers: new Headers({ 'content-type': 'application/json' }),
-          json: async () => ({ error: 'Server error' }),
+          text: async () => '{"error": "Server error"}',
         })
         .mockResolvedValueOnce({
           ok: false,
           status: 500,
           statusText: 'Internal Server Error',
           headers: new Headers({ 'content-type': 'application/json' }),
-          json: async () => ({ error: 'Server error' }),
+          text: async () => '{"error": "Server error"}',
         })
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
           statusText: 'OK',
           headers: new Headers({ 'content-type': 'application/json' }),
-          json: async () => ({ success: true }),
+          text: async () => '{"success": true}',
         });
 
       const response = await client.get('/flaky-endpoint');
@@ -216,7 +218,7 @@ describe('ApiClient', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Server error' }),
+        text: async () => '{"error": "Server error"}',
       });
 
       await expect(client.get('/always-fails')).rejects.toMatchObject({
@@ -241,7 +243,7 @@ describe('ApiClient', () => {
         status: 400,
         statusText: 'Bad Request',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Bad request' }),
+        text: async () => '{"error": "Bad request"}',
       });
 
       await expect(singleAttemptClient.get('/bad-request')).rejects.toMatchObject({
@@ -283,7 +285,7 @@ describe('ApiClient', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Server error' }),
+        text: async () => '{"error": "Server error"}',
       });
 
       await expect(
@@ -343,7 +345,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({}),
+        text: async () => '{}',
       });
 
       await wildcardClient.get('/trusted');
@@ -386,7 +388,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({}),
+        text: async () => '{}',
       });
 
       await permissiveClient.get('/open');
@@ -401,7 +403,7 @@ describe('ApiClient', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Server error' }),
+        text: async () => '{"error": "Server error"}',
       });
 
       // Create client with low thresholds for testing
@@ -442,7 +444,7 @@ describe('ApiClient', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Server error' }),
+        text: async () => '{"error": "Server error"}',
       });
 
       const cbClient = new ApiClient(
@@ -473,7 +475,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ success: true }),
+        text: async () => '{"success": true}',
       });
 
       await cbClient.get('/recover');
@@ -493,7 +495,7 @@ describe('ApiClient', () => {
         status: 200,
         statusText: 'OK',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({}),
+        text: async () => '{}',
       });
 
       await client.get('/audit-test');
@@ -532,7 +534,7 @@ describe('ApiClient', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ error: 'Server error' }),
+        text: async () => '{"error": "Server error"}',
       });
 
       const cbClient = new ApiClient(
@@ -644,5 +646,325 @@ describe('maskSecrets', () => {
     const masked = maskSecrets(headers);
 
     expect(masked).toEqual(headers);
+  });
+});
+
+describe('ApiClient Convenience Methods', () => {
+  let client: ApiClient;
+  const mockAuditLogger = vi.fn();
+
+  const defaultConfig: ApiClientConfig = {
+    baseUrl: 'https://api.example.com',
+    timeoutMs: 5000,
+    integrationName: 'test-integration',
+    retry: { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 50, retryableStatuses: [], exponentialBackoff: false },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    client = new ApiClient(defaultConfig, { allowedHosts: ['api.example.com'] }, mockAuditLogger);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should execute PUT request', async () => {
+    const requestBody = { name: 'Updated User' };
+    const responseData = { id: 1, name: 'Updated User' };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => JSON.stringify(responseData),
+    });
+
+    const response = await client.put<typeof responseData>('/users/1', requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual(responseData);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ method: 'PUT' })
+    );
+  });
+
+  it('should execute PATCH request', async () => {
+    const requestBody = { name: 'Patched User' };
+    const responseData = { id: 1, name: 'Patched User' };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => JSON.stringify(responseData),
+    });
+
+    const response = await client.patch<typeof responseData>('/users/1', requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual(responseData);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ method: 'PATCH' })
+    );
+  });
+
+  it('should execute DELETE request', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 204,
+      statusText: 'No Content',
+      headers: new Headers({}),
+      text: async () => '',
+    });
+
+    const response = await client.delete('/users/1');
+
+    expect(response.status).toBe(204);
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ method: 'DELETE' })
+    );
+  });
+});
+
+describe('Parse Error Handling', () => {
+  let client: ApiClient;
+  const mockAuditLogger = vi.fn();
+
+  const defaultConfig: ApiClientConfig = {
+    baseUrl: 'https://api.example.com',
+    timeoutMs: 5000,
+    integrationName: 'test-integration',
+    retry: { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 50, retryableStatuses: [], exponentialBackoff: false },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    client = new ApiClient(defaultConfig, { allowedHosts: ['api.example.com'] }, mockAuditLogger);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return PARSE_ERROR for invalid JSON response', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => 'not valid json {{{',
+    });
+
+    await expect(client.get('/invalid-json')).rejects.toMatchObject({
+      code: 'PARSE_ERROR',
+      message: 'Failed to parse JSON response',
+    });
+  });
+});
+
+describe('Response Size Limit', () => {
+  let client: ApiClient;
+  const mockAuditLogger = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should reject response exceeding Content-Length limit', async () => {
+    const smallLimitConfig: ApiClientConfig = {
+      baseUrl: 'https://api.example.com',
+      timeoutMs: 5000,
+      integrationName: 'test-integration',
+      maxResponseSizeBytes: 100,
+      retry: { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 50, retryableStatuses: [], exponentialBackoff: false },
+    };
+    client = new ApiClient(smallLimitConfig, { allowedHosts: ['api.example.com'] }, mockAuditLogger);
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json', 'content-length': '1000' }),
+      text: async () => '{}',
+    });
+
+    await expect(client.get('/large-response')).rejects.toMatchObject({
+      code: 'RESPONSE_TOO_LARGE',
+      message: expect.stringContaining('1000 bytes exceeds limit'),
+    });
+  });
+
+  it('should reject response body exceeding size limit', async () => {
+    const smallLimitConfig: ApiClientConfig = {
+      baseUrl: 'https://api.example.com',
+      timeoutMs: 5000,
+      integrationName: 'test-integration',
+      maxResponseSizeBytes: 50,
+      retry: { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 50, retryableStatuses: [], exponentialBackoff: false },
+    };
+    client = new ApiClient(smallLimitConfig, { allowedHosts: ['api.example.com'] }, mockAuditLogger);
+
+    const largeBody = JSON.stringify({ data: 'x'.repeat(100) });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      text: async () => largeBody,
+    });
+
+    await expect(client.get('/large-body')).rejects.toMatchObject({
+      code: 'RESPONSE_TOO_LARGE',
+    });
+  });
+
+  it('should allow response within size limit', async () => {
+    const config: ApiClientConfig = {
+      baseUrl: 'https://api.example.com',
+      timeoutMs: 5000,
+      integrationName: 'test-integration',
+      maxResponseSizeBytes: 1000,
+      retry: { maxAttempts: 1, baseDelayMs: 10, maxDelayMs: 50, retryableStatuses: [], exponentialBackoff: false },
+    };
+    client = new ApiClient(config, { allowedHosts: ['api.example.com'] }, mockAuditLogger);
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      headers: new Headers({ 'content-type': 'application/json', 'content-length': '20' }),
+      text: async () => '{"success": true}',
+    });
+
+    const response = await client.get('/small-response');
+    expect(response.status).toBe(200);
+  });
+});
+
+describe('OutboundMetricsService SLO Checks', () => {
+  let metricsService: OutboundMetricsService;
+
+  beforeEach(() => {
+    metricsService = new OutboundMetricsService();
+  });
+
+  it('should report SLOs met when no violations', () => {
+    // Use a unique integration name that has no metrics
+    const uniqueIntegration = `slo-test-${Date.now()}-${Math.random()}`;
+    const result = metricsService.checkSLOs(uniqueIntegration, 60000);
+    expect(result.met).toBe(true);
+    expect(result.violations).toEqual([]);
+  });
+
+  it('should have correct SLO thresholds defined', () => {
+    expect(OUTBOUND_SLOS.LATENCY_P99_MS).toBe(2000);
+    expect(OUTBOUND_SLOS.LATENCY_P95_MS).toBe(1000);
+    expect(OUTBOUND_SLOS.SUCCESS_RATE_PERCENT).toBe(99.5);
+  });
+});
+
+describe('OutboundMetricsService Cleanup', () => {
+  let metricsService: OutboundMetricsService;
+
+  beforeEach(() => {
+    metricsService = new OutboundMetricsService();
+  });
+
+  it('should execute cleanup without error', () => {
+    expect(() => metricsService.cleanup(3600000)).not.toThrow();
+  });
+
+  it('should cleanup old metrics based on retention window', () => {
+    // Just verify the method works - actual cleanup is internal
+    metricsService.cleanup(0); // Immediate cleanup
+    const integrations = metricsService.getActiveIntegrations(60000);
+    expect(Array.isArray(integrations)).toBe(true);
+  });
+});
+
+describe('validateResolvedIP', () => {
+  it('should return true for public IP addresses', () => {
+    expect(validateResolvedIP('8.8.8.8')).toBe(true);
+    expect(validateResolvedIP('1.1.1.1')).toBe(true);
+    expect(validateResolvedIP('203.0.113.1')).toBe(true);
+  });
+
+  it('should throw for private IPv4 addresses', () => {
+    expect(() => validateResolvedIP('10.0.0.1')).toThrow('DNS rebinding detected');
+    expect(() => validateResolvedIP('192.168.1.1')).toThrow('DNS rebinding detected');
+    expect(() => validateResolvedIP('172.16.0.1')).toThrow('DNS rebinding detected');
+    expect(() => validateResolvedIP('127.0.0.1')).toThrow('DNS rebinding detected');
+  });
+
+  it('should throw for localhost', () => {
+    expect(() => validateResolvedIP('localhost')).toThrow('DNS rebinding detected');
+  });
+
+  it('should throw for private IPv6 addresses', () => {
+    expect(() => validateResolvedIP('::1')).toThrow('DNS rebinding detected');
+    expect(() => validateResolvedIP('fe80::1')).toThrow('DNS rebinding detected');
+  });
+});
+
+describe('Extended IPv6 Private Range Detection', () => {
+  it('should detect Unique Local Addresses (ULA) - fc00::/7', () => {
+    expect(isPrivateIP('fc00::1')).toBe(true);
+    expect(isPrivateIP('fcff::1')).toBe(true);
+  });
+
+  it('should detect ULA fd00::/8', () => {
+    expect(isPrivateIP('fd00::1')).toBe(true);
+    expect(isPrivateIP('fdff::1234')).toBe(true);
+  });
+
+  it('should detect multicast ff00::/8', () => {
+    expect(isPrivateIP('ff00::1')).toBe(true);
+    expect(isPrivateIP('ff02::1')).toBe(true);
+    expect(isPrivateIP('ffff::1')).toBe(true);
+  });
+
+  it('should detect documentation prefix 2001:db8::/32', () => {
+    expect(isPrivateIP('2001:db8::1')).toBe(true);
+    expect(isPrivateIP('2001:db8:1234::1')).toBe(true);
+  });
+
+  it('should detect discard prefix 100::/64', () => {
+    expect(isPrivateIP('100::1')).toBe(true);
+  });
+
+  it('should detect unspecified address', () => {
+    expect(isPrivateIP('::')).toBe(true);
+  });
+
+  it('should detect link-local hostname patterns', () => {
+    expect(isPrivateIP('myhost.local')).toBe(true);
+    expect(isPrivateIP('server.internal')).toBe(true);
+    expect(isPrivateIP('host.localdomain')).toBe(true);
+  });
+
+  it('should detect link-local IPv4 (169.254.x.x)', () => {
+    expect(isPrivateIP('169.254.0.1')).toBe(true);
+    expect(isPrivateIP('169.254.255.255')).toBe(true);
+  });
+
+  it('should detect CGN range (100.64.0.0/10)', () => {
+    expect(isPrivateIP('100.64.0.1')).toBe(true);
+    expect(isPrivateIP('100.127.255.255')).toBe(true);
+    expect(isPrivateIP('100.63.0.1')).toBe(false); // Outside CGN range
+    expect(isPrivateIP('100.128.0.1')).toBe(false); // Outside CGN range
+  });
+
+  it('should detect IPv4-compatible IPv6 addresses', () => {
+    expect(isPrivateIP('::127.0.0.1')).toBe(true);
+    expect(isPrivateIP('::10.0.0.1')).toBe(true);
+    expect(isPrivateIP('::8.8.8.8')).toBe(false);
   });
 });
