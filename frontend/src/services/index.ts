@@ -18,3 +18,4 @@ export {
   setupResponseInterceptors,
   type InterceptorConfig,
 } from './axios';
+export { SocketService } from './SocketService';

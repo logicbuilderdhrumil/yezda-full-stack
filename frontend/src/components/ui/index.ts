@@ -209,3 +209,13 @@ export {
   CardHeader,
   CardTitle,
 } from './Card';
+
+// Connection Status
+export {
+  ConnectionStatusBadge,
+  PresenceIndicator,
+  AvatarPresence,
+  type ConnectionStatusBadgeProps,
+  type PresenceIndicatorProps,
+  type AvatarPresenceProps,
+} from './ConnectionStatus';

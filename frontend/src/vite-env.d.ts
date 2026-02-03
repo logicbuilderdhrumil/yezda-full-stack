@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly PROD: boolean;
   readonly MODE: string;
   readonly BASE_URL: string;
+  readonly VITE_SOCKET_URL?: string;
 }
 
 interface ImportMeta {
