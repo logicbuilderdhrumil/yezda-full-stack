@@ -9,3 +9,5 @@ export { ProfileEditScreen } from './ProfileEditScreen';
 export { PasswordChangeScreen } from './PasswordChangeScreen';
 export { ConsentPromptScreen } from './ConsentPromptScreen';
 export { ConsentReviewScreen } from './ConsentReviewScreen';
+export { ApplicationListScreen } from './ApplicationListScreen';
+export { ApplicationDetailScreen } from './ApplicationDetailScreen';
