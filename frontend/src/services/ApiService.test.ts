@@ -71,12 +71,11 @@ describe('ApiService utilities', () => {
       const { isRequestCancelled } = await import('@/services/ApiService');
       const axios = await import('axios');
       
-      // Create a cancel error using axios
-      const source = axios.default.CancelToken.source();
-      source.cancel('Test cancel');
+      // Create a cancel error to test detection
+      const cancelError = new axios.default.Cancel('Test cancel');
       
-      // The cancelled error object created by axios will be detected
-      expect(typeof isRequestCancelled).toBe('function');
+      // Verify the function correctly identifies the cancel error
+      expect(isRequestCancelled(cancelError)).toBe(true);
     });
 
     it('returns false for regular errors', async () => {

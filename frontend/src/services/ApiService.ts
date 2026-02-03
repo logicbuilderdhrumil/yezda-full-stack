@@ -70,7 +70,7 @@ export const ApiService = {
    * Performs a GET request.
    * @param endpoint - The endpoint name from the config, or a raw URL path
    * @param options - Request options including path parameters
-   * @returns Promise resolving to the response data
+   * @returns Promise resolving to the full Axios response
    */
   async get<T, TParams extends Record<string, string> = Record<string, string>>(
     endpoint: EndpointName | string,
@@ -86,7 +86,7 @@ export const ApiService = {
    * @param endpoint - The endpoint name from the config, or a raw URL path
    * @param data - Request body
    * @param options - Request options including path parameters
-   * @returns Promise resolving to the response data
+   * @returns Promise resolving to the full Axios response
    */
   async post<T, D = unknown, TParams extends Record<string, string> = Record<string, string>>(
     endpoint: EndpointName | string,
@@ -103,7 +103,7 @@ export const ApiService = {
    * @param endpoint - The endpoint name from the config, or a raw URL path
    * @param data - Request body
    * @param options - Request options including path parameters
-   * @returns Promise resolving to the response data
+   * @returns Promise resolving to the full Axios response
    */
   async put<T, D = unknown, TParams extends Record<string, string> = Record<string, string>>(
     endpoint: EndpointName | string,
@@ -120,7 +120,7 @@ export const ApiService = {
    * @param endpoint - The endpoint name from the config, or a raw URL path
    * @param data - Request body
    * @param options - Request options including path parameters
-   * @returns Promise resolving to the response data
+   * @returns Promise resolving to the full Axios response
    */
   async patch<T, D = unknown, TParams extends Record<string, string> = Record<string, string>>(
     endpoint: EndpointName | string,
@@ -136,7 +136,7 @@ export const ApiService = {
    * Performs a DELETE request.
    * @param endpoint - The endpoint name from the config, or a raw URL path
    * @param options - Request options including path parameters
-   * @returns Promise resolving to the response data
+   * @returns Promise resolving to the full Axios response
    */
   async delete<T, TParams extends Record<string, string> = Record<string, string>>(
     endpoint: EndpointName | string,
@@ -165,8 +165,8 @@ function resolveUrl(
   endpoint: EndpointName | string,
   pathParams?: Record<string, string>
 ): string {
-  // Check if it's a known endpoint name
-  if (endpoint in endpoints) {
+  // Check if it's a known endpoint name (own-property only)
+  if (Object.prototype.hasOwnProperty.call(endpoints, endpoint)) {
     return resolveEndpoint(endpoint as EndpointName, pathParams);
   }
 
