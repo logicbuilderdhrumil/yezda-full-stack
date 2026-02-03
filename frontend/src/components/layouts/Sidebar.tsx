@@ -4,6 +4,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSidebar } from '@/context/SidebarContext';
@@ -48,7 +49,10 @@ interface NavItemButtonProps {
 }
 
 function NavItemButton({ item, isCollapsed }: NavItemButtonProps): ReactNode {
+  const { t } = useTranslation();
   const Icon = iconMap[item.icon];
+  // Map nav item ids to translation keys
+  const navLabel = t(`nav.${item.id}`, { defaultValue: item.label });
 
   return (
     <NavLink
@@ -63,10 +67,10 @@ function NavItemButton({ item, isCollapsed }: NavItemButtonProps): ReactNode {
           isCollapsed && 'justify-center px-2'
         )
       }
-      title={isCollapsed ? item.label : undefined}
+      title={isCollapsed ? navLabel : undefined}
     >
       <Icon className="h-5 w-5 shrink-0" />
-      {!isCollapsed && <span>{item.label}</span>}
+      {!isCollapsed && <span>{navLabel}</span>}
     </NavLink>
   );
 }
@@ -80,6 +84,7 @@ interface SidebarProps {
  * Sidebar component with navigation items filtered by user role.
  */
 export function Sidebar({ className }: SidebarProps): ReactNode {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { isCollapsed, isMobileOpen, closeMobile, toggleCollapsed } =
     useSidebar();
@@ -89,6 +94,13 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
     () => filterNavConfig(navConfig.sections, user?.role),
     [user?.role]
   );
+
+  // Map section titles to translation keys
+  const getSectionTitle = (title: string | undefined): string | undefined => {
+    if (!title) return undefined;
+    const key = title.toLowerCase();
+    return t(`nav.${key}`, { defaultValue: title });
+  };
 
   // Close mobile sidebar on navigation
   const handleNavClick = () => {
@@ -104,7 +116,7 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
           <div key={section.title || index} className="mb-4">
             {section.title && !isCollapsed && (
               <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {section.title}
+                {getSectionTitle(section.title)}
               </h3>
             )}
             <ul className="space-y-1">
@@ -127,7 +139,7 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
             'flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800',
             isCollapsed && 'justify-center'
           )}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
         >
           <ChevronLeft
             className={cn(
@@ -135,7 +147,7 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
               isCollapsed && 'rotate-180'
             )}
           />
-          {!isCollapsed && <span>Collapse</span>}
+          {!isCollapsed && <span>{t('nav.collapse')}</span>}
         </button>
       </div>
     </nav>
@@ -161,13 +173,13 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
       >
         <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-800">
           <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Yezda
+            {t('app.name')}
           </span>
           <button
             type="button"
             onClick={closeMobile}
             className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            aria-label="Close sidebar"
+            aria-label={t('common.closeSidebar')}
           >
             <ChevronLeft className="h-5 w-5" />
           </button>

@@ -16,3 +16,4 @@ export * from './firebase-device-token.service.js';
 export * from './notification.service.js';
 export * from './notification-metrics.service.js';
 export * from './localization.service.js';
+export * from './oauth.service.js';

@@ -5,6 +5,7 @@ import shellRoutes from './shell.routes.js';
 import firebaseRoutes from './firebase.routes.js';
 import notificationRoutes from './notification.routes.js';
 import localizationRoutes from './localization.routes.js';
+import oauthRoutes from './oauth.routes.js';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/shell', shellRoutes);
 router.use('/firebase', firebaseRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/localization', localizationRoutes);
+router.use('/oauth', oauthRoutes);
 
 export default router;

@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Yezda"
+  },
+  "nav": {
+    "home": "Início",
+    "candidates": "Candidatos",
+    "organizations": "Organizações",
+    "screening": "Triagem",
+    "reports": "Relatórios",
+    "settings": "Configurações",
+    "management": "Gestão",
+    "analytics": "Análises",
+    "system": "Sistema",
+    "collapse": "Recolher",
+    "expandSidebar": "Expandir barra lateral",
+    "collapseSidebar": "Recolher barra lateral"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "accessDenied": "Acesso Negado",
+    "accessDeniedMessage": "Você não tem permissão para ver esta página.",
+    "returnToHome": "Voltar ao Início",
+    "signOut": "Sair",
+    "closeSidebar": "Fechar barra lateral",
+    "toggleMobileMenu": "Alternar menu móvel",
+    "switchToLight": "Mudar para modo claro",
+    "switchToDark": "Mudar para modo escuro",
+    "language": "Idioma"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "signOut": "Sair",
+    "signInTitle": "Entre na sua conta",
+    "signInSubtitle": "Bem-vindo de volta! Por favor, insira seus dados.",
+    "signUpTitle": "Criar uma conta",
+    "signUpSubtitle": "Comece sua jornada de triagem hoje.",
+    "forgotPasswordTitle": "Esqueceu sua senha?",
+    "forgotPasswordSubtitle": "Digite seu email e enviaremos um link de redefinição.",
+    "checkEmailTitle": "Verifique seu email",
+    "checkEmailSubtitle": "Enviamos um link de redefinição para seu endereço de email.",
+    "emailLabel": "Endereço de email",
+    "emailPlaceholder": "voce@exemplo.com",
+    "passwordLabel": "Senha",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirmar senha",
+    "firstNameLabel": "Nome",
+    "firstNamePlaceholder": "João",
+    "lastNameLabel": "Sobrenome",
+    "lastNamePlaceholder": "Silva",
+    "rememberMe": "Lembrar de mim",
+    "forgotPassword": "Esqueceu a senha?",
+    "signingIn": "Entrando...",
+    "creatingAccount": "Criando conta...",
+    "sendingResetLink": "Enviando link...",
+    "sendResetLink": "Enviar link",
+    "createAccount": "Criar conta",
+    "returnToSignIn": "Voltar para entrar",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "rememberPassword": "Lembra da sua senha?",
+    "termsAgree": "Eu aceito os",
+    "termsOfService": "Termos de Serviço",
+    "and": "e",
+    "privacyPolicy": "Política de Privacidade",
+    "resetEmailSent": "Se uma conta com {{email}} existir, você receberá um link de redefinição em breve.",
+    "validation": {
+      "emailRequired": "Email é obrigatório",
+      "emailInvalid": "Por favor, insira um email válido",
+      "passwordRequired": "Senha é obrigatória",
+      "passwordMinLength": "A senha deve ter pelo menos 8 caracteres",
+      "firstNameRequired": "Nome é obrigatório",
+      "lastNameRequired": "Sobrenome é obrigatório",
+      "confirmPasswordRequired": "Por favor, confirme sua senha",
+      "passwordsMismatch": "As senhas não correspondem",
+      "termsRequired": "Você deve aceitar os termos e condições"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Início",
+      "description": "Bem-vindo ao seu painel",
+      "welcomeBack": "Bem-vindo de volta, {{name}}!",
+      "dashboardIntro": "Este é o seu painel principal. Navegue usando a barra lateral para acessar diferentes seções do aplicativo."
+    }
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português"
+  }
+}

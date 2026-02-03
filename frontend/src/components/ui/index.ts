@@ -209,3 +209,6 @@ export {
   CardHeader,
   CardTitle,
 } from './Card';
+
+// Language Selector
+export { LanguageSelector } from './LanguageSelector';

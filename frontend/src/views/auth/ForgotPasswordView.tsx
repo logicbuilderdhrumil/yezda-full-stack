@@ -1,5 +1,6 @@
 import { useState, type ReactNode, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { AuthLayout } from './AuthLayout';
 import { ErrorMessage, LoadingOverlay } from '@/components/ui';
@@ -12,23 +13,27 @@ interface FormErrors {
   email?: string;
 }
 
-function validateForm(data: FormData): FormErrors {
-  const errors: FormErrors = {};
+function useFormValidation(t: (key: string) => string) {
+  return (data: FormData): FormErrors => {
+    const errors: FormErrors = {};
 
-  if (!data.email.trim()) {
-    errors.email = 'Email is required';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = 'Please enter a valid email address';
-  }
+    if (!data.email.trim()) {
+      errors.email = t('auth.validation.emailRequired');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      errors.email = t('auth.validation.emailInvalid');
+    }
 
-  return errors;
+    return errors;
+  };
 }
 
 /**
  * Forgot password page with email form and success confirmation.
  */
 export function ForgotPasswordView(): ReactNode {
+  const { t } = useTranslation();
   const { requestPasswordReset, isLoading, error, clearError } = useAuth();
+  const validateForm = useFormValidation(t);
 
   const [formData, setFormData] = useState<FormData>({ email: '' });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -69,8 +74,8 @@ export function ForgotPasswordView(): ReactNode {
   if (success) {
     return (
       <AuthLayout
-        title="Check your email"
-        subtitle="We've sent a password reset link to your email address."
+        title={t('auth.checkEmailTitle')}
+        subtitle={t('auth.checkEmailSubtitle')}
       >
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
@@ -89,14 +94,13 @@ export function ForgotPasswordView(): ReactNode {
             </svg>
           </div>
           <p className="mb-6 text-sm text-gray-600">
-            If an account with <span className="font-medium">{formData.email}</span> exists, you
-            will receive a password reset link shortly.
+            {t('auth.resetEmailSent', { email: formData.email })}
           </p>
           <Link
             to="/sign-in"
             className="inline-flex justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
           >
-            Return to sign in
+            {t('auth.returnToSignIn')}
           </Link>
         </div>
       </AuthLayout>
@@ -105,16 +109,16 @@ export function ForgotPasswordView(): ReactNode {
 
   return (
     <AuthLayout
-      title="Forgot your password?"
-      subtitle="Enter your email and we'll send you a reset link."
+      title={t('auth.forgotPasswordTitle')}
+      subtitle={t('auth.forgotPasswordSubtitle')}
     >
-      <LoadingOverlay isLoading={isLoading} message="Sending reset link...">
+      <LoadingOverlay isLoading={isLoading} message={t('auth.sendingResetLink')}>
         <form onSubmit={handleSubmit} className="space-y-5">
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {t('auth.emailLabel')}
             </label>
             <input
               id="email"
@@ -128,7 +132,7 @@ export function ForgotPasswordView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
             />
             {touched.email && formErrors.email && (
               <p className="mt-1.5 text-xs text-red-600">{formErrors.email}</p>
@@ -140,13 +144,13 @@ export function ForgotPasswordView(): ReactNode {
             disabled={isLoading}
             className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Send reset link
+            {t('auth.sendResetLink')}
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Remember your password?{' '}
+            {t('auth.rememberPassword')}{' '}
             <Link to="/sign-in" className="font-medium text-primary hover:text-primary/80">
-              Sign in
+              {t('auth.signIn')}
             </Link>
           </p>
         </form>

@@ -3,6 +3,11 @@
  * Centralized configuration for auth services
  */
 
+export interface OAuthProviderEnv {
+  clientId: string;
+  clientSecret: string;
+}
+
 export interface AuthConfig {
   jwt: {
     accessTokenSecret: string;
@@ -23,6 +28,7 @@ export interface AuthConfig {
     windowMs: number;
     maxRequests: number;
     maxAuthRequests: number;
+    maxOAuthRequests: number;
   };
   database: {
     host: string;
@@ -37,6 +43,17 @@ export interface AuthConfig {
     port: number;
     password: string;
     db: number;
+  };
+  oauth: {
+    stateExpiryMinutes: number;
+    tokenEncryptionKey: string;
+    baseRedirectUri: string;
+    providers: {
+      google?: OAuthProviderEnv;
+      microsoft?: OAuthProviderEnv;
+      slack?: OAuthProviderEnv;
+      github?: OAuthProviderEnv;
+    };
   };
 }
 
@@ -103,6 +120,19 @@ validateJwtSecret(accessTokenSecret, 'JWT_ACCESS_SECRET');
 validateJwtSecret(refreshTokenSecret, 'JWT_REFRESH_SECRET');
 validateJwtSecret(mfaEncryptionKey, 'MFA_ENCRYPTION_KEY');
 
+const oauthTokenEncryptionKey = getEnvOrDefault('OAUTH_TOKEN_ENCRYPTION_KEY', 'dev-oauth-encryption-key-change-in-production');
+validateJwtSecret(oauthTokenEncryptionKey, 'OAUTH_TOKEN_ENCRYPTION_KEY');
+
+// Load OAuth provider credentials from environment
+function loadOAuthProvider(prefix: string): OAuthProviderEnv | undefined {
+  const clientId = process.env[`${prefix}_CLIENT_ID`];
+  const clientSecret = process.env[`${prefix}_CLIENT_SECRET`];
+  if (clientId && clientSecret) {
+    return { clientId, clientSecret };
+  }
+  return undefined;
+}
+
 export const config: AuthConfig = {
   jwt: {
     accessTokenSecret,
@@ -123,6 +153,7 @@ export const config: AuthConfig = {
     windowMs: getEnvIntOrDefault('RATE_LIMIT_WINDOW_MS', 60000), // 1 minute
     maxRequests: getEnvIntOrDefault('RATE_LIMIT_MAX_REQUESTS', 100),
     maxAuthRequests: getEnvIntOrDefault('RATE_LIMIT_MAX_AUTH_REQUESTS', 10),
+    maxOAuthRequests: getEnvIntOrDefault('RATE_LIMIT_MAX_OAUTH_REQUESTS', 20),
   },
   database: {
     host: getEnvOrDefault('DB_HOST', 'localhost'),
@@ -137,6 +168,17 @@ export const config: AuthConfig = {
     port: getEnvIntOrDefault('REDIS_PORT', 6379),
     password: getEnvOrDefault('REDIS_PASSWORD', ''),
     db: getEnvIntOrDefault('REDIS_DB', 0),
+  },
+  oauth: {
+    stateExpiryMinutes: getEnvIntOrDefault('OAUTH_STATE_EXPIRY_MINUTES', 10),
+    tokenEncryptionKey: oauthTokenEncryptionKey,
+    baseRedirectUri: getEnvOrDefault('OAUTH_BASE_REDIRECT_URI', 'http://localhost:3000/api/v1/oauth/callback'),
+    providers: {
+      google: loadOAuthProvider('OAUTH_GOOGLE'),
+      microsoft: loadOAuthProvider('OAUTH_MICROSOFT'),
+      slack: loadOAuthProvider('OAUTH_SLACK'),
+      github: loadOAuthProvider('OAUTH_GITHUB'),
+    },
   },
 };
 

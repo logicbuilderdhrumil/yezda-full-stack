@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Yezda"
+  },
+  "nav": {
+    "home": "Accueil",
+    "candidates": "Candidats",
+    "organizations": "Organisations",
+    "screening": "Sélection",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "management": "Gestion",
+    "analytics": "Analytique",
+    "system": "Système",
+    "collapse": "Réduire",
+    "expandSidebar": "Développer la barre latérale",
+    "collapseSidebar": "Réduire la barre latérale"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "accessDenied": "Accès Refusé",
+    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page.",
+    "returnToHome": "Retour à l'accueil",
+    "signOut": "Déconnexion",
+    "closeSidebar": "Fermer la barre latérale",
+    "toggleMobileMenu": "Basculer le menu mobile",
+    "switchToLight": "Passer en mode clair",
+    "switchToDark": "Passer en mode sombre",
+    "language": "Langue"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Déconnexion",
+    "signInTitle": "Connectez-vous à votre compte",
+    "signInSubtitle": "Bon retour! Veuillez entrer vos informations.",
+    "signUpTitle": "Créer un compte",
+    "signUpSubtitle": "Commencez votre parcours de sélection aujourd'hui.",
+    "forgotPasswordTitle": "Mot de passe oublié?",
+    "forgotPasswordSubtitle": "Entrez votre email et nous vous enverrons un lien de réinitialisation.",
+    "checkEmailTitle": "Vérifiez votre email",
+    "checkEmailSubtitle": "Nous avons envoyé un lien de réinitialisation à votre adresse email.",
+    "emailLabel": "Adresse email",
+    "emailPlaceholder": "vous@exemple.com",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Jean",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Dupont",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié?",
+    "signingIn": "Connexion en cours...",
+    "creatingAccount": "Création du compte...",
+    "sendingResetLink": "Envoi du lien...",
+    "sendResetLink": "Envoyer le lien",
+    "createAccount": "Créer un compte",
+    "returnToSignIn": "Retour à la connexion",
+    "noAccount": "Vous n'avez pas de compte?",
+    "hasAccount": "Vous avez déjà un compte?",
+    "rememberPassword": "Vous vous souvenez de votre mot de passe?",
+    "termsAgree": "J'accepte les",
+    "termsOfService": "Conditions d'utilisation",
+    "and": "et",
+    "privacyPolicy": "Politique de confidentialité",
+    "resetEmailSent": "Si un compte avec {{email}} existe, vous recevrez un lien de réinitialisation sous peu.",
+    "validation": {
+      "emailRequired": "L'email est requis",
+      "emailInvalid": "Veuillez entrer un email valide",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom est requis",
+      "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas",
+      "termsRequired": "Vous devez accepter les conditions"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Accueil",
+      "description": "Bienvenue sur votre tableau de bord",
+      "welcomeBack": "Bon retour, {{name}}!",
+      "dashboardIntro": "Ceci est votre tableau de bord principal. Naviguez en utilisant la barre latérale pour accéder aux différentes sections de l'application."
+    }
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português"
+  }
+}

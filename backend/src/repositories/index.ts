@@ -12,3 +12,4 @@ export * from './state-store.repository.js';
 export * from './device-token.repository.js';
 export * from './notification.repository.js';
 export * from './locale-preference.repository.js';
+export * from './oauth.repository.js';

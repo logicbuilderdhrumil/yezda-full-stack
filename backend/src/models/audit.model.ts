@@ -2,6 +2,7 @@
  * Audit Event Models
  * Task 1.7: Authentication audit logging models
  * Socket audit events added for socket infrastructure
+ * OAuth audit events added for OAuth integration
  */
 
 export type AuditEventType =
@@ -50,7 +51,15 @@ export type AuditEventType =
   // Localization-related audit events
   | 'LOCALE_PREFERENCE_UPDATED'
   | 'LOCALE_UPDATE_DENIED'
-  | 'TRANSLATION_ACCESSED';
+  | 'TRANSLATION_ACCESSED'
+  // OAuth-related audit events
+  | 'OAUTH_AUTHORIZE_INITIATED'
+  | 'OAUTH_CALLBACK_SUCCESS'
+  | 'OAUTH_CALLBACK_FAILURE'
+  | 'OAUTH_TOKEN_REFRESH_SUCCESS'
+  | 'OAUTH_TOKEN_REFRESH_FAILURE'
+  | 'OAUTH_INTEGRATION_DISCONNECTED'
+  | 'OAUTH_INVALID_STATE';
 
 export interface AuditEvent {
   id: string;
