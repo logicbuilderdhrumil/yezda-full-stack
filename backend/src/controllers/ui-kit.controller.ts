@@ -6,7 +6,7 @@
 import type { Request, Response } from 'express';
 import { uiKitService } from '../services/ui-kit.service.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
-import type { ComponentCategory, ThemePreset } from '../models/ui-kit.model.js';
+import type { ComponentCategory, UIKitTheme } from '../models/ui-kit.model.js';
 
 /**
  * Extract client info from request
@@ -43,7 +43,7 @@ export async function getUIConfig(req: AuthenticatedRequest, res: Response): Pro
   const { ipAddress } = getClientInfo(req);
   const tenantId = getTenantId(req);
   const category = req.query.category as ComponentCategory | undefined;
-  const theme = req.query.theme as ThemePreset | undefined;
+  const theme = req.query.theme as UIKitTheme | undefined;
 
   // Optional auth - configuration can be fetched with or without auth
   const userId = req.user?.sub;
@@ -76,7 +76,7 @@ export async function getUIConfig(req: AuthenticatedRequest, res: Response): Pro
 export async function getThemedVariants(req: AuthenticatedRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
   const tenantId = getTenantId(req);
-  const theme = req.query.theme as ThemePreset;
+  const theme = req.query.theme as UIKitTheme;
   const category = req.query.category as ComponentCategory | undefined;
 
   if (!theme) {

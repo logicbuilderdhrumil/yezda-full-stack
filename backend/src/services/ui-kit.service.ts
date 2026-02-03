@@ -9,13 +9,13 @@ import type {
   UIComponentConfigBundle,
   UIConfigResponse,
   ThemedVariantsResponse,
-  ThemePreset,
+  UIKitTheme,
   ComponentCategory,
   ComponentVariant,
   ThemedVariant,
 } from '../models/ui-kit.model.js';
 import {
-  THEME_PRESETS,
+  UI_KIT_THEMES,
   COMPONENT_CATEGORIES,
 } from '../models/ui-kit.model.js';
 import { auditService } from './audit.service.js';
@@ -46,7 +46,7 @@ function generateDefaultComponents(): UIComponentConfig[] {
   });
 
   const createThemedVariants = (): ThemedVariant[] =>
-    THEME_PRESETS.map((theme) => ({
+    UI_KIT_THEMES.map((theme) => ({
       theme,
       variants: {
         default: createVariant('default', { opacity: '1' }),
@@ -149,7 +149,7 @@ function generateDefaultComponents(): UIComponentConfig[] {
 /**
  * Generate global design tokens per theme
  */
-function generateGlobalTokens(): Record<ThemePreset, Record<string, string>> {
+function generateGlobalTokens(): Record<UIKitTheme, Record<string, string>> {
   return {
     light: {
       '--background': '#FFFFFF',
@@ -226,7 +226,7 @@ export class UIKitService {
   async getUIConfig(
     tenantId: string,
     category?: ComponentCategory,
-    theme?: ThemePreset,
+    theme?: UIKitTheme,
     userId?: string,
     userType?: 'user' | 'candidate',
     ipAddress?: string
@@ -286,7 +286,7 @@ export class UIKitService {
     let globalTokens = bundle.globalTokens;
     if (theme) {
       globalTokens = { [theme]: bundle.globalTokens[theme] } as Record<
-        ThemePreset,
+        UIKitTheme,
         Record<string, string>
       >;
     }
@@ -327,7 +327,7 @@ export class UIKitService {
    */
   async getThemedVariants(
     tenantId: string,
-    theme: ThemePreset,
+    theme: UIKitTheme,
     category?: ComponentCategory,
     userId?: string,
     userType?: 'user' | 'candidate',
@@ -424,8 +424,8 @@ export class UIKitService {
   /**
    * Get available themes
    */
-  getAvailableThemes(): ThemePreset[] {
-    return [...THEME_PRESETS];
+  getAvailableThemes(): UIKitTheme[] {
+    return [...UI_KIT_THEMES];
   }
 
   /**
@@ -452,7 +452,7 @@ export class UIKitService {
     userType?: 'user' | 'candidate';
     tenantId: string;
     category?: ComponentCategory;
-    theme?: ThemePreset;
+    theme?: UIKitTheme;
     cached: boolean;
     ipAddress?: string;
   }): void {

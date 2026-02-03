@@ -8,10 +8,10 @@ import type { Request, Response, NextFunction } from 'express';
 import { uiKitService } from '../src/services/ui-kit.service.js';
 import { metricsService } from '../src/services/metrics.service.js';
 import {
-  THEME_PRESETS,
+  UI_KIT_THEMES,
   COMPONENT_CATEGORIES,
-  DEFAULT_THEME,
-  isValidTheme,
+  DEFAULT_UI_KIT_THEME,
+  isValidUIKitTheme,
   isValidCategory,
   getUIConfigQuerySchema,
   getThemedVariantsQuerySchema,
@@ -19,18 +19,18 @@ import {
 import { validateQuery } from '../src/middleware/validation.middleware.js';
 
 describe('UI Kit Model', () => {
-  describe('isValidTheme', () => {
+  describe('isValidUIKitTheme', () => {
     it('should return true for valid themes', () => {
-      expect(isValidTheme('light')).toBe(true);
-      expect(isValidTheme('dark')).toBe(true);
-      expect(isValidTheme('system')).toBe(true);
-      expect(isValidTheme('high-contrast')).toBe(true);
+      expect(isValidUIKitTheme('light')).toBe(true);
+      expect(isValidUIKitTheme('dark')).toBe(true);
+      expect(isValidUIKitTheme('system')).toBe(true);
+      expect(isValidUIKitTheme('high-contrast')).toBe(true);
     });
 
     it('should return false for invalid themes', () => {
-      expect(isValidTheme('invalid')).toBe(false);
-      expect(isValidTheme('custom')).toBe(false);
-      expect(isValidTheme('')).toBe(false);
+      expect(isValidUIKitTheme('invalid')).toBe(false);
+      expect(isValidUIKitTheme('custom')).toBe(false);
+      expect(isValidUIKitTheme('')).toBe(false);
     });
   });
 
@@ -49,12 +49,12 @@ describe('UI Kit Model', () => {
     });
   });
 
-  describe('THEME_PRESETS', () => {
+  describe('UI_KIT_THEMES', () => {
     it('should include all required themes', () => {
-      expect(THEME_PRESETS).toContain('light');
-      expect(THEME_PRESETS).toContain('dark');
-      expect(THEME_PRESETS).toContain('system');
-      expect(THEME_PRESETS).toContain('high-contrast');
+      expect(UI_KIT_THEMES).toContain('light');
+      expect(UI_KIT_THEMES).toContain('dark');
+      expect(UI_KIT_THEMES).toContain('system');
+      expect(UI_KIT_THEMES).toContain('high-contrast');
     });
   });
 
@@ -68,9 +68,9 @@ describe('UI Kit Model', () => {
     });
   });
 
-  describe('DEFAULT_THEME', () => {
+  describe('DEFAULT_UI_KIT_THEME', () => {
     it('should be light', () => {
-      expect(DEFAULT_THEME).toBe('light');
+      expect(DEFAULT_UI_KIT_THEME).toBe('light');
     });
   });
 });
@@ -183,7 +183,7 @@ describe('UI Kit Service', () => {
       const themes = uiKitService.getAvailableThemes();
 
       expect(themes).toEqual(expect.arrayContaining(['light', 'dark', 'system', 'high-contrast']));
-      expect(themes.length).toBe(THEME_PRESETS.length);
+      expect(themes.length).toBe(UI_KIT_THEMES.length);
     });
   });
 

@@ -6,10 +6,10 @@
 import { z } from 'zod';
 
 /**
- * Theme preset identifiers
+ * UI Kit theme preset identifiers
  */
-export const THEME_PRESETS = ['light', 'dark', 'system', 'high-contrast'] as const;
-export type ThemePreset = (typeof THEME_PRESETS)[number];
+export const UI_KIT_THEMES = ['light', 'dark', 'system', 'high-contrast'] as const;
+export type UIKitTheme = (typeof UI_KIT_THEMES)[number];
 
 /**
  * UI component categories
@@ -66,7 +66,7 @@ export interface ComponentVariant {
  * Themed variant configuration
  */
 export interface ThemedVariant {
-  theme: ThemePreset;
+  theme: UIKitTheme;
   variants: Record<string, ComponentVariant>;
 }
 
@@ -94,7 +94,7 @@ export interface UIComponentConfig {
 export interface UIComponentConfigBundle {
   tenantId: string;
   components: UIComponentConfig[];
-  globalTokens: Record<ThemePreset, Record<string, string>>;
+  globalTokens: Record<UIKitTheme, Record<string, string>>;
   version: string;
   updatedAt: Date;
 }
@@ -105,7 +105,7 @@ export interface UIComponentConfigBundle {
 export interface UIConfigAccessRecord {
   configId: string;
   category?: ComponentCategory;
-  theme?: ThemePreset;
+  theme?: UIKitTheme;
   timestamp: Date;
   userId?: string;
   userType?: 'user' | 'candidate';
@@ -124,7 +124,7 @@ export interface UIConfigResponse {
  * Response for themed variants retrieval
  */
 export interface ThemedVariantsResponse {
-  theme: ThemePreset;
+  theme: UIKitTheme;
   components: Array<{
     id: string;
     category: ComponentCategory;
@@ -140,30 +140,30 @@ export interface ThemedVariantsResponse {
  */
 export interface GetUIConfigQuery {
   category?: ComponentCategory;
-  theme?: ThemePreset;
+  theme?: UIKitTheme;
 }
 
 // Validation schemas
-export const themePresetSchema = z.enum(THEME_PRESETS);
+export const uiKitThemeSchema = z.enum(UI_KIT_THEMES);
 export const componentCategorySchema = z.enum(COMPONENT_CATEGORIES);
 export const sizeVariantSchema = z.enum(SIZE_VARIANTS);
 export const colorVariantSchema = z.enum(COLOR_VARIANTS);
 
 export const getUIConfigQuerySchema = z.object({
   category: componentCategorySchema.optional(),
-  theme: themePresetSchema.optional(),
+  theme: uiKitThemeSchema.optional(),
 });
 
 export const getThemedVariantsQuerySchema = z.object({
-  theme: themePresetSchema,
+  theme: uiKitThemeSchema,
   category: componentCategorySchema.optional(),
 });
 
 /**
  * Check if theme is valid
  */
-export function isValidTheme(theme: string): theme is ThemePreset {
-  return THEME_PRESETS.includes(theme as ThemePreset);
+export function isValidUIKitTheme(theme: string): theme is UIKitTheme {
+  return UI_KIT_THEMES.includes(theme as UIKitTheme);
 }
 
 /**
@@ -174,6 +174,6 @@ export function isValidCategory(category: string): category is ComponentCategory
 }
 
 /**
- * Default theme
+ * Default UI Kit theme
  */
-export const DEFAULT_THEME: ThemePreset = 'light';
+export const DEFAULT_UI_KIT_THEME: UIKitTheme = 'light';
