@@ -1,5 +1,6 @@
-import { getToken, onMessage, type MessagePayload } from 'firebase/messaging';
+import { getToken, onMessage, type MessagePayload, type Unsubscribe } from 'firebase/messaging';
 import { getFirebaseMessaging } from './FirebaseService';
+import { apiClient } from '../axios';
 
 export type NotificationPermissionStatus = 'granted' | 'denied' | 'default' | 'unsupported';
 
@@ -17,6 +18,12 @@ const notificationHandlers: Set<NotificationHandler> = new Set();
 
 // Track token refresh callback cleanup
 let tokenRefreshUnsubscribe: (() => void) | null = null;
+
+// Track last known token to avoid redundant refresh calls
+let lastKnownToken: string | null = null;
+
+// Track onMessage listener cleanup
+let onMessageUnsubscribe: Unsubscribe | null = null;
 
 /**
  * NotificationService handles push notification permissions, token management,
@@ -107,15 +114,8 @@ export const NotificationService = {
    */
   async registerToken(token: string, apiEndpoint: string = '/api/v1/notifications/token'): Promise<boolean> {
     try {
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ token, platform: 'web' }),
-      });
-      return response.ok;
+      await apiClient.post(apiEndpoint, { token, platform: 'web' });
+      return true;
     } catch (error) {
       console.error('Failed to register FCM token:', error);
       return false;
@@ -135,14 +135,15 @@ export const NotificationService = {
     }
 
     // Note: Firebase v9+ handles token refresh automatically.
-    // We set up a periodic check as a fallback.
+    // We set up a periodic check as a fallback, only calling callback if token changed.
     const checkInterval = setInterval(async () => {
       if (!this.isPermissionGranted()) {
         return;
       }
 
       const token = await this.getToken();
-      if (token) {
+      if (token && token !== lastKnownToken) {
+        lastKnownToken = token;
         onTokenRefresh(token);
       }
     }, 60 * 60 * 1000); // Check every hour
@@ -167,8 +168,8 @@ export const NotificationService = {
     notificationHandlers.add(handler);
 
     // Set up the Firebase onMessage listener if this is the first handler
-    if (notificationHandlers.size === 1) {
-      onMessage(messaging, (payload: MessagePayload) => {
+    if (notificationHandlers.size === 1 && !onMessageUnsubscribe) {
+      onMessageUnsubscribe = onMessage(messaging, (payload: MessagePayload) => {
         const notification = this.parsePayload(payload);
         if (notification) {
           notificationHandlers.forEach((h) => h(notification));
@@ -179,6 +180,11 @@ export const NotificationService = {
     // Return unsubscribe function
     return () => {
       notificationHandlers.delete(handler);
+      // Clean up onMessage listener when all handlers are removed
+      if (notificationHandlers.size === 0 && onMessageUnsubscribe) {
+        onMessageUnsubscribe();
+        onMessageUnsubscribe = null;
+      }
     };
   },
 
@@ -230,5 +236,10 @@ export const NotificationService = {
       tokenRefreshUnsubscribe();
       tokenRefreshUnsubscribe = null;
     }
+    if (onMessageUnsubscribe) {
+      onMessageUnsubscribe();
+      onMessageUnsubscribe = null;
+    }
+    lastKnownToken = null;
   },
 };
