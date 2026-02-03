@@ -1,47 +1,70 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
-import {
-  ProtectedRoute,
-  AccessDeniedView,
-  NotFoundView,
-} from '@/components/route';
+import { AppShell } from '@/components/layouts';
+import { ProtectedRoute, NotFoundView } from '@/components/route';
+import { RouteLoadingFallback } from '@/components/ui';
+
+// Lazy load views for code splitting
+const HomeView = lazy(() =>
+  import('@/views/HomeView').then((m) => ({ default: m.HomeView }))
+);
+const AccessDeniedView = lazy(() =>
+  import('@/views/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
+);
 
 /**
- * Placeholder home component for authenticated users.
+ * Wraps a component with Suspense for lazy loading.
  */
-function HomePage() {
+function withSuspense(Component: React.ComponentType): React.ReactNode {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome to Yezda</h1>
-        <p className="mt-2 text-gray-600">You are signed in.</p>
-      </div>
-    </div>
+    <Suspense fallback={<RouteLoadingFallback />}>
+      <Component />
+    </Suspense>
   );
 }
 
 /**
- * Root routes configuration.
+ * Public routes that don't require authentication.
  */
-const routes: RouteObject[] = [
+export const publicRoutes: RouteObject[] = [
+  ...authRoutes,
+  {
+    path: '/access-denied',
+    element: withSuspense(AccessDeniedView),
+  },
+];
+
+/**
+ * Protected routes that require authentication.
+ * Wrapped with AppShell layout.
+ */
+export const protectedRoutes: RouteObject[] = [
   {
     path: '/',
     element: (
       <ProtectedRoute>
-        <HomePage />
+        <AppShell />
       </ProtectedRoute>
     ),
-  },
-  ...authRoutes,
-  {
-    path: '/access-denied',
-    element: <AccessDeniedView />,
+    children: [
+      {
+        index: true,
+        element: withSuspense(HomeView),
+      },
+      // Additional protected routes will be added here
+    ],
   },
   {
     path: '*',
     element: <NotFoundView />,
   },
 ];
+
+/**
+ * Root routes configuration.
+ */
+const routes: RouteObject[] = [...publicRoutes, ...protectedRoutes];
 
 /**
  * Application router instance.
