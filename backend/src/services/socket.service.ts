@@ -34,8 +34,16 @@ interface AuthenticatedSocket extends Socket {
 // In-memory presence store (would use Redis in production for horizontal scaling)
 const presenceStore = new Map<string, UserPresence>();
 
-// Rate limiting state per socket
-const socketRateLimits = new Map<string, Map<string, { count: number; resetAt: number }>>();
+// Heartbeat tracking for stale presence cleanup
+const lastHeartbeat = new Map<string, number>();
+
+// Presence TTL in milliseconds (60 seconds without heartbeat = stale)
+const PRESENCE_TTL_MS = 60000;
+// Cleanup interval (30 seconds)
+const PRESENCE_CLEANUP_INTERVAL_MS = 30000;
+
+// Rate limiting state - keyed by userId or IP, not socketId
+const rateLimits = new Map<string, Map<string, { count: number; resetAt: number }>>();
 
 /**
  * Socket Service
@@ -43,14 +51,30 @@ const socketRateLimits = new Map<string, Map<string, { count: number; resetAt: n
  */
 export class SocketService {
   private io: Server | null = null;
+  private presenceCleanupInterval: ReturnType<typeof setInterval> | null = null;
+
+  /**
+   * Get allowed CORS origins from environment or default to localhost
+   */
+  private getAllowedOrigins(): string[] {
+    const envOrigins = process.env.CORS_ORIGIN;
+    if (envOrigins) {
+      return envOrigins.split(',').map((o) => o.trim()).filter(Boolean);
+    }
+    // Safe defaults for development - never use wildcard with credentials
+    return ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
+  }
 
   /**
    * Initialize Socket.IO server and attach to HTTP server
    */
   initialize(httpServer: HttpServer): Server {
+    const allowedOrigins = this.getAllowedOrigins();
+    console.log('[Socket] CORS allowed origins:', allowedOrigins);
+
     this.io = new Server(httpServer, {
       cors: {
-        origin: process.env.CORS_ORIGIN || '*',
+        origin: allowedOrigins,
         credentials: true,
       },
       pingTimeout: 20000,
@@ -69,6 +93,9 @@ export class SocketService {
     // Set up notifications namespace
     const notificationsNs = this.io.of(SOCKET_NAMESPACES.NOTIFICATIONS);
     this.setupNamespace(notificationsNs);
+
+    // Start periodic stale presence cleanup
+    this.startPresenceCleanup();
 
     console.log('[Socket] Socket.IO server initialized');
     return this.io;
@@ -199,11 +226,12 @@ export class SocketService {
         timestamp: new Date().toISOString(),
       });
 
-      // Initialize rate limit tracking for this socket
-      socketRateLimits.set(socket.id, new Map());
+      // Initialize heartbeat tracking for this socket
+      lastHeartbeat.set(socket.id, Date.now());
 
-      // Handle ping for keepalive
+      // Handle ping for keepalive - update heartbeat timestamp
       socket.on(CLIENT_EVENTS.PING, (callback) => {
+        lastHeartbeat.set(socket.id, Date.now());
         if (typeof callback === 'function') {
           callback({ pong: true, timestamp: Date.now() });
         }
@@ -222,8 +250,8 @@ export class SocketService {
           success: true,
         });
 
-        // Clean up rate limit tracking
-        socketRateLimits.delete(socket.id);
+        // Clean up heartbeat tracking
+        lastHeartbeat.delete(socket.id);
 
         // Update presence on disconnect
         this.handleUserDisconnect(socket);
@@ -248,8 +276,9 @@ export class SocketService {
 
       // Handle set status
       socket.on(CLIENT_EVENTS.SET_STATUS, (data, callback) => {
-        // Rate limit check
-        if (!this.checkSocketRateLimit(socket.id, 'presence', SOCKET_RATE_LIMITS.presence)) {
+        // Rate limit check using userId (not socketId) for persistence across reconnects
+        const rateLimitKey = this.getRateLimitKey(socket as AuthenticatedSocket);
+        if (!this.checkRateLimitByKey(rateLimitKey, 'presence', SOCKET_RATE_LIMITS.presence)) {
           socket.emit(SERVER_EVENTS.RATE_LIMITED, { event: CLIENT_EVENTS.SET_STATUS });
           if (typeof callback === 'function') {
             callback({ error: 'Rate limit exceeded' });
@@ -433,16 +462,28 @@ export class SocketService {
   }
 
   /**
-   * Check rate limit (IP-based for connections)
+   * Get rate limit key for a socket - uses userId if available, falls back to IP
    */
-  private checkRateLimit(key: string, category: string, config: { maxEvents: number; windowMs: number }): boolean {
+  private getRateLimitKey(socket: AuthenticatedSocket): string {
+    const userId = socket.data?.userId;
+    return userId || socket.handshake.address;
+  }
+
+  /**
+   * Check rate limit by key (userId or IP)
+   */
+  private checkRateLimitByKey(
+    key: string,
+    category: string,
+    config: { maxEvents: number; windowMs: number }
+  ): boolean {
     const now = Date.now();
     const limitKey = `${category}:${key}`;
-    
-    // Use a simple in-memory map for now
-    const limits = socketRateLimits.get('global') || new Map();
-    if (!socketRateLimits.has('global')) {
-      socketRateLimits.set('global', limits);
+
+    let limits = rateLimits.get('global');
+    if (!limits) {
+      limits = new Map();
+      rateLimits.set('global', limits);
     }
 
     const window = limits.get(limitKey);
@@ -452,33 +493,72 @@ export class SocketService {
     }
 
     window.count += 1;
-    return window.count <= config.maxEvents;
-  }
-
-  /**
-   * Check rate limit for a specific socket
-   */
-  private checkSocketRateLimit(
-    socketId: string,
-    category: string,
-    config: { maxEvents: number; windowMs: number }
-  ): boolean {
-    const now = Date.now();
-    const limits = socketRateLimits.get(socketId);
-    if (!limits) return true;
-
-    const window = limits.get(category);
-    if (!window || window.resetAt < now) {
-      limits.set(category, { count: 1, resetAt: now + config.windowMs });
-      return true;
-    }
-
-    window.count += 1;
     if (window.count > config.maxEvents) {
       socketMetricsService.recordRateLimited(category);
       return false;
     }
     return true;
+  }
+
+  /**
+   * Check rate limit (IP-based for connections)
+   */
+  private checkRateLimit(
+    key: string,
+    category: string,
+    config: { maxEvents: number; windowMs: number }
+  ): boolean {
+    return this.checkRateLimitByKey(key, category, config);
+  }
+
+  /**
+   * Start periodic cleanup of stale presence entries
+   */
+  private startPresenceCleanup(): void {
+    this.presenceCleanupInterval = setInterval(() => {
+      const now = Date.now();
+      const staleSocketIds: string[] = [];
+
+      // Find stale sockets based on heartbeat
+      for (const [socketId, timestamp] of lastHeartbeat) {
+        if (now - timestamp > PRESENCE_TTL_MS) {
+          staleSocketIds.push(socketId);
+        }
+      }
+
+      // Clean up stale presence entries
+      for (const socketId of staleSocketIds) {
+        lastHeartbeat.delete(socketId);
+        
+        // Find and update presence for affected users
+        for (const [userId, presence] of presenceStore) {
+          if (presence.socketIds.includes(socketId)) {
+            presence.socketIds = presence.socketIds.filter((id) => id !== socketId);
+            
+            if (presence.socketIds.length === 0) {
+              presence.status = 'offline';
+              presence.lastSeen = new Date();
+              
+              // Broadcast offline status
+              if (presence.tenantId && this.io) {
+                const update: PresenceUpdatePayload = {
+                  userId,
+                  userType: presence.userType,
+                  status: 'offline',
+                  tenantId: presence.tenantId,
+                  timestamp: new Date(),
+                };
+                const presenceNs = this.io.of(SOCKET_NAMESPACES.PRESENCE);
+                presenceNs.to(getPresenceRoom(presence.tenantId)).emit(SERVER_EVENTS.USER_OFFLINE, update);
+                presenceNs.to(getPresenceRoom(presence.tenantId)).emit(SERVER_EVENTS.PRESENCE_UPDATE, update);
+              }
+              
+              console.log(`[Socket] Cleaned up stale presence for user ${userId} (socket: ${socketId})`);
+            }
+          }
+        }
+      }
+    }, PRESENCE_CLEANUP_INTERVAL_MS);
   }
 
   /**
@@ -558,10 +638,17 @@ export class SocketService {
       
       this.io = null;
     }
+
+    // Stop cleanup interval
+    if (this.presenceCleanupInterval) {
+      clearInterval(this.presenceCleanupInterval);
+      this.presenceCleanupInterval = null;
+    }
     
     // Clear stores
     presenceStore.clear();
-    socketRateLimits.clear();
+    lastHeartbeat.clear();
+    rateLimits.clear();
   }
 }
 
