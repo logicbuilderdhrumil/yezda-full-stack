@@ -48,7 +48,7 @@ Ask about edge cases or environment constraints before proceeding.
 - Commit changes:
   - git add -A
   - git commit -m "feat: <task-slug> - concise summary"
-- Open a pull request into dev; if dev does not exist, ask for the correct base branch.
+- **MUST open a pull request into dev once work is completed**; if dev does not exist, ask for the correct base branch.
 - Report: task-slug, worktree path, branch, commits (short), diff summary (short).
 
 ## Usage Examples
