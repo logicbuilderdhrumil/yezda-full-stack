@@ -2,7 +2,7 @@
  * Switch component using Radix.
  */
 import * as SwitchPrimitive from '@radix-ui/react-switch';
-import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from 'react';
+import { forwardRef, useId, type ComponentPropsWithoutRef, type ElementRef } from 'react';
 import { cn } from '@/utils';
 import { focusRing } from './variants';
 
@@ -18,7 +18,8 @@ export interface SwitchProps extends ComponentPropsWithoutRef<typeof SwitchPrimi
  */
 export const Switch = forwardRef<ElementRef<typeof SwitchPrimitive.Root>, SwitchProps>(
   ({ className, label, description, id, ...props }, ref) => {
-    const switchId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+    const generatedId = useId();
+    const switchId = id ?? generatedId;
 
     const switchElement = (
       <SwitchPrimitive.Root

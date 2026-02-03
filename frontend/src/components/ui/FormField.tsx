@@ -11,6 +11,8 @@ import { Label } from './Label';
 
 interface FormFieldContextValue {
   id: string;
+  errorId?: string;
+  helperId?: string;
   error?: string;
   required?: boolean;
 }
@@ -61,7 +63,7 @@ export function FormField({
   const errorId = `${id}-error`;
   const helperId = `${id}-helper`;
 
-  const contextValue: FormFieldContextValue = { id };
+  const contextValue: FormFieldContextValue = { id, errorId, helperId };
   if (error !== undefined) contextValue.error = error;
   if (required !== undefined) contextValue.required = required;
 
