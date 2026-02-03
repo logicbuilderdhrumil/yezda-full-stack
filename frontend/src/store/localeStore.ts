@@ -5,7 +5,7 @@ import type { LocaleCode, LocaleState } from '@/@types/stores';
 const STORAGE_KEY = 'yezda-locale';
 const DEFAULT_LOCALE: LocaleCode = 'en';
 
-interface LocaleStore extends LocaleState {
+export interface LocaleStore extends LocaleState {
   /** Set the current locale. */
   setLocale: (locale: LocaleCode) => void;
   /** Set loading state. */

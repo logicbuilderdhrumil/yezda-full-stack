@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -13,6 +14,8 @@ interface AuthLayoutProps {
  * Shared layout for authentication pages.
  */
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps): ReactNode {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
@@ -21,7 +24,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps): Reac
             <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
-            Yezda
+            {t('app.name')}
           </Link>
         </div>
         <div className="rounded-xl bg-white px-8 py-10 shadow-lg ring-1 ring-gray-900/5">
