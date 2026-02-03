@@ -3,7 +3,8 @@
  * Task 1.4: Tests for locale preference handling
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { Request, Response, NextFunction } from 'express';
 import { localizationService } from '../src/services/localization.service.js';
 import { localePreferenceRepository } from '../src/repositories/locale-preference.repository.js';
 import { metricsService } from '../src/services/metrics.service.js';
@@ -13,7 +14,9 @@ import {
   isValidLocale,
   getFallbackLocale,
   getLocaleChain,
+  getTranslationsQuerySchema,
 } from '../src/models/localization.model.js';
+import { validateQuery } from '../src/middleware/validation.middleware.js';
 
 describe('Localization Model', () => {
   describe('isValidLocale', () => {
@@ -296,6 +299,175 @@ describe('Localization Service', () => {
 
       expect(sloStatus.met).toBe(true);
       expect(sloStatus.violations).toHaveLength(0);
+    });
+  });
+});
+
+describe('Translations Query Validation', () => {
+  let mockRes: Partial<Response>;
+  let mockNext: NextFunction;
+  let jsonSpy: ReturnType<typeof vi.fn>;
+  let statusSpy: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    jsonSpy = vi.fn();
+    statusSpy = vi.fn().mockReturnValue({ json: jsonSpy });
+
+    mockRes = {
+      status: statusSpy,
+    };
+
+    mockNext = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const validationMiddleware = validateQuery(getTranslationsQuerySchema as unknown as import('zod').ZodSchema);
+
+  describe('validateQuery(getTranslationsQuerySchema)', () => {
+    it('should accept valid locale', () => {
+      const mockReq = {
+        query: { locale: 'en' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(statusSpy).not.toHaveBeenCalled();
+    });
+
+    it('should accept valid regional locale', () => {
+      const mockReq = {
+        query: { locale: 'en-US' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(statusSpy).not.toHaveBeenCalled();
+    });
+
+    it('should accept locale with namespaces', () => {
+      const mockReq = {
+        query: { locale: 'es', namespaces: 'common,auth' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+      expect(statusSpy).not.toHaveBeenCalled();
+    });
+
+    it('should reject missing locale', () => {
+      const mockReq = {
+        query: {},
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(400);
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        details: expect.arrayContaining([
+          expect.objectContaining({ path: 'locale' }),
+        ]),
+      });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject invalid locale', () => {
+      const mockReq = {
+        query: { locale: 'invalid-locale' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(400);
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        details: expect.arrayContaining([
+          expect.objectContaining({ path: 'locale' }),
+        ]),
+      });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject path traversal attempts', () => {
+      const mockReq = {
+        query: { locale: '../../etc/passwd' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(400);
+      expect(jsonSpy).toHaveBeenCalledWith({
+        error: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        details: expect.arrayContaining([
+          expect.objectContaining({ path: 'locale' }),
+        ]),
+      });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject SQL injection attempts', () => {
+      const mockReq = {
+        query: { locale: "en'; DROP TABLE users;--" },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should reject empty string locale', () => {
+      const mockReq = {
+        query: { locale: '' },
+      } as Partial<Request>;
+
+      validationMiddleware(
+        mockReq as Request,
+        mockRes as Response,
+        mockNext
+      );
+
+      expect(statusSpy).toHaveBeenCalledWith(400);
+      expect(mockNext).not.toHaveBeenCalled();
     });
   });
 });

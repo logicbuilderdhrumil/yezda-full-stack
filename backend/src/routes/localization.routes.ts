@@ -9,9 +9,11 @@ import { requireAuth, optionalAuth } from '../middleware/auth.middleware.js';
 import { translationRateLimiter } from '../middleware/localization-rate-limit.middleware.js';
 import {
   validateBody,
+  validateQuery,
 } from '../middleware/validation.middleware.js';
 import {
   updateLocalePreferenceSchema,
+  getTranslationsQuerySchema,
 } from '../models/localization.model.js';
 
 const router = Router();
@@ -30,6 +32,7 @@ router.get('/locales', localizationController.getSupportedLocales);
 router.get(
   '/translations',
   translationRateLimiter,
+  validateQuery(getTranslationsQuerySchema),
   optionalAuth,
   localizationController.getTranslations
 );
