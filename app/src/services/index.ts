@@ -13,3 +13,11 @@ export {
   withdrawConsent,
   ConsentApiError,
 } from './consentService';
+export {
+  getApplications,
+  getApplication,
+  getApplicationDraft,
+  saveApplicationDraft,
+  submitApplication,
+  ApplicationApiError,
+} from './applicationService';
