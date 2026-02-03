@@ -93,6 +93,31 @@ export const SHELL_SLOS = {
   CACHE_HIT_RATE_MIN: 80,
 } as const;
 
+// Metric names for Firebase integration
+export const FIREBASE_METRICS = {
+  TOKEN_REGISTRATION_SUCCESS: 'firebase_token_registration_success_total',
+  TOKEN_REGISTRATION_FAILURE: 'firebase_token_registration_failure_total',
+  TOKEN_UNREGISTRATION: 'firebase_token_unregistration_total',
+  NOTIFICATION_DISPATCH_SUCCESS: 'firebase_notification_dispatch_success_total',
+  NOTIFICATION_DISPATCH_FAILURE: 'firebase_notification_dispatch_failure_total',
+  DISPATCH_LATENCY: 'firebase_dispatch_latency_ms',
+  RATE_LIMIT_HIT: 'firebase_rate_limit_hit_total',
+} as const;
+
+// SLO targets for Firebase integration
+export const FIREBASE_SLOS = {
+  // Latency SLOs
+  DISPATCH_LATENCY_P99_MS: 500,
+  DISPATCH_LATENCY_P95_MS: 200,
+
+  // Availability SLOs
+  DISPATCH_SUCCESS_RATE: 99.5,
+  TOKEN_REGISTRATION_SUCCESS_RATE: 99.9,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 50,
+} as const;
+
 export class MetricsService {
   /**
    * Record a counter metric
@@ -372,6 +397,139 @@ export class MetricsService {
   }
 
   /**
+   * Record Firebase token registration
+   */
+  recordFirebaseTokenRegistration(success: boolean): void {
+    this.incrementCounter(
+      success
+        ? FIREBASE_METRICS.TOKEN_REGISTRATION_SUCCESS
+        : FIREBASE_METRICS.TOKEN_REGISTRATION_FAILURE
+    );
+  }
+
+  /**
+   * Record Firebase token unregistration
+   */
+  recordFirebaseTokenUnregistration(): void {
+    this.incrementCounter(FIREBASE_METRICS.TOKEN_UNREGISTRATION);
+  }
+
+  /**
+   * Record Firebase notification dispatch
+   */
+  recordFirebaseDispatch(success: boolean, durationMs: number): void {
+    this.recordLatency(FIREBASE_METRICS.DISPATCH_LATENCY, durationMs);
+    this.incrementCounter(
+      success
+        ? FIREBASE_METRICS.NOTIFICATION_DISPATCH_SUCCESS
+        : FIREBASE_METRICS.NOTIFICATION_DISPATCH_FAILURE
+    );
+  }
+
+  /**
+   * Record Firebase rate limit hit
+   */
+  recordFirebaseRateLimitHit(endpoint: string): void {
+    this.incrementCounter(FIREBASE_METRICS.RATE_LIMIT_HIT, { endpoint });
+  }
+
+  /**
+   * Get Firebase dispatch P99 latency
+   */
+  getFirebaseDispatchP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === FIREBASE_METRICS.DISPATCH_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get Firebase dispatch success rate
+   */
+  getFirebaseDispatchSuccessRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const successes = recentMetrics.filter(
+      (m) => m.name === FIREBASE_METRICS.NOTIFICATION_DISPATCH_SUCCESS
+    ).length;
+    const failures = recentMetrics.filter(
+      (m) => m.name === FIREBASE_METRICS.NOTIFICATION_DISPATCH_FAILURE
+    ).length;
+    const total = successes + failures;
+    return total > 0 ? (successes / total) * 100 : 100;
+  }
+
+  /**
+   * Get Firebase token registration success rate
+   */
+  getFirebaseTokenRegistrationSuccessRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const successes = recentMetrics.filter(
+      (m) => m.name === FIREBASE_METRICS.TOKEN_REGISTRATION_SUCCESS
+    ).length;
+    const failures = recentMetrics.filter(
+      (m) => m.name === FIREBASE_METRICS.TOKEN_REGISTRATION_FAILURE
+    ).length;
+    const total = successes + failures;
+    return total > 0 ? (successes / total) * 100 : 100;
+  }
+
+  /**
+   * Get Firebase rate limit hit count
+   */
+  getFirebaseRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === FIREBASE_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if Firebase SLOs are met
+   */
+  checkFirebaseSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getFirebaseDispatchP99Latency();
+    if (p99Latency > FIREBASE_SLOS.DISPATCH_LATENCY_P99_MS) {
+      violations.push(
+        `Firebase dispatch P99 latency ${p99Latency}ms exceeds SLO ${FIREBASE_SLOS.DISPATCH_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const dispatchSuccessRate = this.getFirebaseDispatchSuccessRate();
+    if (dispatchSuccessRate < FIREBASE_SLOS.DISPATCH_SUCCESS_RATE) {
+      violations.push(
+        `Firebase dispatch success rate ${dispatchSuccessRate.toFixed(2)}% below SLO ${FIREBASE_SLOS.DISPATCH_SUCCESS_RATE}%`
+      );
+    }
+
+    const tokenSuccessRate = this.getFirebaseTokenRegistrationSuccessRate();
+    if (tokenSuccessRate < FIREBASE_SLOS.TOKEN_REGISTRATION_SUCCESS_RATE) {
+      violations.push(
+        `Firebase token registration success rate ${tokenSuccessRate.toFixed(2)}% below SLO ${FIREBASE_SLOS.TOKEN_REGISTRATION_SUCCESS_RATE}%`
+      );
+    }
+
+    const rateLimitHits = this.getFirebaseRateLimitHitCount();
+    if (rateLimitHits > FIREBASE_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `Firebase rate limit hits ${rateLimitHits}/min exceeds SLO ${FIREBASE_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  /**
    * Clear old metrics
    */
   cleanup(retentionMs = 3600000): void {
@@ -379,6 +537,13 @@ export class MetricsService {
     const count = metrics.length;
     metrics.splice(0, metrics.findIndex((m) => m.timestamp > cutoff));
     console.log(`Cleaned up ${count - metrics.length} old metrics`);
+  }
+
+  /**
+   * Clear all metrics (for testing purposes)
+   */
+  clearAll(): void {
+    metrics.length = 0;
   }
 }
 

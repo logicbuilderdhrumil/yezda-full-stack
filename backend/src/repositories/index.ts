@@ -9,3 +9,4 @@ export * from './mfa-enrollment.repository.js';
 export * from './backup-code.repository.js';
 export * from './audit-log.repository.js';
 export * from './state-store.repository.js';
+export * from './device-token.repository.js';
