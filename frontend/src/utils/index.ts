@@ -14,4 +14,11 @@ export {
   ErrorCodes,
   type ApiError,
 } from './errorHandler';
+export {
+  generateCSSVariables,
+  applyThemeToDocument,
+  getThemePreset,
+  generateCustomTheme,
+  previewTheme,
+} from './themeGenerator';
 export { cn } from './cn';

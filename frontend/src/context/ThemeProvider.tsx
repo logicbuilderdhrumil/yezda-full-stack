@@ -1,33 +1,25 @@
 /**
- * Theme provider that applies theme to the document.
+ * ThemeProvider component for theme management.
+ * Wires the theme store to the document and applies CSS variables.
  */
 
 import { useEffect, type ReactNode } from 'react';
-import { useThemeStore, selectResolvedTheme } from '@/store/themeStore';
+import { useThemeStore, selectResolvedTheme } from '@/store';
+import { applyThemeToDocument } from '@/utils/themeGenerator';
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
 /**
- * ThemeProvider applies the resolved theme to the document root.
- * Updates the document class and color-scheme when theme changes.
+ * ThemeProvider initializes theme on mount and syncs theme changes to DOM.
  */
-export function ThemeProvider({ children }: ThemeProviderProps): ReactNode {
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const resolvedTheme = useThemeStore(selectResolvedTheme);
 
+  // Apply theme on initial render and when theme changes
   useEffect(() => {
-    const root = document.documentElement;
-
-    // Toggle dark class
-    if (resolvedTheme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-
-    // Set color-scheme for native elements
-    root.style.colorScheme = resolvedTheme;
+    applyThemeToDocument(resolvedTheme);
   }, [resolvedTheme]);
 
   return <>{children}</>;

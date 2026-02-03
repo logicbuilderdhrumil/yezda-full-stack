@@ -33,6 +33,9 @@ interface ThemeStore extends ThemeState {
   reset: () => void;
 }
 
+/** Export the ThemeStore type for typed selectors. */
+export type { ThemeStore };
+
 const initialState: ThemeState = {
   mode: 'system',
   resolvedTheme: 'light',
