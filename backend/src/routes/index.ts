@@ -7,6 +7,7 @@ import notificationRoutes from './notification.routes.js';
 import localizationRoutes from './localization.routes.js';
 import oauthRoutes from './oauth.routes.js';
 import mockRoutes from './mock.routes.js';
+import themeRoutes from './theme.routes.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/notifications', notificationRoutes);
 router.use('/localization', localizationRoutes);
 router.use('/oauth', oauthRoutes);
 router.use('/mock', mockRoutes);
+router.use('/theme', themeRoutes);
 
 export default router;

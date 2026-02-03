@@ -4,3 +4,13 @@ export * from './shell.controller.js';
 export * from './notification.controller.js';
 export * from './localization.controller.js';
 export * from './oauth.controller.js';
+// Theme controller exports explicitly to avoid naming conflict with state-store
+export {
+  getPresets as getThemePresets,
+  getPreset as getThemePreset,
+  getPreference as getThemePreference,
+  updatePreference as updateThemePreference,
+  deletePreference as deleteThemePreference,
+  getEffectiveTokens,
+  getHealthSummary as getThemeHealthSummary,
+} from './theme.controller.js';
