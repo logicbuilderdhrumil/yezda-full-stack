@@ -18,3 +18,8 @@ export {
   defaultRadius,
 } from './theme.config';
 export { iconMap, navConfig } from './navigation.config';
+export {
+  getFirebaseConfig,
+  isFirebaseConfigValid,
+  type FirebaseConfig,
+} from './firebase.config';
