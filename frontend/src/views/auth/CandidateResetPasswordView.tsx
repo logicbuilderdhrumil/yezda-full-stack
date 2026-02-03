@@ -1,6 +1,7 @@
 import { useState, type ReactNode, type FormEvent } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { validatePassword } from '@/utils/validation';
 import { AuthLayout } from './AuthLayout';
 import { ErrorMessage, LoadingOverlay } from '@/components/ui';
 
@@ -17,12 +18,9 @@ interface FormErrors {
 function validateForm(data: FormData): FormErrors {
   const errors: FormErrors = {};
 
-  if (!data.password) {
-    errors.password = 'Password is required';
-  } else if (data.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
-  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(data.password)) {
-    errors.password = 'Password must contain uppercase, lowercase, and a number';
+  const passwordError = validatePassword(data.password);
+  if (passwordError) {
+    errors.password = passwordError;
   }
 
   if (!data.confirmPassword) {

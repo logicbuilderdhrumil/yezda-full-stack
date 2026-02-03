@@ -74,20 +74,27 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
 
   // Try to restore session on mount
   useEffect(() => {
+    let isMounted = true;
+
     const restoreSession = async () => {
       const refreshToken = getRefreshToken();
+      // Only refresh if we have a token and the session is expired
       if (!refreshToken || !isSessionExpired()) return;
 
       setLoading(true);
       try {
         const newSession = await AuthService.refreshToken(refreshToken);
-        setSession(newSession);
+        if (isMounted) setSession(newSession);
       } catch {
-        clearSession();
+        if (isMounted) clearSession();
       }
     };
 
     restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, [getRefreshToken, isSessionExpired, setLoading, setSession, clearSession]);
 
   const signIn = useCallback(

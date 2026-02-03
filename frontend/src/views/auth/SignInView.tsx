@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type FormEvent } from 'react';
+import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { AuthLayout } from './AuthLayout';
@@ -47,10 +47,11 @@ export function SignInView(): ReactNode {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Redirect to TOTP verification if MFA is required
-  if (mfaPending) {
-    navigate('/totp-verify');
-    return null;
-  }
+  useEffect(() => {
+    if (mfaPending) {
+      navigate('/totp-verify');
+    }
+  }, [mfaPending, navigate]);
 
   const handleChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));

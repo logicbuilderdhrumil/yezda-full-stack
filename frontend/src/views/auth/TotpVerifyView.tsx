@@ -1,6 +1,7 @@
-import { useState, useRef, type ReactNode, type FormEvent, type KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, type ReactNode, type FormEvent, type KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/authStore';
 import { AuthLayout } from './AuthLayout';
 import { ErrorMessage, LoadingOverlay } from '@/components/ui';
 
@@ -18,10 +19,15 @@ export function TotpVerifyView(): ReactNode {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Redirect if no MFA pending
-  if (!mfaPending) {
-    navigate('/sign-in');
-    return null;
-  }
+  useEffect(() => {
+    if (!mfaPending) {
+      navigate('/sign-in');
+    }
+  }, [mfaPending, navigate]);
+
+  const handleClearMfaState = () => {
+    useAuthStore.getState().setMfaPending(null);
+  };
 
   const handleChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
@@ -149,9 +155,7 @@ export function TotpVerifyView(): ReactNode {
               <Link
                 to="/sign-in"
                 className="font-medium text-primary hover:text-primary/80"
-                onClick={() => {
-                  // Clear MFA state when going back
-                }}
+                onClick={handleClearMfaState}
               >
                 Try another method
               </Link>

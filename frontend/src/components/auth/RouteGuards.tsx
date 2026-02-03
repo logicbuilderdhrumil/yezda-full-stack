@@ -1,6 +1,13 @@
 import { type ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, type Location } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+
+/**
+ * Type guard to safely access location state with `from` property.
+ */
+function hasFromLocation(state: unknown): state is { from?: Location } {
+  return typeof state === 'object' && state !== null && 'from' in state;
+}
 
 interface RequireAuthProps {
   children: ReactNode;
@@ -64,7 +71,9 @@ export function RequireGuest({
 
   if (isAuthenticated) {
     // Redirect to intended destination or default redirect
-    const from = (location.state as { from?: Location } | null)?.from?.pathname ?? redirectTo;
+    const from = hasFromLocation(location.state)
+      ? location.state.from?.pathname ?? redirectTo
+      : redirectTo;
     return <Navigate to={from} replace />;
   }
 
