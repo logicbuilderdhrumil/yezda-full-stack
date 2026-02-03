@@ -45,22 +45,22 @@ function getStatusLabel(status: ApplicationStatus): string {
 }
 
 /**
- * Get style classes for status badge.
+ * Get style classes for status badge (container and text separately for NativeWind).
  */
-function getStatusStyle(status: ApplicationStatus): string {
+function getStatusStyle(status: ApplicationStatus): { container: string; text: string } {
   switch (status) {
     case 'pending':
-      return 'bg-gray-100 text-gray-700';
+      return { container: 'bg-gray-100', text: 'text-gray-700' };
     case 'in_progress':
-      return 'bg-blue-100 text-blue-700';
+      return { container: 'bg-blue-100', text: 'text-blue-700' };
     case 'submitted':
-      return 'bg-green-100 text-green-700';
+      return { container: 'bg-green-100', text: 'text-green-700' };
     case 'approved':
-      return 'bg-green-200 text-green-800';
+      return { container: 'bg-green-200', text: 'text-green-800' };
     case 'rejected':
-      return 'bg-red-100 text-red-700';
+      return { container: 'bg-red-100', text: 'text-red-700' };
     default:
-      return 'bg-gray-100 text-gray-700';
+      return { container: 'bg-gray-100', text: 'text-gray-700' };
   }
 }
 
@@ -118,7 +118,7 @@ function ApplicationCard({
 }) {
   const dueDateText = formatDueDate(application.dueDate);
   const statusLabel = getStatusLabel(application.status);
-  const statusStyle = getStatusStyle(application.status);
+  const statusStyles = getStatusStyle(application.status);
   const dueDateStyle = getDueDateStyle(application.dueDate);
 
   return (
@@ -132,8 +132,8 @@ function ApplicationCard({
         <Text className="text-lg font-semibold text-gray-900 flex-1 mr-2">
           {application.title}
         </Text>
-        <View className={`px-2 py-1 rounded-full ${statusStyle}`}>
-          <Text className="text-xs font-medium">{statusLabel}</Text>
+        <View className={`px-2 py-1 rounded-full ${statusStyles.container}`}>
+          <Text className={`text-xs font-medium ${statusStyles.text}`}>{statusLabel}</Text>
         </View>
       </View>
 

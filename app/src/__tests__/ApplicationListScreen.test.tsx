@@ -4,15 +4,22 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 
 // Mock the entire store module to prevent authService import chain
-jest.mock('../store/applicationStore', () => ({
-  useApplicationStore: jest.fn(),
-  selectApplications: jest.fn(),
-  selectListScreenState: jest.fn(),
-  selectListError: jest.fn(),
-}));
+jest.mock('../store/applicationStore', () => {
+  // Define actual selector functions that the mock can use
+  const selectApplications = (state: any) => state.applications;
+  const selectListScreenState = (state: any) => state.listScreenState;
+  const selectListError = (state: any) => state.listError;
+  
+  return {
+    useApplicationStore: jest.fn(),
+    selectApplications,
+    selectListScreenState,
+    selectListError,
+  };
+});
 
 import { ApplicationListScreen } from '../screens/ApplicationListScreen';
 import { useApplicationStore } from '../store/applicationStore';
