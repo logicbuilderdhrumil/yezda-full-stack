@@ -1,9 +1,21 @@
 /**
  * Auth Service
  * Task 1.2, 1.3, 1.6: Core authentication business logic
+ * 
+ * ⚠️ PRODUCTION BLOCKER: In-memory user storage
+ * Current implementation stores users in-memory which means:
+ * - All user data is lost on server restart
+ * - No horizontal scaling possible
+ * - Data persistence is not guaranteed
+ * 
+ * TODO: Before production deployment:
+ * 1. Migrate to a persistent database (PostgreSQL recommended)
+ * 2. Add database indexes on email columns for efficient lookups
+ * 3. Implement proper user repository pattern
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import type { User, Candidate, PasswordResetToken, TokenPair } from '../models/auth.model.js';
 import { tokenService } from './token.service.js';
 import { passwordService } from './password.service.js';
@@ -14,9 +26,31 @@ import { config } from '../config/index.js';
 // In-memory user stores (replace with DB in production)
 const users = new Map<string, User>();
 const candidates = new Map<string, Candidate>();
+// Email index maps for O(1) lookups (already implemented)
 const usersByEmail = new Map<string, string>();
 const candidatesByEmail = new Map<string, string>();
+// Password reset tokens stored by token hash (not raw token) for security
 const passwordResetTokens = new Map<string, PasswordResetToken>();
+
+/**
+ * Hash a token for secure storage using SHA-256
+ * Only the hash is stored; raw token is sent to user
+ */
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ */
+function secureCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Still do a comparison to prevent length-based timing leaks
+    crypto.timingSafeEqual(Buffer.from(a), Buffer.from(a));
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 export interface AuthResult {
   success: boolean;
@@ -302,9 +336,9 @@ export class AuthService {
       return { success: true };
     }
 
-    // Generate reset token
+    // Generate reset token and store only the hash (security best practice)
     const resetToken = uuidv4();
-    const tokenHash = Buffer.from(resetToken).toString('base64');
+    const tokenHash = hashToken(resetToken);
 
     const passwordResetToken: PasswordResetToken = {
       id: uuidv4(),
@@ -315,7 +349,8 @@ export class AuthService {
       createdAt: new Date(),
     };
 
-    passwordResetTokens.set(resetToken, passwordResetToken);
+    // Store by hash, not raw token
+    passwordResetTokens.set(tokenHash, passwordResetToken);
 
     auditService.logPasswordResetRequest({
       userId: entity.id,
@@ -340,13 +375,22 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string
   ): Promise<{ success: boolean; error?: string }> {
-    const resetTokenData = passwordResetTokens.get(token);
+    // Hash the incoming token and use constant-time comparison
+    const tokenHash = hashToken(token);
+    const resetTokenData = passwordResetTokens.get(tokenHash);
+    
     if (!resetTokenData) {
       return { success: false, error: 'Invalid or expired reset token' };
     }
 
+    // Use constant-time comparison to prevent timing attacks
+    if (!secureCompare(tokenHash, resetTokenData.tokenHash)) {
+      return { success: false, error: 'Invalid or expired reset token' };
+    }
+
     if (resetTokenData.expiresAt < new Date() || resetTokenData.usedAt) {
-      passwordResetTokens.delete(token);
+      // Clean up expired/used token
+      passwordResetTokens.delete(tokenHash);
       return { success: false, error: 'Invalid or expired reset token' };
     }
 
@@ -367,8 +411,9 @@ export class AuthService {
     entity.failedAttempts = 0;
     entity.lockedUntil = undefined;
 
-    // Mark token as used
+    // Mark token as used and immediately delete (one-time use)
     resetTokenData.usedAt = new Date();
+    passwordResetTokens.delete(tokenHash);
 
     // Revoke all existing sessions for security
     tokenService.revokeAllUserSessions(entity.id, resetTokenData.userType);

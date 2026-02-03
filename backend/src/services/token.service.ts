@@ -1,6 +1,17 @@
 /**
  * Token Service
  * Task 1.1, 1.8: JWT token generation, validation, rotation, and revocation
+ * 
+ * ⚠️ PRODUCTION BLOCKER: In-memory session storage
+ * Current implementation stores sessions in-memory which means:
+ * - All sessions are lost on server restart (mass logout)
+ * - No distributed session management (horizontal scaling impossible)
+ * - Memory consumption grows unbounded with active sessions
+ * 
+ * TODO: Before production deployment:
+ * 1. Store sessions in Redis or a database with proper indexing
+ * 2. Add TTL-based auto-expiration for sessions
+ * 3. Implement session cleanup job for expired entries
  */
 
 import jwt from 'jsonwebtoken';
@@ -16,6 +27,9 @@ import { config } from '../config/index.js';
 // In-memory session store (replace with Redis/DB in production)
 const sessions = new Map<string, Session>();
 const revokedTokens = new Set<string>();
+
+// Secondary index: userId -> Set<sessionId> for O(1) user session lookups
+const userSessionIndex = new Map<string, Set<string>>();
 
 export class TokenService {
   /**
@@ -72,6 +86,13 @@ export class TokenService {
     };
 
     sessions.set(sessionId, session);
+
+    // Update user session index for O(1) lookups
+    const userKey = `${userType}:${userId}`;
+    if (!userSessionIndex.has(userKey)) {
+      userSessionIndex.set(userKey, new Set());
+    }
+    userSessionIndex.get(userKey)!.add(sessionId);
 
     return {
       tokenPair: {
@@ -177,12 +198,20 @@ export class TokenService {
   }
 
   /**
-   * Revoke all sessions for a user
+   * Revoke all sessions for a user - O(1) lookup using secondary index
    */
   revokeAllUserSessions(userId: string, userType: 'user' | 'candidate'): number {
+    const userKey = `${userType}:${userId}`;
+    const sessionIds = userSessionIndex.get(userKey);
+    
+    if (!sessionIds) {
+      return 0;
+    }
+
     let count = 0;
-    for (const session of sessions.values()) {
-      if (session.userId === userId && session.userType === userType && !session.revokedAt) {
+    for (const sessionId of sessionIds) {
+      const session = sessions.get(sessionId);
+      if (session && !session.revokedAt) {
         session.revokedAt = new Date();
         count++;
       }

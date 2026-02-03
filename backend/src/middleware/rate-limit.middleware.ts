@@ -1,6 +1,16 @@
 /**
  * Rate Limiting Middleware
  * Task 1.6: Rate limiting and abuse protection for auth endpoints
+ * 
+ * ⚠️ PRODUCTION NOTE: In-memory rate limiting
+ * Current implementation uses in-memory storage which means:
+ * - Attackers can bypass rate limits by hitting different instances behind a load balancer
+ * - Rate limit state is lost on server restart
+ * 
+ * TODO: For production with multiple instances:
+ * 1. Use a shared Redis store (express-rate-limit supports this via `rate-limit-redis`)
+ * 2. Consider IP + user-based compound keys for authenticated endpoints
+ * 3. Implement distributed rate limiting coordination
  */
 
 import rateLimit from 'express-rate-limit';
