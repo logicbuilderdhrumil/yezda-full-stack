@@ -1,7 +1,7 @@
 import type { AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
 import axios from 'axios';
 import { apiClient, setupInterceptors, type InterceptorConfig } from './axios';
-import { resolveEndpoint, type EndpointName } from '@/configs/endpoint.config';
+import { endpoints, resolveEndpoint, type EndpointName } from '@/configs/endpoint.config';
 
 /** Request configuration options for ApiService methods. */
 export interface RequestOptions<TParams = Record<string, string>> extends Omit<AxiosRequestConfig, 'url' | 'method' | 'data'> {
@@ -166,19 +166,19 @@ function resolveUrl(
   pathParams?: Record<string, string>
 ): string {
   // Check if it's a known endpoint name
-  try {
+  if (endpoint in endpoints) {
     return resolveEndpoint(endpoint as EndpointName, pathParams);
-  } catch {
-    // If not found in config, treat as raw URL
-    if (pathParams) {
-      let url = endpoint;
-      for (const [key, value] of Object.entries(pathParams)) {
-        url = url.replace(`:${key}`, encodeURIComponent(value));
-      }
-      return url;
-    }
-    return endpoint;
   }
+
+  // Treat as raw URL
+  if (pathParams) {
+    let url = endpoint;
+    for (const [key, value] of Object.entries(pathParams)) {
+      url = url.replace(`:${key}`, encodeURIComponent(value));
+    }
+    return url;
+  }
+  return endpoint;
 }
 
 /**

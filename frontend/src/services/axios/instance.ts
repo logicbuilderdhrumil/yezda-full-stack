@@ -2,9 +2,10 @@ import axios, { type AxiosInstance, type CreateAxiosDefaults } from 'axios';
 
 /**
  * Default Axios configuration.
+ * Note: baseURL is '/' because endpoint resolution already adds the /api/v1 prefix.
  */
 const defaultConfig: CreateAxiosDefaults = {
-  baseURL: '/api/v1',
+  baseURL: '/',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

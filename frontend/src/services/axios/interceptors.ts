@@ -25,9 +25,6 @@ interface QueuedRequest {
   reject: (error: unknown) => void;
 }
 
-let isRefreshing = false;
-const refreshQueue: QueuedRequest[] = [];
-
 /**
  * Sets up request interceptors on an Axios instance.
  * Adds authentication headers and locale.
@@ -63,11 +60,16 @@ export function setupRequestInterceptors(
 /**
  * Sets up response interceptors on an Axios instance.
  * Handles error mapping and token refresh.
+ * State is encapsulated per-instance to avoid singleton coupling.
  */
 export function setupResponseInterceptors(
   instance: AxiosInstance,
   config: InterceptorConfig
 ): void {
+  // Encapsulated state per instance to avoid shared mutable state
+  let isRefreshing = false;
+  const refreshQueue: QueuedRequest[] = [];
+
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {

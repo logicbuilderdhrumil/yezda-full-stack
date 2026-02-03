@@ -65,5 +65,10 @@ export function resolveEndpoint(
     }
   }
 
+  // Warn about unreplaced path parameters in development
+  if (path.includes(':') && import.meta.env.DEV) {
+    console.warn(`[endpoint.config] Unreplaced path parameters in endpoint "${name}": ${path}`);
+  }
+
   return `/api/${version}${path}`;
 }
