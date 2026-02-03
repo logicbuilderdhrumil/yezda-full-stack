@@ -309,6 +309,83 @@ export class AuditService {
       success: true,
     });
   }
+
+  /**
+   * Log shell preference update
+   */
+  logPreferenceUpdated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId?: string;
+    changes: Record<string, unknown>;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'SHELL_PREFERENCE_UPDATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        tenantId: params.tenantId,
+        changes: params.changes,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log navigation policy update
+   */
+  logNavigationPolicyUpdated(params: {
+    actorId: string;
+    actorType: 'user' | 'candidate' | 'system';
+    tenantId?: string;
+    policyChanges: Record<string, unknown>;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'SHELL_NAVIGATION_POLICY_UPDATED',
+      actorId: params.actorId,
+      actorType: params.actorType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        policyChanges: params.policyChanges,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log shell config access
+   */
+  logShellConfigAccessed(params: {
+    userId?: string;
+    userType?: 'user' | 'candidate';
+    tenantId?: string;
+    resource: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'SHELL_CONFIG_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        resource: params.resource,
+      },
+      success: true,
+    });
+  }
 }
 
 export const auditService = new AuditService();
