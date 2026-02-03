@@ -222,6 +222,93 @@ export class AuditService {
   async getRecentEvents(limit = 100): Promise<AuditLogEntry[]> {
     return auditLogRepository.findRecent(limit);
   }
+
+  /**
+   * Log guard authentication denial
+   */
+  logGuardAuthDenied(params: {
+    route: string;
+    method: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'GUARD_AUTH_DENIED',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        route: params.route,
+        method: params.method,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log guard role denial
+   */
+  logGuardRoleDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    route: string;
+    method: string;
+    requiredRole: string;
+    actualRoles: string[];
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'GUARD_ROLE_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        route: params.route,
+        method: params.method,
+        requiredRole: params.requiredRole,
+        actualRoles: params.actualRoles,
+      },
+      success: false,
+      errorMessage: `Missing required role: ${params.requiredRole}`,
+    });
+  }
+
+  /**
+   * Log guard access granted
+   */
+  logGuardAccessGranted(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    route: string;
+    method: string;
+    grantedRole?: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'GUARD_ACCESS_GRANTED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        route: params.route,
+        method: params.method,
+        grantedRole: params.grantedRole,
+      },
+      success: true,
+    });
+  }
 }
 
 export const auditService = new AuditService();
