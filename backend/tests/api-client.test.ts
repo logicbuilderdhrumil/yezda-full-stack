@@ -9,6 +9,8 @@ import {
   OutboundMetricsService,
   createApiClient,
   maskSecrets,
+  maskUrlSecrets,
+  isPrivateIP,
   type ApiClientConfig,
   type OutboundSecurityConfig,
   type ApiClientError,

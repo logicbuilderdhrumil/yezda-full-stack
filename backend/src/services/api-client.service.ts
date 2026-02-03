@@ -116,6 +116,20 @@ export type ApiErrorCode =
 // Circuit Breaker State
 // ============================================================================
 
+/**
+ * Circuit breaker states.
+ * 
+ * IMPORTANT: Circuit breaker state is stored in-memory per instance.
+ * In multi-instance deployments (e.g., Kubernetes pods), each instance
+ * maintains its own state. This means:
+ * - One pod can have a circuit open while others keep sending requests
+ * - Half-open probes are not coordinated across instances
+ * 
+ * For production multi-instance deployments, consider:
+ * - Using Redis or another shared store for circuit breaker state
+ * - Implementing a distributed circuit breaker pattern
+ * - Accepting this as a limitation for simpler deployments
+ */
 export type CircuitState = 'closed' | 'open' | 'half-open';
 
 interface CircuitBreakerState {
@@ -148,7 +162,7 @@ const DEFAULT_SECURITY_CONFIG: OutboundSecurityConfig = {
   blockPrivateRanges: true,
 };
 
-// Private IP patterns
+// Private IP patterns for hostname validation
 const PRIVATE_IP_PATTERNS = [
   /^10\./,
   /^172\.(1[6-9]|2[0-9]|3[01])\./,
@@ -159,6 +173,66 @@ const PRIVATE_IP_PATTERNS = [
   /^::1$/,
   /^fe80:/i,
 ];
+
+/**
+ * Check if an IP address is private/internal.
+ * Used for post-DNS resolution validation to prevent DNS rebinding attacks.
+ */
+export function isPrivateIP(ip: string): boolean {
+  for (const pattern of PRIVATE_IP_PATTERNS) {
+    if (pattern.test(ip)) {
+      return true;
+    }
+  }
+  // Additional check for IPv4-mapped IPv6 addresses
+  if (ip.startsWith('::ffff:')) {
+    const ipv4Part = ip.slice(7);
+    return isPrivateIP(ipv4Part);
+  }
+  return false;
+}
+
+// Sensitive query parameter keys to mask in URLs
+const SENSITIVE_QUERY_PARAMS = [
+  'api_key',
+  'apikey',
+  'api-key',
+  'token',
+  'access_token',
+  'secret',
+  'password',
+  'key',
+  'auth',
+  'bearer',
+  'credential',
+];
+
+/**
+ * Mask sensitive query parameters in a URL for safe logging.
+ * Replaces values of sensitive params like api_key, token, secret with asterisks.
+ */
+export function maskUrlSecrets(url: string): string {
+  try {
+    const parsed = new URL(url);
+    let masked = false;
+    
+    for (const [key, value] of parsed.searchParams.entries()) {
+      const lowerKey = key.toLowerCase();
+      if (SENSITIVE_QUERY_PARAMS.some(s => lowerKey.includes(s))) {
+        const maskedValue = value.length > 8 
+          ? `${value.slice(0, 2)}****${value.slice(-2)}` 
+          : '****';
+        parsed.searchParams.set(key, maskedValue);
+        masked = true;
+      }
+    }
+    
+    return masked ? parsed.toString() : url;
+  } catch {
+    // If URL parsing fails, return as-is
+    return url;
+  }
+}
 
 // ============================================================================
 // Default Configurations
@@ -485,14 +559,15 @@ export class ApiClient {
     timeoutMs: number,
     requestId: string
   ): Promise<{ status: number; headers: Record<string, string>; data: T }> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    // Use AbortSignal.timeout() for cleaner timeout handling (Node 18+)
+    // This properly handles both connection and body streaming timeouts
+    const signal = AbortSignal.timeout(timeoutMs);
 
     try {
       const fetchOptions: RequestInit = {
         method,
         headers,
-        signal: controller.signal,
+        signal,
       };
 
       if (body !== undefined && method !== 'GET' && method !== 'HEAD') {
@@ -500,7 +575,6 @@ export class ApiClient {
       }
 
       const response = await fetch(url, fetchOptions);
-      clearTimeout(timeoutId);
 
       // Parse response headers
       const responseHeaders: Record<string, string> = {};
@@ -534,9 +608,8 @@ export class ApiClient {
 
       return { status: response.status, headers: responseHeaders, data };
     } catch (err) {
-      clearTimeout(timeoutId);
-
-      if (err instanceof Error && err.name === 'AbortError') {
+      // Handle timeout errors (AbortSignal.timeout throws TimeoutError in Node 18+)
+      if (err instanceof Error && (err.name === 'AbortError' || err.name === 'TimeoutError')) {
         throw this.createError('TIMEOUT', `Request timed out after ${timeoutMs}ms`, requestId);
       }
 
@@ -544,9 +617,11 @@ export class ApiClient {
         throw err;
       }
 
+      // Mask URL secrets in network error messages
+      const maskedUrl = maskUrlSecrets(url);
       throw this.createError(
         'NETWORK_ERROR',
-        `Network error: ${(err as Error).message}`,
+        `Network error for ${maskedUrl}: ${(err as Error).message}`,
         requestId,
         undefined,
         err as Error
@@ -577,14 +652,15 @@ export class ApiClient {
       throw this.createError('TLS_ERROR', 'TLS is required for outbound requests', requestId);
     }
 
-    // Check private ranges
+    // Check private ranges (hostname-based)
+    // Note: This validates the hostname/IP string before DNS resolution.
+    // For DNS rebinding protection, use validateResolvedIP() after DNS lookup
+    // to verify the resolved IP is not private. See isPrivateIP() helper.
     if (this.securityConfig.blockPrivateRanges) {
       const hostname = parsed.hostname;
-      for (const pattern of PRIVATE_IP_PATTERNS) {
-        if (pattern.test(hostname)) {
-          this.logBlockedRequest(parsed, requestId, 'Private IP blocked');
-          throw this.createError('BLOCKED_HOST', `Blocked private IP range: ${hostname}`, requestId);
-        }
+      if (isPrivateIP(hostname)) {
+        this.logBlockedRequest(parsed, requestId, 'Private IP blocked');
+        throw this.createError('BLOCKED_HOST', `Blocked private IP range: ${hostname}`, requestId);
       }
     }
 
@@ -607,12 +683,16 @@ export class ApiClient {
   }
 
   private logBlockedRequest(url: URL, requestId: string, reason: string): void {
+    // Mask secrets in the URL before logging
+    const maskedUrl = maskUrlSecrets(url.toString());
+    const maskedUrlObj = new URL(maskedUrl);
+    
     this.logAudit({
       eventType: 'OUTBOUND_BLOCKED',
       integrationName: this.config.integrationName,
       requestId,
-      targetHost: url.hostname,
-      targetPath: url.pathname,
+      targetHost: maskedUrlObj.hostname,
+      targetPath: maskedUrlObj.pathname + (maskedUrlObj.search || ''),
       method: 'BLOCKED',
       success: false,
       errorCode: 'BLOCKED_HOST',
@@ -626,7 +706,8 @@ export class ApiClient {
         event: 'outbound_blocked',
         integrationName: this.config.integrationName,
         requestId,
-        host: url.hostname,
+        host: maskedUrlObj.hostname,
+        url: maskedUrl,
         reason,
         timestamp: new Date().toISOString(),
       })
