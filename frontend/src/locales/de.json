@@ -91,5 +91,29 @@
     "fr": "Français",
     "de": "Deutsch",
     "pt": "Português"
+  },
+  "oauth": {
+    "verifying": "Verbindung wird überprüft...",
+    "verificationTitle": "OAuth-Verifizierung",
+    "verificationSubtitle": "Ihre Integrationsverbindung wird verarbeitet",
+    "successTitle": "Verbindung Erfolgreich",
+    "errorTitle": "Verbindung Fehlgeschlagen",
+    "connectionSuccess": "{{provider}} erfolgreich verbunden",
+    "connectionFailed": "Integration konnte nicht verbunden werden",
+    "continue": "Weiter",
+    "tryAgain": "Erneut versuchen",
+    "integrationsTitle": "Integrationen",
+    "integrationsDescription": "Verbinden Sie externe Dienste, um Ihren Workflow zu verbessern",
+    "connected": "Verbunden",
+    "error": "Fehler",
+    "connectedAs": "Verbunden als {{account}}",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "disconnecting": "{{provider}} wird getrennt...",
+    "disconnected": "{{provider}} getrennt",
+    "disconnectError": "{{provider}} konnte nicht getrennt werden",
+    "connectError": "{{provider}} konnte nicht verbunden werden",
+    "loadError": "Integrationen konnten nicht geladen werden",
+    "noProviders": "Keine Integrationen verfügbar"
   }
 }

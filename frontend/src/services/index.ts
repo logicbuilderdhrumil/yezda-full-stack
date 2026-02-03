@@ -1,4 +1,5 @@
 export { AuthService } from './AuthService';
+export { OAuthService } from './OAuthService';
 export {
   ApiService,
   initializeApiService,
