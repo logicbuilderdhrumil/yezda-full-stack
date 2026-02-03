@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeProvider';
 import { router } from '@/routes';
 
 /**
@@ -9,9 +10,11 @@ import { router } from '@/routes';
 export function App() {
   return (
     <StrictMode>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ThemeProvider>
     </StrictMode>
   );
 }

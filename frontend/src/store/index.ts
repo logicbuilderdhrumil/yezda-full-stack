@@ -4,6 +4,7 @@ export {
   selectThemeMode,
   selectResolvedTheme,
   selectIsDark,
+  type ThemeStore,
 } from './themeStore';
 export { useLocaleStore, selectLocale, selectLocaleLoading } from './localeStore';
 export {
