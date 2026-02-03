@@ -57,6 +57,11 @@ export interface UseNotificationsActions {
   markAsUnread: (id: string) => Promise<void>;
   /** Mark all notifications as read */
   markAllAsRead: () => Promise<void>;
+  /**
+   * Handle incoming realtime notification.
+   * Call this from Socket.IO or Firebase listeners.
+   */
+  handleRealtimeNotification: (notification: Notification) => void;
 }
 
 /** Return type for useNotifications hook */
@@ -116,6 +121,12 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
   const [nextCursor, setNextCursor] = useState<string | undefined>();
 
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const nextCursorRef = useRef<string | undefined>(undefined);
+
+  // Keep ref in sync with state for use in callbacks
+  useEffect(() => {
+    nextCursorRef.current = nextCursor;
+  }, [nextCursor]);
 
   /**
    * Fetch notifications from the API
@@ -129,24 +140,25 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
     setError(null);
 
     try {
-      const pagination = isLoadMore && nextCursor
-        ? { limit: pageSize, cursor: nextCursor }
+      // Use ref to get current cursor value, avoiding stale closures
+      const currentCursor = nextCursorRef.current;
+      const pagination = isLoadMore && currentCursor
+        ? { limit: pageSize, cursor: currentCursor }
         : { limit: pageSize };
 
       const result: NotificationListResponse = await NotificationsService.list(filters, pagination);
 
-      setNotifications((prev) =>
-        isLoadMore ? [...prev, ...result.notifications] : result.notifications
-      );
+      // Use functional update to avoid stale closure on notifications
+      setNotifications((prev) => {
+        const newList = isLoadMore ? [...prev, ...result.notifications] : result.notifications;
+        // Calculate unread count from the new list
+        const unread = newList.filter((n) => n.status === 'unread').length;
+        setUnreadCount(unread);
+        return newList;
+      });
       setTotal(result.total);
       setHasMore(result.hasMore);
       setNextCursor(result.nextCursor);
-
-      // Calculate unread count from fetched notifications
-      const unread = isLoadMore
-        ? [...notifications, ...result.notifications].filter((n) => n.status === 'unread').length
-        : result.notifications.filter((n) => n.status === 'unread').length;
-      setUnreadCount(unread);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load notifications';
       setError(message);
@@ -154,7 +166,7 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
       setIsLoading(false);
       setIsLoadingMore(false);
     }
-  }, [filters, pageSize, nextCursor, notifications]);
+  }, [filters, pageSize]);
 
   /**
    * Refresh notifications (reset and fetch fresh)
@@ -266,7 +278,7 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
     };
   }, [enablePolling, pollingInterval]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // TODO: Add Socket.IO/Firebase listener integration
+  // TODO: Add Socket.IO/Firebase listener integration (Task 1.6 - blocked until socket-infra/firebase-integration ready)
   // When socket-infra or firebase-integration is implemented, add:
   //
   // useEffect(() => {
@@ -290,10 +302,6 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
   //   return () => unsubscribe();
   // }, [handleRealtimeNotification]);
 
-  // Export handleRealtimeNotification for external callers
-  // This allows integration with socket/firebase when ready
-  (useNotifications as unknown as { handleRealtimeNotification: typeof handleRealtimeNotification }).handleRealtimeNotification = handleRealtimeNotification;
-
   return {
     notifications,
     total,
@@ -307,6 +315,7 @@ export function useNotifications(config: UseNotificationsConfig = {}): UseNotifi
     markAsRead,
     markAsUnread,
     markAllAsRead,
+    handleRealtimeNotification,
   };
 }
 

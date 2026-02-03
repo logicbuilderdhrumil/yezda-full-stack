@@ -6,8 +6,9 @@
  * Task 1.7: Add loading, empty, and error states
  */
 
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { PageContainer } from '@/components/layouts';
 import {
   Badge,
@@ -156,8 +157,9 @@ function NotificationItem({
             'h-2.5 w-2.5 rounded-full',
             isUnread ? 'bg-blue-500' : 'bg-transparent'
           )}
-          aria-label={isUnread ? 'Unread' : 'Read'}
+          aria-hidden="true"
         />
+        <span className="sr-only">{isUnread ? 'Unread notification' : 'Read notification'}</span>
       </div>
 
       {/* Icon */}
@@ -317,6 +319,12 @@ export function NotificationsView(): ReactNode {
   const navigate = useNavigate();
   const [state, setState] = useState<NotificationsState>(initialState);
   const [filter, setFilter] = useState<NotificationFilters>({});
+  const nextCursorRef = useRef<string | undefined>(undefined);
+
+  // Keep ref in sync with state to avoid stale closures
+  useEffect(() => {
+    nextCursorRef.current = state.nextCursor;
+  }, [state.nextCursor]);
 
   /**
    * Load notifications
@@ -330,8 +338,10 @@ export function NotificationsView(): ReactNode {
     }));
 
     try {
-      const pagination = isLoadMore && state.nextCursor
-        ? { limit: 20, cursor: state.nextCursor }
+      // Use ref to get current cursor value, avoiding stale closures
+      const currentCursor = nextCursorRef.current;
+      const pagination = isLoadMore && currentCursor
+        ? { limit: 20, cursor: currentCursor }
         : { limit: 20 };
 
       const result = await NotificationsService.list(filter, pagination);
@@ -356,7 +366,7 @@ export function NotificationsView(): ReactNode {
         error: message,
       }));
     }
-  }, [filter, state.nextCursor]);
+  }, [filter]);
 
   /**
    * Handle mark as read
@@ -372,6 +382,7 @@ export function NotificationsView(): ReactNode {
       }));
     } catch (err) {
       console.error('Failed to mark notification as read:', err);
+      toast.error('Failed to update notification');
     }
   }, []);
 
@@ -389,6 +400,7 @@ export function NotificationsView(): ReactNode {
       }));
     } catch (err) {
       console.error('Failed to mark notification as unread:', err);
+      toast.error('Failed to update notification');
     }
   }, []);
 
@@ -408,6 +420,7 @@ export function NotificationsView(): ReactNode {
       }));
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err);
+      toast.error('Failed to mark all as read');
     }
   }, []);
 
