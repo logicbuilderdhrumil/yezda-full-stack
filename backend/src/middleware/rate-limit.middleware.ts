@@ -191,3 +191,14 @@ export const passwordResetRateLimiter = createRateLimiter({
   keyPrefix: 'rl:password-reset',
   message: { error: 'Too many password reset attempts, please try again later', code: 'RESET_RATE_LIMITED' },
 });
+
+/**
+ * Rate limiter for shell configuration endpoints
+ * Higher limit than auth since these are frequently accessed
+ */
+export const shellConfigRateLimiter = createRateLimiter({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests * 2, // Higher limit for config endpoints
+  keyPrefix: 'rl:shell-config',
+  message: { error: 'Too many requests, please try again later', code: 'RATE_LIMITED' },
+});

@@ -68,6 +68,31 @@ export const GUARD_METRICS = {
   RATE_LIMITED: 'guard_rate_limited_total',
 } as const;
 
+// Metric names for shell configuration
+export const SHELL_METRICS = {
+  CONFIG_REQUEST: 'shell_config_request_total',
+  CONFIG_LATENCY: 'shell_config_latency_ms',
+  NAVIGATION_REQUEST: 'shell_navigation_request_total',
+  PREFERENCE_UPDATE: 'shell_preference_update_total',
+  CACHE_HIT: 'shell_cache_hit_total',
+  CACHE_MISS: 'shell_cache_miss_total',
+} as const;
+
+// SLO targets for shell configuration endpoints
+export const SHELL_SLOS = {
+  // Latency SLOs
+  CONFIG_LATENCY_P99_MS: 100,
+  CONFIG_LATENCY_P95_MS: 50,
+  NAVIGATION_LATENCY_P99_MS: 150,
+  NAVIGATION_LATENCY_P95_MS: 75,
+
+  // Availability SLOs
+  CONFIG_AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+} as const;
+
 export class MetricsService {
   /**
    * Record a counter metric
@@ -255,6 +280,88 @@ export class MetricsService {
     if (denials.role > GUARD_SLOS.MAX_ROLE_DENIED_RATE_PER_MINUTE) {
       violations.push(
         `Role denied rate ${denials.role}/min exceeds SLO ${GUARD_SLOS.MAX_ROLE_DENIED_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  /**
+   * Record shell config request
+   */
+  recordShellConfigRequest(endpoint: string, cached: boolean): void {
+    this.incrementCounter(SHELL_METRICS.CONFIG_REQUEST, { endpoint });
+    this.incrementCounter(cached ? SHELL_METRICS.CACHE_HIT : SHELL_METRICS.CACHE_MISS, { endpoint });
+  }
+
+  /**
+   * Record shell config latency
+   */
+  recordShellConfigLatency(endpoint: string, durationMs: number): void {
+    this.recordLatency(SHELL_METRICS.CONFIG_LATENCY, durationMs, { endpoint });
+  }
+
+  /**
+   * Record navigation request
+   */
+  recordNavigationRequest(authorized: boolean): void {
+    this.incrementCounter(SHELL_METRICS.NAVIGATION_REQUEST, { authorized: String(authorized) });
+  }
+
+  /**
+   * Record preference update
+   */
+  recordPreferenceUpdate(userType: 'user' | 'candidate'): void {
+    this.incrementCounter(SHELL_METRICS.PREFERENCE_UPDATE, { userType });
+  }
+
+  /**
+   * Get shell config P99 latency
+   */
+  getShellConfigP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === SHELL_METRICS.CONFIG_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get shell cache hit rate
+   */
+  getShellCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === SHELL_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === SHELL_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Check if shell SLOs are met
+   */
+  checkShellSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getShellConfigP99Latency();
+    if (p99Latency > SHELL_SLOS.CONFIG_LATENCY_P99_MS) {
+      violations.push(
+        `Shell config P99 latency ${p99Latency}ms exceeds SLO ${SHELL_SLOS.CONFIG_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getShellCacheHitRate();
+    if (cacheHitRate < SHELL_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `Shell cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${SHELL_SLOS.CACHE_HIT_RATE_MIN}%`
       );
     }
 
