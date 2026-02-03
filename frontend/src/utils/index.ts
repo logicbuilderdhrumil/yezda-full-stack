@@ -14,3 +14,4 @@ export {
   ErrorCodes,
   type ApiError,
 } from './errorHandler';
+export { cn } from './cn';
