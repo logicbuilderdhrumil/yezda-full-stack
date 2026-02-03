@@ -1,5 +1,6 @@
 import { useState, type ReactNode, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { validatePassword } from '@/utils/validation';
 import { AuthLayout } from './AuthLayout';
@@ -23,47 +24,51 @@ interface FormErrors {
   termsAccepted?: string;
 }
 
-function validateForm(data: FormData): FormErrors {
-  const errors: FormErrors = {};
+function useFormValidation(t: (key: string) => string) {
+  return (data: FormData): FormErrors => {
+    const errors: FormErrors = {};
 
-  if (!data.firstName.trim()) {
-    errors.firstName = 'First name is required';
-  }
+    if (!data.firstName.trim()) {
+      errors.firstName = t('auth.validation.firstNameRequired');
+    }
 
-  if (!data.lastName.trim()) {
-    errors.lastName = 'Last name is required';
-  }
+    if (!data.lastName.trim()) {
+      errors.lastName = t('auth.validation.lastNameRequired');
+    }
 
-  if (!data.email.trim()) {
-    errors.email = 'Email is required';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = 'Please enter a valid email address';
-  }
+    if (!data.email.trim()) {
+      errors.email = t('auth.validation.emailRequired');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      errors.email = t('auth.validation.emailInvalid');
+    }
 
-  const passwordError = validatePassword(data.password);
-  if (passwordError) {
-    errors.password = passwordError;
-  }
+    const passwordError = validatePassword(data.password);
+    if (passwordError) {
+      errors.password = passwordError;
+    }
 
-  if (!data.confirmPassword) {
-    errors.confirmPassword = 'Please confirm your password';
-  } else if (data.password !== data.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match';
-  }
+    if (!data.confirmPassword) {
+      errors.confirmPassword = t('auth.validation.confirmPasswordRequired');
+    } else if (data.password !== data.confirmPassword) {
+      errors.confirmPassword = t('auth.validation.passwordsMismatch');
+    }
 
-  if (!data.termsAccepted) {
-    errors.termsAccepted = 'You must accept the terms and conditions';
-  }
+    if (!data.termsAccepted) {
+      errors.termsAccepted = t('auth.validation.termsRequired');
+    }
 
-  return errors;
+    return errors;
+  };
 }
 
 /**
  * Sign-up page with registration form.
  */
 export function SignUpView(): ReactNode {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signUp, isLoading, error, clearError } = useAuth();
+  const validateForm = useFormValidation(t);
 
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -125,17 +130,17 @@ export function SignUpView(): ReactNode {
 
   return (
     <AuthLayout
-      title="Create an account"
-      subtitle="Start your screening journey today."
+      title={t('auth.signUpTitle')}
+      subtitle={t('auth.signUpSubtitle')}
     >
-      <LoadingOverlay isLoading={isLoading} message="Creating account...">
+      <LoadingOverlay isLoading={isLoading} message={t('auth.creatingAccount')}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                First name
+                {t('auth.firstNameLabel')}
               </label>
               <input
                 id="firstName"
@@ -149,7 +154,7 @@ export function SignUpView(): ReactNode {
                     ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                     : 'border-gray-300 focus:border-primary focus:ring-primary/20'
                 }`}
-                placeholder="John"
+                placeholder={t('auth.firstNamePlaceholder')}
               />
               {touched.firstName && formErrors.firstName && (
                 <p className="mt-1 text-xs text-red-600">{formErrors.firstName}</p>
@@ -158,7 +163,7 @@ export function SignUpView(): ReactNode {
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                Last name
+                {t('auth.lastNameLabel')}
               </label>
               <input
                 id="lastName"
@@ -172,7 +177,7 @@ export function SignUpView(): ReactNode {
                     ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                     : 'border-gray-300 focus:border-primary focus:ring-primary/20'
                 }`}
-                placeholder="Doe"
+                placeholder={t('auth.lastNamePlaceholder')}
               />
               {touched.lastName && formErrors.lastName && (
                 <p className="mt-1 text-xs text-red-600">{formErrors.lastName}</p>
@@ -182,7 +187,7 @@ export function SignUpView(): ReactNode {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {t('auth.emailLabel')}
             </label>
             <input
               id="email"
@@ -196,7 +201,7 @@ export function SignUpView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
             />
             {touched.email && formErrors.email && (
               <p className="mt-1 text-xs text-red-600">{formErrors.email}</p>
@@ -205,7 +210,7 @@ export function SignUpView(): ReactNode {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {t('auth.passwordLabel')}
             </label>
             <input
               id="password"
@@ -219,7 +224,7 @@ export function SignUpView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
             />
             {touched.password && formErrors.password && (
               <p className="mt-1 text-xs text-red-600">{formErrors.password}</p>
@@ -228,7 +233,7 @@ export function SignUpView(): ReactNode {
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm password
+              {t('auth.confirmPasswordLabel')}
             </label>
             <input
               id="confirmPassword"
@@ -242,7 +247,7 @@ export function SignUpView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
             />
             {touched.confirmPassword && formErrors.confirmPassword && (
               <p className="mt-1 text-xs text-red-600">{formErrors.confirmPassword}</p>
@@ -258,13 +263,13 @@ export function SignUpView(): ReactNode {
               className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             />
             <label htmlFor="terms" className="text-sm text-gray-600">
-              I agree to the{' '}
+              {t('auth.termsAgree')}{' '}
               <Link to="/terms" className="font-medium text-primary hover:text-primary/80">
-                Terms of Service
+                {t('auth.termsOfService')}
               </Link>{' '}
-              and{' '}
+              {t('auth.and')}{' '}
               <Link to="/privacy" className="font-medium text-primary hover:text-primary/80">
-                Privacy Policy
+                {t('auth.privacyPolicy')}
               </Link>
             </label>
           </div>
@@ -277,13 +282,13 @@ export function SignUpView(): ReactNode {
             disabled={isLoading}
             className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Create account
+            {t('auth.createAccount')}
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
+            {t('auth.hasAccount')}{' '}
             <Link to="/sign-in" className="font-medium text-primary hover:text-primary/80">
-              Sign in
+              {t('auth.signIn')}
             </Link>
           </p>
         </form>

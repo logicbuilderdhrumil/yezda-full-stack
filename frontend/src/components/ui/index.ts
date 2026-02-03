@@ -219,3 +219,6 @@ export {
   type PresenceIndicatorProps,
   type AvatarPresenceProps,
 } from './ConnectionStatus';
+
+// Language Selector
+export { LanguageSelector } from './LanguageSelector';

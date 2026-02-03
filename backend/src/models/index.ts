@@ -28,3 +28,4 @@ export {
 } from './socket.model.js';
 export * from './firebase.model.js';
 export * from './notification.model.js';
+export * from './oauth.model.js';

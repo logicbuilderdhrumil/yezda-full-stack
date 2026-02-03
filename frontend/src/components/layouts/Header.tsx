@@ -4,10 +4,12 @@
 
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Menu, Sun, Moon, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSidebar } from '@/context/SidebarContext';
 import { useThemeStore, selectResolvedTheme } from '@/store/themeStore';
+import { LanguageSelector } from '@/components/ui';
 import { cn } from '@/utils';
 
 interface HeaderProps {
@@ -19,6 +21,7 @@ interface HeaderProps {
  * Header component with app branding and user actions.
  */
 export function Header({ className }: HeaderProps): ReactNode {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const { toggleMobile, toggleCollapsed, isCollapsed } = useSidebar();
   const resolvedTheme = useThemeStore(selectResolvedTheme);
@@ -41,7 +44,7 @@ export function Header({ className }: HeaderProps): ReactNode {
           type="button"
           onClick={toggleMobile}
           className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          aria-label="Toggle mobile menu"
+          aria-label={t('common.toggleMobileMenu')}
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -51,7 +54,7 @@ export function Header({ className }: HeaderProps): ReactNode {
           type="button"
           onClick={toggleCollapsed}
           className="hidden lg:flex p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -61,11 +64,14 @@ export function Header({ className }: HeaderProps): ReactNode {
           to="/"
           className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100"
         >
-          <span className="text-xl">Yezda</span>
+          <span className="text-xl">{t('app.name')}</span>
         </Link>
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Language selector */}
+        <LanguageSelector />
+
         {/* Theme toggle */}
         <button
           type="button"
@@ -73,8 +79,8 @@ export function Header({ className }: HeaderProps): ReactNode {
           className="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
           aria-label={
             resolvedTheme === 'dark'
-              ? 'Switch to light mode'
-              : 'Switch to dark mode'
+              ? t('common.switchToLight')
+              : t('common.switchToDark')
           }
         >
           {resolvedTheme === 'dark' ? (
@@ -94,7 +100,7 @@ export function Header({ className }: HeaderProps): ReactNode {
               type="button"
               onClick={handleSignOut}
               className="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-              aria-label="Sign out"
+              aria-label={t('common.signOut')}
             >
               <LogOut className="h-5 w-5" />
             </button>

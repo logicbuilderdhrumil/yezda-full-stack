@@ -78,6 +78,19 @@ export const SHELL_METRICS = {
   CACHE_MISS: 'shell_cache_miss_total',
 } as const;
 
+// Metric names for OAuth operations
+export const OAUTH_METRICS = {
+  AUTHORIZE_INITIATED: 'oauth_authorize_initiated_total',
+  CALLBACK_SUCCESS: 'oauth_callback_success_total',
+  CALLBACK_FAILURE: 'oauth_callback_failure_total',
+  CALLBACK_LATENCY: 'oauth_callback_latency_ms',
+  TOKEN_REFRESH_SUCCESS: 'oauth_token_refresh_success_total',
+  TOKEN_REFRESH_FAILURE: 'oauth_token_refresh_failure_total',
+  TOKEN_REFRESH_LATENCY: 'oauth_token_refresh_latency_ms',
+  DISCONNECT: 'oauth_disconnect_total',
+  INVALID_STATE: 'oauth_invalid_state_total',
+} as const;
+
 // SLO targets for shell configuration endpoints
 export const SHELL_SLOS = {
   // Latency SLOs
@@ -116,6 +129,22 @@ export const FIREBASE_SLOS = {
 
   // Rate limiting SLOs
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 50,
+} as const;
+
+// SLO targets for OAuth endpoints
+export const OAUTH_SLOS = {
+  // Latency SLOs
+  CALLBACK_LATENCY_P99_MS: 2000,
+  CALLBACK_LATENCY_P95_MS: 1000,
+  TOKEN_REFRESH_LATENCY_P99_MS: 1000,
+  TOKEN_REFRESH_LATENCY_P95_MS: 500,
+
+  // Availability SLOs
+  CALLBACK_SUCCESS_RATE: 99.0,
+  TOKEN_REFRESH_SUCCESS_RATE: 99.5,
+
+  // Security SLOs
+  MAX_INVALID_STATE_RATE_PER_MINUTE: 50,
 } as const;
 
 export class MetricsService {
@@ -450,6 +479,76 @@ export class MetricsService {
   }
 
   /**
+   * Record OAuth operation
+   */
+  recordOAuthOperation(
+    operation: 'authorize' | 'callback' | 'refresh' | 'disconnect',
+    provider: string,
+    success: boolean,
+    durationMs?: number
+  ): void {
+    const labels = { provider, operation };
+
+    switch (operation) {
+      case 'authorize':
+        this.incrementCounter(OAUTH_METRICS.AUTHORIZE_INITIATED, labels);
+        break;
+      case 'callback':
+        this.incrementCounter(
+          success ? OAUTH_METRICS.CALLBACK_SUCCESS : OAUTH_METRICS.CALLBACK_FAILURE,
+          labels
+        );
+        if (durationMs !== undefined) {
+          this.recordLatency(OAUTH_METRICS.CALLBACK_LATENCY, durationMs, labels);
+        }
+        break;
+      case 'refresh':
+        this.incrementCounter(
+          success ? OAUTH_METRICS.TOKEN_REFRESH_SUCCESS : OAUTH_METRICS.TOKEN_REFRESH_FAILURE,
+          labels
+        );
+        if (durationMs !== undefined) {
+          this.recordLatency(OAUTH_METRICS.TOKEN_REFRESH_LATENCY, durationMs, labels);
+        }
+        break;
+      case 'disconnect':
+        this.incrementCounter(OAUTH_METRICS.DISCONNECT, labels);
+        break;
+    }
+  }
+
+  /**
+   * Get OAuth callback success rate
+   */
+  getOAuthCallbackSuccessRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const successes = recentMetrics.filter(
+      (m) => m.name === OAUTH_METRICS.CALLBACK_SUCCESS
+    ).length;
+    const failures = recentMetrics.filter(
+      (m) => m.name === OAUTH_METRICS.CALLBACK_FAILURE
+    ).length;
+    const total = successes + failures;
+    return total > 0 ? (successes / total) * 100 : 100;
+  }
+
+  /**
+   * Get OAuth callback P99 latency
+   */
+  getOAuthCallbackP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === OAUTH_METRICS.CALLBACK_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
    * Get Firebase dispatch success rate
    */
   getFirebaseDispatchSuccessRate(windowMs = 60000): number {
@@ -520,6 +619,32 @@ export class MetricsService {
     if (rateLimitHits > FIREBASE_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
       violations.push(
         `Firebase rate limit hits ${rateLimitHits}/min exceeds SLO ${FIREBASE_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  /**
+   * Check if OAuth SLOs are met
+   */
+  checkOAuthSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const successRate = this.getOAuthCallbackSuccessRate();
+    if (successRate < OAUTH_SLOS.CALLBACK_SUCCESS_RATE) {
+      violations.push(
+        `OAuth callback success rate ${successRate.toFixed(2)}% below SLO ${OAUTH_SLOS.CALLBACK_SUCCESS_RATE}%`
+      );
+    }
+
+    const p99Latency = this.getOAuthCallbackP99Latency();
+    if (p99Latency > OAUTH_SLOS.CALLBACK_LATENCY_P99_MS) {
+      violations.push(
+        `OAuth callback P99 latency ${p99Latency}ms exceeds SLO ${OAUTH_SLOS.CALLBACK_LATENCY_P99_MS}ms`
       );
     }
 
