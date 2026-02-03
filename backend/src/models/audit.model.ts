@@ -20,7 +20,10 @@ export type AuditEventType =
   | 'AUTH_ANOMALY_DETECTED'
   | 'GUARD_AUTH_DENIED'
   | 'GUARD_ROLE_DENIED'
-  | 'GUARD_ACCESS_GRANTED';
+  | 'GUARD_ACCESS_GRANTED'
+  | 'SHELL_PREFERENCE_UPDATED'
+  | 'SHELL_NAVIGATION_POLICY_UPDATED'
+  | 'SHELL_CONFIG_ACCESSED';
 
 export interface AuditEvent {
   id: string;
