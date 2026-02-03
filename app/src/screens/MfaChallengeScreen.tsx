@@ -55,7 +55,10 @@ function getMfaDescription(type: MfaChallengeType, hint?: string): string {
 
 export function MfaChallengeScreen() {
   const [code, setCode] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const inputRef = useRef<TextInput>(null);
+  const cooldownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const verifyMfa = useAuthStore((state) => state.verifyMfa);
   const signOut = useAuthStore((state) => state.signOut);
@@ -67,7 +70,28 @@ export function MfaChallengeScreen() {
   // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
+    return () => {
+      if (cooldownIntervalRef.current) {
+        clearInterval(cooldownIntervalRef.current);
+      }
+    };
   }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (code.length !== CODE_LENGTH || !pendingMfa || isLoading || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await verifyMfa({
+        challengeId: pendingMfa.challengeId,
+        code,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [code, pendingMfa, verifyMfa, isLoading, isSubmitting]);
 
   const handleCodeChange = useCallback(
     (value: string) => {
@@ -83,16 +107,34 @@ export function MfaChallengeScreen() {
     [error, clearError]
   );
 
-  const handleSubmit = useCallback(async () => {
-    if (code.length !== CODE_LENGTH || !pendingMfa) {
-      return;
+  // Auto-submit when all 6 digits are entered
+  useEffect(() => {
+    if (code.length === CODE_LENGTH && pendingMfa && !isLoading && !isSubmitting) {
+      handleSubmit();
     }
+  }, [code, pendingMfa, isLoading, isSubmitting, handleSubmit]);
 
-    await verifyMfa({
-      challengeId: pendingMfa.challengeId,
-      code,
-    });
-  }, [code, pendingMfa, verifyMfa]);
+  const handleResendCode = useCallback(async () => {
+    if (resendCooldown > 0 || !pendingMfa) return;
+
+    // Start cooldown timer (60 seconds)
+    setResendCooldown(60);
+    cooldownIntervalRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownIntervalRef.current) {
+            clearInterval(cooldownIntervalRef.current);
+            cooldownIntervalRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // TODO: Call resend API when backend adds support
+    // For now, just show the cooldown timer
+  }, [resendCooldown, pendingMfa]);
 
   const handleCancel = useCallback(async () => {
     await signOut();
@@ -122,7 +164,10 @@ export function MfaChallengeScreen() {
 
         {/* Error Banner */}
         {error && (
-          <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <View 
+            className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+            accessibilityRole="alert"
+          >
             <Text className="text-red-700 text-sm text-center">{error}</Text>
           </View>
         )}
@@ -174,6 +219,21 @@ export function MfaChallengeScreen() {
               : "Didn't receive a code? Wait a few moments and check your spam folder. If you still don't see it, contact support."}
           </Text>
         </View>
+
+        {/* Resend Code Button (SMS/Email only) */}
+        {(pendingMfa.type === 'sms' || pendingMfa.type === 'email') && (
+          <TouchableOpacity
+            className="mt-4"
+            onPress={handleResendCode}
+            disabled={resendCooldown > 0 || isLoading}
+            accessibilityRole="button"
+            accessibilityLabel={resendCooldown > 0 ? `Resend code available in ${resendCooldown} seconds` : 'Resend code'}
+          >
+            <Text className={`text-center text-sm ${resendCooldown > 0 ? 'text-gray-400' : 'text-blue-600'}`}>
+              {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Cancel Link */}
         <TouchableOpacity

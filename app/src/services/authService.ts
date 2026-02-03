@@ -13,39 +13,11 @@ import {
 } from '../types/auth.types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
 
 interface ApiError {
   code: string;
   message: string;
-}
-
-/**
- * Generic fetch wrapper with error handling.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    const errorData: ApiError = await response.json().catch(() => ({
-      code: 'UNKNOWN_ERROR',
-      message: authErrorMessages.unknownError,
-    }));
-    throw new AuthApiError(errorData.code, errorData.message, response.status);
-  }
-
-  return response.json();
 }
 
 /**
@@ -59,6 +31,54 @@ export class AuthApiError extends Error {
   ) {
     super(message);
     this.name = 'AuthApiError';
+  }
+}
+
+/**
+ * Generic fetch wrapper with error handling and timeout.
+ */
+async function apiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  timeoutMs: number = REQUEST_TIMEOUT_MS
+): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const errorData: ApiError = await response.json().catch(() => ({
+        code: 'UNKNOWN_ERROR',
+        message: authErrorMessages.unknownError,
+      }));
+      throw new AuthApiError(errorData.code, errorData.message, response.status);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new AuthApiError(
+        'REQUEST_TIMEOUT',
+        authErrorMessages.networkError,
+        0
+      );
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

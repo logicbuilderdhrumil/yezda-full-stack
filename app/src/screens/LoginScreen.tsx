@@ -70,6 +70,8 @@ export function LoginScreen() {
   );
 
   const handleSubmit = useCallback(async () => {
+    if (isLoading) return; // Guard against concurrent submissions
+
     // Mark all fields as touched
     setTouched({ email: true, password: true });
 
@@ -109,7 +111,10 @@ export function LoginScreen() {
 
         {/* Error Banner */}
         {error && (
-          <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <View 
+            className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+            accessibilityRole="alert"
+          >
             <Text className="text-red-700 text-sm text-center">{error}</Text>
           </View>
         )}

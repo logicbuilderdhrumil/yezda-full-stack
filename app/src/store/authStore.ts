@@ -30,6 +30,8 @@ import {
 interface AuthState extends AuthSession {
   error: string | null;
   pendingMfaChallenge: MfaChallenge | null;
+  failedAttempts: number;
+  lastFailedAttempt: number | null;
 
   // Actions
   bootstrap: () => Promise<void>;
@@ -40,6 +42,34 @@ interface AuthState extends AuthSession {
   clearError: () => void;
 }
 
+/**
+ * Calculate backoff delay based on failed attempts.
+ * Uses exponential backoff: 1s, 2s, 4s, 8s, 16s max.
+ */
+function getBackoffDelay(failedAttempts: number): number {
+  const baseDelay = 1000; // 1 second
+  const maxDelay = 16000; // 16 seconds
+  return Math.min(baseDelay * Math.pow(2, failedAttempts - 1), maxDelay);
+}
+
+/**
+ * Check if rate limited based on failed attempts and last failure time.
+ */
+function isRateLimited(failedAttempts: number, lastFailedAttempt: number | null): { limited: boolean; remainingMs: number } {
+  if (failedAttempts === 0 || !lastFailedAttempt) {
+    return { limited: false, remainingMs: 0 };
+  }
+  
+  const backoffDelay = getBackoffDelay(failedAttempts);
+  const timeSinceLastFail = Date.now() - lastFailedAttempt;
+  const remainingMs = backoffDelay - timeSinceLastFail;
+  
+  return {
+    limited: remainingMs > 0,
+    remainingMs: Math.max(0, remainingMs),
+  };
+}
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   // Initial state
   user: null,
@@ -48,6 +78,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
   error: null,
   pendingMfaChallenge: null,
+  failedAttempts: 0,
+  lastFailedAttempt: null,
 
   /**
    * Bootstrap: check for stored tokens and restore session on app launch.
@@ -90,8 +122,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   /**
    * Sign in with credentials.
    * Returns true on success, false if MFA is required or on error.
+   * Includes client-side rate limiting with exponential backoff.
    */
   signIn: async (request: SignInRequest) => {
+    const { failedAttempts, lastFailedAttempt } = get();
+    
+    // Check rate limiting
+    const { limited, remainingMs } = isRateLimited(failedAttempts, lastFailedAttempt);
+    if (limited) {
+      const seconds = Math.ceil(remainingMs / 1000);
+      set({ error: `Too many attempts. Please wait ${seconds} seconds before trying again.` });
+      return false;
+    }
+
     set({ isLoading: true, error: null, pendingMfaChallenge: null });
 
     try {
@@ -102,6 +145,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({
           isLoading: false,
           pendingMfaChallenge: response.mfaChallenge,
+          failedAttempts: 0, // Reset on valid credentials
+          lastFailedAttempt: null,
         });
         return false;
       }
@@ -114,6 +159,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user: response.user,
           isAuthenticated: true,
           isLoading: false,
+          failedAttempts: 0,
+          lastFailedAttempt: null,
         });
         return true;
       }
@@ -125,7 +172,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         error instanceof AuthApiError
           ? error.message
           : 'An unexpected error occurred';
-      set({ isLoading: false, error: message });
+      
+      // Track failed attempt for rate limiting
+      set({
+        isLoading: false,
+        error: message,
+        failedAttempts: failedAttempts + 1,
+        lastFailedAttempt: Date.now(),
+      });
       return false;
     }
   },
