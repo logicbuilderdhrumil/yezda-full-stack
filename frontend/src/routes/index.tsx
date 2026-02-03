@@ -1,5 +1,10 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
+import {
+  ProtectedRoute,
+  AccessDeniedView,
+  NotFoundView,
+} from '@/components/route';
 
 /**
  * Placeholder home component for authenticated users.
@@ -21,9 +26,21 @@ function HomePage() {
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <HomePage />,
+    element: (
+      <ProtectedRoute>
+        <HomePage />
+      </ProtectedRoute>
+    ),
   },
   ...authRoutes,
+  {
+    path: '/access-denied',
+    element: <AccessDeniedView />,
+  },
+  {
+    path: '*',
+    element: <NotFoundView />,
+  },
 ];
 
 /**
