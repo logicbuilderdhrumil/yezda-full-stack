@@ -23,7 +23,6 @@ import { cacheGet, cacheSet } from '../db/redis.js';
 
 // Cache TTL constants
 const SHELL_CONFIG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const NAVIGATION_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
 const PREFERENCES_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 // Cache key prefixes

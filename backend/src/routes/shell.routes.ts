@@ -5,7 +5,7 @@
 
 import { Router } from 'express';
 import * as shellController from '../controllers/shell.controller.js';
-import { requireAuth, optionalAuth } from '../middleware/auth.middleware.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 import { shellConfigRateLimiter } from '../middleware/rate-limit.middleware.js';
 
 const router = Router();
