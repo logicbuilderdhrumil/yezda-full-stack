@@ -5,6 +5,7 @@
 
 import type { Request, Response } from 'express';
 import { oauthService } from '../services/oauth.service.js';
+import { oauthRepository } from '../repositories/oauth.repository.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import type { OAuthProvider } from '../models/oauth.model.js';
 
@@ -260,18 +261,19 @@ export async function refreshIntegrationToken(req: AuthenticatedRequest, res: Re
   }
 
   // Get current token
-  const status = await oauthService.getIntegrationStatus(
-    tenantId,
-    req.user.sub,
-    req.user.type,
-    provider
-  );
+  const token = await oauthRepository.findToken(tenantId, req.user.sub, req.user.type, provider);
 
-  if (!status.connected) {
+  if (!token) {
     res.status(404).json({ error: 'Integration not found', code: 'NOT_CONNECTED' });
     return;
   }
 
-  // This is a simplified version - in production you'd need to get the token ID
-  res.status(200).json({ message: 'Token refresh initiated' });
+  const result = await oauthService.refreshToken(token.id);
+
+  if (!result.success) {
+    res.status(400).json({ error: result.error, code: 'REFRESH_FAILED' });
+    return;
+  }
+
+  res.status(200).json({ message: 'Token refreshed successfully' });
 }
