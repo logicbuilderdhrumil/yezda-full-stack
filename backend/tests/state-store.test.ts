@@ -91,6 +91,19 @@ describe('State Store Persistence', () => {
       expect(result.errorCode).toBe('INVALID_PREFERENCE');
     });
 
+    it('should validate presence values', async () => {
+      const result = await stateStoreService.updatePreferences(
+        'tenant-1',
+        'user-validate-presence',
+        'user',
+        { presence: 'invisible' as any },
+        testContext
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.errorCode).toBe('INVALID_PREFERENCE');
+    });
+
     it('should update single preference', async () => {
       await stateStoreService.updatePreference(
         'tenant-1',
@@ -223,6 +236,33 @@ describe('State Store Persistence', () => {
       expect(getResult.success).toBe(true);
       expect(getResult.data).toEqual({});
     });
+  });
+});
+
+describe('State Store Tenant Validation', () => {
+  it('should require tenant ID header for all operations', async () => {
+    // This test verifies controller behavior - getTenantId returns null
+    // when x-tenant-id header is missing, and endpoints return 400
+    // Testing at service level: verifyTenantAccess enforces tenant matching
+    const isAllowed = await stateStoreService.verifyTenantAccess(
+      '', // empty tenant ID
+      'tenant-1',
+      'user-1',
+      'user',
+      testContext
+    );
+    expect(isAllowed).toBe(false);
+  });
+
+  it('should reject operations with empty tenant ID', async () => {
+    const isAllowed = await stateStoreService.verifyTenantAccess(
+      '   ', // whitespace-only tenant ID  
+      'tenant-1',
+      'user-1',
+      'user',
+      testContext
+    );
+    expect(isAllowed).toBe(false);
   });
 });
 

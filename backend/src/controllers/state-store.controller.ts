@@ -4,9 +4,39 @@
  */
 
 import type { Response } from 'express';
+import { z } from 'zod';
 import { stateStoreService } from '../services/state-store.service.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import type { PreferenceKey, UserPreferences, SessionState } from '../models/state-store.model.js';
+
+/** Maximum size for state values (64KB) */
+const MAX_VALUE_SIZE_BYTES = 64 * 1024;
+
+/**
+ * Zod schemas for input validation
+ */
+const preferencesSchema = z.object({
+  theme: z.enum(['light', 'dark', 'system']).optional(),
+  locale: z.string().min(2).max(10).optional(),
+  presence: z.enum(['online', 'away', 'busy', 'offline']).optional(),
+}).refine(
+  (data) => JSON.stringify(data).length <= MAX_VALUE_SIZE_BYTES,
+  { message: 'Preferences value exceeds maximum size (64KB)' }
+);
+
+const sessionStateSchema = z.object({
+  currentView: z.string().max(512).optional(),
+  unsavedChanges: z.boolean().optional(),
+  customData: z.record(z.unknown()).optional(),
+  lastActivity: z.coerce.date().optional(),
+}).refine(
+  (data) => JSON.stringify(data).length <= MAX_VALUE_SIZE_BYTES,
+  { message: 'Session state value exceeds maximum size (64KB)' }
+);
+
+const preferenceValueSchema = z.object({
+  value: z.string().min(1).max(255),
+});
 
 /**
  * Get client context from request
@@ -20,11 +50,15 @@ function getClientContext(req: AuthenticatedRequest) {
 
 /**
  * Get tenant ID from request
- * In a full implementation, this would come from the authenticated user's organization
- * For now, we use a header or default
+ * Tenant ID is required for all state store operations to ensure proper data isolation.
+ * Returns null if not provided - callers must handle missing tenant context.
  */
-function getTenantId(req: AuthenticatedRequest): string {
-  return req.get('x-tenant-id') || 'default-tenant';
+function getTenantId(req: AuthenticatedRequest): string | null {
+  const tenantId = req.get('x-tenant-id');
+  if (!tenantId || tenantId.trim() === '') {
+    return null;
+  }
+  return tenantId.trim();
 }
 
 /**
@@ -38,6 +72,11 @@ export async function getPreferences(req: AuthenticatedRequest, res: Response): 
   }
 
   const tenantId = getTenantId(req);
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
+    return;
+  }
+
   const context = getClientContext(req);
 
   const result = await stateStoreService.getPreferences(
@@ -66,14 +105,21 @@ export async function updatePreferences(req: AuthenticatedRequest, res: Response
   }
 
   const tenantId = getTenantId(req);
-  const context = getClientContext(req);
-  const preferences: Partial<UserPreferences> = req.body;
-
-  // Validate request body
-  if (!preferences || typeof preferences !== 'object') {
-    res.status(400).json({ error: 'Invalid preferences object', code: 'INVALID_INPUT' });
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
     return;
   }
+
+  const context = getClientContext(req);
+
+  // Validate request body with Zod schema
+  const parseResult = preferencesSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    const errorMessage = parseResult.error.errors[0]?.message || 'Invalid preferences object';
+    res.status(400).json({ error: errorMessage, code: 'INVALID_INPUT' });
+    return;
+  }
+  const preferences: Partial<UserPreferences> = parseResult.data;
 
   const result = await stateStoreService.updatePreferences(
     tenantId,
@@ -103,9 +149,13 @@ export async function updatePreference(req: AuthenticatedRequest, res: Response)
   }
 
   const tenantId = getTenantId(req);
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
+    return;
+  }
+
   const context = getClientContext(req);
   const key = req.params.key as PreferenceKey;
-  const { value } = req.body;
 
   // Validate key
   if (!['theme', 'locale', 'presence'].includes(key)) {
@@ -113,11 +163,13 @@ export async function updatePreference(req: AuthenticatedRequest, res: Response)
     return;
   }
 
-  // Validate value
-  if (typeof value !== 'string') {
-    res.status(400).json({ error: 'Value must be a string', code: 'INVALID_VALUE' });
+  // Validate value with Zod
+  const parseResult = preferenceValueSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    res.status(400).json({ error: 'Value must be a non-empty string (max 255 chars)', code: 'INVALID_VALUE' });
     return;
   }
+  const { value } = parseResult.data;
 
   const result = await stateStoreService.updatePreference(
     tenantId,
@@ -148,6 +200,11 @@ export async function getSessionState(req: AuthenticatedRequest, res: Response):
   }
 
   const tenantId = getTenantId(req);
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
+    return;
+  }
+
   const context = getClientContext(req);
 
   const result = await stateStoreService.getSessionState(
@@ -176,14 +233,21 @@ export async function updateSessionState(req: AuthenticatedRequest, res: Respons
   }
 
   const tenantId = getTenantId(req);
-  const context = getClientContext(req);
-  const sessionState: Partial<SessionState> = req.body;
-
-  // Validate request body
-  if (!sessionState || typeof sessionState !== 'object') {
-    res.status(400).json({ error: 'Invalid session state object', code: 'INVALID_INPUT' });
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
     return;
   }
+
+  const context = getClientContext(req);
+
+  // Validate request body with Zod schema
+  const parseResult = sessionStateSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    const errorMessage = parseResult.error.errors[0]?.message || 'Invalid session state object';
+    res.status(400).json({ error: errorMessage, code: 'INVALID_INPUT' });
+    return;
+  }
+  const sessionState: Partial<SessionState> = parseResult.data;
 
   const result = await stateStoreService.updateSessionState(
     tenantId,
@@ -212,6 +276,11 @@ export async function getUserState(req: AuthenticatedRequest, res: Response): Pr
   }
 
   const tenantId = getTenantId(req);
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
+    return;
+  }
+
   const context = getClientContext(req);
 
   const result = await stateStoreService.getUserState(
@@ -240,6 +309,11 @@ export async function clearUserState(req: AuthenticatedRequest, res: Response): 
   }
 
   const tenantId = getTenantId(req);
+  if (!tenantId) {
+    res.status(400).json({ error: 'Tenant context required', code: 'MISSING_TENANT' });
+    return;
+  }
+
   const context = getClientContext(req);
 
   const result = await stateStoreService.clearUserState(
