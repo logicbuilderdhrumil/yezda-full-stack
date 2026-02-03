@@ -1,0 +1,13 @@
+## 1. Implementation
+- [ ] 1.1 Define candidate data model and table columns
+- [ ] 1.2 Build candidate list with search, filters, and status badges
+- [ ] 1.3 Build candidate create form with validation
+- [ ] 1.4 Build candidate edit form with prefilled data
+- [ ] 1.5 Build candidate details view with tabs/sections
+- [ ] 1.6 Implement bulk-create UI and file upload handling
+- [ ] 1.7 Implement bulk-create API integration and results summary
+- [ ] 1.8 Implement candidate submission form route and layout
+- [ ] 1.9 Implement certified candidates list view
+- [ ] 1.10 Implement archived candidates list view
+- [ ] 1.11 Add role-based access for candidate routes
+- [ ] 1.12 Wire CandidatesService methods and error states

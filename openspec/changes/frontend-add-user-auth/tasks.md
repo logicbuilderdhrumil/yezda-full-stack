@@ -1,0 +1,13 @@
+## 1. Implementation
+- [ ] 1.1 Define auth routes (sign-in, sign-up, forgot, reset, candidate reset, TOTP)
+- [ ] 1.2 Build sign-in form with validation and error states
+- [ ] 1.3 Build sign-up form with validation and terms acceptance
+- [ ] 1.4 Build forgot-password form and success confirmation state
+- [ ] 1.5 Build password reset form with token handling
+- [ ] 1.6 Build candidate password reset form
+- [ ] 1.7 Build TOTP verification form with retry and error handling
+- [ ] 1.8 Implement AuthService API methods (sign-in, sign-up, reset, verify)
+- [ ] 1.9 Implement AuthContext and useAuth hook for session state
+- [ ] 1.10 Persist session tokens and user profile in client state
+- [ ] 1.11 Add auth route guards and redirect behavior
+- [ ] 1.12 Add loading and error UX for auth actions

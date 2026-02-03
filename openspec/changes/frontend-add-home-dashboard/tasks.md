@@ -1,0 +1,11 @@
+## 1. Implementation
+- [ ] 1.1 Define dashboard metric data model and API contract
+- [ ] 1.2 Add dashboard route and navigation entry
+- [ ] 1.3 Build dashboard layout grid with responsive breakpoints
+- [ ] 1.4 Implement KPI card component (title, value, delta)
+- [ ] 1.5 Implement chart widget container and header controls
+- [ ] 1.6 Implement activity feed list with timestamps
+- [ ] 1.7 Implement data fetch hook with caching
+- [ ] 1.8 Add loading, empty, and error states per widget
+- [ ] 1.9 Add role-based visibility for widgets if needed
+- [ ] 1.10 Add refresh action and last-updated timestamp

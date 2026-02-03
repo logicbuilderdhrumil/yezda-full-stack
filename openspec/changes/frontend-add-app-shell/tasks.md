@@ -1,0 +1,15 @@
+## 1. Implementation
+- [ ] 1.1 Scaffold app entry (main.tsx) with router and providers
+- [ ] 1.2 Create base layout components (AppShell, Header, Sidebar, PageContainer)
+- [ ] 1.3 Implement responsive sidebar behavior (collapse/expand)
+- [ ] 1.4 Add navigation config schema and icon mapping
+- [ ] 1.5 Render navigation tree with active route state
+- [ ] 1.6 Implement role-based filtering for navigation items
+- [ ] 1.7 Define public and protected route arrays
+- [ ] 1.8 Add lazy-loaded route components with Suspense fallback
+- [ ] 1.9 Implement route guard for auth and authority checks
+- [ ] 1.10 Add access-denied route and page container overrides
+- [ ] 1.11 Implement theme store and ThemeProvider
+- [ ] 1.12 Implement locale store and I18nProvider
+- [ ] 1.13 Wire global styles (Tailwind base + custom CSS)
+- [ ] 1.14 Add loading component used by Suspense

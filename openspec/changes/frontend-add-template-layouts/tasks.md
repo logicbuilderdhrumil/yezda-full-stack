@@ -1,0 +1,11 @@
+## 1. Implementation
+- [ ] 1.1 Implement header layout, logo, and branding slots
+- [ ] 1.2 Implement desktop side navigation
+- [ ] 1.3 Implement mobile nav drawer and toggles
+- [ ] 1.4 Implement footer and page container wrappers
+- [ ] 1.5 Implement global search input (optional)
+- [ ] 1.6 Implement user profile dropdown menu
+- [ ] 1.7 Implement notification dropdown UI
+- [ ] 1.8 Implement theme configurator panel
+- [ ] 1.9 Implement language selector dropdown
+- [ ] 1.10 Wire layout components into AppShell

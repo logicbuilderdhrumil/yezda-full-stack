@@ -1,0 +1,11 @@
+## 1. Implementation
+- [ ] 1.1 Define form schema and field types
+- [ ] 1.2 Build forms list view with search and filters
+- [ ] 1.3 Build form create screen with metadata fields
+- [ ] 1.4 Build form edit screen with prefilled schema
+- [ ] 1.5 Implement form builder canvas and field palette
+- [ ] 1.6 Add field configuration panel (label, type, required, options)
+- [ ] 1.7 Add validation rules per field type
+- [ ] 1.8 Implement form preview and save actions
+- [ ] 1.9 Implement FormService list/create/update/get methods
+- [ ] 1.10 Wire submission and error handling
