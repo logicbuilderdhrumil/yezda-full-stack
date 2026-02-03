@@ -2,6 +2,7 @@ export * from './auth.model.js';
 export * from './audit.model.js';
 export * from './state-store.model.js';
 export * from './shell.model.js';
+export * from './localization.model.js';
 // Exclude PresenceStatus from socket.model (already exported from state-store.model)
 export {
   SOCKET_NAMESPACES,

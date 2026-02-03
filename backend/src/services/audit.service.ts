@@ -529,6 +529,100 @@ export class AuditService {
       errorMessage: params.errorMessage,
     });
   }
+
+  // Task 1.6: Localization audit logging methods
+
+  /**
+   * Log locale preference update
+   */
+  logLocalePreferenceUpdated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    previousLocale: string;
+    newLocale: string;
+    changes: Record<string, unknown>;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'LOCALE_PREFERENCE_UPDATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        tenantId: params.tenantId,
+        previousLocale: params.previousLocale,
+        newLocale: params.newLocale,
+        changes: params.changes,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log locale update denied (cross-user attempt)
+   */
+  logLocaleUpdateDenied(params: {
+    actorId: string;
+    actorType: 'user' | 'candidate';
+    targetUserId: string;
+    targetUserType: 'user' | 'candidate';
+    tenantId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+    userAgent?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'LOCALE_UPDATE_DENIED',
+      actorId: params.actorId,
+      actorType: params.actorType,
+      targetId: params.targetUserId,
+      targetType: params.targetUserType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+      metadata: {
+        tenantId: params.tenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log translation resource access
+   */
+  logTranslationAccess(params: {
+    userId?: string;
+    userType: 'user' | 'candidate';
+    tenantId?: string;
+    locale: string;
+    namespaces: string[];
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'TRANSLATION_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        locale: params.locale,
+        namespaces: params.namespaces,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
 }
 
 export const auditService = new AuditService();

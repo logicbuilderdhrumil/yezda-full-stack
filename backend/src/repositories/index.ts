@@ -11,3 +11,4 @@ export * from './audit-log.repository.js';
 export * from './state-store.repository.js';
 export * from './device-token.repository.js';
 export * from './notification.repository.js';
+export * from './locale-preference.repository.js';

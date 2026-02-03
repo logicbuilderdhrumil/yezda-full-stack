@@ -46,7 +46,11 @@ export type AuditEventType =
   | 'NOTIFICATION_LIST_ACCESSED'
   | 'NOTIFICATION_READ'
   | 'NOTIFICATION_UNREAD'
-  | 'NOTIFICATION_BATCH_READ';
+  | 'NOTIFICATION_BATCH_READ'
+  // Localization-related audit events
+  | 'LOCALE_PREFERENCE_UPDATED'
+  | 'LOCALE_UPDATE_DENIED'
+  | 'TRANSLATION_ACCESSED';
 
 export interface AuditEvent {
   id: string;
