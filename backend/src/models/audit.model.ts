@@ -48,6 +48,10 @@ export type AuditEventType =
   | 'NOTIFICATION_READ'
   | 'NOTIFICATION_UNREAD'
   | 'NOTIFICATION_BATCH_READ'
+  // Localization-related audit events
+  | 'LOCALE_PREFERENCE_UPDATED'
+  | 'LOCALE_UPDATE_DENIED'
+  | 'TRANSLATION_ACCESSED'
   // OAuth-related audit events
   | 'OAUTH_AUTHORIZE_INITIATED'
   | 'OAUTH_CALLBACK_SUCCESS'

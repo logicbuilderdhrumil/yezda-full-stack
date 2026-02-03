@@ -131,6 +131,33 @@ export const FIREBASE_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 50,
 } as const;
 
+// Task 1.8: Metric names for localization
+export const LOCALIZATION_METRICS = {
+  PREFERENCE_READ: 'localization_preference_read_total',
+  PREFERENCE_UPDATE: 'localization_preference_update_total',
+  TRANSLATION_REQUEST: 'localization_translation_request_total',
+  REQUEST_LATENCY: 'localization_request_latency_ms',
+  CACHE_HIT: 'localization_cache_hit_total',
+  CACHE_MISS: 'localization_cache_miss_total',
+  RATE_LIMIT_HIT: 'localization_rate_limit_hit_total',
+} as const;
+
+// Task 1.8: SLO targets for localization endpoints
+export const LOCALIZATION_SLOS = {
+  // Latency SLOs
+  REQUEST_LATENCY_P99_MS: 100,
+  REQUEST_LATENCY_P95_MS: 50,
+
+  // Availability SLOs
+  AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 100,
+} as const;
+
 // SLO targets for OAuth endpoints
 export const OAUTH_SLOS = {
   // Latency SLOs
@@ -669,6 +696,107 @@ export class MetricsService {
    */
   clearAll(): void {
     metrics.length = 0;
+  }
+
+  // Task 1.8: Localization metrics methods
+
+  /**
+   * Record localization request
+   */
+  recordLocalizationRequest(operation: string, success: boolean, durationMs: number): void {
+    this.recordLatency(LOCALIZATION_METRICS.REQUEST_LATENCY, durationMs, { operation });
+    this.incrementCounter(
+      operation === 'preference_update'
+        ? LOCALIZATION_METRICS.PREFERENCE_UPDATE
+        : operation === 'preference_read'
+        ? LOCALIZATION_METRICS.PREFERENCE_READ
+        : LOCALIZATION_METRICS.TRANSLATION_REQUEST,
+      { success: String(success) }
+    );
+  }
+
+  /**
+   * Record localization cache hit
+   */
+  recordLocalizationCacheHit(): void {
+    this.incrementCounter(LOCALIZATION_METRICS.CACHE_HIT);
+  }
+
+  /**
+   * Record localization cache miss
+   */
+  recordLocalizationCacheMiss(): void {
+    this.incrementCounter(LOCALIZATION_METRICS.CACHE_MISS);
+  }
+
+  /**
+   * Get localization P99 latency
+   */
+  getLocalizationP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === LOCALIZATION_METRICS.REQUEST_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get localization cache hit rate
+   */
+  getLocalizationCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === LOCALIZATION_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === LOCALIZATION_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Get localization rate limit hit count
+   */
+  getLocalizationRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === LOCALIZATION_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if localization SLOs are met
+   */
+  checkLocalizationSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getLocalizationP99Latency();
+    if (p99Latency > LOCALIZATION_SLOS.REQUEST_LATENCY_P99_MS) {
+      violations.push(
+        `Localization P99 latency ${p99Latency}ms exceeds SLO ${LOCALIZATION_SLOS.REQUEST_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getLocalizationCacheHitRate();
+    if (cacheHitRate < LOCALIZATION_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `Localization cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${LOCALIZATION_SLOS.CACHE_HIT_RATE_MIN}%`
+      );
+    }
+
+    const rateLimitHits = this.getLocalizationRateLimitHitCount();
+    if (rateLimitHits > LOCALIZATION_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `Localization rate limit hits ${rateLimitHits}/min exceeds SLO ${LOCALIZATION_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
   }
 }
 
