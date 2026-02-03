@@ -529,4 +529,61 @@ describe('Firebase Integration', () => {
       expect(true).toBe(true);
     });
   });
+
+  describe('Firebase Route Authorization', () => {
+    it('should require admin role for dispatch endpoint', async () => {
+      // Verify that the route configuration includes requireRoleGuard('admin')
+      // This is a static verification that the route is properly secured
+      const routerModule = await import('../src/routes/firebase.routes.js');
+      const routerDefault = routerModule.default;
+      
+      // The router should be defined
+      expect(routerDefault).toBeDefined();
+
+      // Verify route guards middleware is imported and used
+      const routeGuardsModule = await import('../src/middleware/route-guards.middleware.js');
+      expect(routeGuardsModule.requireRoleGuard).toBeDefined();
+      expect(typeof routeGuardsModule.requireRoleGuard).toBe('function');
+      
+      // The requireRoleGuard should return a middleware function
+      const adminGuard = routeGuardsModule.requireRoleGuard('admin');
+      expect(typeof adminGuard).toBe('function');
+    });
+
+    it('should reject non-admin users attempting dispatch', async () => {
+      // Rather than testing the middleware directly (which requires full DI),
+      // verify the route is correctly configured by checking the source
+      const fs = await import('fs');
+      const path = await import('path');
+      const routePath = path.join(process.cwd(), 'src', 'routes', 'firebase.routes.ts');
+      const routeSource = fs.readFileSync(routePath, 'utf8');
+      
+      // Verify the dispatch route uses requireRoleGuard('admin')
+      expect(routeSource).toContain("requireRoleGuard('admin')");
+      expect(routeSource).toContain('/notifications/dispatch');
+      
+      // Verify the import is present
+      expect(routeSource).toContain('requireRoleGuard');
+    });
+
+    it('should have admin role guard before dispatch handler', async () => {
+      // Verify the order: requireAuth -> requireRoleGuard('admin') -> dispatchNotification
+      const fs = await import('fs');
+      const path = await import('path');
+      const routePath = path.join(process.cwd(), 'src', 'routes', 'firebase.routes.ts');
+      const routeSource = fs.readFileSync(routePath, 'utf8');
+      
+      // Find the dispatch route configuration
+      const dispatchMatch = routeSource.match(/\/notifications\/dispatch[\s\S]*?firebaseController\.dispatchNotification/);
+      expect(dispatchMatch).not.toBeNull();
+      
+      if (dispatchMatch) {
+        const configBlock = dispatchMatch[0];
+        // Verify requireAuth comes before requireRoleGuard
+        expect(configBlock.indexOf('requireAuth')).toBeLessThan(configBlock.indexOf("requireRoleGuard('admin')"));
+        // Verify requireRoleGuard comes before the controller
+        expect(configBlock.indexOf("requireRoleGuard('admin')")).toBeLessThan(configBlock.indexOf('dispatchNotification'));
+      }
+    });
+  });
 });

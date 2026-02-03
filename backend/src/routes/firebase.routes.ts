@@ -8,6 +8,7 @@
 import { Router } from 'express';
 import * as firebaseController from '../controllers/firebase.controller.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireRoleGuard } from '../middleware/route-guards.middleware.js';
 import {
   firebaseTokenRateLimiter,
   firebaseDispatchRateLimiter,
@@ -51,10 +52,11 @@ router.get(
   firebaseController.getActiveDeviceTokens
 );
 
-// Notification dispatch endpoint (require authentication)
+// Notification dispatch endpoint (admin only)
 router.post(
   '/notifications/dispatch',
   requireAuth,
+  requireRoleGuard('admin'),
   firebaseDispatchRateLimiter,
   validateBody(notificationDispatchSchema),
   firebaseController.dispatchNotification

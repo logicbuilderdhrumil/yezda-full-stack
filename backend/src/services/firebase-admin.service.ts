@@ -130,7 +130,7 @@ export class FirebaseAdminService {
 
       if (this.mockMode) {
         // In mock mode, simulate successful send
-        const mockMessageId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const mockMessageId = `mock-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
         
         console.log('[Firebase Mock] Would send notification:', {
           token: deviceToken.substring(0, 20) + '...',
@@ -241,7 +241,7 @@ export class FirebaseAdminService {
    * Verify a Firebase ID token (for authentication)
    * Returns decoded token claims or null if invalid
    */
-  async verifyIdToken(idToken: string): Promise<{
+  async verifyIdToken(_idToken: string): Promise<{
     uid: string;
     email?: string;
     emailVerified?: boolean;
@@ -251,6 +251,7 @@ export class FirebaseAdminService {
       if (this.mockMode) {
         // In mock mode, decode the token as if it were valid
         // This is only for development/testing
+        // Note: _idToken would be verified via Firebase Admin SDK in production
         console.warn('[Firebase Mock] Token verification in mock mode - returning mock claims');
         return {
           uid: `mock-uid-${Date.now()}`,
@@ -260,6 +261,7 @@ export class FirebaseAdminService {
       }
 
       // In production, actual Firebase SDK verification would go here
+      // firebase.auth().verifyIdToken(_idToken)
       return null;
     } catch (error) {
       console.error('[Firebase] Token verification failed:', error);

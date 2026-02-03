@@ -11,8 +11,10 @@ export interface DeviceToken {
   userId: string;
   userType: 'user' | 'candidate';
   tenantId: string;
-  token: string;
+  /** Hash of device token for lookup (one-way) */
   tokenHash: string;
+  /** Encrypted device token for dispatch (reversible) */
+  encryptedToken: string;
   platform: 'ios' | 'android' | 'web';
   deviceId?: string;
   deviceName?: string;

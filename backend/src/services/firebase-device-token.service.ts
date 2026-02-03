@@ -281,7 +281,12 @@ export class FirebaseDeviceTokenService {
       imageUrl: event.payload.imageUrl,
     };
 
-    const deviceTokens = tokens.map((t) => t.token);
+    // Decrypt tokens for FCM dispatch (raw tokens never stored, only encrypted form)
+    const decryptedTokens = tokens.map((t) => ({
+      id: t.id,
+      rawToken: deviceTokenRepository.decryptToken(t),
+    }));
+    const deviceTokens = decryptedTokens.map((t) => t.rawToken);
     const result = await firebaseAdminService.sendToDevices(deviceTokens, message, {
       actorId: context.actorId,
       actorType: context.actorType || 'system',
@@ -293,9 +298,10 @@ export class FirebaseDeviceTokenService {
     // Update last used timestamp for successful sends
     for (const r of result.results) {
       if (r.result.success) {
-        const token = tokens.find((t) => t.token === r.token);
-        if (token) {
-          await deviceTokenRepository.updateLastUsed(token.id);
+        // Match by decrypted token to find the corresponding stored record
+        const tokenRecord = decryptedTokens.find((t) => t.rawToken === r.token);
+        if (tokenRecord) {
+          await deviceTokenRepository.updateLastUsed(tokenRecord.id);
         }
       }
     }
