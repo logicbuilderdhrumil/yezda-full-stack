@@ -59,7 +59,13 @@ export type AuditEventType =
   | 'OAUTH_TOKEN_REFRESH_SUCCESS'
   | 'OAUTH_TOKEN_REFRESH_FAILURE'
   | 'OAUTH_INTEGRATION_DISCONNECTED'
-  | 'OAUTH_INVALID_STATE';
+  | 'OAUTH_INVALID_STATE'
+  // Mock API-related audit events
+  | 'MOCK_MODE_ENABLED'
+  | 'MOCK_MODE_DISABLED'
+  | 'MOCK_MODE_BLOCKED'
+  | 'MOCK_FIXTURE_ACCESSED'
+  | 'MOCK_ENDPOINT_CALLED';
 
 export interface AuditEvent {
   id: string;

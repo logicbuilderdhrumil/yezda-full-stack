@@ -18,3 +18,4 @@ export {
 export * from './state-store-rate-limit.middleware.js';
 export * from './notification-rate-limit.middleware.js';
 export * from './localization-rate-limit.middleware.js';
+export * from './mock-mode.middleware.js';

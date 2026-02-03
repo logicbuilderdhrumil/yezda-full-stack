@@ -17,3 +17,4 @@ export * from './notification.service.js';
 export * from './notification-metrics.service.js';
 export * from './localization.service.js';
 export * from './oauth.service.js';
+export * from './mock-api.service.js';
