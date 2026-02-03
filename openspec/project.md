@@ -1,11 +1,11 @@
 # Project Context
 
 ## Purpose
-Full-stack Employment Screening Service monorepo with a React + Vite admin dashboard frontend and Node.js backend. Enables HR teams to manage candidate screening workflows, background checks, document verification, and compliance reporting. Focus on secure data handling, audit trails, multi-tenant support, and rapid feature delivery.
+Full-stack Employment Screening Service monorepo with a React + Vite admin dashboard frontend, Node.js backend, and customer-facing screening application. Enables HR teams to manage candidate screening workflows, background checks, document verification, and compliance reporting. Provides a dedicated customer portal for candidates to complete screening forms, submit work history, and provide additional information as determined by dynamic form builder configurations. Focus on secure data handling, audit trails, multi-tenant support, and rapid feature delivery.
 
 ## Tech Stack
 
-### Frontend
+### Frontend (Admin Dashboard)
 - React 19 + TypeScript 5
 - Vite 6 (module-based, ESM)
 - Tailwind CSS 4 + PostCSS
@@ -15,6 +15,14 @@ Full-stack Employment Screening Service monorepo with a React + Vite admin dashb
 - Firebase SDK (auth/notifications)
 - Socket.IO client (realtime screening updates)
 - ESLint + Prettier
+
+### App (Customer-Facing App)
+- Expo + React Native + TypeScript 5
+- NativeWind for Tailwind CSS styling
+- Zustand state management
+- SWR or React Query for data fetching
+- Firebase SDK (auth/notifications)
+- Socket.IO client (realtime screening updates)
 
 ### Backend
 - Node.js + Express (or similar)
