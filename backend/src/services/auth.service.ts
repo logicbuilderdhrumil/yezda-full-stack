@@ -2,16 +2,8 @@
  * Auth Service
  * Task 1.2, 1.3, 1.6: Core authentication business logic
  * 
- * ⚠️ PRODUCTION BLOCKER: In-memory user storage
- * Current implementation stores users in-memory which means:
- * - All user data is lost on server restart
- * - No horizontal scaling possible
- * - Data persistence is not guaranteed
- * 
- * TODO: Before production deployment:
- * 1. Migrate to a persistent database (PostgreSQL recommended)
- * 2. Add database indexes on email columns for efficient lookups
- * 3. Implement proper user repository pattern
+ * Uses Postgres for persistent storage of users, sessions, and tokens.
+ * Uses Redis for MFA sessions and rate limiting (handled in middleware).
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -21,16 +13,10 @@ import { tokenService } from './token.service.js';
 import { passwordService } from './password.service.js';
 import { mfaService } from './mfa.service.js';
 import { auditService } from './audit.service.js';
+import { userRepository } from '../repositories/user.repository.js';
+import { passwordResetRepository } from '../repositories/password-reset.repository.js';
+import { storeMfaSession, consumeMfaSession } from '../db/redis.js';
 import { config } from '../config/index.js';
-
-// In-memory user stores (replace with DB in production)
-const users = new Map<string, User>();
-const candidates = new Map<string, Candidate>();
-// Email index maps for O(1) lookups (already implemented)
-const usersByEmail = new Map<string, string>();
-const candidatesByEmail = new Map<string, string>();
-// Password reset tokens stored by token hash (not raw token) for security
-const passwordResetTokens = new Map<string, PasswordResetToken>();
 
 /**
  * Hash a token for secure storage using SHA-256
@@ -78,9 +64,6 @@ export interface SignInInput {
   channel: 'web' | 'mobile' | 'api';
 }
 
-// Temporary MFA sessions for pending MFA verification
-const mfaSessions = new Map<string, { userId: string; userType: 'user' | 'candidate'; expiresAt: Date }>();
-
 export class AuthService {
   /**
    * Sign up a new user or candidate
@@ -90,10 +73,8 @@ export class AuthService {
     const normalizedEmail = email.toLowerCase().trim();
 
     // Check if email already exists
-    if (userType === 'user' && usersByEmail.has(normalizedEmail)) {
-      return { success: false, error: 'Email already registered', errorCode: 'EMAIL_EXISTS' };
-    }
-    if (userType === 'candidate' && candidatesByEmail.has(normalizedEmail)) {
+    const emailExists = await userRepository.emailExists(normalizedEmail, userType);
+    if (emailExists) {
       return { success: false, error: 'Email already registered', errorCode: 'EMAIL_EXISTS' };
     }
 
@@ -112,30 +93,20 @@ export class AuthService {
     const id = uuidv4();
     const now = new Date();
 
+    const entity: User | Candidate = {
+      id,
+      email: normalizedEmail,
+      passwordHash,
+      mfaEnabled: false,
+      failedAttempts: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+
     if (userType === 'user') {
-      const user: User = {
-        id,
-        email: normalizedEmail,
-        passwordHash,
-        mfaEnabled: false,
-        failedAttempts: 0,
-        createdAt: now,
-        updatedAt: now,
-      };
-      users.set(id, user);
-      usersByEmail.set(normalizedEmail, id);
+      await userRepository.createUser(entity);
     } else {
-      const candidate: Candidate = {
-        id,
-        email: normalizedEmail,
-        passwordHash,
-        mfaEnabled: false,
-        failedAttempts: 0,
-        createdAt: now,
-        updatedAt: now,
-      };
-      candidates.set(id, candidate);
-      candidatesByEmail.set(normalizedEmail, id);
+      await userRepository.createCandidate(entity);
     }
 
     auditService.log({
@@ -156,7 +127,7 @@ export class AuthService {
     const normalizedEmail = email.toLowerCase().trim();
 
     // Find user
-    const entity = this.findEntityByEmail(normalizedEmail, userType);
+    const entity = await userRepository.findEntityByEmail(normalizedEmail, userType);
     if (!entity) {
       auditService.logSignInFailure({
         email: normalizedEmail,
@@ -197,12 +168,12 @@ export class AuthService {
     // Check MFA requirement
     if (entity.mfaEnabled) {
       if (!mfaCode) {
-        // Generate temporary MFA session
+        // Generate temporary MFA session and store in Redis
         const mfaSessionToken = uuidv4();
-        mfaSessions.set(mfaSessionToken, {
+        await storeMfaSession(mfaSessionToken, {
           userId: entity.id,
           userType,
-          expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+          expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
         });
         return { success: true, requiresMfa: true, mfaSessionToken };
       }
@@ -224,9 +195,10 @@ export class AuthService {
     entity.failedAttempts = 0;
     entity.lockedUntil = undefined;
     entity.updatedAt = new Date();
+    await userRepository.updateEntity(entity, userType);
 
     // Generate tokens
-    const { tokenPair } = tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress);
+    const { tokenPair } = await tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress);
 
     auditService.logSignInSuccess({
       userId: entity.id,
@@ -250,13 +222,13 @@ export class AuthService {
     userAgent?: string,
     channel: 'web' | 'mobile' | 'api' = 'api'
   ): Promise<AuthResult> {
-    const session = mfaSessions.get(mfaSessionToken);
-    if (!session || session.expiresAt < new Date()) {
-      mfaSessions.delete(mfaSessionToken);
+    // Consume MFA session from Redis (one-time use)
+    const session = await consumeMfaSession(mfaSessionToken);
+    if (!session || session.expiresAt < Date.now()) {
       return { success: false, error: 'MFA session expired', errorCode: 'MFA_SESSION_EXPIRED' };
     }
 
-    const entity = this.findEntityById(session.userId, session.userType);
+    const entity = await userRepository.findEntityById(session.userId, session.userType);
     if (!entity || !entity.mfaSecret) {
       return { success: false, error: 'User not found', errorCode: 'USER_NOT_FOUND' };
     }
@@ -272,11 +244,8 @@ export class AuthService {
       return { success: false, error: 'Invalid MFA code', errorCode: 'INVALID_MFA' };
     }
 
-    // Clean up MFA session
-    mfaSessions.delete(mfaSessionToken);
-
     // Generate tokens
-    const { tokenPair } = tokenService.generateTokenPair(
+    const { tokenPair } = await tokenService.generateTokenPair(
       entity.id,
       session.userType,
       deviceInfo,
@@ -297,12 +266,12 @@ export class AuthService {
   /**
    * Refresh tokens using refresh token rotation (Task 1.8)
    */
-  refreshTokens(
+  async refreshTokens(
     refreshToken: string,
     deviceInfo?: string,
     ipAddress?: string
-  ): AuthResult {
-    const result = tokenService.rotateToken(refreshToken, deviceInfo, ipAddress);
+  ): Promise<AuthResult> {
+    const result = await tokenService.rotateToken(refreshToken, deviceInfo, ipAddress);
     if (!result) {
       return { success: false, error: 'Invalid refresh token', errorCode: 'INVALID_REFRESH_TOKEN' };
     }
@@ -329,7 +298,7 @@ export class AuthService {
     userAgent?: string
   ): Promise<{ success: boolean; token?: string }> {
     const normalizedEmail = email.toLowerCase().trim();
-    const entity = this.findEntityByEmail(normalizedEmail, userType);
+    const entity = await userRepository.findEntityByEmail(normalizedEmail, userType);
 
     // Always return success to prevent email enumeration
     if (!entity) {
@@ -349,8 +318,7 @@ export class AuthService {
       createdAt: new Date(),
     };
 
-    // Store by hash, not raw token
-    passwordResetTokens.set(tokenHash, passwordResetToken);
+    await passwordResetRepository.create(passwordResetToken);
 
     auditService.logPasswordResetRequest({
       userId: entity.id,
@@ -377,7 +345,7 @@ export class AuthService {
   ): Promise<{ success: boolean; error?: string }> {
     // Hash the incoming token and use constant-time comparison
     const tokenHash = hashToken(token);
-    const resetTokenData = passwordResetTokens.get(tokenHash);
+    const resetTokenData = await passwordResetRepository.findByTokenHash(tokenHash);
     
     if (!resetTokenData) {
       return { success: false, error: 'Invalid or expired reset token' };
@@ -390,7 +358,7 @@ export class AuthService {
 
     if (resetTokenData.expiresAt < new Date() || resetTokenData.usedAt) {
       // Clean up expired/used token
-      passwordResetTokens.delete(tokenHash);
+      await passwordResetRepository.delete(resetTokenData.id);
       return { success: false, error: 'Invalid or expired reset token' };
     }
 
@@ -401,7 +369,7 @@ export class AuthService {
     }
 
     // Find user and update password
-    const entity = this.findEntityById(resetTokenData.userId, resetTokenData.userType);
+    const entity = await userRepository.findEntityById(resetTokenData.userId, resetTokenData.userType);
     if (!entity) {
       return { success: false, error: 'User not found' };
     }
@@ -410,13 +378,13 @@ export class AuthService {
     entity.updatedAt = new Date();
     entity.failedAttempts = 0;
     entity.lockedUntil = undefined;
+    await userRepository.updateEntity(entity, resetTokenData.userType);
 
-    // Mark token as used and immediately delete (one-time use)
-    resetTokenData.usedAt = new Date();
-    passwordResetTokens.delete(tokenHash);
+    // Mark token as used and delete
+    await passwordResetRepository.delete(resetTokenData.id);
 
     // Revoke all existing sessions for security
-    tokenService.revokeAllUserSessions(entity.id, resetTokenData.userType);
+    await tokenService.revokeAllUserSessions(entity.id, resetTokenData.userType);
 
     auditService.logPasswordResetSuccess({
       userId: entity.id,
@@ -432,16 +400,16 @@ export class AuthService {
   /**
    * Sign out - revoke session
    */
-  signOut(
+  async signOut(
     userId: string,
     userType: 'user' | 'candidate',
     sessionId?: string,
     revokeAll = false
-  ): { success: boolean } {
+  ): Promise<{ success: boolean }> {
     if (revokeAll) {
-      tokenService.revokeAllUserSessions(userId, userType);
+      await tokenService.revokeAllUserSessions(userId, userType);
     } else if (sessionId) {
-      tokenService.revokeSession(sessionId);
+      await tokenService.revokeSession(sessionId);
     }
 
     auditService.log({
@@ -465,7 +433,7 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string
   ): Promise<{ success: boolean }> {
-    const entity = this.findEntityById(userId, userType);
+    const entity = await userRepository.findEntityById(userId, userType);
     if (!entity) {
       return { success: false };
     }
@@ -473,6 +441,7 @@ export class AuthService {
     entity.mfaEnabled = true;
     entity.mfaSecret = secret;
     entity.updatedAt = new Date();
+    await userRepository.updateEntity(entity, userType);
 
     auditService.logMfaEnrolled({
       userId,
@@ -494,7 +463,7 @@ export class AuthService {
     channel: 'web' | 'mobile' | 'api' = 'api',
     ipAddress?: string
   ): Promise<{ success: boolean }> {
-    const entity = this.findEntityById(userId, userType);
+    const entity = await userRepository.findEntityById(userId, userType);
     if (!entity) {
       return { success: false };
     }
@@ -502,6 +471,7 @@ export class AuthService {
     entity.mfaEnabled = false;
     entity.mfaSecret = undefined;
     entity.updatedAt = new Date();
+    await userRepository.updateEntity(entity, userType);
 
     auditService.log({
       eventType: 'AUTH_MFA_DISABLED',
@@ -539,39 +509,15 @@ export class AuthService {
         ipAddress,
       });
     }
-  }
 
-  /**
-   * Find user or candidate by email
-   */
-  private findEntityByEmail(
-    email: string,
-    userType: 'user' | 'candidate'
-  ): User | Candidate | undefined {
-    if (userType === 'user') {
-      const userId = usersByEmail.get(email);
-      return userId ? users.get(userId) : undefined;
-    } else {
-      const candidateId = candidatesByEmail.get(email);
-      return candidateId ? candidates.get(candidateId) : undefined;
-    }
-  }
-
-  /**
-   * Find user or candidate by ID
-   */
-  private findEntityById(
-    id: string,
-    userType: 'user' | 'candidate'
-  ): User | Candidate | undefined {
-    return userType === 'user' ? users.get(id) : candidates.get(id);
+    await userRepository.updateEntity(entity, userType);
   }
 
   /**
    * Get user by ID (for authenticated requests)
    */
-  getUser(userId: string, userType: 'user' | 'candidate'): Omit<User | Candidate, 'passwordHash' | 'mfaSecret'> | undefined {
-    const entity = this.findEntityById(userId, userType);
+  async getUser(userId: string, userType: 'user' | 'candidate'): Promise<Omit<User | Candidate, 'passwordHash' | 'mfaSecret'> | undefined> {
+    const entity = await userRepository.findEntityById(userId, userType);
     if (!entity) return undefined;
 
     // Return without sensitive fields

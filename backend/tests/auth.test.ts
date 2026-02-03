@@ -123,15 +123,15 @@ describe('Auth Service', () => {
         channel: 'api',
       });
 
-      const refreshResult = authService.refreshTokens(signInResult.tokenPair!.refreshToken);
+      const refreshResult = await authService.refreshTokens(signInResult.tokenPair!.refreshToken);
 
       expect(refreshResult.success).toBe(true);
       expect(refreshResult.tokenPair).toBeDefined();
       expect(refreshResult.tokenPair?.accessToken).not.toBe(signInResult.tokenPair?.accessToken);
     });
 
-    it('should reject invalid refresh token', () => {
-      const result = authService.refreshTokens('invalid-token');
+    it('should reject invalid refresh token', async () => {
+      const result = await authService.refreshTokens('invalid-token');
 
       expect(result.success).toBe(false);
       expect(result.errorCode).toBe('INVALID_REFRESH_TOKEN');
@@ -185,8 +185,8 @@ describe('Auth Service', () => {
 
 describe('Token Service', () => {
   describe('Token Generation', () => {
-    it('should generate valid token pair', () => {
-      const result = tokenService.generateTokenPair('user-123', 'user');
+    it('should generate valid token pair', async () => {
+      const result = await tokenService.generateTokenPair('user-123', 'user');
 
       expect(result.tokenPair.accessToken).toBeDefined();
       expect(result.tokenPair.refreshToken).toBeDefined();
@@ -194,8 +194,8 @@ describe('Token Service', () => {
       expect(result.tokenPair.expiresIn).toBeGreaterThan(0);
     });
 
-    it('should create session on token generation', () => {
-      const result = tokenService.generateTokenPair('user-456', 'user');
+    it('should create session on token generation', async () => {
+      const result = await tokenService.generateTokenPair('user-456', 'user');
 
       expect(result.session.id).toBeDefined();
       expect(result.session.userId).toBe('user-456');
@@ -204,37 +204,37 @@ describe('Token Service', () => {
   });
 
   describe('Token Validation', () => {
-    it('should validate valid access token', () => {
-      const { tokenPair } = tokenService.generateTokenPair('user-789', 'user');
-      const payload = tokenService.validateAccessToken(tokenPair.accessToken);
+    it('should validate valid access token', async () => {
+      const { tokenPair } = await tokenService.generateTokenPair('user-789', 'user');
+      const payload = await tokenService.validateAccessToken(tokenPair.accessToken);
 
       expect(payload).not.toBeNull();
       expect(payload?.sub).toBe('user-789');
       expect(payload?.type).toBe('user');
     });
 
-    it('should reject invalid access token', () => {
-      const payload = tokenService.validateAccessToken('invalid-token');
+    it('should reject invalid access token', async () => {
+      const payload = await tokenService.validateAccessToken('invalid-token');
 
       expect(payload).toBeNull();
     });
   });
 
   describe('Token Rotation', () => {
-    it('should rotate refresh token', () => {
-      const { tokenPair: initial } = tokenService.generateTokenPair('user-rotate', 'user');
-      const rotated = tokenService.rotateToken(initial.refreshToken);
+    it('should rotate refresh token', async () => {
+      const { tokenPair: initial } = await tokenService.generateTokenPair('user-rotate', 'user');
+      const rotated = await tokenService.rotateToken(initial.refreshToken);
 
       expect(rotated).not.toBeNull();
       expect(rotated?.tokenPair.refreshToken).not.toBe(initial.refreshToken);
     });
 
-    it('should revoke old token after rotation', () => {
-      const { tokenPair: initial } = tokenService.generateTokenPair('user-revoke', 'user');
-      tokenService.rotateToken(initial.refreshToken);
+    it('should revoke old token after rotation', async () => {
+      const { tokenPair: initial } = await tokenService.generateTokenPair('user-revoke', 'user');
+      await tokenService.rotateToken(initial.refreshToken);
 
       // Old token should be revoked
-      const reuse = tokenService.rotateToken(initial.refreshToken);
+      const reuse = await tokenService.rotateToken(initial.refreshToken);
       expect(reuse).toBeNull();
     });
   });

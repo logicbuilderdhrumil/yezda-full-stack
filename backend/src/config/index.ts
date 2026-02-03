@@ -23,6 +23,20 @@ export interface AuthConfig {
     maxRequests: number;
     maxAuthRequests: number;
   };
+  database: {
+    host: string;
+    port: number;
+    name: string;
+    user: string;
+    password: string;
+    maxConnections: number;
+  };
+  redis: {
+    host: string;
+    port: number;
+    password: string;
+    db: number;
+  };
 }
 
 /**
@@ -103,6 +117,20 @@ export const config: AuthConfig = {
     windowMs: getEnvIntOrDefault('RATE_LIMIT_WINDOW_MS', 60000), // 1 minute
     maxRequests: getEnvIntOrDefault('RATE_LIMIT_MAX_REQUESTS', 100),
     maxAuthRequests: getEnvIntOrDefault('RATE_LIMIT_MAX_AUTH_REQUESTS', 10),
+  },
+  database: {
+    host: getEnvOrDefault('DB_HOST', 'localhost'),
+    port: getEnvIntOrDefault('DB_PORT', 5432),
+    name: getEnvOrDefault('DB_NAME', 'yezda'),
+    user: getEnvOrDefault('DB_USER', 'postgres'),
+    password: getEnvOrDefault('DB_PASSWORD', ''),
+    maxConnections: getEnvIntOrDefault('DB_MAX_CONNECTIONS', 20),
+  },
+  redis: {
+    host: getEnvOrDefault('REDIS_HOST', 'localhost'),
+    port: getEnvIntOrDefault('REDIS_PORT', 6379),
+    password: getEnvOrDefault('REDIS_PASSWORD', ''),
+    db: getEnvIntOrDefault('REDIS_DB', 0),
   },
 };
 

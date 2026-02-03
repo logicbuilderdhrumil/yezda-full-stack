@@ -86,38 +86,38 @@ describe('Security Compliance Tests', () => {
   });
 
   describe('Token Security', () => {
-    it('should generate unique tokens', () => {
-      const { tokenPair: pair1 } = tokenService.generateTokenPair('user-1', 'user');
-      const { tokenPair: pair2 } = tokenService.generateTokenPair('user-1', 'user');
+    it('should generate unique tokens', async () => {
+      const { tokenPair: pair1 } = await tokenService.generateTokenPair('user-1', 'user');
+      const { tokenPair: pair2 } = await tokenService.generateTokenPair('user-1', 'user');
 
       expect(pair1.accessToken).not.toBe(pair2.accessToken);
       expect(pair1.refreshToken).not.toBe(pair2.refreshToken);
     });
 
-    it('should include expiration in tokens', () => {
-      const { tokenPair } = tokenService.generateTokenPair('user-exp', 'user');
-      const payload = tokenService.validateAccessToken(tokenPair.accessToken);
+    it('should include expiration in tokens', async () => {
+      const { tokenPair } = await tokenService.generateTokenPair('user-exp', 'user');
+      const payload = await tokenService.validateAccessToken(tokenPair.accessToken);
 
       expect(payload?.exp).toBeDefined();
       expect(payload?.exp).toBeGreaterThan(payload?.iat ?? 0);
     });
 
-    it('should reject tampered tokens', () => {
-      const { tokenPair } = tokenService.generateTokenPair('user-tamper', 'user');
+    it('should reject tampered tokens', async () => {
+      const { tokenPair } = await tokenService.generateTokenPair('user-tamper', 'user');
       const tamperedToken = tokenPair.accessToken.slice(0, -5) + 'XXXXX';
 
-      const payload = tokenService.validateAccessToken(tamperedToken);
+      const payload = await tokenService.validateAccessToken(tamperedToken);
       expect(payload).toBeNull();
     });
 
-    it('should prevent token reuse after rotation', () => {
-      const { tokenPair: initial } = tokenService.generateTokenPair('user-reuse', 'user');
+    it('should prevent token reuse after rotation', async () => {
+      const { tokenPair: initial } = await tokenService.generateTokenPair('user-reuse', 'user');
       
       // Rotate the token
-      tokenService.rotateToken(initial.refreshToken);
+      await tokenService.rotateToken(initial.refreshToken);
 
       // Attempt to reuse old refresh token
-      const reused = tokenService.rotateToken(initial.refreshToken);
+      const reused = await tokenService.rotateToken(initial.refreshToken);
       expect(reused).toBeNull();
     });
   });
@@ -143,7 +143,7 @@ describe('Security Compliance Tests', () => {
       await authService.completePasswordReset(resetRequest.token!, 'NewSecureP@ss456!');
 
       // Old refresh token should be invalid
-      const refreshResult = authService.refreshTokens(tokenPair!.refreshToken);
+      const refreshResult = await authService.refreshTokens(tokenPair!.refreshToken);
       expect(refreshResult.success).toBe(false);
     });
 
@@ -170,14 +170,14 @@ describe('Security Compliance Tests', () => {
       }));
 
       // Get user ID from token
-      const payload = tokenService.validateAccessToken(session1!.accessToken);
+      const payload = await tokenService.validateAccessToken(session1!.accessToken);
       
       // Sign out with revoke all
-      authService.signOut(payload!.sub, 'user', undefined, true);
+      await authService.signOut(payload!.sub, 'user', undefined, true);
 
       // Both sessions should be invalid
-      expect(authService.refreshTokens(session1!.refreshToken).success).toBe(false);
-      expect(authService.refreshTokens(session2!.refreshToken).success).toBe(false);
+      expect((await authService.refreshTokens(session1!.refreshToken)).success).toBe(false);
+      expect((await authService.refreshTokens(session2!.refreshToken)).success).toBe(false);
     });
   });
 

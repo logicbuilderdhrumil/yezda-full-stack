@@ -111,11 +111,11 @@ export async function verifyMfa(req: Request, res: Response): Promise<void> {
  * POST /api/v1/auth/refresh
  * Refresh access token using refresh token
  */
-export function refreshToken(req: Request, res: Response): void {
+export async function refreshToken(req: Request, res: Response): Promise<void> {
   const { refreshToken } = req.body;
   const { ipAddress, deviceInfo } = getClientInfo(req);
 
-  const result = authService.refreshTokens(refreshToken, deviceInfo, ipAddress);
+  const result = await authService.refreshTokens(refreshToken, deviceInfo, ipAddress);
 
   if (!result.success) {
     res.status(401).json({ error: result.error, code: result.errorCode });
@@ -134,11 +134,11 @@ export function refreshToken(req: Request, res: Response): void {
  * POST /api/v1/auth/signout
  * Sign out the current session
  */
-export function signOut(req: AuthenticatedRequest, res: Response): void {
+export async function signOut(req: AuthenticatedRequest, res: Response): Promise<void> {
   const revokeAll = req.query.all === 'true';
 
   if (req.user) {
-    authService.signOut(req.user.sub, req.user.type, req.user.jti, revokeAll);
+    await authService.signOut(req.user.sub, req.user.type, req.user.jti, revokeAll);
   }
 
   res.status(200).json({ message: 'Signed out successfully' });
@@ -194,7 +194,7 @@ export async function startMfaEnrollment(req: AuthenticatedRequest, res: Respons
     return;
   }
 
-  const user = authService.getUser(req.user.sub, req.user.type);
+  const user = await authService.getUser(req.user.sub, req.user.type);
   if (!user) {
     res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
     return;
@@ -226,7 +226,7 @@ export async function completeMfaEnrollment(req: AuthenticatedRequest, res: Resp
   const { enrollmentId, code } = req.body;
   const { ipAddress, userAgent, channel } = getClientInfo(req);
 
-  const verifyResult = mfaService.verifyEnrollment(enrollmentId, code);
+  const verifyResult = await mfaService.verifyEnrollment(enrollmentId, code);
   if (!verifyResult.success) {
     res.status(400).json({ error: 'Invalid verification code', code: 'INVALID_CODE' });
     return;
@@ -286,13 +286,13 @@ export async function disableMfa(req: AuthenticatedRequest, res: Response): Prom
  * GET /api/v1/auth/me
  * Get current user info
  */
-export function getCurrentUser(req: AuthenticatedRequest, res: Response): void {
+export async function getCurrentUser(req: AuthenticatedRequest, res: Response): Promise<void> {
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
     return;
   }
 
-  const user = authService.getUser(req.user.sub, req.user.type);
+  const user = await authService.getUser(req.user.sub, req.user.type);
   if (!user) {
     res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
     return;

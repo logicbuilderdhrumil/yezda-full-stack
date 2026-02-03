@@ -2,45 +2,59 @@
  * Token Service
  * Task 1.1, 1.8: JWT token generation, validation, rotation, and revocation
  * 
- * ⚠️ PRODUCTION BLOCKER: In-memory session storage
- * Current implementation stores sessions in-memory which means:
- * - All sessions are lost on server restart (mass logout)
- * - No distributed session management (horizontal scaling impossible)
- * - Memory consumption grows unbounded with active sessions
- * 
- * TODO: Before production deployment:
- * 1. Store sessions in Redis or a database with proper indexing
- * 2. Add TTL-based auto-expiration for sessions
- * 3. Implement session cleanup job for expired entries
+ * Uses Postgres for session persistence via sessionRepository.
+ * Uses Redis for revoked token tracking (fast lookup).
  */
 
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import type {
   AccessTokenPayload,
   RefreshTokenPayload,
   TokenPair,
   Session,
 } from '../models/auth.model.js';
+import { sessionRepository } from '../repositories/session.repository.js';
+import { cacheGet, cacheSet } from '../db/redis.js';
 import { config } from '../config/index.js';
 
-// In-memory session store (replace with Redis/DB in production)
-const sessions = new Map<string, Session>();
-const revokedTokens = new Set<string>();
+// Revoked token cache TTL (match max token lifetime)
+const REVOKED_TOKEN_TTL_MS = config.jwt.refreshTokenTtlSeconds * 1000;
+const REVOKED_TOKEN_PREFIX = 'revoked:';
 
-// Secondary index: userId -> Set<sessionId> for O(1) user session lookups
-const userSessionIndex = new Map<string, Set<string>>();
+/**
+ * Check if a token JTI is revoked (cached in Redis)
+ */
+async function isTokenRevoked(jti: string): Promise<boolean> {
+  const revoked = await cacheGet<boolean>(`${REVOKED_TOKEN_PREFIX}${jti}`);
+  return revoked === true;
+}
+
+/**
+ * Mark a token JTI as revoked in Redis
+ */
+async function revokeTokenJti(jti: string): Promise<void> {
+  await cacheSet(`${REVOKED_TOKEN_PREFIX}${jti}`, true, REVOKED_TOKEN_TTL_MS);
+}
 
 export class TokenService {
   /**
+   * Hash token for storage
+   */
+  private hashToken(token: string): string {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
+  /**
    * Generate access and refresh token pair
    */
-  generateTokenPair(
+  async generateTokenPair(
     userId: string,
     userType: 'user' | 'candidate',
     deviceInfo?: string,
     ipAddress?: string
-  ): { tokenPair: TokenPair; session: Session } {
+  ): Promise<{ tokenPair: TokenPair; session: Session }> {
     const sessionId = uuidv4();
     const accessTokenJti = uuidv4();
     const refreshTokenJti = uuidv4();
@@ -85,14 +99,7 @@ export class TokenService {
       createdAt: new Date(),
     };
 
-    sessions.set(sessionId, session);
-
-    // Update user session index for O(1) lookups
-    const userKey = `${userType}:${userId}`;
-    if (!userSessionIndex.has(userKey)) {
-      userSessionIndex.set(userKey, new Set());
-    }
-    userSessionIndex.get(userKey)!.add(sessionId);
+    await sessionRepository.create(session);
 
     return {
       tokenPair: {
@@ -108,14 +115,14 @@ export class TokenService {
   /**
    * Validate access token
    */
-  validateAccessToken(token: string): AccessTokenPayload | null {
+  async validateAccessToken(token: string): Promise<AccessTokenPayload | null> {
     try {
       const payload = jwt.verify(token, config.jwt.accessTokenSecret, {
         issuer: config.jwt.issuer,
         audience: config.jwt.audience,
       }) as AccessTokenPayload;
 
-      if (revokedTokens.has(payload.jti)) {
+      if (await isTokenRevoked(payload.jti)) {
         return null;
       }
 
@@ -128,18 +135,18 @@ export class TokenService {
   /**
    * Validate refresh token and return session
    */
-  validateRefreshToken(token: string): { payload: RefreshTokenPayload; session: Session } | null {
+  async validateRefreshToken(token: string): Promise<{ payload: RefreshTokenPayload; session: Session } | null> {
     try {
       const payload = jwt.verify(token, config.jwt.refreshTokenSecret, {
         issuer: config.jwt.issuer,
         audience: config.jwt.audience,
       }) as RefreshTokenPayload;
 
-      if (revokedTokens.has(payload.jti)) {
+      if (await isTokenRevoked(payload.jti)) {
         return null;
       }
 
-      const session = sessions.get(payload.sessionId);
+      const session = await sessionRepository.findById(payload.sessionId);
       if (!session || session.revokedAt) {
         return null;
       }
@@ -154,24 +161,27 @@ export class TokenService {
    * Rotate refresh token (Task 1.8)
    * Issues new token pair and revokes the prior refresh token
    */
-  rotateToken(
+  async rotateToken(
     oldRefreshToken: string,
     deviceInfo?: string,
     ipAddress?: string
-  ): { tokenPair: TokenPair; session: Session } | null {
-    const validated = this.validateRefreshToken(oldRefreshToken);
+  ): Promise<{ tokenPair: TokenPair; session: Session } | null> {
+    const validated = await this.validateRefreshToken(oldRefreshToken);
     if (!validated) {
       return null;
     }
 
     const { payload, session: oldSession } = validated;
 
-    // Revoke old refresh token
-    revokedTokens.add(payload.jti);
+    // Revoke old refresh token in Redis cache
+    await revokeTokenJti(payload.jti);
+    
+    // Mark old session as revoked
     oldSession.revokedAt = new Date();
+    await sessionRepository.update(oldSession);
 
     // Generate new token pair
-    const result = this.generateTokenPair(
+    const result = await this.generateTokenPair(
       payload.sub,
       payload.type,
       deviceInfo ?? oldSession.deviceInfo,
@@ -180,6 +190,7 @@ export class TokenService {
 
     // Link to old session for audit trail
     result.session.rotatedFromId = oldSession.id;
+    await sessionRepository.update(result.session);
 
     return result;
   }
@@ -187,62 +198,22 @@ export class TokenService {
   /**
    * Revoke session and all associated tokens
    */
-  revokeSession(sessionId: string): boolean {
-    const session = sessions.get(sessionId);
-    if (!session) {
-      return false;
-    }
-
-    session.revokedAt = new Date();
-    return true;
+  async revokeSession(sessionId: string): Promise<boolean> {
+    return sessionRepository.revoke(sessionId);
   }
 
   /**
-   * Revoke all sessions for a user - O(1) lookup using secondary index
+   * Revoke all sessions for a user
    */
-  revokeAllUserSessions(userId: string, userType: 'user' | 'candidate'): number {
-    const userKey = `${userType}:${userId}`;
-    const sessionIds = userSessionIndex.get(userKey);
-    
-    if (!sessionIds) {
-      return 0;
-    }
-
-    let count = 0;
-    for (const sessionId of sessionIds) {
-      const session = sessions.get(sessionId);
-      if (session && !session.revokedAt) {
-        session.revokedAt = new Date();
-        count++;
-      }
-    }
-    return count;
+  async revokeAllUserSessions(userId: string, userType: 'user' | 'candidate'): Promise<number> {
+    return sessionRepository.revokeAllForUser(userId, userType);
   }
 
   /**
    * Get active sessions for a user
    */
-  getUserSessions(userId: string, userType: 'user' | 'candidate'): Session[] {
-    const userSessions: Session[] = [];
-    for (const session of sessions.values()) {
-      if (
-        session.userId === userId &&
-        session.userType === userType &&
-        !session.revokedAt &&
-        session.expiresAt > new Date()
-      ) {
-        userSessions.push(session);
-      }
-    }
-    return userSessions;
-  }
-
-  /**
-   * Simple hash for token storage (use bcrypt in production for sensitive tokens)
-   */
-  private hashToken(token: string): string {
-    // Simple hash for demonstration; use crypto.createHash in production
-    return Buffer.from(token).toString('base64').slice(0, 64);
+  async getUserSessions(userId: string, userType: 'user' | 'candidate'): Promise<Session[]> {
+    return sessionRepository.findActiveByUser(userId, userType);
   }
 }
 

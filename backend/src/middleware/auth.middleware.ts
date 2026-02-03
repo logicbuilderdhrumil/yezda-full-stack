@@ -14,11 +14,11 @@ export interface AuthenticatedRequest extends Request {
 /**
  * Require valid access token
  */
-export function requireAuth(
+export async function requireAuth(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-): void {
+): Promise<void> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -27,7 +27,7 @@ export function requireAuth(
   }
 
   const token = authHeader.slice(7);
-  const payload = tokenService.validateAccessToken(token);
+  const payload = await tokenService.validateAccessToken(token);
 
   if (!payload) {
     res.status(401).json({ error: 'Invalid or expired token', code: 'INVALID_TOKEN' });
@@ -41,16 +41,16 @@ export function requireAuth(
 /**
  * Optional authentication - attaches user if token present
  */
-export function optionalAuth(
+export async function optionalAuth(
   req: AuthenticatedRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
-): void {
+): Promise<void> {
   const authHeader = req.headers.authorization;
 
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7);
-    const payload = tokenService.validateAccessToken(token);
+    const payload = await tokenService.validateAccessToken(token);
     if (payload) {
       req.user = payload;
     }

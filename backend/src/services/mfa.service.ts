@@ -1,16 +1,16 @@
 /**
  * MFA Service
  * Task 1.4: TOTP enrollment and verification
+ * 
+ * Uses Postgres for MFA enrollment persistence.
  */
 
 import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 import type { MfaEnrollment } from '../models/auth.model.js';
+import { mfaEnrollmentRepository } from '../repositories/mfa-enrollment.repository.js';
 import { config } from '../config/index.js';
-
-// In-memory enrollment store (replace with DB in production)
-const enrollments = new Map<string, MfaEnrollment>();
 
 export class MfaService {
   /**
@@ -34,7 +34,7 @@ export class MfaService {
       createdAt: new Date(),
     };
 
-    enrollments.set(enrollment.id, enrollment);
+    await mfaEnrollmentRepository.create(enrollment);
 
     return {
       enrollmentId: enrollment.id,
@@ -47,8 +47,8 @@ export class MfaService {
   /**
    * Complete MFA enrollment by verifying a TOTP code
    */
-  verifyEnrollment(enrollmentId: string, code: string): { success: boolean; secret?: string } {
-    const enrollment = enrollments.get(enrollmentId);
+  async verifyEnrollment(enrollmentId: string, code: string): Promise<{ success: boolean; secret?: string }> {
+    const enrollment = await mfaEnrollmentRepository.findById(enrollmentId);
     if (!enrollment) {
       return { success: false };
     }
@@ -62,8 +62,7 @@ export class MfaService {
       return { success: false };
     }
 
-    enrollment.verified = true;
-    enrollment.verifiedAt = new Date();
+    await mfaEnrollmentRepository.markVerified(enrollmentId);
 
     return { success: true, secret: enrollment.secret };
   }
@@ -90,27 +89,18 @@ export class MfaService {
   /**
    * Get pending enrollment for user
    */
-  getPendingEnrollment(
+  async getPendingEnrollment(
     userId: string,
     userType: 'user' | 'candidate'
-  ): MfaEnrollment | undefined {
-    for (const enrollment of enrollments.values()) {
-      if (
-        enrollment.userId === userId &&
-        enrollment.userType === userType &&
-        !enrollment.verified
-      ) {
-        return enrollment;
-      }
-    }
-    return undefined;
+  ): Promise<MfaEnrollment | undefined> {
+    return mfaEnrollmentRepository.findPendingByUser(userId, userType);
   }
 
   /**
    * Cancel pending enrollment
    */
-  cancelEnrollment(enrollmentId: string): boolean {
-    return enrollments.delete(enrollmentId);
+  async cancelEnrollment(enrollmentId: string): Promise<boolean> {
+    return mfaEnrollmentRepository.delete(enrollmentId);
   }
 }
 
