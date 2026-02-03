@@ -6,6 +6,7 @@ import firebaseRoutes from './firebase.routes.js';
 import notificationRoutes from './notification.routes.js';
 import localizationRoutes from './localization.routes.js';
 import oauthRoutes from './oauth.routes.js';
+import mockRoutes from './mock.routes.js';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/firebase', firebaseRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/localization', localizationRoutes);
 router.use('/oauth', oauthRoutes);
+router.use('/mock', mockRoutes);
 
 export default router;
