@@ -65,7 +65,10 @@ export type AuditEventType =
   | 'MOCK_MODE_DISABLED'
   | 'MOCK_MODE_BLOCKED'
   | 'MOCK_FIXTURE_ACCESSED'
-  | 'MOCK_ENDPOINT_CALLED';
+  | 'MOCK_ENDPOINT_CALLED'
+  // UI Kit-related audit events
+  | 'UI_CONFIG_ACCESSED'
+  | 'UI_CONFIG_ACCESS_DENIED';
 
 export interface AuditEvent {
   id: string;
