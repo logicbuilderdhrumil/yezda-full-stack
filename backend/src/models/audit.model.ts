@@ -17,7 +17,10 @@ export type AuditEventType =
   | 'AUTH_MFA_DISABLED'
   | 'AUTH_ACCOUNT_LOCKED'
   | 'AUTH_ACCOUNT_UNLOCKED'
-  | 'AUTH_ANOMALY_DETECTED';
+  | 'AUTH_ANOMALY_DETECTED'
+  | 'GUARD_AUTH_DENIED'
+  | 'GUARD_ROLE_DENIED'
+  | 'GUARD_ACCESS_GRANTED';
 
 export interface AuditEvent {
   id: string;
