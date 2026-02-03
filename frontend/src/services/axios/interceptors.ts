@@ -91,6 +91,7 @@ export function setupResponseInterceptors(
               if (token && originalRequest.headers) {
                 originalRequest.headers.Authorization = `Bearer ${token}`;
               }
+              originalRequest._isRetry = true;
               return instance(originalRequest);
             })
             .catch((err) => Promise.reject(extractApiError(err)));
@@ -126,7 +127,7 @@ export function setupResponseInterceptors(
         }
       }
 
-      // Handle auth failure callback for 401/403
+      // Handle auth failure callback for 401 responses
       if (
         (error.response?.status === 401 || error.response?.status === 403) &&
         config.onAuthFailure
