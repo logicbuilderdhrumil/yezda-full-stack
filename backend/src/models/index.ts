@@ -27,3 +27,4 @@ export {
   type SocketAuditEventType,
 } from './socket.model.js';
 export * from './firebase.model.js';
+export * from './notification.model.js';

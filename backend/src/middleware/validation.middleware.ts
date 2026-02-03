@@ -58,6 +58,32 @@ export function validateQuery<T>(schema: ZodSchema<T>) {
   };
 }
 
+/**
+ * Create validation middleware for route params
+ */
+export function validateParams<T>(schema: ZodSchema<T>) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const result = schema.safeParse(req.params);
+
+    if (!result.success) {
+      const errors = result.error.errors.map((e) => ({
+        path: e.path.join('.'),
+        message: e.message,
+      }));
+
+      res.status(400).json({
+        error: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        details: errors,
+      });
+      return;
+    }
+
+    req.params = result.data as typeof req.params;
+    next();
+  };
+}
+
 // Common validation schemas for auth endpoints
 export const signUpSchema = z.object({
   email: z.string().email('Invalid email address'),
