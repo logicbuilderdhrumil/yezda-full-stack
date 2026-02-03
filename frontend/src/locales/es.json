@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Yezda"
+  },
+  "nav": {
+    "home": "Inicio",
+    "candidates": "Candidatos",
+    "organizations": "Organizaciones",
+    "screening": "Selección",
+    "reports": "Informes",
+    "settings": "Configuración",
+    "management": "Gestión",
+    "analytics": "Analíticas",
+    "system": "Sistema",
+    "collapse": "Contraer",
+    "expandSidebar": "Expandir barra lateral",
+    "collapseSidebar": "Contraer barra lateral"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedMessage": "No tienes permiso para ver esta página.",
+    "returnToHome": "Volver al Inicio",
+    "signOut": "Cerrar sesión",
+    "closeSidebar": "Cerrar barra lateral",
+    "toggleMobileMenu": "Alternar menú móvil",
+    "switchToLight": "Cambiar a modo claro",
+    "switchToDark": "Cambiar a modo oscuro",
+    "language": "Idioma"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "signOut": "Cerrar sesión",
+    "signInTitle": "Inicia sesión en tu cuenta",
+    "signInSubtitle": "¡Bienvenido de nuevo! Por favor ingresa tus datos.",
+    "signUpTitle": "Crear una cuenta",
+    "signUpSubtitle": "Comienza tu proceso de selección hoy.",
+    "forgotPasswordTitle": "¿Olvidaste tu contraseña?",
+    "forgotPasswordSubtitle": "Ingresa tu correo y te enviaremos un enlace de restablecimiento.",
+    "checkEmailTitle": "Revisa tu correo",
+    "checkEmailSubtitle": "Hemos enviado un enlace de restablecimiento a tu correo.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "firstNameLabel": "Nombre",
+    "firstNamePlaceholder": "Juan",
+    "lastNameLabel": "Apellido",
+    "lastNamePlaceholder": "Pérez",
+    "rememberMe": "Recordarme",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "signingIn": "Iniciando sesión...",
+    "creatingAccount": "Creando cuenta...",
+    "sendingResetLink": "Enviando enlace...",
+    "sendResetLink": "Enviar enlace",
+    "createAccount": "Crear cuenta",
+    "returnToSignIn": "Volver a iniciar sesión",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "rememberPassword": "¿Recuerdas tu contraseña?",
+    "termsAgree": "Acepto los",
+    "termsOfService": "Términos de Servicio",
+    "and": "y",
+    "privacyPolicy": "Política de Privacidad",
+    "resetEmailSent": "Si existe una cuenta con {{email}}, recibirás un enlace de restablecimiento en breve.",
+    "validation": {
+      "emailRequired": "El correo es requerido",
+      "emailInvalid": "Por favor ingresa un correo válido",
+      "passwordRequired": "La contraseña es requerida",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+      "firstNameRequired": "El nombre es requerido",
+      "lastNameRequired": "El apellido es requerido",
+      "confirmPasswordRequired": "Por favor confirma tu contraseña",
+      "passwordsMismatch": "Las contraseñas no coinciden",
+      "termsRequired": "Debes aceptar los términos y condiciones"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Inicio",
+      "description": "Bienvenido a tu panel",
+      "welcomeBack": "¡Bienvenido de nuevo, {{name}}!",
+      "dashboardIntro": "Este es tu panel principal. Navega usando la barra lateral para acceder a las diferentes secciones de la aplicación."
+    }
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Yezda"
+  },
+  "nav": {
+    "home": "Home",
+    "candidates": "Candidates",
+    "organizations": "Organizations",
+    "screening": "Screening",
+    "reports": "Reports",
+    "settings": "Settings",
+    "management": "Management",
+    "analytics": "Analytics",
+    "system": "System",
+    "collapse": "Collapse",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar"
+  },
+  "common": {
+    "loading": "Loading...",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to view this page.",
+    "returnToHome": "Return to Home",
+    "signOut": "Sign out",
+    "closeSidebar": "Close sidebar",
+    "toggleMobileMenu": "Toggle mobile menu",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "language": "Language"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "signInTitle": "Sign in to your account",
+    "signInSubtitle": "Welcome back! Please enter your details.",
+    "signUpTitle": "Create an account",
+    "signUpSubtitle": "Start your screening journey today.",
+    "forgotPasswordTitle": "Forgot your password?",
+    "forgotPasswordSubtitle": "Enter your email and we'll send you a reset link.",
+    "checkEmailTitle": "Check your email",
+    "checkEmailSubtitle": "We've sent a password reset link to your email address.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "confirmPasswordLabel": "Confirm password",
+    "firstNameLabel": "First name",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Last name",
+    "lastNamePlaceholder": "Doe",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
+    "sendingResetLink": "Sending reset link...",
+    "sendResetLink": "Send reset link",
+    "createAccount": "Create account",
+    "returnToSignIn": "Return to sign in",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "rememberPassword": "Remember your password?",
+    "termsAgree": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "resetEmailSent": "If an account with {{email}} exists, you will receive a password reset link shortly.",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsMismatch": "Passwords do not match",
+      "termsRequired": "You must accept the terms and conditions"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Home",
+      "description": "Welcome to your dashboard",
+      "welcomeBack": "Welcome back, {{name}}!",
+      "dashboardIntro": "This is your home dashboard. Navigate using the sidebar to access different sections of the application."
+    }
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português"
+  }
+}

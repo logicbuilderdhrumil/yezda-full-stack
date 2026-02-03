@@ -8,6 +8,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { useLocaleStore, selectLocale } from '@/store/localeStore';
+import { resources, supportedLocales, defaultLocale } from '@/locales';
 import type { LocaleCode } from '@/@types/stores';
 
 // Initialize i18next
@@ -17,27 +18,12 @@ i18nInstance
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'en',
-    supportedLngs: ['en', 'es', 'fr', 'de', 'pt'],
+    fallbackLng: defaultLocale,
+    supportedLngs: supportedLocales as unknown as string[],
     interpolation: {
       escapeValue: false,
     },
-    resources: {
-      en: {
-        translation: {
-          'app.name': 'Yezda',
-          'nav.home': 'Home',
-          'nav.candidates': 'Candidates',
-          'nav.organizations': 'Organizations',
-          'nav.screening': 'Screening',
-          'nav.reports': 'Reports',
-          'nav.settings': 'Settings',
-          'common.loading': 'Loading...',
-          'common.accessDenied': 'Access Denied',
-          'common.accessDeniedMessage': 'You do not have permission to view this page.',
-        },
-      },
-    },
+    resources,
     detection: {
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: 'yezda-locale',

@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { AuthLayout } from './AuthLayout';
 import { ErrorMessage, LoadingOverlay } from '@/components/ui';
@@ -14,30 +15,34 @@ interface FormErrors {
   password?: string;
 }
 
-function validateForm(data: FormData): FormErrors {
-  const errors: FormErrors = {};
+function useFormValidation(t: (key: string) => string) {
+  return (data: FormData): FormErrors => {
+    const errors: FormErrors = {};
 
-  if (!data.email.trim()) {
-    errors.email = 'Email is required';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = 'Please enter a valid email address';
-  }
+    if (!data.email.trim()) {
+      errors.email = t('auth.validation.emailRequired');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      errors.email = t('auth.validation.emailInvalid');
+    }
 
-  if (!data.password) {
-    errors.password = 'Password is required';
-  } else if (data.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
-  }
+    if (!data.password) {
+      errors.password = t('auth.validation.passwordRequired');
+    } else if (data.password.length < 8) {
+      errors.password = t('auth.validation.passwordMinLength');
+    }
 
-  return errors;
+    return errors;
+  };
 }
 
 /**
  * Sign-in page with email/password form.
  */
 export function SignInView(): ReactNode {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signIn, isLoading, error, clearError, mfaPending } = useAuth();
+  const validateForm = useFormValidation(t);
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -85,16 +90,16 @@ export function SignInView(): ReactNode {
 
   return (
     <AuthLayout
-      title="Sign in to your account"
-      subtitle="Welcome back! Please enter your details."
+      title={t('auth.signInTitle')}
+      subtitle={t('auth.signInSubtitle')}
     >
-      <LoadingOverlay isLoading={isLoading} message="Signing in...">
+      <LoadingOverlay isLoading={isLoading} message={t('auth.signingIn')}>
         <form onSubmit={handleSubmit} className="space-y-5">
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {t('auth.emailLabel')}
             </label>
             <input
               id="email"
@@ -108,7 +113,7 @@ export function SignInView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
             />
             {touched.email && formErrors.email && (
               <p className="mt-1.5 text-xs text-red-600">{formErrors.email}</p>
@@ -117,7 +122,7 @@ export function SignInView(): ReactNode {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {t('auth.passwordLabel')}
             </label>
             <input
               id="password"
@@ -131,7 +136,7 @@ export function SignInView(): ReactNode {
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:border-primary focus:ring-primary/20'
               }`}
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
             />
             {touched.password && formErrors.password && (
               <p className="mt-1.5 text-xs text-red-600">{formErrors.password}</p>
@@ -144,13 +149,13 @@ export function SignInView(): ReactNode {
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
-              Remember me
+              {t('auth.rememberMe')}
             </label>
             <Link
               to="/forgot-password"
               className="text-sm font-medium text-primary hover:text-primary/80"
             >
-              Forgot password?
+              {t('auth.forgotPassword')}
             </Link>
           </div>
 
@@ -159,13 +164,13 @@ export function SignInView(): ReactNode {
             disabled={isLoading}
             className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Sign in
+            {t('auth.signIn')}
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/sign-up" className="font-medium text-primary hover:text-primary/80">
-              Sign up
+              {t('auth.signUp')}
             </Link>
           </p>
         </form>
