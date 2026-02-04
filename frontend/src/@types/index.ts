@@ -1,5 +1,6 @@
 export * from './account';
 export * from './auth';
+export * from './candidate';
 export * from './notification.types';
 export * from './oauth';
 export * from './organization';

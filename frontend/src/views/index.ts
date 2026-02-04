@@ -1,5 +1,6 @@
 export * from './auth';
 export * from './account';
+export * from './candidates';
 export * from './notifications';
 export * from './organizations';
 export * from './users';
