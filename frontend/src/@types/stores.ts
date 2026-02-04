@@ -2,6 +2,8 @@
  * Store-related types for frontend state management.
  */
 
+import type { PresenceStatus } from './socket';
+
 /** Theme preference options. */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -19,9 +21,6 @@ export interface LocaleState {
   locale: LocaleCode;
   isLoading: boolean;
 }
-
-/** User presence status. */
-export type PresenceStatus = 'online' | 'away' | 'busy' | 'offline';
 
 /** Presence state. */
 export interface PresenceState {

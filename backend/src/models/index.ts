@@ -3,6 +3,7 @@ export * from './audit.model.js';
 export * from './state-store.model.js';
 export * from './shell.model.js';
 export * from './localization.model.js';
+export * from './ui-kit.model.js';
 // Exclude PresenceStatus from socket.model (already exported from state-store.model)
 export {
   SOCKET_NAMESPACES,
@@ -30,3 +31,4 @@ export {
 export * from './firebase.model.js';
 export * from './notification.model.js';
 export * from './oauth.model.js';
+export * from './theme.model.js';
