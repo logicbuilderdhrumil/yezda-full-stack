@@ -1,11 +1,11 @@
 ## 1. Implementation
-- [ ] 1.1 Define file metadata model and storage adapter interfaces.
-- [ ] 1.2 Implement upload and download endpoints.
-- [ ] 1.3 Implement metadata normalization helpers for size and type.
-- [ ] 1.4 Add tests for file operations and metadata.
-- [ ] 1.5 Enforce tenant scoping and RBAC for file access.
-- [ ] 1.6 Add file security validation (type/size) and malware scanning hooks.
-- [ ] 1.7 Add audit logging for file access and download events.
-- [ ] 1.8 Add rate limiting and caching for file metadata endpoints.
-- [ ] 1.9 Define file endpoint SLOs and add metrics/alerts.
-- [ ] 1.10 Add security/compliance tests for file access and retention.
+- [x] 1.1 Define file metadata model and storage adapter interfaces.
+- [x] 1.2 Implement upload and download endpoints.
+- [x] 1.3 Implement metadata normalization helpers for size and type.
+- [x] 1.4 Add tests for file operations and metadata.
+- [x] 1.5 Enforce tenant scoping and RBAC for file access.
+- [x] 1.6 Add file security validation (type/size) and malware scanning hooks.
+- [x] 1.7 Add audit logging for file access and download events.
+- [x] 1.8 Add rate limiting and caching for file metadata endpoints.
+- [x] 1.9 Define file endpoint SLOs and add metrics/alerts.
+- [x] 1.10 Add security/compliance tests for file access and retention.

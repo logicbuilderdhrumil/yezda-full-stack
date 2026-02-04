@@ -1,5 +1,6 @@
 export * from './auth.middleware.js';
 export * from './rate-limit.middleware.js';
+export * from './app-auth-rate-limit.middleware.js';
 export * from './validation.middleware.js';
 export * from './error.middleware.js';
 // Re-export route-guards explicitly to avoid AuthenticatedRequest conflict
@@ -23,3 +24,12 @@ export * from './theme-rate-limit.middleware.js';
 export * from './user-management-rate-limit.middleware.js';
 export * from './user-management-validation.middleware.js';
 export * from './org-management-rate-limit.middleware.js';
+export * from './view-components-rate-limit.middleware.js';
+export * from './candidate-management-rate-limit.middleware.js';
+export * from './candidate-management-validation.middleware.js';
+export * from './form-builder-rate-limit.middleware.js';
+export * from './file-management-rate-limit.middleware.js';
+export * from './asset-management-rate-limit.middleware.js';
+export * from './chat-rate-limit.middleware.js';
+export * from './home-dashboard-rate-limit.middleware.js';
+export * from './template-layouts-rate-limit.middleware.js';
