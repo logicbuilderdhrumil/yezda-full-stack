@@ -15,6 +15,7 @@ import accountSettingsRoutes from './account-settings.routes.js';
 import candidateManagementRoutes from './candidate-management.routes.js';
 import formBuilderRoutes from './form-builder.routes.js';
 import fileManagementRoutes from './file-management.routes.js';
+import assetManagementRoutes from './asset-management.routes.js';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/account', accountSettingsRoutes);
 router.use('/candidates', candidateManagementRoutes);
 router.use('/forms', formBuilderRoutes);
 router.use('/files', fileManagementRoutes);
+router.use('/assets', assetManagementRoutes);
 
 export default router;
