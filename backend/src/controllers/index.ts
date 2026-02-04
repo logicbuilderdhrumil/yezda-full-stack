@@ -16,3 +16,4 @@ export {
 } from './theme.controller.js';
 export * from './ui-kit.controller.js';
 export * from './org-management.controller.js';
+export * from './account-settings.controller.js';

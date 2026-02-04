@@ -23,3 +23,5 @@ export * from './theme-metrics.service.js';
 export * from './ui-kit.service.js';
 export * from './org-management.service.js';
 export * from './org-management-metrics.service.js';
+export * from './account-settings.service.js';
+export * from './account-settings-metrics.service.js';

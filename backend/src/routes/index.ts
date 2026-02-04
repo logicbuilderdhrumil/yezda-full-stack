@@ -10,6 +10,7 @@ import mockRoutes from './mock.routes.js';
 import themeRoutes from './theme.routes.js';
 import uiKitRoutes from './ui-kit.routes.js';
 import orgManagementRoutes from './org-management.routes.js';
+import accountSettingsRoutes from './account-settings.routes.js';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/mock', mockRoutes);
 router.use('/theme', themeRoutes);
 router.use('/ui-kit', uiKitRoutes);
 router.use('/organizations', orgManagementRoutes);
+router.use('/account', accountSettingsRoutes);
 
 export default router;

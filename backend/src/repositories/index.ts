@@ -15,3 +15,4 @@ export * from './locale-preference.repository.js';
 export * from './oauth.repository.js';
 export * from './theme.repository.js';
 export * from './org-management.repository.js';
+export * from './account-settings.repository.js';
