@@ -1,12 +1,26 @@
 /**
  * Auth types for app login and session management.
  * Task 1.1: Define login form fields, validation rules, and error copy.
+ * Integration: Aligned with backend auth contracts.
  */
+
+import type { UserType } from './api.types';
+
+// Re-export aligned API contracts for service usage
+export type {
+  SignInRequestDto,
+  SignInResponseDto,
+  MfaVerifyRequestDto,
+  RefreshTokenRequestDto,
+  RefreshTokenResponseDto,
+  UserType,
+} from './api.types';
 
 /** Login form field values */
 export interface LoginFormValues {
   email: string;
   password: string;
+  userType: UserType;
 }
 
 /** Login form field errors */
@@ -87,20 +101,50 @@ export interface MfaVerifyRequest {
   code: string;
 }
 
-/** Sign-in request payload */
+/** Sign-in request payload aligned with backend */
 export interface SignInRequest {
   email: string;
   password: string;
+  userType: UserType;
+  mfaCode?: string;
 }
 
-/** Sign-in response from backend */
+/** Sign-in response from backend (aligned with backend auth.controller) */
 export interface SignInResponse {
-  tokens?: SessionTokens;
-  user?: AuthUser;
-  mfaChallenge?: MfaChallenge;
+  /** Access token on successful auth */
+  accessToken?: string;
+  /** Refresh token on successful auth */
+  refreshToken?: string;
+  /** Token expiry in seconds */
+  expiresIn?: number;
+  /** Token type (always 'Bearer') */
+  tokenType?: 'Bearer';
+  /** True if MFA challenge required */
+  requiresMfa?: boolean;
+  /** MFA session token for verification step */
+  mfaSessionToken?: string;
 }
 
-/** Token refresh response */
+/** Token refresh response (aligned with backend auth.controller) */
 export interface RefreshResponse {
-  tokens: SessionTokens;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  tokenType: 'Bearer';
+}
+
+/**
+ * Convert backend auth response to app session tokens
+ */
+export function toSessionTokens(response: SignInResponse | RefreshResponse): SessionTokens {
+  const token = 'accessToken' in response ? response : null;
+  if (!token?.accessToken || !token?.refreshToken) {
+    throw new Error('Invalid token response');
+  }
+  const expiresIn = token.expiresIn ?? 3600;
+  return {
+    accessToken: token.accessToken,
+    refreshToken: token.refreshToken,
+    expiresAt: Date.now() + expiresIn * 1000,
+  };
 }

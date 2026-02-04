@@ -7,11 +7,15 @@
     "candidates": "Candidates",
     "organizations": "Organizations",
     "users": "Users",
+    "forms": "Forms",
     "screening": "Screening",
     "reports": "Reports",
     "settings": "Settings",
     "management": "Management",
     "analytics": "Analytics",
+    "billing": "Billing",
+    "ledgerBilled": "Billed Ledger",
+    "ledgerUnbilled": "Unbilled Ledger",
     "system": "System",
     "collapse": "Collapse",
     "expandSidebar": "Expand sidebar",
@@ -35,7 +39,11 @@
     "delete": "Delete",
     "back": "Back",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "view": "View",
+    "reset": "Reset",
+    "success": "Success",
+    "failed": "Failed"
   },
   "auth": {
     "signIn": "Sign in",
@@ -91,7 +99,18 @@
       "title": "Home",
       "description": "Welcome to your dashboard",
       "welcomeBack": "Welcome back, {{name}}!",
-      "dashboardIntro": "This is your home dashboard. Navigate using the sidebar to access different sections of the application."
+      "dashboardIntro": "This is your home dashboard. Navigate using the sidebar to access different sections of the application.",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity",
+      "noChartData": "No data available",
+      "noData": "No dashboard data available",
+      "lastUpdated": "Last updated {{time}}",
+      "refresh": "Refresh",
+      "refreshError": "Failed to refresh dashboard",
+      "retry": "Retry",
+      "kpiSection": "Key Performance Indicators",
+      "chartsSection": "Trend Charts",
+      "activitySection": "Recent Activity"
     }
   },
   "languages": {
@@ -303,6 +322,159 @@
       }
     }
   },
+  "candidates": {
+    "list": {
+      "title": "Candidates",
+      "description": "Manage candidate profiles and applications",
+      "searchPlaceholder": "Search candidates...",
+      "filterStatus": "Filter by status",
+      "createButton": "Add Candidate",
+      "bulkCreateButton": "Bulk Import",
+      "noResults": "No candidates found",
+      "fetchError": "Failed to load candidates"
+    },
+    "create": {
+      "title": "Add Candidate",
+      "description": "Create a new candidate profile",
+      "success": "Candidate created successfully",
+      "error": "Failed to create candidate"
+    },
+    "edit": {
+      "title": "Edit Candidate",
+      "description": "Update candidate: {{name}}",
+      "success": "Candidate updated successfully",
+      "error": "Failed to update candidate",
+      "fetchError": "Failed to load candidate"
+    },
+    "details": {
+      "title": "Candidate Details",
+      "description": "View candidate information",
+      "fetchError": "Failed to load candidate",
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "createdAt": "Created",
+      "updatedAt": "Last Updated",
+      "submittedAt": "Submitted",
+      "certifiedAt": "Certified",
+      "archivedAt": "Archived",
+      "organizationTitle": "Organization",
+      "organization": "Organization",
+      "statusInfoTitle": "Status Information",
+      "tabs": {
+        "overview": "Overview",
+        "history": "History",
+        "documents": "Documents"
+      },
+      "historyTitle": "Activity History",
+      "historyDescription": "Timeline of candidate activity",
+      "noHistory": "No activity recorded yet.",
+      "documentsTitle": "Documents",
+      "documentsDescription": "Uploaded files and documents",
+      "noDocuments": "No documents uploaded yet."
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "organization": "Organization",
+      "created": "Created",
+      "certifiedAt": "Certified",
+      "archivedAt": "Archived"
+    },
+    "status": {
+      "all": "All Statuses",
+      "pending": "Pending",
+      "active": "Active",
+      "certified": "Certified",
+      "archived": "Archived"
+    },
+    "form": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter last name",
+      "email": "Email",
+      "emailPlaceholder": "candidate@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "status": "Status",
+      "sections": {
+        "basicInfo": "Personal Information",
+        "basicInfoDescription": "Candidate's contact details",
+        "status": "Status",
+        "statusDescription": "Current candidate status"
+      },
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required"
+      }
+    },
+    "bulkCreate": {
+      "title": "Bulk Import Candidates",
+      "description": "Import multiple candidates from a CSV file",
+      "uploadTitle": "Upload CSV File",
+      "uploadDescription": "Upload a CSV file with candidate information",
+      "dropzoneText": "Drop your CSV file here or click to browse",
+      "dropzoneSubtext": "Maximum file size: 10MB",
+      "dropzoneLabel": "Click to select a CSV file for upload",
+      "invalidFileType": "Please upload a CSV file",
+      "emptyFile": "The uploaded file is empty or has no data rows",
+      "parseError": "Failed to parse CSV file",
+      "formatTitle": "Expected format:",
+      "previewTitle": "Preview",
+      "previewDescription": "{{valid}} valid, {{invalid}} invalid candidates",
+      "uploading": "Uploading...",
+      "uploadButton": "Import {{count}} Candidates",
+      "progress": "{{percent}}% complete",
+      "noValidCandidates": "No valid candidates to import",
+      "uploadError": "Failed to import candidates",
+      "success": "Successfully imported {{count}} candidates",
+      "resultsTitle": "Import Results",
+      "resultsDescription": "Processed {{total}} candidates: {{success}} succeeded, {{failed}} failed",
+      "successCount": "Successful",
+      "failureCount": "Failed",
+      "rowColumn": "Row",
+      "errorColumn": "Error",
+      "valid": "Valid",
+      "invalid": "Invalid",
+      "moreRows": "...and {{count}} more rows",
+      "uploadMore": "Import More",
+      "viewCandidates": "View Candidates"
+    },
+    "certified": {
+      "title": "Certified Candidates",
+      "description": "View all certified candidates",
+      "fetchError": "Failed to load certified candidates",
+      "noResults": "No certified candidates found"
+    },
+    "archived": {
+      "title": "Archived Candidates",
+      "description": "View all archived candidates",
+      "fetchError": "Failed to load archived candidates",
+      "noResults": "No archived candidates found"
+    },
+    "submission": {
+      "title": "Candidate Application",
+      "description": "Please fill out the form below to submit your information",
+      "submitButton": "Submit Application",
+      "success": "Your application has been submitted successfully",
+      "error": "Failed to submit application. Please try again.",
+      "thankYouTitle": "Thank You!",
+      "thankYouDescription": "Your application has been submitted.",
+      "confirmationText": "We will review your information and contact you soon.",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required"
+      }
+    }
+  },
   "account": {
     "title": "Account Settings",
     "description": "Manage your profile and account preferences",
@@ -358,5 +530,168 @@
       "invalidType": "Please upload a valid image file (JPG, PNG, WebP, or GIF)",
       "tooLarge": "Image must be less than 5MB"
     }
+  },
+  "forms": {
+    "list": {
+      "title": "Forms",
+      "description": "Manage dynamic forms for candidate workflows",
+      "searchPlaceholder": "Search forms...",
+      "filterStatus": "Filter by status",
+      "createButton": "Create Form",
+      "noResults": "No forms found",
+      "fetchError": "Failed to load forms"
+    },
+    "create": {
+      "title": "Create Form",
+      "description": "Build a new form for collecting candidate information",
+      "success": "Form created successfully",
+      "error": "Failed to create form",
+      "nextStep": "Continue to Builder"
+    },
+    "edit": {
+      "title": "Edit Form",
+      "description": "Update form: {{name}}",
+      "success": "Form updated successfully",
+      "error": "Failed to update form",
+      "fetchError": "Failed to load form",
+      "nextStep": "Continue to Builder"
+    },
+    "details": {
+      "title": "Form Details",
+      "description": "View form information",
+      "fetchError": "Failed to load form",
+      "id": "ID",
+      "status": "Status",
+      "createdAt": "Created",
+      "updatedAt": "Last Updated",
+      "overview": "Overview",
+      "schema": "Fields",
+      "noFields": "No fields defined"
+    },
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "created": "Created"
+    },
+    "status": {
+      "all": "All Statuses",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter form name",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the purpose of this form",
+      "descriptionHelper": "Optional description for internal reference",
+      "status": "Status",
+      "sections": {
+        "basicInfo": "Basic Information",
+        "basicInfoDescription": "Configure the form name and description"
+      },
+      "validation": {
+        "nameRequired": "Form name is required"
+      }
+    },
+    "builder": {
+      "title": "Form Builder",
+      "fieldPalette": "Field Types",
+      "canvas": "Form Canvas",
+      "configPanel": "Field Settings",
+      "emptyCanvas": "Click a field type to add it to your form",
+      "selectField": "Select a field to configure",
+      "paletteHint": "Click to add a field",
+      "preview": "Preview"
+    },
+    "fieldTypes": {
+      "text": "Text",
+      "number": "Number",
+      "date": "Date",
+      "select": "Select",
+      "file": "File Upload"
+    },
+    "config": {
+      "general": "General",
+      "label": "Label",
+      "placeholder": "Placeholder",
+      "helperText": "Helper Text",
+      "required": "Required",
+      "validation": "Validation",
+      "minLength": "Min Length",
+      "maxLength": "Max Length",
+      "min": "Minimum",
+      "max": "Maximum",
+      "options": "Options",
+      "optionValue": "Value",
+      "optionLabel": "Label",
+      "addOption": "Add Option",
+      "deleteField": "Delete Field",
+      "moveUp": "Move Up",
+      "moveDown": "Move Down",
+      "removeOption": "Remove Option"
+    },
+    "preview": {
+      "title": "Form Preview",
+      "closePreview": "Close Preview",
+      "backToBuilder": "Back to Builder",
+      "submit": "Submit",
+      "untitled": "Untitled Form",
+      "noFields": "This form has no fields",
+      "selectPlaceholder": "Select an option..."
+    }
+  },
+  "ledger": {
+    "billed": {
+      "title": "Billed Ledger",
+      "description": "View billed ledger entries and totals",
+      "noResults": "No billed entries found",
+      "fetchError": "Failed to load billed entries"
+    },
+    "unbilled": {
+      "title": "Unbilled Ledger",
+      "description": "View unbilled ledger entries and totals",
+      "noResults": "No unbilled entries found",
+      "fetchError": "Failed to load unbilled entries"
+    },
+    "columns": {
+      "organization": "Organization",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "billedAt": "Billed Date",
+      "created": "Created"
+    },
+    "status": {
+      "billed": "Billed",
+      "unbilled": "Unbilled",
+      "pending": "Pending",
+      "void": "Void"
+    },
+    "summary": {
+      "totalAmount": "Total Amount",
+      "entryCount": "Entries"
+    },
+    "filters": {
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
+      "organization": "Organization"
+    },
+    "export": "Export CSV",
+    "exporting": "Exporting...",
+    "exportSuccess": "Ledger exported successfully",
+    "exportError": "Failed to export ledger"
+  },
+  "errors": {
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to view this page.",
+    "notFound": "Page Not Found",
+    "notFoundMessage": "The page you are looking for does not exist or has been moved.",
+    "genericError": "Something Went Wrong",
+    "genericErrorMessage": "An unexpected error occurred. Please try again later.",
+    "goBack": "Go Back",
+    "returnToHome": "Return to Home",
+    "tryAgain": "Try Again"
   }
 }

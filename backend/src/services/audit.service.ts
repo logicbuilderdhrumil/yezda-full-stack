@@ -682,6 +682,381 @@ export class AuditService {
       errorMessage: params.reason,
     });
   }
+
+// App auth session audit logging methods
+
+  /**
+   * Log successful app sign-in
+   */
+  logAppSignInSuccess(params: {
+    userId: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    sessionId: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_IN_SUCCESS',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+        sessionId: params.sessionId,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log failed app sign-in attempt
+   */
+  logAppSignInFailure(params: {
+    email: string;
+    reason: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_IN_FAILURE',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        email: params.email,
+        reason: params.reason,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log app token refresh
+   */
+  logAppTokenRefresh(params: {
+    userId: string;
+    sessionId: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_TOKEN_REFRESH',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        sessionId: params.sessionId,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log app token refresh failure
+   */
+  logAppTokenRefreshFailure(params: {
+    userId?: string;
+    reason: string;
+    deviceId: string;
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_TOKEN_REFRESH_FAILURE',
+      actorId: params.userId,
+      actorType: params.userId ? 'candidate' : undefined,
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        reason: params.reason,
+        deviceId: params.deviceId,
+        appVersion: params.appVersion,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log app sign-out
+   */
+  logAppSignOut(params: {
+    userId: string;
+    sessionId?: string;
+    revokeAll: boolean;
+    revokedCount: number;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_OUT',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      metadata: {
+        sessionId: params.sessionId,
+        revokeAll: params.revokeAll,
+        revokedSessions: params.revokedCount,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log app account lockout
+   */
+  logAppAccountLocked(params: {
+    userId: string;
+    reason: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_ACCOUNT_LOCKED',
+      actorType: 'system',
+      targetId: params.userId,
+      targetType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        reason: params.reason,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: true,
+    });
+  }
+
+  // View Components audit logging methods
+
+  /**
+   * Log view component access
+   */
+  logViewComponentAccess(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    componentType: 'chat' | 'file';
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        componentType: params.componentType,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log view component access denied (cross-tenant attempt)
+   */
+  logViewComponentAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    attemptedTenantId: string;
+    actualTenantId: string;
+    componentType: 'chat' | 'file';
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        attemptedTenantId: params.attemptedTenantId,
+        actualTenantId: params.actualTenantId,
+        componentType: params.componentType,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  // Form builder audit logging methods
+
+  /**
+   * Log form created
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormCreated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    fieldCount: number;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_CREATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        fieldCount: params.fieldCount,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form updated
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormUpdated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    previousVersion: number;
+    newVersion: number;
+    changes: string[];
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_UPDATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        previousVersion: params.previousVersion,
+        newVersion: params.newVersion,
+        changes: params.changes,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form deleted (archived)
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormDeleted(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_DELETED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form accessed
+   * Task 1.5: Audit logging for form access
+   */
+  logFormAccessed(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form access denied (cross-tenant attempt)
+   * Task 1.5: Audit logging for form access denials
+   */
+  logFormAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
 }
 
 export const auditService = new AuditService();

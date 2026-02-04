@@ -1,6 +1,7 @@
 /**
  * Auth module mock fixtures.
  * Provides fake data for authentication endpoints.
+ * Aligned with backend contract.
  */
 
 /** Mock user credential for testing. */
@@ -9,13 +10,17 @@ export const mockCredentials = {
   password: 'Demo123!',
 };
 
-/** Mock authenticated user data. */
+/** Mock authenticated user data - aligned with backend. */
 export const mockUser = {
   id: 'user-001',
   email: 'demo@example.com',
+  displayName: 'Demo User',
   firstName: 'Demo',
   lastName: 'User',
-  role: 'admin',
+  roles: ['admin'] as const,
+  tenantId: 'tenant-001',
+  type: 'user' as const,
+  mfaEnabled: false,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
 };

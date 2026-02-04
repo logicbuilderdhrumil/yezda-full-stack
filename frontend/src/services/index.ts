@@ -1,5 +1,9 @@
 export { AccountService } from './AccountService';
 export { AuthService } from './AuthService';
+export { CandidatesService } from './CandidatesService';
+export { ChatService } from './ChatService';
+export { DashboardService } from './DashboardService';
+export { FormsService } from './FormsService';
 export { OAuthService } from './OAuthService';
 export {
   ApiService,
@@ -32,6 +36,6 @@ export { ExportService, type ExportOptions } from './ExportService';
 export { FormService, type CreateFormRequest, type UpdateFormRequest } from './FormService';
 export { BillingService, type LedgerFilterOptions } from './BillingService';
 export { ChartService } from './ChartService';
-export { ChatService, type MessageListOptions } from './ChatService';
-export { DashboardService } from './DashboardService';
 export { AssetService, type AssetUploadOptions, type AssetListOptions } from './AssetService';
+export { LedgerService } from './LedgerService';
+export { ChatService, type MessageListOptions } from './ChatService';

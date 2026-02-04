@@ -1,50 +1,65 @@
 /**
  * Users module mock fixtures.
  * Provides fake data for user management endpoints.
+ * Aligned with backend contract (user-management.model.ts).
  */
 
-/** Generate a mock user with given id. */
+import type { UserRole } from '@/@types/auth';
+
+/** Generate a mock user with given id - aligned with backend ManagedUser. */
 export function createMockUser(id: string, overrides?: Partial<MockUser>): MockUser {
   return {
     id,
     email: `user${id}@example.com`,
+    displayName: `User ${id}`,
     firstName: `First${id}`,
     lastName: `Last${id}`,
-    role: 'user',
+    roles: ['viewer'],
+    tenantId: 'tenant-001',
     status: 'active',
+    mfaEnabled: false,
     createdAt: '2025-01-01T00:00:00.000Z',
     updatedAt: '2025-01-01T00:00:00.000Z',
     ...overrides,
   };
 }
 
-/** Mock user type. */
+/** Mock user type - aligned with backend ManagedUser. */
 export interface MockUser {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  status: string;
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
+  roles: UserRole[];
+  tenantId: string;
+  status: 'active' | 'inactive' | 'suspended' | 'pending';
+  mfaEnabled: boolean;
+  lockedUntil?: string;
+  lastLoginAt?: string;
+  avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 /** Predefined mock users list. */
 export const mockUsers: MockUser[] = [
-  createMockUser('001', { email: 'admin@example.com', firstName: 'Admin', role: 'admin' }),
-  createMockUser('002', { email: 'manager@example.com', firstName: 'Manager', role: 'manager' }),
-  createMockUser('003', { email: 'user1@example.com', firstName: 'Alice' }),
-  createMockUser('004', { email: 'user2@example.com', firstName: 'Bob' }),
-  createMockUser('005', { email: 'user3@example.com', firstName: 'Charlie', status: 'inactive' }),
+  createMockUser('001', { email: 'admin@example.com', displayName: 'Admin User', roles: ['admin'] }),
+  createMockUser('002', { email: 'manager@example.com', displayName: 'Manager User', roles: ['manager'] }),
+  createMockUser('003', { email: 'agent1@example.com', displayName: 'Alice Agent', roles: ['agent'] }),
+  createMockUser('004', { email: 'agent2@example.com', displayName: 'Bob Agent', roles: ['agent'] }),
+  createMockUser('005', { email: 'viewer@example.com', displayName: 'Charlie Viewer', status: 'inactive' }),
 ];
 
-/** Mock paginated users list response. */
+/** Mock paginated users list response - aligned with backend UserListResult. */
 export const usersListResponse = {
-  data: mockUsers,
+  users: mockUsers,
   total: mockUsers.length,
   page: 1,
-  pageSize: 10,
+  limit: 10,
+  totalPages: 1,
 };
 
 /** Get a single user by ID. */

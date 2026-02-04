@@ -147,3 +147,21 @@ export function isPast(date: Date | string | number): boolean {
 export function isFuture(date: Date | string | number): boolean {
   return toDate(date).getTime() > Date.now();
 }
+
+/**
+ * Formats a number as a currency string.
+ * @param amount - The amount to format
+ * @param currency - The currency code (e.g., 'USD', 'EUR')
+ * @param locale - Locale for formatting
+ * @returns Formatted currency string (e.g., "$1,234.56")
+ */
+export function formatCurrency(
+  amount: number,
+  currency = 'USD',
+  locale = 'en-US'
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(amount);
+}
