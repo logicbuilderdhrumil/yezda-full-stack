@@ -184,6 +184,35 @@ export const UI_KIT_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
 } as const;
 
+// Task 1.7: Metric names for form builder
+export const FORM_BUILDER_METRICS = {
+  CREATE_REQUEST: 'form_builder_create_request_total',
+  UPDATE_REQUEST: 'form_builder_update_request_total',
+  GET_REQUEST: 'form_builder_get_request_total',
+  LIST_REQUEST: 'form_builder_list_request_total',
+  DELETE_REQUEST: 'form_builder_delete_request_total',
+  REQUEST_LATENCY: 'form_builder_request_latency_ms',
+  CACHE_HIT: 'form_builder_cache_hit_total',
+  CACHE_MISS: 'form_builder_cache_miss_total',
+  RATE_LIMIT_HIT: 'form_builder_rate_limit_hit_total',
+} as const;
+
+// Task 1.7: SLO targets for form builder endpoints
+export const FORM_BUILDER_SLOS = {
+  // Latency SLOs
+  REQUEST_LATENCY_P99_MS: 200,
+  REQUEST_LATENCY_P95_MS: 100,
+
+  // Availability SLOs
+  AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
+} as const;
+
 // SLO targets for OAuth endpoints
 export const OAUTH_SLOS = {
   // Latency SLOs
@@ -947,7 +976,7 @@ export class MetricsService {
     };
   }
 
-  // Access error metrics methods
+// Access error metrics methods
 
   /**
    * Record access denied error
@@ -1054,6 +1083,104 @@ export class MetricsService {
     if (rateLimitedCount > ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE) {
       violations.push(
         `Access rate limited ${rateLimitedCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  // Task 1.7: Form builder metrics methods
+
+  /**
+   * Record form builder request
+   */
+  recordFormBuilderRequest(operation: string, success: boolean, durationMs: number): void {
+    this.recordLatency(FORM_BUILDER_METRICS.REQUEST_LATENCY, durationMs, { operation });
+    const metricName = success
+      ? `form_builder_${operation}_success`
+      : `form_builder_${operation}_failure`;
+    this.incrementCounter(metricName, { operation, success: String(success) });
+  }
+
+  /**
+   * Record form builder cache hit
+   */
+  recordFormBuilderCacheHit(): void {
+    this.incrementCounter(FORM_BUILDER_METRICS.CACHE_HIT);
+  }
+
+  /**
+   * Record form builder cache miss
+   */
+  recordFormBuilderCacheMiss(): void {
+    this.incrementCounter(FORM_BUILDER_METRICS.CACHE_MISS);
+  }
+
+  /**
+   * Get form builder P99 latency
+   */
+  getFormBuilderP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === FORM_BUILDER_METRICS.REQUEST_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get form builder cache hit rate
+   */
+  getFormBuilderCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === FORM_BUILDER_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === FORM_BUILDER_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Get form builder rate limit hit count
+   */
+  getFormBuilderRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === FORM_BUILDER_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if form builder SLOs are met
+   * Task 1.7: SLO monitoring for form endpoints
+   */
+  checkFormBuilderSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getFormBuilderP99Latency();
+    if (p99Latency > FORM_BUILDER_SLOS.REQUEST_LATENCY_P99_MS) {
+      violations.push(
+        `Form builder P99 latency ${p99Latency}ms exceeds SLO ${FORM_BUILDER_SLOS.REQUEST_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getFormBuilderCacheHitRate();
+    if (cacheHitRate < FORM_BUILDER_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `Form builder cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${FORM_BUILDER_SLOS.CACHE_HIT_RATE_MIN}%`
+      );
+    }
+
+    const rateLimitHits = this.getFormBuilderRateLimitHitCount();
+    if (rateLimitHits > FORM_BUILDER_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `Form builder rate limit hits ${rateLimitHits}/min exceeds SLO ${FORM_BUILDER_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
       );
     }
 

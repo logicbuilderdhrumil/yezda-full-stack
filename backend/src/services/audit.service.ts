@@ -682,6 +682,162 @@ export class AuditService {
       errorMessage: params.reason,
     });
   }
+
+  // Form builder audit logging methods
+
+  /**
+   * Log form created
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormCreated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    fieldCount: number;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_CREATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        fieldCount: params.fieldCount,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form updated
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormUpdated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    previousVersion: number;
+    newVersion: number;
+    changes: string[];
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_UPDATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        previousVersion: params.previousVersion,
+        newVersion: params.newVersion,
+        changes: params.changes,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form deleted (archived)
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormDeleted(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_DELETED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form accessed
+   * Task 1.5: Audit logging for form access
+   */
+  logFormAccessed(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form access denied (cross-tenant attempt)
+   * Task 1.5: Audit logging for form access denials
+   */
+  logFormAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
 }
 
 export const auditService = new AuditService();
