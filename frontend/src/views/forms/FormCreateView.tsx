@@ -8,7 +8,7 @@ import { PageContainer } from '@/components/layouts';
 import { Card, CardContent, toastSuccess, toastError } from '@/components/ui';
 import { FormsService } from '@/services';
 import { handleApiError } from '@/utils';
-import type { CreateFormPayload, FormSchema, EMPTY_FORM_SCHEMA } from '@/@types/form';
+import type { CreateFormPayload, FormSchema } from '@/@types/form';
 import { FormMetadataForm } from './FormMetadataForm';
 import { FormBuilderCanvas } from './FormBuilderCanvas';
 
