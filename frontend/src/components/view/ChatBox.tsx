@@ -11,7 +11,7 @@ import {
   useRef,
   useEffect,
 } from 'react';
-import { Send, Paperclip, Smile, MoreVertical } from 'lucide-react';
+import { Send, Paperclip, Smile, MoreVertical, Check, CheckCheck, AlertCircle, Circle } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Input';
@@ -119,6 +119,7 @@ export const ChatHeader = forwardRef<HTMLDivElement, ChatHeaderProps>(
               src={avatar}
               alt={title}
               className="h-10 w-10 rounded-full object-cover"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           ) : (
             avatar
@@ -181,6 +182,10 @@ export interface MessageListProps extends HTMLAttributes<HTMLDivElement> {
   isLoading?: boolean;
   /** Empty state content. */
   emptyContent?: ReactNode;
+  /** Title for empty state (i18n support). */
+  emptyTitle?: string;
+  /** Subtitle for empty state (i18n support). */
+  emptySubtitle?: string;
 }
 
 /**
@@ -240,6 +245,8 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       groupThresholdMinutes = 5,
       isLoading,
       emptyContent,
+      emptyTitle = 'No messages yet',
+      emptySubtitle = 'Start the conversation!',
     },
     ref
   ) => {
@@ -247,8 +254,8 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      if (scrollRef.current?.parentElement) {
+        scrollRef.current.parentElement.scrollTop = scrollRef.current.parentElement.scrollHeight;
       }
     }, [messages.length]);
 
@@ -270,7 +277,7 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
         className={cn('flex-1', className)}
         viewportClassName="p-4"
       >
-        <div ref={scrollRef}>
+        <div ref={scrollRef} aria-live="polite" aria-atomic="false">
           {isLoading && (
             <div className="flex items-center justify-center py-8">
               <span className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
@@ -280,8 +287,8 @@ export const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
           {isEmpty &&
             (emptyContent || (
               <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                <p>No messages yet</p>
-                <p className="text-sm">Start the conversation!</p>
+                <p>{emptyTitle}</p>
+                <p className="text-sm">{emptySubtitle}</p>
               </div>
             ))}
 
@@ -415,12 +422,12 @@ export function MessageItem({
       >
         <span className="text-xs opacity-70">{formatTime(message.timestamp)}</span>
         {message.isOwn && message.status && (
-          <span className="text-xs opacity-70">
-            {message.status === 'sending' && '○'}
-            {message.status === 'sent' && '✓'}
-            {message.status === 'delivered' && '✓✓'}
-            {message.status === 'read' && '✓✓'}
-            {message.status === 'error' && '!'}
+          <span className="text-xs opacity-70 inline-flex items-center">
+            {message.status === 'sending' && <Circle className="h-3 w-3" aria-label="Sending" />}
+            {message.status === 'sent' && <Check className="h-3 w-3" aria-label="Sent" />}
+            {message.status === 'delivered' && <CheckCheck className="h-3 w-3" aria-label="Delivered" />}
+            {message.status === 'read' && <CheckCheck className="h-3 w-3 text-blue-500" aria-label="Read" />}
+            {message.status === 'error' && <AlertCircle className="h-3 w-3 text-red-500" aria-label="Error" />}
           </span>
         )}
       </div>
@@ -559,6 +566,8 @@ export function ChatComposer({
         />
         {maxLength > 0 && (
           <span
+            role="status"
+            aria-live="polite"
             className={cn(
               'absolute bottom-1 right-2 text-xs',
               message.length > maxLength * 0.9
