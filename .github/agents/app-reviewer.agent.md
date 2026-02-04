@@ -41,7 +41,7 @@ Ask for evidence, metrics, or missing context.
 - Review the pull request associated with the change proposal.
 - Add review comments directly in the PR.
 - If blocking issues are found, request changes and summarize required fixes.
-- After fixes, re-review and add follow-up PR comments.
+- Expect implementers to fix issues and reply on the PR; re-review after updates.
 - If formal approval is not possible (self-review limits), leave an explicit PR comment: "APPROVED (AI) - ready to merge" when satisfied.
 
 ## Usage Examples
