@@ -82,7 +82,7 @@ export function SignInView(): ReactNode {
 
     if (Object.keys(errors).length > 0) return;
 
-    const success = await signIn(formData);
+    const success = await signIn({ ...formData, userType: 'user' });
     if (success) {
       navigate('/');
     }
