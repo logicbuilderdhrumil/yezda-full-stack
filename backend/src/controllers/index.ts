@@ -17,3 +17,4 @@ export {
 export * from './ui-kit.controller.js';
 export * from './user-management.controller.js';
 export * from './org-management.controller.js';
+export * from './account-settings.controller.js';

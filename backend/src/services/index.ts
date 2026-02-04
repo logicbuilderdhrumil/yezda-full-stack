@@ -25,3 +25,5 @@ export * from './user-management.service.js';
 export * from './user-management-metrics.service.js';
 export * from './org-management.service.js';
 export * from './org-management-metrics.service.js';
+export * from './account-settings.service.js';
+export * from './account-settings-metrics.service.js';
