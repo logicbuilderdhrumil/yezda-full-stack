@@ -35,6 +35,14 @@ export const consentScopeDescriptions: Record<ConsentScope, string> = {
 /** Consent decision status */
 export type ConsentStatus = 'pending' | 'granted' | 'denied' | 'withdrawn';
 
+/** Workflow state for consent processing (aligned with backend) */
+export type ConsentWorkflowState =
+  | 'awaiting_response'
+  | 'accepted'
+  | 'declined'
+  | 'expired'
+  | 'revoked';
+
 /** A single consent decision record */
 export interface ConsentDecision {
   id: string;
@@ -43,9 +51,12 @@ export interface ConsentDecision {
   sourceApplicationId: string;
   scopes: ConsentScope[];
   status: ConsentStatus;
+  workflowState: ConsentWorkflowState;
   grantedAt?: number; // Unix timestamp in milliseconds
   withdrawnAt?: number; // Unix timestamp in milliseconds
   expiresAt?: number; // Unix timestamp in milliseconds
+  createdAt: number;
+  updatedAt: number;
 }
 
 /** Consent prompt request from backend */
@@ -56,6 +67,7 @@ export interface ConsentPromptRequest {
   sourceOrganization: string;
   targetOrganization: string;
   sourceDate: string; // ISO date string
+  workflowState: ConsentWorkflowState;
 }
 
 /** Consent submission payload */
@@ -69,6 +81,21 @@ export interface ConsentSubmitRequest {
 /** Consent submission response */
 export interface ConsentSubmitResponse {
   consent: ConsentDecision;
+  workflowState: ConsentWorkflowState;
+}
+
+/** Validation error detail for field-level errors */
+export interface ValidationErrorDetail {
+  field: string;
+  message: string;
+  code: string;
+}
+
+/** Standardized API error response */
+export interface ApiErrorResponse {
+  code: string;
+  message: string;
+  details?: ValidationErrorDetail[];
 }
 
 /** Consent update request (for modifying or withdrawing) */

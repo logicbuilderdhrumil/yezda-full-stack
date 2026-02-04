@@ -8,14 +8,26 @@ export type ApplicationStatus =
   | 'pending'
   | 'in_progress'
   | 'submitted'
+  | 'under_review'
   | 'approved'
   | 'rejected';
+
+/** Submission lifecycle state (aligned with backend) */
+export type SubmissionLifecycleState =
+  | 'draft'
+  | 'validating'
+  | 'submitting'
+  | 'submitted'
+  | 'processing'
+  | 'completed'
+  | 'failed';
 
 /** Application summary for list view */
 export interface ApplicationSummary {
   id: string;
   title: string;
   status: ApplicationStatus;
+  lifecycleState: SubmissionLifecycleState;
   dueDate: string | null;
   progress: number; // 0-100
   createdAt: string;
@@ -28,6 +40,7 @@ export interface Application {
   title: string;
   description?: string;
   status: ApplicationStatus;
+  lifecycleState: SubmissionLifecycleState;
   dueDate: string | null;
   progress: number;
   sections: FormSection[];
@@ -177,6 +190,7 @@ export interface SaveDraftRequest {
 export interface SaveDraftResponse {
   success: boolean;
   savedAt: number;
+  lifecycleState: SubmissionLifecycleState;
 }
 
 export interface SubmitApplicationRequest {
@@ -187,4 +201,19 @@ export interface SubmitApplicationResponse {
   success: boolean;
   submittedAt: string;
   message: string;
+  lifecycleState: SubmissionLifecycleState;
+}
+
+/** Validation error detail for field-level errors */
+export interface ValidationErrorDetail {
+  field: string;
+  message: string;
+  code: string;
+}
+
+/** Standardized API error response */
+export interface ApiErrorResponse {
+  code: string;
+  message: string;
+  details?: ValidationErrorDetail[];
 }

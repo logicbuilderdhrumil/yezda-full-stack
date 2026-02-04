@@ -19,8 +19,6 @@ export * from './ui-kit.controller.js';
 export * from './user-management.controller.js';
 export * from './org-management.controller.js';
 export * from './account-settings.controller.js';
-export * from './app-consent.controller.js';
-export * from './app-application-intake.controller.js';
 export * from './view-components.controller.js';
 export * from './candidate-management.controller.js';
 export * from './form-builder.controller.js';
@@ -44,3 +42,6 @@ export {
   getProfileSummary,
   getHealthSummary as getTemplateLayoutsHealthSummary,
 } from './template-layouts.controller.js';
+// Integration: consent and application controllers
+export * from './consent.controller.js';
+export * from './application.controller.js';
