@@ -17,6 +17,11 @@ const AccountIntegrationsView = lazy(() =>
     default: m.AccountIntegrationsView,
   }))
 );
+const AccountSettingsView = lazy(() =>
+  import('@/views/account/AccountSettingsView').then((m) => ({
+    default: m.AccountSettingsView,
+  }))
+);
 
 // Organization views (admin only)
 const OrganizationsListView = lazy(() =>
@@ -37,6 +42,28 @@ const OrganizationEditView = lazy(() =>
 const OrganizationDetailsView = lazy(() =>
   import('@/views/organizations/OrganizationDetailsView').then((m) => ({
     default: m.OrganizationDetailsView,
+  }))
+);
+
+// User views (admin only)
+const UsersListView = lazy(() =>
+  import('@/views/users/UsersListView').then((m) => ({
+    default: m.UsersListView,
+  }))
+);
+const UserCreateView = lazy(() =>
+  import('@/views/users/UserCreateView').then((m) => ({
+    default: m.UserCreateView,
+  }))
+);
+const UserEditView = lazy(() =>
+  import('@/views/users/UserEditView').then((m) => ({
+    default: m.UserEditView,
+  }))
+);
+const UserDetailsView = lazy(() =>
+  import('@/views/users/UserDetailsView').then((m) => ({
+    default: m.UserDetailsView,
   }))
 );
 
@@ -93,6 +120,10 @@ export const protectedRoutes: RouteObject[] = [
         element: withSuspense(HomeView),
       },
       {
+        path: 'account/settings',
+        element: withSuspense(AccountSettingsView),
+      },
+      {
         path: 'account/integrations',
         element: withSuspense(AccountIntegrationsView),
       },
@@ -112,6 +143,23 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'organizations/:id/edit',
         element: withAdminGuard(OrganizationEditView),
+      },
+      // User management routes (admin only)
+      {
+        path: 'users',
+        element: withAdminGuard(UsersListView),
+      },
+      {
+        path: 'users/new',
+        element: withAdminGuard(UserCreateView),
+      },
+      {
+        path: 'users/:id',
+        element: withAdminGuard(UserDetailsView),
+      },
+      {
+        path: 'users/:id/edit',
+        element: withAdminGuard(UserEditView),
       },
       // Additional protected routes will be added here
     ],
