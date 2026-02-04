@@ -54,22 +54,25 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
     const updatedField: FormFieldType = {
       ...field,
       label,
-      placeholder: placeholder || undefined,
-      helperText: helperText || undefined,
-      validation: {
-        ...field.validation,
-        required,
-        ...(field.type === 'text' && {
-          minLength: minLength ? parseInt(minLength, 10) : undefined,
-          maxLength: maxLength ? parseInt(maxLength, 10) : undefined,
-        }),
-        ...(field.type === 'number' && {
-          min: min ? parseFloat(min) : undefined,
-          max: max ? parseFloat(max) : undefined,
-        }),
-      },
-      ...(field.type === 'select' && { options }),
+      validation: { required },
     };
+
+    // Only set optional properties if they have values
+    if (placeholder) updatedField.placeholder = placeholder;
+    if (helperText) updatedField.helperText = helperText;
+
+    // Set validation rules based on field type
+    if (field.type === 'text') {
+      if (minLength) updatedField.validation!.minLength = parseInt(minLength, 10);
+      if (maxLength) updatedField.validation!.maxLength = parseInt(maxLength, 10);
+    }
+    if (field.type === 'number') {
+      if (min) updatedField.validation!.min = parseFloat(min);
+      if (max) updatedField.validation!.max = parseFloat(max);
+    }
+    if (field.type === 'select') {
+      updatedField.options = options;
+    }
     onUpdate(updatedField);
   }, [field, label, placeholder, helperText, required, minLength, maxLength, min, max, options, onUpdate]);
 
@@ -83,7 +86,8 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
 
   const handleUpdateOption = (index: number, key: 'value' | 'label', value: string) => {
     const newOptions = [...options];
-    newOptions[index] = { ...newOptions[index], [key]: value };
+    const existingOption = newOptions[index]!;
+    newOptions[index] = { value: existingOption.value, label: existingOption.label, [key]: value };
     setOptions(newOptions);
   };
 

@@ -34,12 +34,15 @@ export function FormEditView(): ReactNode {
       try {
         const data = await FormsService.get(id);
         setForm(data);
-        setFormData({
+        const update: UpdateFormPayload = {
           name: data.name,
-          description: data.description,
           status: data.status,
           schema: data.schema,
-        });
+        };
+        if (data.description !== undefined) {
+          update.description = data.description;
+        }
+        setFormData(update);
       } catch (error) {
         toastError(t('forms.edit.fetchError'));
         console.error('Failed to fetch form:', error);

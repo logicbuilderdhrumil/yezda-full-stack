@@ -86,9 +86,12 @@ export function FormMetadataForm({
 
     const formData: Partial<CreateFormPayload> = {
       name: name.trim(),
-      description: description.trim() || undefined,
       status,
     };
+    const trimmedDescription = description.trim();
+    if (trimmedDescription) {
+      formData.description = trimmedDescription;
+    }
 
     const validationErrors = validateForm(formData, t);
     if (hasErrors(validationErrors)) {

@@ -91,8 +91,8 @@ function PreviewField({ field }: { field: FormFieldType }): ReactNode {
   return (
     <FormField
       label={field.label}
-      helperText={field.helperText}
-      required={field.validation?.required}
+      {...(field.helperText && { helperText: field.helperText })}
+      {...(field.validation?.required !== undefined && { required: field.validation.required })}
     >
       {renderInput()}
     </FormField>

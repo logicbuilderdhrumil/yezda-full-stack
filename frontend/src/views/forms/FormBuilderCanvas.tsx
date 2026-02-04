@@ -88,7 +88,9 @@ export function FormBuilderCanvas({
     if (newIndex < 0 || newIndex >= schema.fields.length) return;
 
     const newFields = [...schema.fields];
-    [newFields[index], newFields[newIndex]] = [newFields[newIndex], newFields[index]];
+    const temp = newFields[index]!;
+    newFields[index] = newFields[newIndex]!;
+    newFields[newIndex] = temp;
     onSchemaChange({ ...schema, fields: newFields });
   };
 
@@ -96,7 +98,7 @@ export function FormBuilderCanvas({
     return (
       <FormPreview
         schema={schema}
-        formName={formName}
+        {...(formName !== undefined && { formName })}
         onClose={() => setShowPreview(false)}
       />
     );
