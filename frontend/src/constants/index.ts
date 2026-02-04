@@ -29,3 +29,21 @@ export {
   getTemplatePath,
   type AssetType,
 } from './assets.constant';
+
+export {
+  type ChartColorPalette,
+  type ChartGradient,
+  lightChartColors,
+  darkChartColors,
+  chartColorsByTheme,
+  createAreaGradients,
+  getValueColor,
+  getChangeColor,
+  getSeriesColor,
+  CHART_BREAKPOINTS,
+  SPARKLINE_SIZE,
+  CHART_ANIMATIONS,
+  formatChartNumber,
+  formatChartPercent,
+  formatChartCurrency,
+} from './chart.constant';
