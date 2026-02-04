@@ -24,3 +24,10 @@ export { OrganizationsService } from './OrganizationsService';
 export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
 export { NotificationsService } from './NotificationsService';
+export {
+  FileService,
+  type FileUploadResponse,
+  type UploadOptions,
+  type DownloadOptions,
+  type SignedUrlResponse,
+} from './FileService';
