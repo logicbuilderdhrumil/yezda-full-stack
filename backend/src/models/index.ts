@@ -35,3 +35,4 @@ export * from './oauth.model.js';
 export * from './theme.model.js';
 export * from './org-management.model.js';
 export * from './account-settings.model.js';
+export * from './template-layouts.model.js';

@@ -18,3 +18,9 @@ export * from './ui-kit.controller.js';
 export * from './user-management.controller.js';
 export * from './org-management.controller.js';
 export * from './account-settings.controller.js';
+// Template layouts controller exports explicitly to avoid getHealthSummary naming conflict
+export {
+  getLayoutNavigation,
+  getProfileSummary,
+  getHealthSummary as getTemplateLayoutsHealthSummary,
+} from './template-layouts.controller.js';
