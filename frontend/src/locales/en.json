@@ -7,6 +7,7 @@
     "candidates": "Candidates",
     "organizations": "Organizations",
     "users": "Users",
+    "forms": "Forms",
     "screening": "Screening",
     "reports": "Reports",
     "settings": "Settings",
@@ -514,6 +515,117 @@
       "removeError": "Failed to remove avatar",
       "invalidType": "Please upload a valid image file (JPG, PNG, WebP, or GIF)",
       "tooLarge": "Image must be less than 5MB"
+    }
+  },
+  "forms": {
+    "list": {
+      "title": "Forms",
+      "description": "Manage dynamic forms for candidate workflows",
+      "searchPlaceholder": "Search forms...",
+      "filterStatus": "Filter by status",
+      "createButton": "Create Form",
+      "noResults": "No forms found",
+      "fetchError": "Failed to load forms"
+    },
+    "create": {
+      "title": "Create Form",
+      "description": "Build a new form for collecting candidate information",
+      "success": "Form created successfully",
+      "error": "Failed to create form",
+      "nextStep": "Continue to Builder"
+    },
+    "edit": {
+      "title": "Edit Form",
+      "description": "Update form: {{name}}",
+      "success": "Form updated successfully",
+      "error": "Failed to update form",
+      "fetchError": "Failed to load form",
+      "nextStep": "Continue to Builder"
+    },
+    "details": {
+      "title": "Form Details",
+      "description": "View form information",
+      "fetchError": "Failed to load form",
+      "id": "ID",
+      "status": "Status",
+      "createdAt": "Created",
+      "updatedAt": "Last Updated",
+      "overview": "Overview",
+      "schema": "Fields",
+      "noFields": "No fields defined"
+    },
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "status": "Status",
+      "created": "Created"
+    },
+    "status": {
+      "all": "All Statuses",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter form name",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the purpose of this form",
+      "descriptionHelper": "Optional description for internal reference",
+      "status": "Status",
+      "sections": {
+        "basicInfo": "Basic Information",
+        "basicInfoDescription": "Configure the form name and description"
+      },
+      "validation": {
+        "nameRequired": "Form name is required"
+      }
+    },
+    "builder": {
+      "title": "Form Builder",
+      "fieldPalette": "Field Types",
+      "canvas": "Form Canvas",
+      "configPanel": "Field Settings",
+      "emptyCanvas": "Click a field type to add it to your form",
+      "selectField": "Select a field to configure",
+      "paletteHint": "Click to add a field",
+      "preview": "Preview"
+    },
+    "fieldTypes": {
+      "text": "Text",
+      "number": "Number",
+      "date": "Date",
+      "select": "Select",
+      "file": "File Upload"
+    },
+    "config": {
+      "general": "General",
+      "label": "Label",
+      "placeholder": "Placeholder",
+      "helperText": "Helper Text",
+      "required": "Required",
+      "validation": "Validation",
+      "minLength": "Min Length",
+      "maxLength": "Max Length",
+      "min": "Minimum",
+      "max": "Maximum",
+      "options": "Options",
+      "optionValue": "Value",
+      "optionLabel": "Label",
+      "addOption": "Add Option",
+      "deleteField": "Delete Field",
+      "moveUp": "Move Up",
+      "moveDown": "Move Down",
+      "removeOption": "Remove Option"
+    },
+    "preview": {
+      "title": "Form Preview",
+      "closePreview": "Close Preview",
+      "backToBuilder": "Back to Builder",
+      "submit": "Submit",
+      "untitled": "Untitled Form",
+      "noFields": "This form has no fields",
+      "selectPlaceholder": "Select an option..."
     }
   },
   "errors": {
