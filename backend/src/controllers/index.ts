@@ -33,3 +33,4 @@ export {
 export * from './chat.controller.js';
 export * from './charting.controller.js';
 export * from './billing-ledger.controller.js';
+export * from './home-dashboard.controller.js';

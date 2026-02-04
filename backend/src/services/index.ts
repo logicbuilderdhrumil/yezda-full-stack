@@ -41,3 +41,5 @@ export * from './charting.service.js';
 export * from './charting-metrics.service.js';
 export * from './billing-ledger.service.js';
 export * from './billing-ledger-metrics.service.js';
+export * from './home-dashboard.service.js';
+export * from './home-dashboard-metrics.service.js';

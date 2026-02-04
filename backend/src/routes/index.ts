@@ -19,6 +19,7 @@ import assetManagementRoutes from './asset-management.routes.js';
 import chatRoutes from './chat.routes.js';
 import chartingRoutes from './charting.routes.js';
 import billingLedgerRoutes from './billing-ledger.routes.js';
+import homeDashboardRoutes from './home-dashboard.routes.js';
 
 const router = Router();
 
@@ -42,5 +43,6 @@ router.use('/assets', assetManagementRoutes);
 router.use('/chat', chatRoutes);
 router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerRoutes);
+router.use('/dashboard', homeDashboardRoutes);
 
 export default router;
