@@ -12,6 +12,7 @@ import uiKitRoutes from './ui-kit.routes.js';
 import userManagementRoutes from './user-management.routes.js';
 import orgManagementRoutes from './org-management.routes.js';
 import accountSettingsRoutes from './account-settings.routes.js';
+import candidateManagementRoutes from './candidate-management.routes.js';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/ui-kit', uiKitRoutes);
 router.use('/users', userManagementRoutes);
 router.use('/organizations', orgManagementRoutes);
 router.use('/account', accountSettingsRoutes);
+router.use('/candidates', candidateManagementRoutes);
 
 export default router;
