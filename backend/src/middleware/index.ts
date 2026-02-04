@@ -26,3 +26,4 @@ export * from './org-management-rate-limit.middleware.js';
 export * from './candidate-management-rate-limit.middleware.js';
 export * from './candidate-management-validation.middleware.js';
 export * from './form-builder-rate-limit.middleware.js';
+export * from './file-management-rate-limit.middleware.js';

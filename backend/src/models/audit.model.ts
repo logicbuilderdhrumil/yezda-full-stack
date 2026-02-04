@@ -96,7 +96,16 @@ export type AuditEventType =
   | 'FORM_UPDATED'
   | 'FORM_DELETED'
   | 'FORM_ACCESSED'
-  | 'FORM_ACCESS_DENIED';
+  | 'FORM_ACCESS_DENIED'
+  // File management audit events
+  | 'FILE_UPLOADED'
+  | 'FILE_DOWNLOADED'
+  | 'FILE_DELETED'
+  | 'FILE_ACCESS_DENIED'
+  | 'FILE_SCAN_COMPLETED'
+  | 'FILE_SCAN_FAILED'
+  | 'FILE_VALIDATION_FAILED'
+  | 'FILE_RATE_LIMITED';
 
 export interface AuditEvent {
   id: string;
