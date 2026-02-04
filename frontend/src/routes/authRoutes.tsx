@@ -6,6 +6,7 @@ import {
   ResetPasswordView,
   CandidateResetPasswordView,
   TotpVerifyView,
+  OAuthCallbackView,
 } from '@/views/auth';
 import { PublicRoute } from '@/components/route';
 
@@ -53,5 +54,13 @@ export const authRoutes: RouteObject[] = [
   {
     path: '/totp-verify',
     element: <TotpVerifyView />,
+  },
+  {
+    path: '/oauth/callback',
+    element: <OAuthCallbackView />,
+  },
+  {
+    path: '/oauth/callback/:provider',
+    element: <OAuthCallbackView />,
   },
 ];
