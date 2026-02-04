@@ -1,6 +1,7 @@
 /**
  * Unit tests for auth service.
  * Task 1.8: Add unit and integration tests for auth flows.
+ * Integration: Tests aligned with backend auth.routes.ts contracts.
  */
 
 import { AuthApiError } from '../services/authService';
@@ -28,17 +29,13 @@ describe('signIn', () => {
     mockFetch.mockReset();
   });
 
-  it('returns tokens and user on successful sign-in', async () => {
+  it('returns tokens on successful sign-in (aligned with backend response)', async () => {
+    // Backend returns flat token fields, not nested tokens object
     const mockResponse = {
-      tokens: {
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        expiresAt: Date.now() + 3600000,
-      },
-      user: {
-        id: 'user-1',
-        email: 'test@example.com',
-      },
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -46,24 +43,31 @@ describe('signIn', () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await signIn({ email: 'test@example.com', password: 'password' });
+    const result = await signIn({
+      email: 'test@example.com',
+      password: 'password',
+      userType: 'candidate',
+    });
 
-    expect(result).toEqual(mockResponse);
+    expect(result.accessToken).toBe('access-token');
+    expect(result.tokenType).toBe('Bearer');
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('/v1/auth/signin'),
       expect.objectContaining({
         method: 'POST',
-        body: JSON.stringify({ email: 'test@example.com', password: 'password' }),
+        body: JSON.stringify({
+          email: 'test@example.com',
+          password: 'password',
+          userType: 'candidate',
+        }),
       })
     );
   });
 
-  it('returns MFA challenge when required', async () => {
+  it('returns MFA challenge when required (aligned with backend response)', async () => {
     const mockResponse = {
-      mfaChallenge: {
-        challengeId: 'challenge-123',
-        type: 'totp',
-      },
+      requiresMfa: true,
+      mfaSessionToken: 'mfa-session-uuid',
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -71,10 +75,15 @@ describe('signIn', () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await signIn({ email: 'test@example.com', password: 'password' });
+    const result = await signIn({
+      email: 'test@example.com',
+      password: 'password',
+      userType: 'user',
+    });
 
-    expect(result.mfaChallenge).toEqual(mockResponse.mfaChallenge);
-    expect(result.tokens).toBeUndefined();
+    expect(result.requiresMfa).toBe(true);
+    expect(result.mfaSessionToken).toBe('mfa-session-uuid');
+    expect(result.accessToken).toBeUndefined();
   });
 
   it('throws AuthApiError for invalid credentials', async () => {
@@ -85,7 +94,7 @@ describe('signIn', () => {
     });
 
     await expect(
-      signIn({ email: 'test@example.com', password: 'wrong' })
+      signIn({ email: 'test@example.com', password: 'wrong', userType: 'candidate' })
     ).rejects.toThrow(AuthApiError);
   });
 
@@ -97,7 +106,7 @@ describe('signIn', () => {
     });
 
     await expect(
-      signIn({ email: 'test@example.com', password: 'password' })
+      signIn({ email: 'test@example.com', password: 'password', userType: 'candidate' })
     ).rejects.toMatchObject({
       code: 'ACCOUNT_LOCKED',
       status: 423,
@@ -108,7 +117,7 @@ describe('signIn', () => {
     mockFetch.mockRejectedValueOnce(new TypeError('Network request failed'));
 
     await expect(
-      signIn({ email: 'test@example.com', password: 'password' })
+      signIn({ email: 'test@example.com', password: 'password', userType: 'candidate' })
     ).rejects.toMatchObject({
       code: 'NETWORK_ERROR',
     });
@@ -120,17 +129,13 @@ describe('verifyMfa', () => {
     mockFetch.mockReset();
   });
 
-  it('returns tokens on successful verification', async () => {
+  it('returns tokens on successful verification (aligned with backend response)', async () => {
+    // Backend returns flat token fields
     const mockResponse = {
-      tokens: {
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        expiresAt: Date.now() + 3600000,
-      },
-      user: {
-        id: 'user-1',
-        email: 'test@example.com',
-      },
+      accessToken: 'access-token',
+      refreshToken: 'refresh-token',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -138,9 +143,13 @@ describe('verifyMfa', () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await verifyMfa({ challengeId: 'challenge-123', code: '123456' });
+    const result = await verifyMfa({
+      mfaSessionToken: '550e8400-e29b-41d4-a716-446655440000',
+      mfaCode: '123456',
+    });
 
-    expect(result).toEqual(mockResponse);
+    expect(result.accessToken).toBe('access-token');
+    expect(result.tokenType).toBe('Bearer');
   });
 
   it('throws AuthApiError for invalid code', async () => {
@@ -151,7 +160,7 @@ describe('verifyMfa', () => {
     });
 
     await expect(
-      verifyMfa({ challengeId: 'challenge-123', code: '000000' })
+      verifyMfa({ mfaSessionToken: '550e8400-e29b-41d4-a716-446655440000', mfaCode: '000000' })
     ).rejects.toMatchObject({
       code: 'MFA_FAILED',
     });
@@ -163,13 +172,13 @@ describe('refreshTokens', () => {
     mockFetch.mockReset();
   });
 
-  it('returns new tokens on successful refresh', async () => {
+  it('returns new tokens on successful refresh (aligned with backend response)', async () => {
+    // Backend returns flat token fields
     const mockResponse = {
-      tokens: {
-        accessToken: 'new-access-token',
-        refreshToken: 'new-refresh-token',
-        expiresAt: Date.now() + 3600000,
-      },
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -179,7 +188,8 @@ describe('refreshTokens', () => {
 
     const result = await refreshTokens('old-refresh-token');
 
-    expect(result).toEqual(mockResponse);
+    expect(result.accessToken).toBe('new-access-token');
+    expect(result.tokenType).toBe('Bearer');
   });
 
   it('throws AuthApiError for expired refresh token', async () => {
