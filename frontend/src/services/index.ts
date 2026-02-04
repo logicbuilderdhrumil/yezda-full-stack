@@ -1,4 +1,5 @@
 export { AuthService } from './AuthService';
+export { OAuthService } from './OAuthService';
 export {
   ApiService,
   initializeApiService,
@@ -20,3 +21,4 @@ export {
 } from './axios';
 export { OrganizationsService } from './OrganizationsService';
 export { SocketService } from './SocketService';
+export { NotificationsService } from './NotificationsService';

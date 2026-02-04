@@ -12,6 +12,11 @@ const HomeView = lazy(() =>
 const AccessDeniedView = lazy(() =>
   import('@/views/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
 );
+const AccountIntegrationsView = lazy(() =>
+  import('@/views/account/AccountIntegrationsView').then((m) => ({
+    default: m.AccountIntegrationsView,
+  }))
+);
 
 // Organization views (admin only)
 const OrganizationsListView = lazy(() =>
@@ -87,6 +92,10 @@ export const protectedRoutes: RouteObject[] = [
         index: true,
         element: withSuspense(HomeView),
       },
+      {
+        path: 'account/integrations',
+        element: withSuspense(AccountIntegrationsView),
+      },
       // Organization management routes (admin only)
       {
         path: 'organizations',
@@ -104,6 +113,7 @@ export const protectedRoutes: RouteObject[] = [
         path: 'organizations/:id/edit',
         element: withAdminGuard(OrganizationEditView),
       },
+      // Additional protected routes will be added here
     ],
   },
   {

@@ -184,5 +184,29 @@
         "emailInvalid": "Please enter a valid email address"
       }
     }
+  },
+  "oauth": {
+    "verifying": "Verifying connection...",
+    "verificationTitle": "OAuth Verification",
+    "verificationSubtitle": "Processing your integration connection",
+    "successTitle": "Connection Successful",
+    "errorTitle": "Connection Failed",
+    "connectionSuccess": "{{provider}} connected successfully",
+    "connectionFailed": "Failed to connect integration",
+    "continue": "Continue",
+    "tryAgain": "Try Again",
+    "integrationsTitle": "Integrations",
+    "integrationsDescription": "Connect external services to enhance your workflow",
+    "connected": "Connected",
+    "error": "Error",
+    "connectedAs": "Connected as {{account}}",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "disconnecting": "Disconnecting {{provider}}...",
+    "disconnected": "{{provider}} disconnected",
+    "disconnectError": "Failed to disconnect {{provider}}",
+    "connectError": "Failed to connect {{provider}}",
+    "loadError": "Failed to load integrations",
+    "noProviders": "No integrations available"
   }
 }
