@@ -4,6 +4,7 @@
 import { useState, type ReactNode, type FormEvent } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CheckCircle } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -49,6 +50,8 @@ export function CandidateSubmissionView(): ReactNode {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
+  /** Honeypot field for bot protection - should remain empty */
+  const [website, setWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
@@ -102,6 +105,12 @@ export function CandidateSubmissionView(): ReactNode {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    // Bot protection: if honeypot field is filled, silently reject
+    if (website) {
+      setIsSubmitted(true);
+      return;
+    }
+
     const validationErrors = validateForm();
     if (hasErrors(validationErrors)) {
       setErrors(validationErrors);
@@ -151,7 +160,9 @@ export function CandidateSubmissionView(): ReactNode {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <div className="text-6xl mb-4">✓</div>
+            <div role="status" aria-label={t('candidates.submission.thankYouTitle')} className="flex justify-center mb-4">
+              <CheckCircle className="h-16 w-16 text-green-500" aria-hidden="true" />
+            </div>
             <p className="text-gray-600 dark:text-gray-400">
               {t('candidates.submission.confirmationText')}
             </p>
@@ -227,6 +238,19 @@ export function CandidateSubmissionView(): ReactNode {
                     disabled={isSubmitting}
                   />
                 </FormField>
+              </div>
+              {/* Honeypot field for bot protection - hidden from users, visible to bots */}
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="website">Website</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
               </div>
             </FormSection>
 

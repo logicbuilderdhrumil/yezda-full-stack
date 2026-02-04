@@ -229,6 +229,7 @@ export function CandidatesListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('firstName')}
+                  aria-sort={sortBy === 'firstName' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('candidates.columns.name')}
                   {renderSortIcon('firstName')}
@@ -236,6 +237,7 @@ export function CandidatesListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('email')}
+                  aria-sort={sortBy === 'email' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('candidates.columns.email')}
                   {renderSortIcon('email')}
@@ -245,6 +247,7 @@ export function CandidatesListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('createdAt')}
+                  aria-sort={sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('candidates.columns.created')}
                   {renderSortIcon('createdAt')}

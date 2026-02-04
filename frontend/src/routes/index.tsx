@@ -155,7 +155,13 @@ export const publicRoutes: RouteObject[] = [
     path: '/access-denied',
     element: withSuspense(AccessDeniedView),
   },
-  // Public candidate submission form
+  /**
+   * Public candidate submission form.
+   * Security Note: This endpoint is public and should have rate limiting and
+   * bot protection implemented at the API gateway or backend level.
+   * The form includes a honeypot field for basic bot detection.
+   * Backend should validate formId and org parameters before processing.
+   */
   {
     path: '/submit/:formId',
     element: withSuspense(CandidateSubmissionView),

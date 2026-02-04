@@ -40,6 +40,55 @@ interface ParsedCandidate extends CreateCandidatePayload {
 }
 
 /**
+ * Parse a single CSV line with RFC 4180 compliant handling for quoted fields.
+ * Handles commas within quoted fields correctly.
+ */
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  let i = 0;
+
+  while (i < line.length) {
+    const char = line[i];
+
+    if (inQuotes) {
+      if (char === '"') {
+        // Check for escaped quote (double quote)
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"';
+          i += 2;
+        } else {
+          // End of quoted field
+          inQuotes = false;
+          i++;
+        }
+      } else {
+        current += char;
+        i++;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+        i++;
+      } else if (char === ',') {
+        result.push(current.trim());
+        current = '';
+        i++;
+      } else {
+        current += char;
+        i++;
+      }
+    }
+  }
+
+  // Push the last field
+  result.push(current.trim());
+
+  return result;
+}
+
+/**
  * Parse CSV content into candidate records.
  */
 function parseCSV(content: string): ParsedCandidate[] {
@@ -53,7 +102,7 @@ function parseCSV(content: string): ParsedCandidate[] {
   if (!headerLine) {
     return [];
   }
-  const header = headerLine.toLowerCase().split(',').map((h) => h.trim());
+  const header = parseCSVLine(headerLine).map((h) => h.toLowerCase());
   const emailIndex = header.indexOf('email');
   const firstNameIndex = header.indexOf('firstname');
   const lastNameIndex = header.indexOf('lastname');
@@ -69,7 +118,7 @@ function parseCSV(content: string): ParsedCandidate[] {
     const currentLine = lines[i];
     if (!currentLine) continue;
     
-    const values = currentLine.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
+    const values = parseCSVLine(currentLine);
     const email = values[emailIndex] || '';
     const firstName = values[firstNameIndex] || '';
     const lastName = values[lastNameIndex] || '';
