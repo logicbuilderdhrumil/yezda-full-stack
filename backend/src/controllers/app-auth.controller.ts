@@ -18,7 +18,7 @@ function getClientInfo(req: Request) {
 }
 
 /**
- * POST /api/v1/app/auth/signin
+ * POST /api/v1/app/auth/sign-in
  * App sign-in for candidates
  */
 export async function appSignIn(req: Request, res: Response): Promise<void> {
@@ -128,7 +128,7 @@ export async function appRefreshToken(req: Request, res: Response): Promise<void
 }
 
 /**
- * POST /api/v1/app/auth/signout
+ * POST /api/v1/app/auth/sign-out
  * Sign out from the current app session
  */
 export async function appSignOut(req: AuthenticatedRequest, res: Response): Promise<void> {

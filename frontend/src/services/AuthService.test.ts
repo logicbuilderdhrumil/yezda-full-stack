@@ -138,7 +138,7 @@ describe('AuthService', () => {
         AuthService.requestPasswordReset({ email: 'test@example.com' })
       ).resolves.toBeUndefined();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/forgot-password', {
+      expect(mockClient.post).toHaveBeenCalledWith('/password/reset-request', {
         email: 'test@example.com',
       });
     });
@@ -156,7 +156,7 @@ describe('AuthService', () => {
         AuthService.resetPassword({ token: 'reset-token', password: 'NewPassword123' })
       ).resolves.toBeUndefined();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/reset-password', {
+      expect(mockClient.post).toHaveBeenCalledWith('/password/reset-complete', {
         token: 'reset-token',
         password: 'NewPassword123',
       });
@@ -200,7 +200,7 @@ describe('AuthService', () => {
         totpCode: '123456',
       });
 
-      expect(mockClient.post).toHaveBeenCalledWith('/verify-totp', {
+      expect(mockClient.post).toHaveBeenCalledWith('/mfa/verify', {
         mfaToken: 'mfa-token-789',
         totpCode: '123456',
       });

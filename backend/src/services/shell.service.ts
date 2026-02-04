@@ -177,8 +177,8 @@ const NAVIGATION_ITEMS: NavItem[] = [
  */
 const ROUTE_POLICIES: RoutePolicy[] = [
   { route: '/health', public: true },
-  { route: '/api/v1/auth/signin', public: true, methods: ['POST'] },
-  { route: '/api/v1/auth/signup', public: true, methods: ['POST'] },
+  { route: '/api/v1/auth/sign-in', public: true, methods: ['POST'] },
+  { route: '/api/v1/auth/sign-up', public: true, methods: ['POST'] },
   { route: '/api/v1/auth/refresh', public: true, methods: ['POST'] },
   { route: '/api/v1/auth/password/*', public: true, methods: ['POST'] },
   { route: '/api/v1/shell/config', public: true, methods: ['GET'] },

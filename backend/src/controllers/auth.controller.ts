@@ -21,7 +21,7 @@ function getClientInfo(req: Request) {
 }
 
 /**
- * POST /api/v1/auth/signup
+ * POST /api/v1/auth/sign-up
  * Create a new user or candidate account
  */
 export async function signUp(req: Request, res: Response): Promise<void> {
@@ -38,7 +38,7 @@ export async function signUp(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * POST /api/v1/auth/signin
+ * POST /api/v1/auth/sign-in
  * Sign in with email and password
  */
 export async function signIn(req: Request, res: Response): Promise<void> {
@@ -131,7 +131,7 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * POST /api/v1/auth/signout
+ * POST /api/v1/auth/sign-out
  * Sign out the current session
  */
 export async function signOut(req: AuthenticatedRequest, res: Response): Promise<void> {

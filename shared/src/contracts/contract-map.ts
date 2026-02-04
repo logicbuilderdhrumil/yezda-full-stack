@@ -102,7 +102,7 @@ export const FOUNDATION_API_CONTRACTS = {
   },
   'auth.signOut': {
     method: 'POST',
-    path: '/auth/signout',
+    path: '/auth/sign-out',
     description: 'Sign out the current session',
     auth: true,
     response: '{ message: string }',

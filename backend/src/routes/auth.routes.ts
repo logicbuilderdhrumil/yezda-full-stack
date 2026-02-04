@@ -25,14 +25,14 @@ const router = Router();
 
 // Public authentication endpoints with rate limiting
 router.post(
-  '/signup',
+  '/sign-up',
   authRateLimiter,
   validateBody(signUpSchema),
   authController.signUp
 );
 
 router.post(
-  '/signin',
+  '/sign-in',
   authRateLimiter,
   validateBody(signInSchema),
   authController.signIn
@@ -68,7 +68,7 @@ router.post(
 );
 
 // Protected endpoints requiring authentication
-router.post('/signout', requireAuth, authController.signOut);
+router.post('/sign-out', requireAuth, authController.signOut);
 
 router.get('/me', requireAuth, authController.getCurrentUser);
 

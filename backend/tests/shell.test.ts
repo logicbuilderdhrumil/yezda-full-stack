@@ -68,7 +68,7 @@ describe('Shell Service', () => {
     it('should include auth endpoints as public', async () => {
       const policies = await shellService.getRoutePolicies();
 
-      const signInPolicy = policies.policies.find(p => p.route.includes('signin'));
+      const signInPolicy = policies.policies.find(p => p.route.includes('sign-in'));
       expect(signInPolicy).toBeDefined();
       expect(signInPolicy?.public).toBe(true);
     });

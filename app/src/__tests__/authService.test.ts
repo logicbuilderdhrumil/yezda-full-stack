@@ -52,7 +52,7 @@ describe('signIn', () => {
     expect(result.accessToken).toBe('access-token');
     expect(result.tokenType).toBe('Bearer');
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/v1/auth/signin'),
+      expect.stringContaining('/v1/auth/sign-in'),
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({
@@ -219,7 +219,7 @@ describe('signOut', () => {
     await signOut('access-token');
 
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/v1/auth/signout'),
+      expect.stringContaining('/v1/auth/sign-out'),
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({

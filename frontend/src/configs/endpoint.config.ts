@@ -20,10 +20,10 @@ export const endpoints = {
   'auth.signIn': { path: '/auth/sign-in', version: 'v1' },
   'auth.signUp': { path: '/auth/sign-up', version: 'v1' },
   'auth.signOut': { path: '/auth/sign-out', version: 'v1' },
-  'auth.forgotPassword': { path: '/auth/forgot-password', version: 'v1' },
-  'auth.resetPassword': { path: '/auth/reset-password', version: 'v1' },
+  'auth.passwordResetRequest': { path: '/auth/password/reset-request', version: 'v1' },
+  'auth.passwordResetComplete': { path: '/auth/password/reset-complete', version: 'v1' },
   'auth.candidateResetPassword': { path: '/auth/candidate-reset-password', version: 'v1' },
-  'auth.verifyTotp': { path: '/auth/verify-totp', version: 'v1' },
+  'auth.mfaVerify': { path: '/auth/mfa/verify', version: 'v1' },
   'auth.refresh': { path: '/auth/refresh', version: 'v1' },
   'auth.me': { path: '/auth/me', version: 'v1' },
 

@@ -40,8 +40,8 @@ All endpoints are prefixed with `/api/v1/auth`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/signup` | Create a new account |
-| POST | `/signin` | Sign in with credentials |
+| POST | `/sign-up` | Create a new account |
+| POST | `/sign-in` | Sign in with credentials |
 | POST | `/mfa/verify` | Complete MFA verification |
 | POST | `/refresh` | Refresh access token |
 | POST | `/password/reset-request` | Request password reset |
@@ -51,7 +51,7 @@ All endpoints are prefixed with `/api/v1/auth`.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/signout` | Sign out current session |
+| POST | `/sign-out` | Sign out current session |
 | GET | `/me` | Get current user info |
 | POST | `/mfa/enroll` | Start MFA enrollment |
 | POST | `/mfa/enroll/verify` | Complete MFA enrollment |

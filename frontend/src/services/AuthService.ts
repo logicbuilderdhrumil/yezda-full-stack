@@ -70,7 +70,7 @@ export const AuthService = {
   async requestPasswordReset(payload: PasswordResetRequest): Promise<void> {
     const client = createClient();
     try {
-      await client.post('/forgot-password', payload);
+      await client.post('/password/reset-request', payload);
     } catch (err) {
       throw extractApiError(err);
     }
@@ -83,7 +83,7 @@ export const AuthService = {
   async resetPassword(payload: PasswordResetPayload): Promise<void> {
     const client = createClient();
     try {
-      await client.post('/reset-password', payload);
+      await client.post('/password/reset-complete', payload);
     } catch (err) {
       throw extractApiError(err);
     }
@@ -110,7 +110,7 @@ export const AuthService = {
   async verifyTotp(payload: TotpVerifyPayload): Promise<AuthSession> {
     const client = createClient();
     try {
-      const response = await client.post<AuthSession>('/verify-totp', payload);
+      const response = await client.post<AuthSession>('/mfa/verify', payload);
       return response.data;
     } catch (err) {
       throw extractApiError(err);

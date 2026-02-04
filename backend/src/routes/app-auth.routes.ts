@@ -22,7 +22,7 @@ const router = Router();
 
 // Public app authentication endpoints with rate limiting
 router.post(
-  '/signin',
+  '/sign-in',
   appSignInRateLimiter,
   validateBody(appSignInSchema),
   appAuthController.appSignIn
@@ -43,7 +43,7 @@ router.post(
 );
 
 // Protected endpoints requiring authentication
-router.post('/signout', requireAuth, appAuthController.appSignOut);
+router.post('/sign-out', requireAuth, appAuthController.appSignOut);
 
 router.get('/sessions', requireAuth, appAuthController.getAppSessions);
 

@@ -53,9 +53,9 @@ setMockConfig({ logRequests: true });
 - `POST /api/v1/auth/sign-in` - User sign in
 - `POST /api/v1/auth/sign-up` - User registration
 - `POST /api/v1/auth/sign-out` - Sign out
-- `POST /api/v1/auth/forgot-password` - Request password reset
-- `POST /api/v1/auth/reset-password` - Reset password
-- `POST /api/v1/auth/verify-totp` - Verify TOTP code
+- `POST /api/v1/auth/password/reset-request` - Request password reset
+- `POST /api/v1/auth/password/reset-complete` - Reset password
+- `POST /api/v1/auth/mfa/verify` - Verify TOTP code
 - `POST /api/v1/auth/refresh` - Refresh token
 - `GET /api/v1/auth/me` - Get current user
 

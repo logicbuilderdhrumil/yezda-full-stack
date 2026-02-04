@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -16,10 +20,20 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@shared/*": ["../shared/@types/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@shared/*": [
+        "../shared/@types/*"
+      ]
     }
   },
-  "include": ["src/**/*", "app/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "app/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "extends": "expo/tsconfig.base"
 }

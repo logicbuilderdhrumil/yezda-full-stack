@@ -94,7 +94,7 @@ async function apiRequest<T>(
  */
 export async function signIn(request: SignInRequest): Promise<SignInResponse> {
   try {
-    return await apiRequest<SignInResponse>('/v1/auth/signin', {
+    return await apiRequest<SignInResponse>('/v1/auth/sign-in', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -174,7 +174,7 @@ export async function refreshTokens(refreshToken: string): Promise<RefreshRespon
  */
 export async function signOut(accessToken: string): Promise<void> {
   try {
-    await apiRequest<void>('/v1/auth/signout', {
+    await apiRequest<void>('/v1/auth/sign-out', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
