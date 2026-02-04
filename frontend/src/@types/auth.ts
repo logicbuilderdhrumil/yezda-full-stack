@@ -1,21 +1,45 @@
 /**
  * Authentication-related types for the frontend.
+ * Aligned with backend contract (route-guards.middleware.ts, auth.model.ts).
  */
 
-/** User profile returned after successful authentication. */
+/** Supported user roles - matches backend UserRole. */
+export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer';
+
+/** User profile returned after successful authentication - aligned with backend. */
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
+  roles: UserRole[];
+  tenantId?: string;
+  type: 'user' | 'candidate';
   mfaEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-/** Supported user roles. */
-export type UserRole = 'admin' | 'manager' | 'user' | 'candidate';
+/**
+ * Helper to check if user has any of the required roles.
+ */
+export function hasRole(user: User | null | undefined, ...requiredRoles: UserRole[]): boolean {
+  if (!user || !user.roles) return false;
+  return requiredRoles.some((role) => user.roles.includes(role));
+}
+
+/**
+ * Helper to get the primary role for display purposes.
+ * Returns the highest-priority role.
+ */
+export function getPrimaryRole(user: User): UserRole | undefined {
+  const rolePriority: UserRole[] = ['admin', 'manager', 'agent', 'viewer'];
+  for (const role of rolePriority) {
+    if (user.roles.includes(role)) return role;
+  }
+  return user.roles[0];
+}
 
 /** Session data including tokens and user profile. */
 export interface AuthSession {
@@ -35,8 +59,9 @@ export interface SignInCredentials {
 export interface SignUpCredentials {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
   termsAccepted: boolean;
 }
 

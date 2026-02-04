@@ -1,29 +1,36 @@
 /**
  * Account profile types for frontend.
- * Task 1.1: Define account profile data model and form fields
+ * Aligned with backend contract (account-settings.model.ts).
  */
 
-/** Account profile data returned from API. */
+/** Supported integration providers - matches backend IntegrationProvider. */
+export type IntegrationProvider = 'google' | 'microsoft' | 'slack' | 'github';
+
+/** Account profile data returned from API - aligned with backend ProfileResponse. */
 export interface AccountProfile {
   id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string | undefined;
-  avatarUrl?: string | undefined;
-  timezone?: string | undefined;
-  locale?: string | undefined;
+  displayName?: string;
+  avatarUrl?: string;
+  phone?: string;
+  timezone?: string;
+  locale?: string;
+  bio?: string;
+  notificationsEnabled: boolean;
+  emailNotificationsEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-/** Payload for updating account profile. */
+/** Payload for updating account profile - aligned with backend ProfileUpdateRequest. */
 export interface UpdateProfilePayload {
-  firstName?: string | undefined;
-  lastName?: string | undefined;
-  phone?: string | undefined;
-  timezone?: string | undefined;
-  locale?: string | undefined;
+  displayName?: string;
+  avatarUrl?: string | null;
+  phone?: string | null;
+  timezone?: string;
+  locale?: string;
+  bio?: string | null;
+  notificationsEnabled?: boolean;
+  emailNotificationsEnabled?: boolean;
 }
 
 /** Payload for updating avatar. */
@@ -47,4 +54,32 @@ export interface AccountError {
   code: string;
   message: string;
   field?: string;
+}
+
+/** Integration status response - aligned with backend IntegrationStatusResponse. */
+export interface IntegrationStatus {
+  provider: IntegrationProvider;
+  connected: boolean;
+  verified: boolean;
+  providerEmail?: string;
+  scopes: string[];
+  connectedAt?: string;
+  verifiedAt?: string;
+  hasError: boolean;
+  errorMessage?: string;
+}
+
+/** Response containing all integrations. */
+export interface IntegrationsResponse {
+  integrations: IntegrationStatus[];
+}
+
+/** Integration verification payload. */
+export interface IntegrationVerifyPayload {
+  success?: boolean;
+  providerAccountId?: string;
+  providerEmail?: string;
+  scopes?: string[];
+  error?: string;
+  errorCode?: string;
 }

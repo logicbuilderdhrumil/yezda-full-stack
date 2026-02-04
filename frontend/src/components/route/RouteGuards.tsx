@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navigate, useLocation, Outlet, type Location } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { hasRole } from '@/@types/auth';
 import type { AppRouteConfig, RouteMeta, UserRole } from '@/@types';
 
 /**
@@ -130,18 +131,19 @@ interface AuthorityGuardProps {
   children: ReactNode;
   /** Required roles for access. If empty or undefined, no role check is performed. */
   authority?: UserRole[] | undefined;
-  /** Redirect path when access is denied. Defaults to /access-denied. */
-  redirectTo?: string;
+  /** Component to render if access is denied. Defaults to AccessDeniedView. */
+  accessDeniedComponent?: ReactNode;
 }
 
 /**
- * AuthorityGuard restricts access based on user role.
- * Redirects to access denied page if user lacks required authority.
+ * AuthorityGuard restricts access based on user roles.
+ * Uses roles array aligned with backend route-guards.middleware.ts.
+ * Displays access denied page if user lacks required authority.
  */
 export function AuthorityGuard({
   children,
   authority,
-  redirectTo = '/access-denied',
+  accessDeniedComponent = <AccessDeniedView />,
 }: AuthorityGuardProps): ReactNode {
   const { user } = useAuth();
 
@@ -150,12 +152,12 @@ export function AuthorityGuard({
     return <>{children}</>;
   }
 
-  // Check if user has any of the required roles
-  if (user && authority.includes(user.role)) {
+  // Check if user has any of the required roles using hasRole helper
+  if (hasRole(user, ...authority)) {
     return <>{children}</>;
   }
 
-  return <Navigate to={redirectTo} replace />;
+  return <>{accessDeniedComponent}</>;
 }
 
 interface AppRouteProps {
