@@ -12,6 +12,11 @@ const HomeView = lazy(() =>
 const AccessDeniedView = lazy(() =>
   import('@/views/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
 );
+const AccountIntegrationsView = lazy(() =>
+  import('@/views/account/AccountIntegrationsView').then((m) => ({
+    default: m.AccountIntegrationsView,
+  }))
+);
 
 /**
  * Wraps a component with Suspense for lazy loading.
@@ -51,6 +56,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         index: true,
         element: withSuspense(HomeView),
+      },
+      {
+        path: 'account/integrations',
+        element: withSuspense(AccountIntegrationsView),
       },
       // Additional protected routes will be added here
     ],

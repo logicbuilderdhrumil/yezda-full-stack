@@ -5,3 +5,4 @@ export { ForgotPasswordView } from './ForgotPasswordView';
 export { ResetPasswordView } from './ResetPasswordView';
 export { CandidateResetPasswordView } from './CandidateResetPasswordView';
 export { TotpVerifyView } from './TotpVerifyView';
+export { OAuthCallbackView } from './OAuthCallbackView';

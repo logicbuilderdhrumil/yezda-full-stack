@@ -18,3 +18,6 @@ export * from './notification-metrics.service.js';
 export * from './localization.service.js';
 export * from './oauth.service.js';
 export * from './mock-api.service.js';
+export * from './theme.service.js';
+export * from './theme-metrics.service.js';
+export * from './ui-kit.service.js';

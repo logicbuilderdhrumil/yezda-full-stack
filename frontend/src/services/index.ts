@@ -1,4 +1,5 @@
 export { AuthService } from './AuthService';
+export { OAuthService } from './OAuthService';
 export {
   ApiService,
   initializeApiService,
@@ -19,3 +20,4 @@ export {
   type InterceptorConfig,
 } from './axios';
 export { SocketService } from './SocketService';
+export { NotificationsService } from './NotificationsService';

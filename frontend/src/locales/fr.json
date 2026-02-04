@@ -91,5 +91,29 @@
     "fr": "Français",
     "de": "Deutsch",
     "pt": "Português"
+  },
+  "oauth": {
+    "verifying": "Vérification de la connexion...",
+    "verificationTitle": "Vérification OAuth",
+    "verificationSubtitle": "Traitement de votre connexion d'intégration",
+    "successTitle": "Connexion Réussie",
+    "errorTitle": "Échec de la Connexion",
+    "connectionSuccess": "{{provider}} connecté avec succès",
+    "connectionFailed": "Échec de la connexion de l'intégration",
+    "continue": "Continuer",
+    "tryAgain": "Réessayer",
+    "integrationsTitle": "Intégrations",
+    "integrationsDescription": "Connectez des services externes pour améliorer votre flux de travail",
+    "connected": "Connecté",
+    "error": "Erreur",
+    "connectedAs": "Connecté en tant que {{account}}",
+    "connect": "Connecter",
+    "disconnect": "Déconnecter",
+    "disconnecting": "Déconnexion de {{provider}}...",
+    "disconnected": "{{provider}} déconnecté",
+    "disconnectError": "Échec de la déconnexion de {{provider}}",
+    "connectError": "Échec de la connexion à {{provider}}",
+    "loadError": "Échec du chargement des intégrations",
+    "noProviders": "Aucune intégration disponible"
   }
 }

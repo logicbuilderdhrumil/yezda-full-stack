@@ -623,6 +623,65 @@ export class AuditService {
       success: true,
     });
   }
+
+  // UI Kit audit logging methods
+
+  /**
+   * Log UI configuration access
+   */
+  logUIConfigAccess(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    category?: string;
+    theme?: string;
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'UI_CONFIG_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        category: params.category,
+        theme: params.theme,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log UI configuration access denied (cross-tenant attempt)
+   */
+  logUIConfigAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    attemptedTenantId: string;
+    actualTenantId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'UI_CONFIG_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        attemptedTenantId: params.attemptedTenantId,
+        actualTenantId: params.actualTenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
 }
 
 export const auditService = new AuditService();

@@ -158,6 +158,32 @@ export const LOCALIZATION_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 100,
 } as const;
 
+// Metric names for UI Kit configuration
+export const UI_KIT_METRICS = {
+  CONFIG_REQUEST: 'ui_kit_config_request_total',
+  THEMED_REQUEST: 'ui_kit_themed_request_total',
+  REQUEST_LATENCY: 'ui_kit_request_latency_ms',
+  CACHE_HIT: 'ui_kit_cache_hit_total',
+  CACHE_MISS: 'ui_kit_cache_miss_total',
+  RATE_LIMIT_HIT: 'ui_kit_rate_limit_hit_total',
+} as const;
+
+// SLO targets for UI Kit endpoints
+export const UI_KIT_SLOS = {
+  // Latency SLOs
+  REQUEST_LATENCY_P99_MS: 100,
+  REQUEST_LATENCY_P95_MS: 50,
+
+  // Availability SLOs
+  AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
+} as const;
+
 // SLO targets for OAuth endpoints
 export const OAUTH_SLOS = {
   // Latency SLOs
@@ -790,6 +816,105 @@ export class MetricsService {
     if (rateLimitHits > LOCALIZATION_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
       violations.push(
         `Localization rate limit hits ${rateLimitHits}/min exceeds SLO ${LOCALIZATION_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  // UI Kit metrics methods
+
+  /**
+   * Record UI Kit request
+   */
+  recordUIKitRequest(operation: string, success: boolean, durationMs: number): void {
+    this.recordLatency(UI_KIT_METRICS.REQUEST_LATENCY, durationMs, { operation });
+    this.incrementCounter(
+      operation === 'themed'
+        ? UI_KIT_METRICS.THEMED_REQUEST
+        : UI_KIT_METRICS.CONFIG_REQUEST,
+      { success: String(success) }
+    );
+  }
+
+  /**
+   * Record UI Kit cache hit
+   */
+  recordUIKitCacheHit(): void {
+    this.incrementCounter(UI_KIT_METRICS.CACHE_HIT);
+  }
+
+  /**
+   * Record UI Kit cache miss
+   */
+  recordUIKitCacheMiss(): void {
+    this.incrementCounter(UI_KIT_METRICS.CACHE_MISS);
+  }
+
+  /**
+   * Get UI Kit P99 latency
+   */
+  getUIKitP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === UI_KIT_METRICS.REQUEST_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get UI Kit cache hit rate
+   */
+  getUIKitCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === UI_KIT_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === UI_KIT_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Get UI Kit rate limit hit count
+   */
+  getUIKitRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === UI_KIT_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if UI Kit SLOs are met
+   */
+  checkUIKitSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getUIKitP99Latency();
+    if (p99Latency > UI_KIT_SLOS.REQUEST_LATENCY_P99_MS) {
+      violations.push(
+        `UI Kit P99 latency ${p99Latency}ms exceeds SLO ${UI_KIT_SLOS.REQUEST_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getUIKitCacheHitRate();
+    if (cacheHitRate < UI_KIT_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `UI Kit cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${UI_KIT_SLOS.CACHE_HIT_RATE_MIN}%`
+      );
+    }
+
+    const rateLimitHits = this.getUIKitRateLimitHitCount();
+    if (rateLimitHits > UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `UI Kit rate limit hits ${rateLimitHits}/min exceeds SLO ${UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
       );
     }
 

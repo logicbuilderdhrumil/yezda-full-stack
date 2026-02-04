@@ -40,6 +40,14 @@ export const endpoints = {
   'candidates.create': { path: '/candidates', version: 'v1' },
   'candidates.update': { path: '/candidates/:id', version: 'v1' },
   'candidates.delete': { path: '/candidates/:id', version: 'v1' },
+
+  // Notification endpoints
+  'notifications.list': { path: '/notifications', version: 'v1' },
+  'notifications.get': { path: '/notifications/:id', version: 'v1' },
+  'notifications.unreadCount': { path: '/notifications/unread-count', version: 'v1' },
+  'notifications.markAsRead': { path: '/notifications/:id/read', version: 'v1' },
+  'notifications.markAsUnread': { path: '/notifications/:id/unread', version: 'v1' },
+  'notifications.markManyAsRead': { path: '/notifications/mark-read', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */
