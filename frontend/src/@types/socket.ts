@@ -17,6 +17,8 @@ export const SOCKET_NAMESPACES = {
   PRESENCE: '/presence',
   /** Notifications namespace */
   NOTIFICATIONS: '/notifications',
+  /** Chat namespace for realtime messaging */
+  CHAT: '/chat',
 } as const;
 
 export type SocketNamespace = (typeof SOCKET_NAMESPACES)[keyof typeof SOCKET_NAMESPACES];
@@ -43,6 +45,11 @@ export const SERVER_EVENTS = {
 
   // Rate limit events
   RATE_LIMITED: 'rate:limited',
+
+  // Chat events
+  CHAT_NEW_MESSAGE: 'chat:new_message',
+  CHAT_MESSAGE_STATUS: 'chat:message_status',
+  CHAT_CONVERSATION_UPDATE: 'chat:conversation_update',
 } as const;
 
 /**
@@ -57,6 +64,11 @@ export const CLIENT_EVENTS = {
 
   // Ping for keepalive
   PING: 'ping',
+
+  // Chat events
+  CHAT_JOIN: 'chat:join',
+  CHAT_LEAVE: 'chat:leave',
+  CHAT_SEND: 'chat:send',
 } as const;
 
 export type ServerEvent = (typeof SERVER_EVENTS)[keyof typeof SERVER_EVENTS];
