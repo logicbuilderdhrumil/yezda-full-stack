@@ -8,30 +8,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Mock error envelope types for testing
-interface ApiErrorEnvelope {
-  code: string;
-  message: string;
-  details?: Array<{ field: string; message: string; rule?: string }>;
-  correlationId: string;
-  timestamp?: string;
-}
-
-/**
- * Type guard to check if an object is an ApiErrorEnvelope.
- */
-function isApiErrorEnvelope(obj: unknown): obj is ApiErrorEnvelope {
-  if (typeof obj !== 'object' || obj === null) {
-    return false;
-  }
-  const envelope = obj as Partial<ApiErrorEnvelope>;
-  return (
-    typeof envelope.code === 'string' &&
-    typeof envelope.message === 'string' &&
-    typeof envelope.correlationId === 'string'
-  );
-}
+import type { ApiErrorEnvelope } from '@yezda/shared/contracts';
+import { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
 describe('Foundation Contracts', () => {
   describe('Error Envelope Format', () => {

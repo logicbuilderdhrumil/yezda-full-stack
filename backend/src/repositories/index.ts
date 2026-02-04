@@ -4,6 +4,7 @@
 
 export * from './user.repository.js';
 export * from './session.repository.js';
+export * from './app-session.repository.js';
 export * from './password-reset.repository.js';
 export * from './mfa-enrollment.repository.js';
 export * from './backup-code.repository.js';
@@ -17,3 +18,9 @@ export * from './theme.repository.js';
 export * from './user-management.repository.js';
 export * from './org-management.repository.js';
 export * from './account-settings.repository.js';
+export * from './app-application-intake.repository.js';
+export * from './candidate-management.repository.js';
+export * from './file-management.repository.js';
+export * from './asset-management.repository.js';
+export * from './chat.repository.js';
+export * from './billing-ledger.repository.js';

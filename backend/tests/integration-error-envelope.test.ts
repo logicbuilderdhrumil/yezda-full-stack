@@ -15,8 +15,11 @@ import {
   createError,
   createValidationError,
   type ApiError,
-  type ApiErrorEnvelope,
 } from '../src/middleware/error.middleware.js';
+
+// Import shared contract types and validators for cross-layer validation
+import type { ApiErrorEnvelope } from '@yezda/shared/contracts';
+import { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
 describe('Error Envelope Integration', () => {
   let app: Express;
@@ -201,4 +204,86 @@ describe('HTTP Status Code Mapping', () => {
       expect(expectedStatus).toBeLessThan(600);
     }
   );
+});
+
+describe('Cross-Layer Contract Validation', () => {
+  let app: Express;
+
+  beforeEach(() => {
+    app = express();
+    app.use(express.json());
+  });
+
+  describe('Backend produces valid ApiErrorEnvelope per shared contract', () => {
+    beforeEach(() => {
+      // Route that throws an error
+      app.get('/test-error', (_req: Request, _res: Response, next: NextFunction) => {
+        const error = createError('Test error message', 400, 'BAD_REQUEST');
+        next(error);
+      });
+
+      // Route that throws a validation error
+      app.post('/test-validation', (_req: Request, _res: Response, next: NextFunction) => {
+        const error = createValidationError([
+          { field: 'email', message: 'Invalid email format', rule: 'format' },
+        ]);
+        next(error);
+      });
+
+      app.use(errorHandler);
+      app.use(notFoundHandler);
+    });
+
+    it('should produce JSON that passes isApiErrorEnvelope() from @yezda/shared', async () => {
+      const response = await request(app).get('/test-error');
+
+      // The critical test: backend response must pass the shared contract validator
+      expect(isApiErrorEnvelope(response.body)).toBe(true);
+    });
+
+    it('should produce valid error envelope for validation errors', async () => {
+      const response = await request(app).post('/test-validation');
+
+      // Verify the response passes the shared contract validator
+      expect(isApiErrorEnvelope(response.body)).toBe(true);
+
+      // Additionally verify the structure matches ApiErrorEnvelope type
+      const envelope: ApiErrorEnvelope = response.body;
+      expect(envelope.code).toBe('VALIDATION_ERROR');
+      expect(envelope.message).toBe('Validation failed');
+      expect(envelope.correlationId).toBeDefined();
+      expect(envelope.details).toHaveLength(1);
+    });
+
+    it('should produce valid error envelope for 404 responses', async () => {
+      const response = await request(app).get('/non-existent');
+
+      // Verify the response passes the shared contract validator
+      expect(isApiErrorEnvelope(response.body)).toBe(true);
+
+      const envelope: ApiErrorEnvelope = response.body;
+      expect(envelope.code).toBe('NOT_FOUND');
+      expect(envelope.correlationId).toBeDefined();
+    });
+
+    it('should include all required ApiErrorEnvelope fields', async () => {
+      const response = await request(app).get('/test-error');
+      const envelope = response.body as ApiErrorEnvelope;
+
+      // Required fields per shared contract
+      expect(typeof envelope.code).toBe('string');
+      expect(typeof envelope.message).toBe('string');
+      expect(typeof envelope.correlationId).toBe('string');
+
+      // Optional fields should be correct types if present
+      if (envelope.timestamp) {
+        expect(typeof envelope.timestamp).toBe('string');
+        const date = new Date(envelope.timestamp);
+        expect(isNaN(date.getTime())).toBe(false);
+      }
+      if (envelope.details) {
+        expect(Array.isArray(envelope.details)).toBe(true);
+      }
+    });
+  });
 });

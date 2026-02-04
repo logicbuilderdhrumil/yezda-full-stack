@@ -1,73 +1,22 @@
 /**
  * API Error Types
- * Shared error envelope types aligned with backend contracts.
+ * Aligned with backend contracts via @yezda/shared.
  *
  * @see shared/src/contracts/error-envelope.ts for contract definition
  */
 
-/**
- * Standard error codes from foundation APIs.
- */
-export type ErrorCode =
-  | 'VALIDATION_ERROR'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'RATE_LIMITED'
-  | 'INTERNAL_ERROR'
-  | 'SERVICE_UNAVAILABLE'
-  | 'BAD_REQUEST'
-  | 'AUTH_ERROR'
-  | 'TOKEN_EXPIRED'
-  | 'TOKEN_INVALID'
-  | 'MFA_REQUIRED'
-  | 'MFA_INVALID'
-  | 'NETWORK_ERROR';
+// Import shared types as source of truth
+export type {
+  ErrorCode,
+  ValidationErrorDetail,
+  ApiErrorEnvelope,
+} from '@yezda/shared/contracts';
 
-/**
- * Validation error detail for field-level errors.
- */
-export interface ValidationErrorDetail {
-  /** Field path that failed validation (e.g., "email", "address.city") */
-  field: string;
-  /** Validation error message */
-  message: string;
-  /** Optional validation rule that failed (e.g., "required", "format") */
-  rule?: string;
-}
+export { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
-/**
- * Standard API error envelope.
- * All foundation API errors conform to this structure.
- */
-export interface ApiErrorEnvelope {
-  /** Machine-readable error code */
-  code: ErrorCode | string;
-  /** Human-readable error message */
-  message: string;
-  /** Field-level validation errors (for VALIDATION_ERROR) */
-  details?: ValidationErrorDetail[];
-  /** Correlation ID for request tracing */
-  correlationId: string;
-  /** Timestamp of when the error occurred */
-  timestamp?: string;
-}
-
-/**
- * Type guard to check if an object is an ApiErrorEnvelope.
- */
-export function isApiErrorEnvelope(obj: unknown): obj is ApiErrorEnvelope {
-  if (typeof obj !== 'object' || obj === null) {
-    return false;
-  }
-  const envelope = obj as Partial<ApiErrorEnvelope>;
-  return (
-    typeof envelope.code === 'string' &&
-    typeof envelope.message === 'string' &&
-    typeof envelope.correlationId === 'string'
-  );
-}
+// Import for local use
+import type { ApiErrorEnvelope, ErrorCode } from '@yezda/shared/contracts';
+import { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
 /**
  * Extracts ApiErrorEnvelope from an axios error response.

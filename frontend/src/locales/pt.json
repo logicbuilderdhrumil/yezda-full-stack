@@ -82,7 +82,18 @@
       "title": "Início",
       "description": "Bem-vindo ao seu painel",
       "welcomeBack": "Bem-vindo de volta, {{name}}!",
-      "dashboardIntro": "Este é o seu painel principal. Navegue usando a barra lateral para acessar diferentes seções do aplicativo."
+      "dashboardIntro": "Este é o seu painel principal. Navegue usando a barra lateral para acessar diferentes seções do aplicativo.",
+      "recentActivity": "Atividade Recente",
+      "noActivity": "Nenhuma atividade recente",
+      "noChartData": "Nenhum dado disponível",
+      "noData": "Nenhum dado do painel disponível",
+      "lastUpdated": "Última atualização {{time}}",
+      "refresh": "Atualizar",
+      "refreshError": "Falha ao atualizar o painel",
+      "retry": "Tentar novamente",
+      "kpiSection": "Indicadores Chave de Desempenho",
+      "chartsSection": "Gráficos de Tendências",
+      "activitySection": "Atividade Recente"
     }
   },
   "languages": {
@@ -115,5 +126,16 @@
     "connectError": "Falha ao conectar {{provider}}",
     "loadError": "Falha ao carregar integrações",
     "noProviders": "Nenhuma integração disponível"
+  },
+  "errors": {
+    "accessDenied": "Acesso Negado",
+    "accessDeniedMessage": "Você não tem permissão para ver esta página.",
+    "notFound": "Página Não Encontrada",
+    "notFoundMessage": "A página que você procura não existe ou foi movida.",
+    "genericError": "Algo Deu Errado",
+    "genericErrorMessage": "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
+    "goBack": "Voltar",
+    "returnToHome": "Voltar ao Início",
+    "tryAgain": "Tentar Novamente"
   }
 }
