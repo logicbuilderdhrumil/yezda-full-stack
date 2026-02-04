@@ -291,7 +291,15 @@ export function UsersListView(): ReactNode {
                   <TableRow
                     key={user.id}
                     className="cursor-pointer"
+                    tabIndex={0}
+                    role="button"
                     onClick={() => handleRowClick(user.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleRowClick(user.id);
+                      }
+                    }}
                   >
                     <TableCell className="font-medium">{getUserFullName(user)}</TableCell>
                     <TableCell className="text-gray-500">{user.email}</TableCell>

@@ -22,7 +22,18 @@ import type {
   UserRole,
   UserStatus,
   CreateUserPayload,
+  UpdateUserPayload,
 } from '@/@types/user';
+
+/**
+ * Union type for form submit data that supports both create and edit modes.
+ */
+export type UserFormSubmitData = CreateUserPayload | (UpdateUserPayload & {
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+});
 
 export interface UserFormProps {
   /** Initial values for editing. */
@@ -30,14 +41,14 @@ export interface UserFormProps {
   /** Whether form is in edit mode. */
   isEdit?: boolean;
   /** Submit handler. */
-  onSubmit: (data: CreateUserPayload) => Promise<void>;
+  onSubmit: (data: UserFormSubmitData) => Promise<void>;
   /** Cancel handler. */
   onCancel: () => void;
   /** Whether submission is in progress. */
   isSubmitting?: boolean;
 }
 
-interface FormErrors {
+export interface FormErrors {
   email?: string | undefined;
   firstName?: string | undefined;
   lastName?: string | undefined;
@@ -53,8 +64,9 @@ const EMPTY_ERRORS: FormErrors = {
 
 /**
  * Validates user form data.
+ * @internal Exported for testing purposes.
  */
-function validateForm(
+export function validateForm(
   data: Partial<CreateUserPayload>,
   isEdit: boolean,
   t: (key: string) => string
@@ -76,7 +88,11 @@ function validateForm(
   }
 
   // Password required only on create when not sending invitation
-  if (!isEdit && data.password !== undefined && data.password.length > 0 && data.password.length < 8) {
+  if (!isEdit && !data.sendInvitation) {
+    if (!data.password || data.password.length < 8) {
+      errors.password = t('users.form.validation.passwordMinLength');
+    }
+  } else if (!isEdit && data.password && data.password.length > 0 && data.password.length < 8) {
     errors.password = t('users.form.validation.passwordMinLength');
   }
 
@@ -114,6 +130,33 @@ export function UserForm({
 
   const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
+  // Clear field-specific error on input change
+  const clearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    clearError('email');
+  };
+
+  const handleFirstNameChange = (value: string) => {
+    setFirstName(value);
+    clearError('firstName');
+  };
+
+  const handleLastNameChange = (value: string) => {
+    setLastName(value);
+    clearError('lastName');
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    clearError('password');
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -137,7 +180,7 @@ export function UserForm({
 
     // For edit mode, include status
     if (isEdit) {
-      await onSubmit({ ...formData, status } as unknown as CreateUserPayload);
+      await onSubmit({ ...formData, status });
     } else {
       await onSubmit(formData);
     }
@@ -157,7 +200,7 @@ export function UserForm({
           >
             <Input
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => handleFirstNameChange(e.target.value)}
               placeholder={t('users.form.firstNamePlaceholder')}
               disabled={isSubmitting}
             />
@@ -170,7 +213,7 @@ export function UserForm({
           >
             <Input
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => handleLastNameChange(e.target.value)}
               placeholder={t('users.form.lastNamePlaceholder')}
               disabled={isSubmitting}
             />
@@ -185,7 +228,7 @@ export function UserForm({
             <Input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
               placeholder={t('users.form.emailPlaceholder')}
               disabled={isSubmitting || isEdit}
             />
@@ -264,11 +307,13 @@ export function UserForm({
                 label={t('users.form.password')}
                 error={errors.password}
                 helperText={t('users.form.passwordHelper')}
+                required
               >
                 <Input
                   type="password"
+                  autoComplete="new-password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   placeholder={t('users.form.passwordPlaceholder')}
                   disabled={isSubmitting}
                 />

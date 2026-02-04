@@ -14,8 +14,8 @@ import {
 } from '@/components/ui';
 import { UsersService } from '@/services';
 import { handleApiError } from '@/utils';
-import type { ManagedUser, CreateUserPayload } from '@/@types/user';
-import { UserForm } from './UserForm';
+import type { ManagedUser, UpdateUserPayload } from '@/@types/user';
+import { UserForm, type UserFormSubmitData } from './UserForm';
 
 /**
  * UserEditView renders the form to edit an existing user.
@@ -61,12 +61,24 @@ export function UserEditView(): ReactNode {
     };
   }, [id, navigate, t]);
 
-  const handleSubmit = async (data: CreateUserPayload) => {
+  const handleSubmit = async (data: UserFormSubmitData) => {
     if (!id) return;
 
     setIsSubmitting(true);
     try {
-      await UsersService.update(id, data);
+      // Extract only fields valid for update
+      const updatePayload: UpdateUserPayload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: data.role,
+      };
+      if ('phone' in data && data.phone) {
+        updatePayload.phone = data.phone;
+      }
+      if ('status' in data && data.status) {
+        updatePayload.status = data.status;
+      }
+      await UsersService.update(id, updatePayload);
       toastSuccess(t('users.edit.success'));
       navigate(`/users/${id}`);
     } catch (error) {
