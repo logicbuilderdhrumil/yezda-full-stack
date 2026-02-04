@@ -31,7 +31,9 @@ import { config } from '../config/index.js';
 
 const REVOKED_TOKEN_TTL_MS = config.jwt.refreshTokenTtlSeconds * 1000;
 const REVOKED_TOKEN_PREFIX = 'revoked:app:';
-const MAX_SESSIONS_PER_USER = 10;
+const MAX_SESSIONS_PER_USER = 5;
+// Dummy hash for timing attack mitigation when user not found
+const DUMMY_HASH = '$2b$12$dummy.salt.for.timing.attack.mitigation.hash';
 
 /**
  * Hash a token for secure storage using SHA-256
@@ -67,6 +69,8 @@ export class AppAuthService {
     // Find candidate (app auth is for candidates only)
     const candidate = await userRepository.findEntityByEmail(normalizedEmail, 'candidate');
     if (!candidate) {
+      // Timing attack mitigation: run dummy bcrypt compare to normalize response time
+      await passwordService.verify(password, DUMMY_HASH);
       auditService.logAppSignInFailure({
         email: normalizedEmail,
         reason: 'Candidate not found',
