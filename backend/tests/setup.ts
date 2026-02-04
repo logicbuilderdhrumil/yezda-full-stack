@@ -10,6 +10,7 @@ const users = new Map<string, unknown>();
 const candidates = new Map<string, unknown>();
 const sessions = new Map<string, unknown>();
 const appSessions = new Map<string, unknown>();
+const managedUsers = new Map<string, Record<string, unknown>>();
 const passwordResetTokens = new Map<string, unknown>();
 const mfaEnrollments = new Map<string, unknown>();
 const backupCodes = new Map<string, unknown>();
@@ -220,6 +221,139 @@ vi.mock('../src/repositories/user.repository.js', () => ({
     }),
   },
   UserRepository: vi.fn(),
+}));
+
+// Mock User Management Repository
+vi.mock('../src/repositories/user-management.repository.js', () => ({
+  userManagementRepository: {
+    create: vi.fn(async (input: { id: string; email: string; tenantId: string; roles: string[]; status?: string; displayName?: string; firstName?: string; lastName?: string; createdBy?: string; updatedBy?: string; passwordHash?: string }) => {
+      const now = new Date();
+      const user = {
+        id: input.id,
+        email: input.email,
+        tenantId: input.tenantId,
+        roles: input.roles,
+        status: input.status ?? 'pending',
+        displayName: input.displayName,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        mfaEnabled: false,
+        lockedUntil: undefined,
+        lastLoginAt: undefined,
+        createdAt: now,
+        updatedAt: now,
+        createdBy: input.createdBy,
+        updatedBy: input.updatedBy,
+      } as Record<string, unknown>;
+      managedUsers.set(input.id, user);
+      return user;
+    }),
+    findById: vi.fn(async (id: string, tenantId: string) => {
+      const user = managedUsers.get(id);
+      if (!user || user.tenantId !== tenantId) return undefined;
+      return user;
+    }),
+    findByEmail: vi.fn(async (email: string, tenantId: string) => {
+      const lower = email.toLowerCase();
+      for (const user of managedUsers.values()) {
+        if (user.tenantId === tenantId && String(user.email).toLowerCase() === lower) {
+          return user;
+        }
+      }
+      return undefined;
+    }),
+    emailExists: vi.fn(async (email: string, tenantId: string) => {
+      const lower = email.toLowerCase();
+      for (const user of managedUsers.values()) {
+        if (user.tenantId === tenantId && String(user.email).toLowerCase() === lower) {
+          return true;
+        }
+      }
+      return false;
+    }),
+    update: vi.fn(async (id: string, tenantId: string, input: Record<string, unknown>) => {
+      const user = managedUsers.get(id);
+      if (!user || user.tenantId !== tenantId) return undefined;
+      const updated = {
+        ...user,
+        ...input,
+        updatedAt: new Date(),
+      } as Record<string, unknown>;
+      managedUsers.set(id, updated);
+      return updated;
+    }),
+    search: vi.fn(async (params: { tenantId: string; query?: string; status?: string; role?: string; page?: number; limit?: number }) => {
+      const {
+        tenantId,
+        query: searchQuery,
+        status,
+        role,
+        page = 1,
+        limit = 20,
+      } = params;
+
+      let results = Array.from(managedUsers.values()).filter((user) => user.tenantId === tenantId);
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        results = results.filter((user) => {
+          const email = String(user.email ?? '').toLowerCase();
+          const displayName = String(user.displayName ?? '').toLowerCase();
+          const firstName = String(user.firstName ?? '').toLowerCase();
+          const lastName = String(user.lastName ?? '').toLowerCase();
+          return email.includes(q) || displayName.includes(q) || firstName.includes(q) || lastName.includes(q);
+        });
+      }
+
+      if (status) {
+        results = results.filter((user) => user.status === status);
+      }
+
+      if (role) {
+        results = results.filter((user) => Array.isArray(user.roles) && user.roles.includes(role));
+      }
+
+      const total = results.length;
+      const start = (page - 1) * limit;
+      const paged = results.slice(start, start + limit);
+
+      return {
+        users: paged,
+        total,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(total / limit)),
+      };
+    }),
+    softDelete: vi.fn(async (id: string, tenantId: string, deletedBy?: string) => {
+      const user = managedUsers.get(id);
+      if (!user || user.tenantId !== tenantId) return false;
+      user.status = 'inactive';
+      user.updatedAt = new Date();
+      user.updatedBy = deletedBy;
+      managedUsers.set(id, user);
+      return true;
+    }),
+    updateStatus: vi.fn(async (id: string, tenantId: string, status: string, updatedBy?: string) => {
+      const user = managedUsers.get(id);
+      if (!user || user.tenantId !== tenantId) return undefined;
+      user.status = status;
+      user.updatedAt = new Date();
+      user.updatedBy = updatedBy;
+      managedUsers.set(id, user);
+      return user;
+    }),
+    updateRoles: vi.fn(async (id: string, tenantId: string, roles: string[], updatedBy?: string) => {
+      const user = managedUsers.get(id);
+      if (!user || user.tenantId !== tenantId) return undefined;
+      user.roles = roles;
+      user.updatedAt = new Date();
+      user.updatedBy = updatedBy;
+      managedUsers.set(id, user);
+      return user;
+    }),
+  },
+  UserManagementRepository: vi.fn(),
 }));
 
 // Mock Session Repository
@@ -649,6 +783,7 @@ beforeEach(() => {
   candidates.clear();
   sessions.clear();
   appSessions.clear();
+  managedUsers.clear();
   passwordResetTokens.clear();
   mfaEnrollments.clear();
   backupCodes.clear();
@@ -657,4 +792,4 @@ beforeEach(() => {
   auditLogs.length = 0;
 });
 
-export { users, candidates, sessions, appSessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, themePreferences, auditLogs };
+export { users, candidates, sessions, appSessions, managedUsers, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, themePreferences, auditLogs };

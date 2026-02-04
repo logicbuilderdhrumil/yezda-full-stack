@@ -288,16 +288,13 @@ function CheckboxFieldComponent({
   if (isMultiple && field.options) {
     const selectedValues = Array.isArray(value) ? value : [];
 
-    const handleToggle = useCallback(
-      (optionValue: string, currentSelected: string[]) => {
-        if (disabled) return;
-        const newValues = currentSelected.includes(optionValue)
-          ? currentSelected.filter((v) => v !== optionValue)
-          : [...currentSelected, optionValue];
-        onChange(newValues);
-      },
-      [onChange, disabled]
-    );
+    const handleToggle = (optionValue: string) => {
+      if (disabled) return;
+      const newValues = selectedValues.includes(optionValue)
+        ? selectedValues.filter((v) => v !== optionValue)
+        : [...selectedValues, optionValue];
+      onChange(newValues);
+    };
 
     return (
       <View className="mb-4">
@@ -310,7 +307,7 @@ function CheckboxFieldComponent({
             <TouchableOpacity
               key={option.value}
               className={`flex-row items-center py-2 ${disabled ? 'opacity-50' : ''}`}
-              onPress={() => handleToggle(option.value, selectedValues)}
+              onPress={() => handleToggle(option.value)}
               disabled={disabled}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: selectedValues.includes(option.value) }}

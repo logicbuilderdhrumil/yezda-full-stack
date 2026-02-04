@@ -93,6 +93,7 @@ describe('LoginScreen', () => {
       expect(mockSignIn).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
+        userType: 'candidate',
       });
     });
   });

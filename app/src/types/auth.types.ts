@@ -46,6 +46,9 @@ export const loginValidationRules = {
       message: 'Password must be at least 8 characters',
     },
   },
+  userType: {
+    required: 'User type is required',
+  },
 } as const;
 
 /** Error copy for common auth failures */

@@ -59,6 +59,11 @@ export function validateLoginForm(values: LoginFormValues): LoginFormErrors | nu
     errors.password = passwordError;
   }
 
+  const userTypeError = validateLoginField('userType', values.userType);
+  if (userTypeError) {
+    errors.general = userTypeError;
+  }
+
   return Object.keys(errors).length > 0 ? errors : null;
 }
 

@@ -27,6 +27,7 @@ export function LoginScreen() {
   const [formValues, setFormValues] = useState<LoginFormValues>({
     email: '',
     password: '',
+    userType: 'candidate',
   });
   const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -74,7 +75,7 @@ export function LoginScreen() {
     if (isLoading) return; // Guard against concurrent submissions
 
     // Mark all fields as touched
-    setTouched({ email: true, password: true });
+    setTouched({ email: true, password: true, userType: true });
 
     // Validate form
     const errors = validateLoginForm(formValues);
