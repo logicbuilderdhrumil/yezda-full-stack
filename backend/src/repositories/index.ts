@@ -17,3 +17,4 @@ export * from './theme.repository.js';
 export * from './user-management.repository.js';
 export * from './org-management.repository.js';
 export * from './account-settings.repository.js';
+export * from './app-application-intake.repository.js';
