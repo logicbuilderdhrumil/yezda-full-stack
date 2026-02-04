@@ -137,72 +137,7 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
   const unsubscribersRef = useRef<Array<() => void>>([]);
 
   // ============================================================================
-  // Socket Connection
-  // ============================================================================
-
-  useEffect(() => {
-    const token = getAccessToken();
-    if (!autoConnect || !token) return;
-
-    const socketService = new SocketService({
-      getToken: () => getAccessToken(),
-      namespace: '/chat',
-      onStatusChange: (status) => {
-        if (status === 'error') {
-          setState((prev) => ({
-            ...prev,
-            error: 'Connection lost. Reconnecting...',
-          }));
-        } else if (status === 'connected') {
-          setState((prev) => ({ ...prev, error: null }));
-        }
-      },
-      onError: (error) => {
-        console.error('[useChat] Socket error:', error);
-      },
-    });
-
-    socketRef.current = socketService;
-    socketService.connect();
-
-    // Subscribe to socket events
-    const unsubNewMessage = socketService.on(
-      CHAT_EVENTS.NEW_MESSAGE,
-      (data: unknown) => {
-        const payload = data as NewMessagePayload;
-        handleNewMessage(payload);
-      }
-    );
-    unsubscribersRef.current.push(unsubNewMessage);
-
-    const unsubMessageStatus = socketService.on(
-      CHAT_EVENTS.MESSAGE_STATUS,
-      (data: unknown) => {
-        const payload = data as MessageStatusUpdatePayload;
-        handleMessageStatusUpdate(payload);
-      }
-    );
-    unsubscribersRef.current.push(unsubMessageStatus);
-
-    const unsubConversationUpdate = socketService.on(
-      CHAT_EVENTS.CONVERSATION_UPDATE,
-      (data: unknown) => {
-        const payload = data as ConversationUpdatePayload;
-        handleConversationUpdate(payload);
-      }
-    );
-    unsubscribersRef.current.push(unsubConversationUpdate);
-
-    return () => {
-      unsubscribersRef.current.forEach((unsub) => unsub());
-      unsubscribersRef.current = [];
-      socketService.disconnect();
-      socketRef.current = null;
-    };
-  }, [autoConnect, getAccessToken]);
-
-  // ============================================================================
-  // Socket Event Handlers
+  // Socket Event Handlers (using refs to avoid stale closures)
   // ============================================================================
 
   const handleNewMessage = useCallback((payload: NewMessagePayload) => {
@@ -279,6 +214,82 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
     },
     []
   );
+
+  // Use refs to keep handlers fresh for socket subscriptions
+  const handleNewMessageRef = useRef(handleNewMessage);
+  const handleMessageStatusUpdateRef = useRef(handleMessageStatusUpdate);
+  const handleConversationUpdateRef = useRef(handleConversationUpdate);
+
+  useEffect(() => {
+    handleNewMessageRef.current = handleNewMessage;
+    handleMessageStatusUpdateRef.current = handleMessageStatusUpdate;
+    handleConversationUpdateRef.current = handleConversationUpdate;
+  }, [handleNewMessage, handleMessageStatusUpdate, handleConversationUpdate]);
+
+  // ============================================================================
+  // Socket Connection
+  // ============================================================================
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!autoConnect || !token) return;
+
+    const socketService = new SocketService({
+      getToken: () => getAccessToken(),
+      namespace: '/chat',
+      onStatusChange: (status) => {
+        if (status === 'error') {
+          setState((prev) => ({
+            ...prev,
+            error: 'Connection lost. Reconnecting...',
+          }));
+        } else if (status === 'connected') {
+          setState((prev) => ({ ...prev, error: null }));
+        }
+      },
+      onError: (error) => {
+        console.error('[useChat] Socket error:', error);
+      },
+    });
+
+    socketRef.current = socketService;
+    socketService.connect();
+
+    // Subscribe to socket events (using refs for fresh handlers)
+    const unsubNewMessage = socketService.on(
+      CHAT_EVENTS.NEW_MESSAGE,
+      (data: unknown) => {
+        const payload = data as NewMessagePayload;
+        handleNewMessageRef.current(payload);
+      }
+    );
+    unsubscribersRef.current.push(unsubNewMessage);
+
+    const unsubMessageStatus = socketService.on(
+      CHAT_EVENTS.MESSAGE_STATUS,
+      (data: unknown) => {
+        const payload = data as MessageStatusUpdatePayload;
+        handleMessageStatusUpdateRef.current(payload);
+      }
+    );
+    unsubscribersRef.current.push(unsubMessageStatus);
+
+    const unsubConversationUpdate = socketService.on(
+      CHAT_EVENTS.CONVERSATION_UPDATE,
+      (data: unknown) => {
+        const payload = data as ConversationUpdatePayload;
+        handleConversationUpdateRef.current(payload);
+      }
+    );
+    unsubscribersRef.current.push(unsubConversationUpdate);
+
+    return () => {
+      unsubscribersRef.current.forEach((unsub) => unsub());
+      unsubscribersRef.current = [];
+      socketService.disconnect();
+      socketRef.current = null;
+    };
+  }, [autoConnect, getAccessToken]);
 
   // ============================================================================
   // Actions

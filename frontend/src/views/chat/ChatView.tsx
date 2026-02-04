@@ -19,6 +19,7 @@ import {
 } from '@/components/ui';
 import { formatRelativeTime, cn, debounce } from '@/utils';
 import { useChat } from './useChat';
+import { useAuthStore } from '@/store';
 import type { Conversation, Message, MessageStatus } from '@/@types/chat';
 
 // ============================================================================
@@ -508,7 +509,12 @@ export function ChatView(): ReactNode {
   const loadConversationsRef = useRef(loadConversations);
   loadConversationsRef.current = loadConversations;
 
+  // Get current user ID for message ownership check
+  const { session } = useAuthStore();
+  const currentUserId = session?.user?.id;
+
   // Debounced search - memoize the function
+  // Type cast needed due to debounce utility's generic signature
   const debouncedSearchRef = useRef(
     debounce(((query: unknown) => {
       const q = query as string;
@@ -690,9 +696,9 @@ export function ChatView(): ReactNode {
                 {/* Messages list */}
                 {!isLoadingMessages &&
                   messages.map((message) => {
-                    // Check if message is from current user (simplified - in reality check against auth user)
+                    // Check if message is from current user or is a pending optimistic message
                     const isOwnMessage =
-                      message.sender.id === 'current-user-id' ||
+                      message.sender.id === currentUserId ||
                       message.tempId !== undefined;
 
                     return (
