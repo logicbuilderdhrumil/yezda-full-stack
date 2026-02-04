@@ -40,6 +40,7 @@ export const endpoints = {
   'candidates.create': { path: '/candidates', version: 'v1' },
   'candidates.update': { path: '/candidates/:id', version: 'v1' },
   'candidates.delete': { path: '/candidates/:id', version: 'v1' },
+  'candidates.bulkCreate': { path: '/candidates/bulk', version: 'v1' },
 
   // Organizations endpoints
   'organizations.list': { path: '/organizations', version: 'v1' },
@@ -55,6 +56,20 @@ export const endpoints = {
   'notifications.markAsRead': { path: '/notifications/:id/read', version: 'v1' },
   'notifications.markAsUnread': { path: '/notifications/:id/unread', version: 'v1' },
   'notifications.markManyAsRead': { path: '/notifications/mark-read', version: 'v1' },
+
+  // Forms endpoints
+  'forms.list': { path: '/forms', version: 'v1' },
+  'forms.get': { path: '/forms/:id', version: 'v1' },
+  'forms.create': { path: '/forms', version: 'v1' },
+  'forms.update': { path: '/forms/:id', version: 'v1' },
+  'forms.delete': { path: '/forms/:id', version: 'v1' },
+
+  // Ledger endpoints
+  'ledger.list': { path: '/ledger', version: 'v1' },
+  'ledger.export': { path: '/ledger/export', version: 'v1' },
+
+  // Dashboard endpoints
+  'dashboard.metrics': { path: '/dashboard/metrics', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */
