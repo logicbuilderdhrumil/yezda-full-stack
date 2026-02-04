@@ -21,23 +21,15 @@ function getClientInfo(req: Request) {
 }
 
 /**
- * Extract tenant ID from authenticated user or header
+ * Extract tenant ID from authenticated user context only
  * Task 1.4: Tenant scoping
+ * Security: tenant ID must come from authenticated JWT only, never headers
  */
 function getTenantId(req: AuthenticatedRoleRequest): string {
-  // Try user's tenant first
-  if (req.user?.tenantId) {
-    return req.user.tenantId;
+  if (!req.user?.tenantId) {
+    throw new Error('Tenant context required');
   }
-
-  // Try header (for multi-tenant scenarios)
-  const headerTenantId = req.get('x-tenant-id');
-  if (headerTenantId) {
-    return headerTenantId;
-  }
-
-  // Default tenant for single-tenant or testing
-  return 'default';
+  return req.user.tenantId;
 }
 
 /**
@@ -47,7 +39,15 @@ function getTenantId(req: AuthenticatedRoleRequest): string {
  */
 export async function listForms(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
-  const tenantId = getTenantId(req);
+  
+  let tenantId: string;
+  try {
+    tenantId = getTenantId(req);
+  } catch {
+    res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
   const query = req.query as unknown as ListFormsQuery;
 
   const userId = req.user?.sub;
@@ -70,10 +70,17 @@ export async function listForms(req: AuthenticatedRoleRequest, res: Response): P
  */
 export async function createForm(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
-  const tenantId = getTenantId(req);
 
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
+  let tenantId: string;
+  try {
+    tenantId = getTenantId(req);
+  } catch {
+    res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
     return;
   }
 
@@ -100,7 +107,15 @@ export async function createForm(req: AuthenticatedRoleRequest, res: Response): 
  */
 export async function getForm(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
-  const tenantId = getTenantId(req);
+  
+  let tenantId: string;
+  try {
+    tenantId = getTenantId(req);
+  } catch {
+    res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
   const { formId } = req.params;
 
   const userId = req.user?.sub;
@@ -126,11 +141,18 @@ export async function getForm(req: AuthenticatedRoleRequest, res: Response): Pro
  */
 export async function updateForm(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
-  const tenantId = getTenantId(req);
   const { formId } = req.params;
 
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
+  let tenantId: string;
+  try {
+    tenantId = getTenantId(req);
+  } catch {
+    res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
     return;
   }
 
@@ -161,11 +183,18 @@ export async function updateForm(req: AuthenticatedRoleRequest, res: Response): 
  */
 export async function deleteForm(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
-  const tenantId = getTenantId(req);
   const { formId } = req.params;
 
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
+  let tenantId: string;
+  try {
+    tenantId = getTenantId(req);
+  } catch {
+    res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
     return;
   }
 
