@@ -6,26 +6,32 @@
 import type { Response } from 'express';
 import { templateLayoutsService } from '../services/template-layouts.service.js';
 import { templateLayoutsMetricsService } from '../services/template-layouts-metrics.service.js';
-import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
+import type { AuthenticatedRoleRequest, AuthenticatedUserPayload } from '../middleware/route-guards.middleware.js';
 import type { LayoutAccessContext } from '../models/template-layouts.model.js';
 
 /**
  * Extract tenant ID from request headers
  */
-function getTenantId(req: AuthenticatedRequest): string | undefined {
+function getTenantId(req: AuthenticatedRoleRequest): string | undefined {
   return req.get('x-tenant-id');
 }
 
 /**
  * Extract user authorities from request
- * In production, these would come from the JWT claims or a permission service
+ * Derives authorities from user type and roles (including admin)
  */
-function getUserAuthorities(req: AuthenticatedRequest): string[] {
+function getUserAuthorities(req: AuthenticatedRoleRequest): string[] {
   if (!req.user) return [];
 
+  const user = req.user as AuthenticatedUserPayload;
   const baseAuthorities: string[] = [];
 
-  if (req.user.type === 'user') {
+  // Add 'admin' authority if user has admin role
+  if (user.roles?.includes('admin')) {
+    baseAuthorities.push('admin');
+  }
+
+  if (user.type === 'user') {
     // Regular users get basic read permissions
     baseAuthorities.push(
       'candidate:read',
@@ -33,7 +39,7 @@ function getUserAuthorities(req: AuthenticatedRequest): string[] {
       'report:read',
       'settings:read'
     );
-  } else if (req.user.type === 'candidate') {
+  } else if (user.type === 'candidate') {
     // Candidates get limited access
     baseAuthorities.push('candidate:self');
   }
@@ -44,7 +50,7 @@ function getUserAuthorities(req: AuthenticatedRequest): string[] {
 /**
  * Build layout access context from request
  */
-function buildAccessContext(req: AuthenticatedRequest): LayoutAccessContext | null {
+function buildAccessContext(req: AuthenticatedRoleRequest): LayoutAccessContext | null {
   if (!req.user) return null;
 
   return {
@@ -60,7 +66,7 @@ function buildAccessContext(req: AuthenticatedRequest): LayoutAccessContext | nu
  * Get layout navigation metadata (header and side navigation)
  */
 export async function getLayoutNavigation(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   const startTime = Date.now();
@@ -130,7 +136,7 @@ export async function getLayoutNavigation(
  * Get profile and notification summary for template controls
  */
 export async function getProfileSummary(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   const startTime = Date.now();
@@ -200,7 +206,7 @@ export async function getProfileSummary(
  * Get health summary and SLO status for template layout endpoints
  */
 export async function getHealthSummary(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {

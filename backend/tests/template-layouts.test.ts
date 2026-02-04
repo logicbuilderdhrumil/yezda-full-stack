@@ -311,6 +311,102 @@ describe('Template Layouts Service', () => {
   });
 });
 
+describe('Template Layouts Controller Authorization', () => {
+  describe('getHealthSummary authorization', () => {
+    it('should allow access for users with admin role', async () => {
+      const { getHealthSummary } = await import(
+        '../src/controllers/template-layouts.controller.js'
+      );
+
+      const mockReq = {
+        user: {
+          sub: 'admin-user-123',
+          type: 'user' as const,
+          roles: ['admin'],
+          iat: Date.now() / 1000,
+          exp: (Date.now() / 1000) + 3600,
+          jti: 'test-jti',
+        },
+        get: vi.fn(),
+      };
+
+      const mockRes = {
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+        setHeader: vi.fn(),
+      };
+
+      await getHealthSummary(mockReq as unknown as Parameters<typeof getHealthSummary>[0], mockRes as unknown as Parameters<typeof getHealthSummary>[1]);
+
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({
+        status: expect.stringMatching(/healthy|degraded/),
+      }));
+    });
+
+    it('should deny access for users without admin role', async () => {
+      const { getHealthSummary } = await import(
+        '../src/controllers/template-layouts.controller.js'
+      );
+
+      const mockReq = {
+        user: {
+          sub: 'regular-user-123',
+          type: 'user' as const,
+          roles: [], // No admin role
+          iat: Date.now() / 1000,
+          exp: (Date.now() / 1000) + 3600,
+          jti: 'test-jti',
+        },
+        get: vi.fn(),
+      };
+
+      const mockRes = {
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      };
+
+      await getHealthSummary(mockReq as unknown as Parameters<typeof getHealthSummary>[0], mockRes as unknown as Parameters<typeof getHealthSummary>[1]);
+
+      expect(mockRes.status).toHaveBeenCalledWith(403);
+      expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({
+        error: 'Admin access required',
+        code: 'FORBIDDEN',
+      }));
+    });
+
+    it('should deny access for users without roles property', async () => {
+      const { getHealthSummary } = await import(
+        '../src/controllers/template-layouts.controller.js'
+      );
+
+      const mockReq = {
+        user: {
+          sub: 'user-no-roles',
+          type: 'user' as const,
+          // No roles property
+          iat: Date.now() / 1000,
+          exp: (Date.now() / 1000) + 3600,
+          jti: 'test-jti',
+        },
+        get: vi.fn(),
+      };
+
+      const mockRes = {
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      };
+
+      await getHealthSummary(mockReq as unknown as Parameters<typeof getHealthSummary>[0], mockRes as unknown as Parameters<typeof getHealthSummary>[1]);
+
+      expect(mockRes.status).toHaveBeenCalledWith(403);
+      expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({
+        code: 'FORBIDDEN',
+      }));
+    });
+  });
+});
+
 describe('Template Layouts Metrics Service', () => {
   describe('SLO Checking', () => {
     it('should check SLOs and return status', () => {
