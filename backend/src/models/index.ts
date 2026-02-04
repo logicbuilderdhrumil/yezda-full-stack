@@ -39,3 +39,4 @@ export * from './candidate-management.model.js';
 export * from './form-builder.model.js';
 export * from './file-management.model.js';
 export * from './asset-management.model.js';
+export * from './chat.model.js';

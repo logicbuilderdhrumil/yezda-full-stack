@@ -27,6 +27,7 @@ export * from './org-management.service.js';
 export * from './org-management-metrics.service.js';
 export * from './account-settings.service.js';
 export * from './account-settings-metrics.service.js';
+<<<<<<< HEAD
 export * from './candidate-management.service.js';
 export * from './candidate-management-metrics.service.js';
 export * from './form-builder.service.js';
@@ -35,3 +36,7 @@ export * from './file-management-metrics.service.js';
 export * from './local-storage.adapter.js';
 export * from './asset-management.service.js';
 export * from './asset-management-metrics.service.js';
+=======
+export * from './chat.service.js';
+export * from './chat-metrics.service.js';
+>>>>>>> fcf5db9 (feat: backend-add-chat - Add backend chat services with realtime messaging)
