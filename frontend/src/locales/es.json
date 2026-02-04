@@ -115,5 +115,16 @@
     "connectError": "Error al conectar {{provider}}",
     "loadError": "Error al cargar integraciones",
     "noProviders": "No hay integraciones disponibles"
+  },
+  "errors": {
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedMessage": "No tienes permiso para ver esta página.",
+    "notFound": "Página No Encontrada",
+    "notFoundMessage": "La página que buscas no existe o ha sido movida.",
+    "genericError": "Algo Salió Mal",
+    "genericErrorMessage": "Ocurrió un error inesperado. Por favor, intenta de nuevo más tarde.",
+    "goBack": "Volver",
+    "returnToHome": "Volver al Inicio",
+    "tryAgain": "Intentar de Nuevo"
   }
 }

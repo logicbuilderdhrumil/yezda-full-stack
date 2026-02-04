@@ -115,5 +115,16 @@
     "connectError": "{{provider}} konnte nicht verbunden werden",
     "loadError": "Integrationen konnten nicht geladen werden",
     "noProviders": "Keine Integrationen verfügbar"
+  },
+  "errors": {
+    "accessDenied": "Zugriff Verweigert",
+    "accessDeniedMessage": "Sie haben keine Berechtigung, diese Seite anzuzeigen.",
+    "notFound": "Seite Nicht Gefunden",
+    "notFoundMessage": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "genericError": "Etwas ist Schiefgelaufen",
+    "genericErrorMessage": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+    "goBack": "Zurück",
+    "returnToHome": "Zur Startseite",
+    "tryAgain": "Erneut Versuchen"
   }
 }

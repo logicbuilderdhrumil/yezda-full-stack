@@ -358,5 +358,16 @@
       "invalidType": "Please upload a valid image file (JPG, PNG, WebP, or GIF)",
       "tooLarge": "Image must be less than 5MB"
     }
+  },
+  "errors": {
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have permission to view this page.",
+    "notFound": "Page Not Found",
+    "notFoundMessage": "The page you are looking for does not exist or has been moved.",
+    "genericError": "Something Went Wrong",
+    "genericErrorMessage": "An unexpected error occurred. Please try again later.",
+    "goBack": "Go Back",
+    "returnToHome": "Return to Home",
+    "tryAgain": "Try Again"
   }
 }

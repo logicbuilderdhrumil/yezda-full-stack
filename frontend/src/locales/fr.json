@@ -115,5 +115,16 @@
     "connectError": "Échec de la connexion à {{provider}}",
     "loadError": "Échec du chargement des intégrations",
     "noProviders": "Aucune intégration disponible"
+  },
+  "errors": {
+    "accessDenied": "Accès Refusé",
+    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page.",
+    "notFound": "Page Non Trouvée",
+    "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "genericError": "Une Erreur s'est Produite",
+    "genericErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+    "goBack": "Retour",
+    "returnToHome": "Retour à l'Accueil",
+    "tryAgain": "Réessayer"
   }
 }
