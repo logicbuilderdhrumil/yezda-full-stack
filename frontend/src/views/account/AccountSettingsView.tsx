@@ -49,6 +49,7 @@ export function AccountSettingsView(): ReactNode {
         }
       } catch (error) {
         handleApiError(error);
+        // t is stable enough for error messages; we fetch only on mount
         toastError(t('account.fetchError'));
       } finally {
         if (isMounted) {
@@ -62,7 +63,8 @@ export function AccountSettingsView(): ReactNode {
     return () => {
       isMounted = false;
     };
-  }, [t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleProfileSubmit = async (data: UpdateProfilePayload): Promise<void> => {
     setIsSubmitting(true);
@@ -172,7 +174,7 @@ export function AccountSettingsView(): ReactNode {
                 onAvatarUpload={handleAvatarUpload}
                 onAvatarRemove={handleAvatarRemove}
                 isSubmitting={isSubmitting}
-                isAvatarLoading={isAvatarLoading}
+                isLoading={isAvatarLoading}
               />
             </CardContent>
           </Card>

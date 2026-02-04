@@ -2,7 +2,7 @@
  * Profile Form Component
  * Task 1.3: Implement profile update form and validation
  */
-import { useState, type ReactNode, type FormEvent } from 'react';
+import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -27,7 +27,7 @@ export interface ProfileFormProps {
   /** Whether submission is in progress. */
   isSubmitting?: boolean;
   /** Whether avatar operation is in progress. */
-  isAvatarLoading?: boolean;
+  isLoading?: boolean;
 }
 
 interface FormErrors {
@@ -83,9 +83,10 @@ export function ProfileForm({
   onAvatarUpload,
   onAvatarRemove,
   isSubmitting = false,
-  isAvatarLoading = false,
+  isLoading,
 }: ProfileFormProps): ReactNode {
   const { t } = useTranslation();
+  const isAvatarLoading = isLoading ?? false;
 
   // Form state
   const [firstName, setFirstName] = useState(profile.firstName);
@@ -93,6 +94,13 @@ export function ProfileForm({
   const [phone, setPhone] = useState(profile.phone || '');
 
   const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
+
+  // Sync form state when profile prop changes (e.g., after successful save)
+  useEffect(() => {
+    setFirstName(profile.firstName);
+    setLastName(profile.lastName);
+    setPhone(profile.phone || '');
+  }, [profile.firstName, profile.lastName, profile.phone]);
 
   const displayName = `${firstName} ${lastName}`.trim() || profile.email;
 
@@ -139,7 +147,7 @@ export function ProfileForm({
           displayName={displayName}
           onUpload={onAvatarUpload}
           onRemove={onAvatarRemove}
-          isUploading={isAvatarLoading}
+          isLoading={isAvatarLoading}
         />
       </FormSection>
 

@@ -347,6 +347,7 @@
     "avatar": {
       "upload": "Upload",
       "remove": "Remove",
+      "uploadLabel": "Click or drag to upload avatar",
       "hint": "JPG, PNG, WebP or GIF. Max 5MB.",
       "uploading": "Uploading avatar...",
       "uploadSuccess": "Avatar uploaded successfully",

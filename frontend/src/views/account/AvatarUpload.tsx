@@ -19,10 +19,8 @@ export interface AvatarUploadProps {
   onUpload: (file: File) => Promise<void>;
   /** Called when avatar is removed. */
   onRemove: () => Promise<void>;
-  /** Whether upload is in progress. */
-  isUploading?: boolean;
-  /** Whether remove is in progress. */
-  isRemoving?: boolean;
+  /** Whether any avatar operation is in progress. */
+  isLoading?: boolean;
   /** Additional CSS classes. */
   className?: string;
 }
@@ -46,15 +44,12 @@ export function AvatarUpload({
   displayName,
   onUpload,
   onRemove,
-  isUploading = false,
-  isRemoving = false,
+  isLoading = false,
   className,
 }: AvatarUploadProps): ReactNode {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-
-  const isLoading = isUploading || isRemoving;
 
   const handleFileSelect = async (file: File): Promise<void> => {
     // Validate file type
@@ -106,18 +101,31 @@ export function AvatarUpload({
     fileInputRef.current?.click();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleUploadClick();
+    }
+  };
+
   return (
     <div className={cn('flex items-center gap-6', className)}>
       {/* Avatar display */}
       <div
         className={cn(
           'relative flex h-24 w-24 items-center justify-center rounded-full',
-          'border-2 border-dashed transition-colors',
+          'border-2 border-dashed transition-colors cursor-pointer',
+          'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
           isDragOver
             ? 'border-primary bg-primary/5'
             : 'border-gray-300 dark:border-gray-600',
           avatarUrl && 'border-solid border-transparent'
         )}
+        role="button"
+        tabIndex={isLoading ? -1 : 0}
+        aria-label={t('account.avatar.uploadLabel')}
+        onClick={handleUploadClick}
+        onKeyDown={handleKeyDown}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
