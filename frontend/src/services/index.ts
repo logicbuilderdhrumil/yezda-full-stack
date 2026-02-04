@@ -1,5 +1,9 @@
 export { AccountService } from './AccountService';
 export { AuthService } from './AuthService';
+export { CandidatesService } from './CandidatesService';
+export { ChatService } from './ChatService';
+export { DashboardService } from './DashboardService';
+export { FormsService } from './FormsService';
 export { OAuthService } from './OAuthService';
 export {
   ApiService,
@@ -24,3 +28,4 @@ export { OrganizationsService } from './OrganizationsService';
 export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
 export { NotificationsService } from './NotificationsService';
+export { LedgerService } from './LedgerService';

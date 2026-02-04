@@ -82,7 +82,18 @@
       "title": "Accueil",
       "description": "Bienvenue sur votre tableau de bord",
       "welcomeBack": "Bon retour, {{name}}!",
-      "dashboardIntro": "Ceci est votre tableau de bord principal. Naviguez en utilisant la barre latérale pour accéder aux différentes sections de l'application."
+      "dashboardIntro": "Ceci est votre tableau de bord principal. Naviguez en utilisant la barre latérale pour accéder aux différentes sections de l'application.",
+      "recentActivity": "Activité Récente",
+      "noActivity": "Aucune activité récente",
+      "noChartData": "Aucune donnée disponible",
+      "noData": "Aucune donnée de tableau de bord disponible",
+      "lastUpdated": "Dernière mise à jour {{time}}",
+      "refresh": "Actualiser",
+      "refreshError": "Échec de l'actualisation du tableau de bord",
+      "retry": "Réessayer",
+      "kpiSection": "Indicateurs Clés de Performance",
+      "chartsSection": "Graphiques de Tendances",
+      "activitySection": "Activité Récente"
     }
   },
   "languages": {
@@ -115,5 +126,16 @@
     "connectError": "Échec de la connexion à {{provider}}",
     "loadError": "Échec du chargement des intégrations",
     "noProviders": "Aucune intégration disponible"
+  },
+  "errors": {
+    "accessDenied": "Accès Refusé",
+    "accessDeniedMessage": "Vous n'avez pas la permission de voir cette page.",
+    "notFound": "Page Non Trouvée",
+    "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "genericError": "Une Erreur s'est Produite",
+    "genericErrorMessage": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+    "goBack": "Retour",
+    "returnToHome": "Retour à l'Accueil",
+    "tryAgain": "Réessayer"
   }
 }

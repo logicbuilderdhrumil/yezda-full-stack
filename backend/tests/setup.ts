@@ -9,6 +9,7 @@ import { vi, beforeAll, beforeEach, afterAll } from 'vitest';
 const users = new Map<string, unknown>();
 const candidates = new Map<string, unknown>();
 const sessions = new Map<string, unknown>();
+const appSessions = new Map<string, unknown>();
 const passwordResetTokens = new Map<string, unknown>();
 const mfaEnrollments = new Map<string, unknown>();
 const backupCodes = new Map<string, unknown>();
@@ -271,6 +272,112 @@ vi.mock('../src/repositories/session.repository.js', () => ({
     cleanupExpired: vi.fn(async () => 0),
   },
   SessionRepository: vi.fn(),
+}));
+
+// Mock App Session Repository
+vi.mock('../src/repositories/app-session.repository.js', () => ({
+  appSessionRepository: {
+    create: vi.fn(async (session: { id: string }) => {
+      appSessions.set(session.id, session);
+    }),
+    findById: vi.fn(async (id: string) => appSessions.get(id)),
+    findByRefreshTokenHash: vi.fn(async (hash: string) => {
+      for (const session of appSessions.values()) {
+        if ((session as { refreshTokenHash: string }).refreshTokenHash === hash) {
+          return session;
+        }
+      }
+      return undefined;
+    }),
+    findActiveByUser: vi.fn(async (userId: string) => {
+      const result: unknown[] = [];
+      for (const session of appSessions.values()) {
+        const s = session as { userId: string; revokedAt?: Date; expiresAt: Date };
+        if (s.userId === userId && !s.revokedAt && s.expiresAt > new Date()) {
+          result.push(session);
+        }
+      }
+      return result;
+    }),
+    findActiveByDeviceId: vi.fn(async (userId: string, deviceId: string) => {
+      for (const session of appSessions.values()) {
+        const s = session as { userId: string; deviceId: string; revokedAt?: Date; expiresAt: Date };
+        if (s.userId === userId && s.deviceId === deviceId && !s.revokedAt && s.expiresAt > new Date()) {
+          return session;
+        }
+      }
+      return undefined;
+    }),
+    update: vi.fn(async (session: { id: string }) => {
+      appSessions.set(session.id, session);
+    }),
+    updateLastActive: vi.fn(async (id: string) => {
+      const session = appSessions.get(id) as { lastActiveAt?: Date } | undefined;
+      if (session) {
+        session.lastActiveAt = new Date();
+      }
+    }),
+    revoke: vi.fn(async (id: string) => {
+      const session = appSessions.get(id) as { revokedAt?: Date } | undefined;
+      if (session) {
+        session.revokedAt = new Date();
+        return true;
+      }
+      return false;
+    }),
+    revokeAllForUser: vi.fn(async (userId: string) => {
+      let count = 0;
+      for (const session of appSessions.values()) {
+        const s = session as { userId: string; revokedAt?: Date };
+        if (s.userId === userId && !s.revokedAt) {
+          s.revokedAt = new Date();
+          count++;
+        }
+      }
+      return count;
+    }),
+    revokeAllForDevice: vi.fn(async (userId: string, deviceId: string) => {
+      let count = 0;
+      for (const session of appSessions.values()) {
+        const s = session as { userId: string; deviceId: string; revokedAt?: Date };
+        if (s.userId === userId && s.deviceId === deviceId && !s.revokedAt) {
+          s.revokedAt = new Date();
+          count++;
+        }
+      }
+      return count;
+    }),
+    getSessionInfoForUser: vi.fn(async (userId: string, currentSessionId?: string) => {
+      const result: unknown[] = [];
+      for (const session of appSessions.values()) {
+        const s = session as { id: string; userId: string; deviceId: string; platform: string; appVersion: string; createdAt: Date; lastActiveAt: Date; revokedAt?: Date; expiresAt: Date };
+        if (s.userId === userId && !s.revokedAt && s.expiresAt > new Date()) {
+          result.push({
+            sessionId: s.id,
+            deviceId: s.deviceId,
+            platform: s.platform,
+            appVersion: s.appVersion,
+            createdAt: s.createdAt,
+            lastActiveAt: s.lastActiveAt,
+            isCurrent: s.id === currentSessionId,
+          });
+        }
+      }
+      return result;
+    }),
+    countActiveForUser: vi.fn(async (userId: string) => {
+      let count = 0;
+      for (const session of appSessions.values()) {
+        const s = session as { userId: string; revokedAt?: Date; expiresAt: Date };
+        if (s.userId === userId && !s.revokedAt && s.expiresAt > new Date()) {
+          count++;
+        }
+      }
+      return count;
+    }),
+    cleanupExpired: vi.fn(async () => 0),
+  },
+  AppSessionRepository: vi.fn(),
 }));
 
 // Mock Password Reset Repository
@@ -541,6 +648,7 @@ beforeEach(() => {
   users.clear();
   candidates.clear();
   sessions.clear();
+  appSessions.clear();
   passwordResetTokens.clear();
   mfaEnrollments.clear();
   backupCodes.clear();
@@ -549,4 +657,4 @@ beforeEach(() => {
   auditLogs.length = 0;
 });
 
-export { users, candidates, sessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, themePreferences, auditLogs };
+export { users, candidates, sessions, appSessions, passwordResetTokens, mfaEnrollments, backupCodes, stateStore, themePreferences, auditLogs };
