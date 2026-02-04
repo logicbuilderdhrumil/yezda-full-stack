@@ -67,6 +67,7 @@ export async function runMigrations(): Promise<void> {
  */
 export async function dropAllTables(): Promise<void> {
   const tables = [
+    'organizations',
     'audit_logs',
     'mfa_enrollments',
     'password_reset_tokens',
