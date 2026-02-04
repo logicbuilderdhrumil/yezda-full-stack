@@ -20,5 +20,6 @@ export {
   type InterceptorConfig,
 } from './axios';
 export { OrganizationsService } from './OrganizationsService';
+export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
 export { NotificationsService } from './NotificationsService';

@@ -6,6 +6,7 @@
     "home": "Home",
     "candidates": "Candidates",
     "organizations": "Organizations",
+    "users": "Users",
     "screening": "Screening",
     "reports": "Reports",
     "settings": "Settings",
@@ -32,7 +33,9 @@
     "cancel": "Cancel",
     "create": "Create",
     "delete": "Delete",
-    "back": "Back"
+    "back": "Back",
+    "yes": "Yes",
+    "no": "No"
   },
   "auth": {
     "signIn": "Sign in",
@@ -208,5 +211,96 @@
     "connectError": "Failed to connect {{provider}}",
     "loadError": "Failed to load integrations",
     "noProviders": "No integrations available"
+  },
+  "users": {
+    "list": {
+      "title": "Users",
+      "description": "Manage platform users and their access",
+      "searchPlaceholder": "Search users...",
+      "filterStatus": "Filter by status",
+      "filterRole": "Filter by role",
+      "createButton": "Create User",
+      "noResults": "No users found",
+      "fetchError": "Failed to load users"
+    },
+    "create": {
+      "title": "Create User",
+      "description": "Add a new user to the platform",
+      "success": "User created successfully",
+      "error": "Failed to create user"
+    },
+    "edit": {
+      "title": "Edit User",
+      "description": "Update user: {{name}}",
+      "success": "User updated successfully",
+      "error": "Failed to update user",
+      "fetchError": "Failed to load user"
+    },
+    "details": {
+      "title": "User Details",
+      "description": "View user information",
+      "fetchError": "Failed to load user",
+      "id": "ID",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "mfaEnabled": "MFA Enabled",
+      "createdAt": "Created",
+      "updatedAt": "Last Updated",
+      "organizationTitle": "Organization",
+      "organization": "Organization"
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "created": "Created"
+    },
+    "status": {
+      "all": "All Statuses",
+      "active": "Active",
+      "pending": "Pending",
+      "inactive": "Inactive"
+    },
+    "role": {
+      "all": "All Roles",
+      "admin": "Admin",
+      "manager": "Manager",
+      "user": "User",
+      "candidate": "Candidate"
+    },
+    "form": {
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter last name",
+      "email": "Email",
+      "emailPlaceholder": "user@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "role": "Role",
+      "status": "Status",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "passwordHelper": "Minimum 8 characters",
+      "sendInvitation": "Send invitation email to set up password",
+      "sections": {
+        "basicInfo": "Basic Information",
+        "basicInfoDescription": "User's personal details",
+        "roleAccess": "Role & Access",
+        "roleAccessDescription": "Define the user's role and permissions",
+        "credentials": "Credentials",
+        "credentialsDescription": "Set up the user's login credentials"
+      },
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "passwordMinLength": "Password must be at least 8 characters"
+      }
+    }
   }
 }
