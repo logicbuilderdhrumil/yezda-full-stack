@@ -1,18 +1,19 @@
 /**
  * Auth API service for sign-in, refresh, and sign-out.
  * Task 1.3: Implement app auth API service.
+ * Integration: Aligned with backend auth.routes.ts, auth.controller.ts contracts.
  */
 
 import {
   SignInRequest,
   SignInResponse,
   RefreshResponse,
-  MfaVerifyRequest,
   SessionTokens,
   authErrorMessages,
 } from '../types/auth.types';
+import type { MfaVerifyRequestDto } from '../types/api.types';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:3000/api' : undefined);
 
 if (!API_BASE_URL) {
   throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
@@ -127,8 +128,9 @@ export async function signIn(request: SignInRequest): Promise<SignInResponse> {
 
 /**
  * Complete MFA verification.
+ * Aligned with POST /api/v1/auth/mfa/verify
  */
-export async function verifyMfa(request: MfaVerifyRequest): Promise<SignInResponse> {
+export async function verifyMfa(request: MfaVerifyRequestDto): Promise<SignInResponse> {
   try {
     return await apiRequest<SignInResponse>('/v1/auth/mfa/verify', {
       method: 'POST',
