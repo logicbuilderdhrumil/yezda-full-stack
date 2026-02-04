@@ -9,6 +9,7 @@ import oauthRoutes from './oauth.routes.js';
 import mockRoutes from './mock.routes.js';
 import themeRoutes from './theme.routes.js';
 import uiKitRoutes from './ui-kit.routes.js';
+import userManagementRoutes from './user-management.routes.js';
 import orgManagementRoutes from './org-management.routes.js';
 
 const router = Router();
@@ -23,6 +24,7 @@ router.use('/oauth', oauthRoutes);
 router.use('/mock', mockRoutes);
 router.use('/theme', themeRoutes);
 router.use('/ui-kit', uiKitRoutes);
+router.use('/users', userManagementRoutes);
 router.use('/organizations', orgManagementRoutes);
 
 export default router;

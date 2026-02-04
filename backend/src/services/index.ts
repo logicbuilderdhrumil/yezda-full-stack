@@ -21,5 +21,7 @@ export * from './mock-api.service.js';
 export * from './theme.service.js';
 export * from './theme-metrics.service.js';
 export * from './ui-kit.service.js';
+export * from './user-management.service.js';
+export * from './user-management-metrics.service.js';
 export * from './org-management.service.js';
 export * from './org-management-metrics.service.js';
