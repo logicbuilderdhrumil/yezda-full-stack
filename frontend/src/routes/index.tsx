@@ -70,6 +70,48 @@ const UserDetailsView = lazy(() =>
   }))
 );
 
+// Candidate views (admin and manager access)
+const CandidatesListView = lazy(() =>
+  import('@/views/candidates/CandidatesListView').then((m) => ({
+    default: m.CandidatesListView,
+  }))
+);
+const CandidateCreateView = lazy(() =>
+  import('@/views/candidates/CandidateCreateView').then((m) => ({
+    default: m.CandidateCreateView,
+  }))
+);
+const CandidateEditView = lazy(() =>
+  import('@/views/candidates/CandidateEditView').then((m) => ({
+    default: m.CandidateEditView,
+  }))
+);
+const CandidateDetailsView = lazy(() =>
+  import('@/views/candidates/CandidateDetailsView').then((m) => ({
+    default: m.CandidateDetailsView,
+  }))
+);
+const CandidateBulkCreateView = lazy(() =>
+  import('@/views/candidates/CandidateBulkCreateView').then((m) => ({
+    default: m.CandidateBulkCreateView,
+  }))
+);
+const CandidateSubmissionView = lazy(() =>
+  import('@/views/candidates/CandidateSubmissionView').then((m) => ({
+    default: m.CandidateSubmissionView,
+  }))
+);
+const CertifiedCandidatesListView = lazy(() =>
+  import('@/views/candidates/CertifiedCandidatesListView').then((m) => ({
+    default: m.CertifiedCandidatesListView,
+  }))
+);
+const ArchivedCandidatesListView = lazy(() =>
+  import('@/views/candidates/ArchivedCandidatesListView').then((m) => ({
+    default: m.ArchivedCandidatesListView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -95,6 +137,19 @@ function withAdminGuard(Component: React.ComponentType): React.ReactNode {
 }
 
 /**
+ * Wraps a component with Suspense and AuthorityGuard for admin and manager routes.
+ */
+function withCandidateGuard(Component: React.ComponentType): React.ReactNode {
+  return (
+    <AuthorityGuard authority={['admin', 'manager']}>
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Component />
+      </Suspense>
+    </AuthorityGuard>
+  );
+}
+
+/**
  * Public routes that don't require authentication.
  */
 export const publicRoutes: RouteObject[] = [
@@ -102,6 +157,17 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/access-denied',
     element: withSuspense(AccessDeniedView),
+  },
+  /**
+   * Public candidate submission form.
+   * Security Note: This endpoint is public and should have rate limiting and
+   * bot protection implemented at the API gateway or backend level.
+   * The form includes a honeypot field for basic bot detection.
+   * Backend should validate formId and org parameters before processing.
+   */
+  {
+    path: '/submit/:formId',
+    element: withSuspense(CandidateSubmissionView),
   },
 ];
 
@@ -163,6 +229,35 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'users/:id/edit',
         element: withAdminGuard(UserEditView),
+      },
+      // Candidate management routes (admin and manager)
+      {
+        path: 'candidates',
+        element: withCandidateGuard(CandidatesListView),
+      },
+      {
+        path: 'candidates/new',
+        element: withCandidateGuard(CandidateCreateView),
+      },
+      {
+        path: 'candidates/bulk-create',
+        element: withCandidateGuard(CandidateBulkCreateView),
+      },
+      {
+        path: 'candidates/certified',
+        element: withCandidateGuard(CertifiedCandidatesListView),
+      },
+      {
+        path: 'candidates/archived',
+        element: withCandidateGuard(ArchivedCandidatesListView),
+      },
+      {
+        path: 'candidates/:id',
+        element: withCandidateGuard(CandidateDetailsView),
+      },
+      {
+        path: 'candidates/:id/edit',
+        element: withCandidateGuard(CandidateEditView),
       },
       // Additional protected routes will be added here
     ],

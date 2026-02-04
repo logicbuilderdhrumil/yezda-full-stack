@@ -1,5 +1,6 @@
 export { AccountService } from './AccountService';
 export { AuthService } from './AuthService';
+export { CandidatesService } from './CandidatesService';
 export { OAuthService } from './OAuthService';
 export {
   ApiService,

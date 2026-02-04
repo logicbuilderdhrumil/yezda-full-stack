@@ -164,6 +164,9 @@ export {
   type PaginationInfoProps,
 } from './Pagination';
 
+// Progress
+export { Progress, type ProgressProps } from './Progress';
+
 // Skeleton
 export {
   Skeleton,

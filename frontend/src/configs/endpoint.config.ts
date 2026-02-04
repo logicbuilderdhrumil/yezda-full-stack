@@ -40,6 +40,7 @@ export const endpoints = {
   'candidates.create': { path: '/candidates', version: 'v1' },
   'candidates.update': { path: '/candidates/:id', version: 'v1' },
   'candidates.delete': { path: '/candidates/:id', version: 'v1' },
+  'candidates.bulkCreate': { path: '/candidates/bulk', version: 'v1' },
 
   // Organizations endpoints
   'organizations.list': { path: '/organizations', version: 'v1' },
