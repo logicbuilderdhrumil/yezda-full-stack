@@ -87,6 +87,9 @@ export type AuditEventType =
   | 'INTEGRATION_VERIFICATION_FAILED'
   | 'INTEGRATION_DISCONNECTED'
   | 'INTEGRATION_ACCESS_DENIED'
+  // View Components audit events
+  | 'VIEW_COMPONENT_ACCESSED'
+  | 'VIEW_COMPONENT_ACCESS_DENIED'
   // Access page audit events
   | 'ACCESS_DENIED'
   | 'ACCESS_NOT_FOUND'
