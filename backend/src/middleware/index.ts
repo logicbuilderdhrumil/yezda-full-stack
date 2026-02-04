@@ -1,5 +1,6 @@
 export * from './auth.middleware.js';
 export * from './rate-limit.middleware.js';
+export * from './app-auth-rate-limit.middleware.js';
 export * from './validation.middleware.js';
 export * from './error.middleware.js';
 // Re-export route-guards explicitly to avoid AuthenticatedRequest conflict

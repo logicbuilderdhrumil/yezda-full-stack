@@ -144,3 +144,27 @@ export const notificationDispatchSchema = z.object({
   imageUrl: z.string().url().optional(),
   type: z.string().max(100).optional(),
 });
+
+// App auth validation schemas
+export const appSignInSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+  deviceId: z.string().min(1, 'Device ID is required').max(255),
+  deviceName: z.string().max(255).optional(),
+  platform: z.enum(['ios', 'android']),
+  appVersion: z.string().min(1, 'App version is required').max(50),
+  osVersion: z.string().max(50).optional(),
+  model: z.string().max(100).optional(),
+  mfaCode: z.string().length(6).optional(),
+});
+
+export const appMfaVerifySchema = z.object({
+  mfaSessionToken: z.string().uuid(),
+  mfaCode: z.string().length(6),
+});
+
+export const appRefreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+  deviceId: z.string().min(1, 'Device ID is required').max(255),
+  appVersion: z.string().min(1, 'App version is required').max(50),
+});

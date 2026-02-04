@@ -682,6 +682,166 @@ export class AuditService {
       errorMessage: params.reason,
     });
   }
+
+  // App auth session audit logging methods
+
+  /**
+   * Log successful app sign-in
+   */
+  logAppSignInSuccess(params: {
+    userId: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    sessionId: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_IN_SUCCESS',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+        sessionId: params.sessionId,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log failed app sign-in attempt
+   */
+  logAppSignInFailure(params: {
+    email: string;
+    reason: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_IN_FAILURE',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        email: params.email,
+        reason: params.reason,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log app token refresh
+   */
+  logAppTokenRefresh(params: {
+    userId: string;
+    sessionId: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_TOKEN_REFRESH',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        sessionId: params.sessionId,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log app token refresh failure
+   */
+  logAppTokenRefreshFailure(params: {
+    userId?: string;
+    reason: string;
+    deviceId: string;
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_TOKEN_REFRESH_FAILURE',
+      actorId: params.userId,
+      actorType: params.userId ? 'candidate' : undefined,
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        reason: params.reason,
+        deviceId: params.deviceId,
+        appVersion: params.appVersion,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  /**
+   * Log app sign-out
+   */
+  logAppSignOut(params: {
+    userId: string;
+    sessionId?: string;
+    revokeAll: boolean;
+    revokedCount: number;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_SIGN_OUT',
+      actorId: params.userId,
+      actorType: 'candidate',
+      channel: 'mobile',
+      metadata: {
+        sessionId: params.sessionId,
+        revokeAll: params.revokeAll,
+        revokedSessions: params.revokedCount,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log app account lockout
+   */
+  logAppAccountLocked(params: {
+    userId: string;
+    reason: string;
+    deviceId: string;
+    platform: 'ios' | 'android';
+    appVersion: string;
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'APP_AUTH_ACCOUNT_LOCKED',
+      actorType: 'system',
+      targetId: params.userId,
+      targetType: 'candidate',
+      channel: 'mobile',
+      ipAddress: params.ipAddress,
+      metadata: {
+        reason: params.reason,
+        deviceId: params.deviceId,
+        platform: params.platform,
+        appVersion: params.appVersion,
+      },
+      success: true,
+    });
+  }
 }
 
 export const auditService = new AuditService();
