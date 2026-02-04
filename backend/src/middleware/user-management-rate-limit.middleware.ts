@@ -3,7 +3,8 @@
  * Task 1.7: Rate limiting for user management endpoints
  */
 
-import type { Request, Response, NextFunction } from 'express';
+import type { Response, NextFunction } from 'express';
+import type { AuthenticatedRoleRequest } from './route-guards.middleware.js';
 import { checkRateLimit } from '../db/redis.js';
 import { auditService } from '../services/audit.service.js';
 import { metricsService } from '../services/metrics.service.js';
@@ -75,9 +76,10 @@ const USER_MANAGEMENT_RATE_LIMITS = {
 function createUserManagementRateLimiter(operation: keyof typeof USER_MANAGEMENT_RATE_LIMITS) {
   const config = USER_MANAGEMENT_RATE_LIMITS[operation];
 
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: AuthenticatedRoleRequest, res: Response, next: NextFunction) => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
-    const tenantId = (req.headers['x-tenant-id'] as string) || 'unknown';
+    // Get tenantId from authenticated user context (validated by auth middleware)
+    const tenantId = req.user?.tenantId || 'unknown';
     const key = `rl:user-mgmt:${operation}:${tenantId}:${ip}`;
 
     let result: { allowed: boolean; remaining: number; resetAt: number };

@@ -18,6 +18,7 @@ import type { UserRole } from '../middleware/route-guards.middleware.js';
 type ManagedUserRow = {
   id: string;
   email: string;
+  password_hash: string | null;
   display_name: string | null;
   first_name: string | null;
   last_name: string | null;
@@ -57,16 +58,17 @@ export class UserManagementRepository {
   /**
    * Create a new managed user
    */
-  async create(input: CreateUserInput & { id: string; createdBy?: string }): Promise<ManagedUser> {
+  async create(input: CreateUserInput & { id: string; createdBy?: string; passwordHash?: string }): Promise<ManagedUser> {
     const now = new Date();
     const result = await query<ManagedUserRow>(
       `INSERT INTO managed_users 
-       (id, email, display_name, first_name, last_name, status, roles, tenant_id, mfa_enabled, created_at, updated_at, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       (id, email, password_hash, display_name, first_name, last_name, status, roles, tenant_id, mfa_enabled, created_at, updated_at, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         input.id,
         input.email.toLowerCase(),
+        input.passwordHash ?? null,
         input.displayName ?? null,
         input.firstName ?? null,
         input.lastName ?? null,

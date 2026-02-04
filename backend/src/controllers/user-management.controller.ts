@@ -12,19 +12,20 @@ import type { UserRole } from '../middleware/route-guards.middleware.js';
 
 /**
  * Extract management context from request
+ * TenantId is derived from authenticated user context, not client input
  */
 function getManagementContext(req: AuthenticatedRoleRequest) {
   const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'];
   
-  // Get tenantId from header or query
-  const tenantId = (req.headers['x-tenant-id'] as string) || (req.query.tenantId as string);
+  // Get tenantId from authenticated user context (validated by auth middleware)
+  const tenantId = req.user?.tenantId || '';
   
   return {
     actorId: req.user?.sub || '',
     actorType: (req.user?.type || 'user') as 'user' | 'candidate',
     actorRoles: req.user?.roles || [],
-    tenantId: tenantId || '',
+    tenantId,
     ipAddress: ip,
     userAgent,
     channel: 'api' as const,

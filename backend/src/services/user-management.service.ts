@@ -216,20 +216,20 @@ export class UserManagementService {
         };
       }
 
+      // Hash password if provided
+      let passwordHash: string | undefined;
+      if (input.password) {
+        passwordHash = await passwordService.hash(input.password);
+      }
+
       const userId = uuidv4();
       const user = await userManagementRepository.create({
         ...input,
         id: userId,
         tenantId: ctx.tenantId,
         createdBy: ctx.actorId,
+        passwordHash,
       });
-
-      // If password is provided, hash and store it
-      if (input.password) {
-        const passwordHash = await passwordService.hash(input.password);
-        // Note: In a full implementation, this would update the user's auth record
-        console.log('[UserManagement] Password hash created for user:', userId, passwordHash.substring(0, 10));
-      }
 
       // Audit log creation
       auditService.log({

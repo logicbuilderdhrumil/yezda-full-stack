@@ -21,10 +21,11 @@ export type { AuthenticatedRequest };
 export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer';
 
 /**
- * Extended user payload with roles
+ * Extended user payload with roles and tenant context
  */
 export interface AuthenticatedUserPayload extends AccessTokenPayload {
   roles?: UserRole[];
+  tenantId?: string;
 }
 
 export interface AuthenticatedRoleRequest extends Request {
