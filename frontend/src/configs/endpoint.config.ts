@@ -57,13 +57,88 @@ export const endpoints = {
   'notifications.markAsUnread': { path: '/notifications/:id/unread', version: 'v1' },
   'notifications.markManyAsRead': { path: '/notifications/mark-read', version: 'v1' },
 
+  // File management endpoints
+  'files.upload': { path: '/files/upload', version: 'v1' },
+  'files.list': { path: '/files', version: 'v1' },
+  'files.get': { path: '/files/:id', version: 'v1' },
+  'files.download': { path: '/files/:id/download', version: 'v1' },
+  'files.delete': { path: '/files/:id', version: 'v1' },
+  'files.storageUsage': { path: '/files/storage-usage', version: 'v1' },
+  'files.signedUrl': { path: '/files/signed-url', version: 'v1' },
+
+  // Asset management endpoints
+  'assets.upload': { path: '/assets/upload', version: 'v1' },
+  'assets.list': { path: '/assets', version: 'v1' },
+  'assets.get': { path: '/assets/:id', version: 'v1' },
+  'assets.update': { path: '/assets/:id', version: 'v1' },
+  'assets.delete': { path: '/assets/:id', version: 'v1' },
+  'assets.tags': { path: '/assets/:id/tags', version: 'v1' },
+
   // Forms endpoints
   'forms.list': { path: '/forms', version: 'v1' },
   'forms.get': { path: '/forms/:id', version: 'v1' },
   'forms.create': { path: '/forms', version: 'v1' },
   'forms.update': { path: '/forms/:id', version: 'v1' },
   'forms.delete': { path: '/forms/:id', version: 'v1' },
+  'forms.publish': { path: '/forms/:id/publish', version: 'v1' },
+  'forms.submissions': { path: '/forms/:id/submissions', version: 'v1' },
 
+  // Chat endpoints
+  'chat.conversations': { path: '/chat/conversations', version: 'v1' },
+  'chat.conversation': { path: '/chat/conversations/:id', version: 'v1' },
+  'chat.messages': { path: '/chat/conversations/:id/messages', version: 'v1' },
+  'chat.send': { path: '/chat/conversations/:id/messages', version: 'v1' },
+  'chat.markRead': { path: '/chat/conversations/:id/read', version: 'v1' },
+
+  // Charting endpoints
+  'charts.data': { path: '/charts/:chartType', version: 'v1' },
+  'charts.export': { path: '/charts/:chartType/export', version: 'v1' },
+  'charts.saved': { path: '/charts/saved', version: 'v1' },
+  'charts.save': { path: '/charts/saved', version: 'v1' },
+  'charts.delete': { path: '/charts/saved/:id', version: 'v1' },
+
+  // Billing ledger endpoints
+  'billing.billedEntries': { path: '/organizations/:organizationId/ledger/billed', version: 'v1' },
+  'billing.unbilledEntries': { path: '/organizations/:organizationId/ledger/unbilled', version: 'v1' },
+  'billing.createEntry': { path: '/organizations/:organizationId/ledger/entries', version: 'v1' },
+  'billing.updateEntry': { path: '/organizations/:organizationId/ledger/entries/:entryId', version: 'v1' },
+  'billing.finalizeEntry': { path: '/organizations/:organizationId/ledger/entries/:entryId/finalize', version: 'v1' },
+
+  // Home dashboard endpoints
+  'dashboard.summary': { path: '/dashboard/summary', version: 'v1' },
+  'dashboard.widgets': { path: '/dashboard/widgets', version: 'v1' },
+  'dashboard.activity': { path: '/dashboard/activity', version: 'v1' },
+
+  // Shared widgets endpoints
+  'widgets.list': { path: '/widgets', version: 'v1' },
+  'widgets.get': { path: '/widgets/:id', version: 'v1' },
+  'widgets.create': { path: '/widgets', version: 'v1' },
+  'widgets.update': { path: '/widgets/:id', version: 'v1' },
+  'widgets.delete': { path: '/widgets/:id', version: 'v1' },
+
+  // Template layouts endpoints
+  'templates.list': { path: '/templates', version: 'v1' },
+  'templates.get': { path: '/templates/:id', version: 'v1' },
+  'templates.create': { path: '/templates', version: 'v1' },
+  'templates.update': { path: '/templates/:id', version: 'v1' },
+  'templates.delete': { path: '/templates/:id', version: 'v1' },
+
+  // View components endpoints
+  'views.list': { path: '/views', version: 'v1' },
+  'views.get': { path: '/views/:id', version: 'v1' },
+  'views.create': { path: '/views', version: 'v1' },
+  'views.update': { path: '/views/:id', version: 'v1' },
+  'views.delete': { path: '/views/:id', version: 'v1' },
+
+  // Jobs and async operations endpoints
+  'jobs.status': { path: '/jobs/:jobId', version: 'v1' },
+  'jobs.cancel': { path: '/jobs/:jobId/cancel', version: 'v1' },
+  'jobs.list': { path: '/jobs', version: 'v1' },
+
+  // Export endpoints
+  'exports.request': { path: '/exports', version: 'v1' },
+  'exports.status': { path: '/exports/:exportId', version: 'v1' },
+  'exports.download': { path: '/exports/:exportId/download', version: 'v1' },
   // Ledger endpoints
   'ledger.list': { path: '/ledger', version: 'v1' },
   'ledger.export': { path: '/ledger/export', version: 'v1' },

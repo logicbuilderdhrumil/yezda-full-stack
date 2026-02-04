@@ -1,139 +1,95 @@
 /**
  * Chat Service
- * Task 1.5: Implement ChatService list/send methods
+ * Integration layer for chat and messaging operations.
  */
 
-import { ApiService } from '@/services/ApiService';
+import { ApiService } from './ApiService';
 import type {
-  Conversation,
-  ConversationListResponse,
-  ConversationFilters,
-  ChatPaginationOptions,
-  Message,
-  MessageListResponse,
+  ConversationDTO,
+  MessageDTO,
   SendMessageRequest,
-  SendMessageResponse,
-} from '@/@types/chat';
+  ResponseMeta,
+} from '@/@types/contracts';
 
-/**
- * Build query params from filters and pagination
- */
-function buildQueryParams(
-  filters?: ConversationFilters,
-  pagination?: ChatPaginationOptions
-): Record<string, string> {
-  const params: Record<string, string> = {};
-
-  if (filters?.participantId) {
-    params.participantId = filters.participantId;
-  }
-  if (filters?.search) {
-    params.search = filters.search;
-  }
-  if (pagination?.limit) {
-    params.limit = String(pagination.limit);
-  }
-  if (pagination?.cursor) {
-    params.cursor = pagination.cursor;
-  }
-
-  return params;
+/** Message list options. */
+export interface MessageListOptions {
+  limit?: number;
+  before?: string;
+  after?: string;
 }
 
 /**
- * ChatService handles all chat-related API operations.
+ * ChatService provides methods for chat operations.
  */
 export const ChatService = {
   /**
-   * List conversations for the authenticated user.
-   * @param filters - Optional filters for search/participant
-   * @param pagination - Optional pagination with limit and cursor
-   * @returns Paginated list of conversations
+   * Lists conversations.
    */
-  async listConversations(
-    filters?: ConversationFilters,
-    pagination?: ChatPaginationOptions
-  ): Promise<ConversationListResponse> {
-    const params = buildQueryParams(filters, pagination);
-    const response = await ApiService.get<ConversationListResponse>(
-      'chat.conversations.list',
-      { params }
-    );
+  async listConversations(options?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<{ conversations: ConversationDTO[]; meta: ResponseMeta }> {
+    const response = await ApiService.get<{
+      conversations: ConversationDTO[];
+      meta: ResponseMeta;
+    }>('chat.conversations', { params: options });
     return response.data;
   },
 
   /**
-   * Get a specific conversation by ID.
-   * @param id - Conversation ID
-   * @returns The conversation
+   * Gets a conversation by ID.
    */
-  async getConversation(id: string): Promise<Conversation> {
-    const response = await ApiService.get<Conversation>(
-      'chat.conversations.get',
-      { pathParams: { id } }
-    );
+  async getConversation(conversationId: string): Promise<ConversationDTO> {
+    const response = await ApiService.get<ConversationDTO>('chat.conversation', {
+      pathParams: { id: conversationId },
+    });
     return response.data;
   },
 
   /**
-   * List messages in a conversation.
-   * @param conversationId - Conversation ID
-   * @param pagination - Optional pagination with limit and cursor
-   * @returns Paginated list of messages
+   * Gets messages for a conversation.
    */
-  async listMessages(
+  async getMessages(
     conversationId: string,
-    pagination?: ChatPaginationOptions
-  ): Promise<MessageListResponse> {
-    const params: Record<string, string> = {};
-    if (pagination?.limit) {
-      params.limit = String(pagination.limit);
-    }
-    if (pagination?.cursor) {
-      params.cursor = pagination.cursor;
-    }
-
-    const response = await ApiService.get<MessageListResponse>(
-      'chat.messages.list',
-      { pathParams: { conversationId }, params }
+    options?: MessageListOptions
+  ): Promise<{ messages: MessageDTO[]; meta: ResponseMeta }> {
+    const response = await ApiService.get<{ messages: MessageDTO[]; meta: ResponseMeta }>(
+      'chat.messages',
+      {
+        pathParams: { id: conversationId },
+        params: options,
+      }
     );
     return response.data;
   },
 
   /**
-   * Send a message in a conversation.
-   * @param conversationId - Conversation ID
-   * @param content - Message content
-   * @returns The sent message
+   * Sends a message in a conversation.
    */
   async sendMessage(
     conversationId: string,
-    content: string
-  ): Promise<Message> {
-    const body: SendMessageRequest = { conversationId, content };
-    const response = await ApiService.post<SendMessageResponse>(
-      'chat.messages.send',
-      body
-    );
-    return response.data.message;
+    data: SendMessageRequest
+  ): Promise<MessageDTO> {
+    const response = await ApiService.post<MessageDTO>('chat.send', data, {
+      pathParams: { id: conversationId },
+    });
+    return response.data;
   },
 
   /**
-   * Mark messages in a conversation as read.
-   * @param conversationId - Conversation ID
-   * @param messageIds - Optional array of message IDs to mark as read
-   * @returns Count of marked messages
+   * Marks a conversation as read.
    */
-  async markAsRead(
-    conversationId: string,
-    messageIds?: string[]
-  ): Promise<{ count: number }> {
-    const body = messageIds ? { messageIds } : {};
-    const response = await ApiService.post<{ count: number }>(
-      'chat.messages.markAsRead',
-      body,
-      { pathParams: { conversationId } }
-    );
-    return response.data;
+  async markAsRead(conversationId: string): Promise<void> {
+    await ApiService.post<void>('chat.markRead', undefined, {
+      pathParams: { id: conversationId },
+    });
+  },
+
+  /**
+   * Gets unread message count across all conversations.
+   */
+  async getUnreadCount(): Promise<number> {
+    const { conversations } = await this.listConversations({ limit: 100 });
+    return conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   },
 };

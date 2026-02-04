@@ -1,13 +1,16 @@
 /**
  * Dashboard Service
- * Fetches dashboard metrics, activities, and charts for the home dashboard.
+ * Integration layer for home dashboard operations.
  */
 
-import { ApiService } from '@/services/ApiService';
+import { ApiService } from './ApiService';
 import type {
-  DashboardMetricsResponse,
-  DashboardRefreshOptions,
-} from '@/@types';
+  DashboardSummaryDTO,
+  ActivityItemDTO,
+  WidgetDTO,
+  ResponseMeta,
+} from '@/@types/contracts';
+import type { DashboardMetricsResponse, DashboardRefreshOptions } from '@/@types';
 
 /** Cache storage for dashboard metrics. */
 let cachedMetrics: DashboardMetricsResponse | null = null;
@@ -23,35 +26,59 @@ function isCacheValid(): boolean {
 }
 
 /**
- * DashboardService provides methods for fetching dashboard data.
+ * DashboardService provides methods for dashboard data.
  */
 export const DashboardService = {
   /**
+   * Gets dashboard summary with metrics and recent activity.
+   */
+  async getSummary(): Promise<DashboardSummaryDTO> {
+    const response = await ApiService.get<DashboardSummaryDTO>('dashboard.summary');
+    return response.data;
+  },
+
+  /**
+   * Gets dashboard widgets.
+   */
+  async getWidgets(): Promise<{ widgets: WidgetDTO[]; meta: ResponseMeta }> {
+    const response = await ApiService.get<{ widgets: WidgetDTO[]; meta: ResponseMeta }>(
+      'dashboard.widgets'
+    );
+    return response.data;
+  },
+
+  /**
+   * Gets activity feed.
+   */
+  async getActivity(options?: {
+    limit?: number;
+    offset?: number;
+    type?: string;
+  }): Promise<{ activity: ActivityItemDTO[]; meta: ResponseMeta }> {
+    const response = await ApiService.get<{
+      activity: ActivityItemDTO[];
+      meta: ResponseMeta;
+    }>('dashboard.activity', { params: options });
+    return response.data;
+  },
+
+  /**
    * Fetches dashboard metrics including KPIs, activities, and charts.
    * Results are cached for 1 minute unless force refresh is requested.
-   * @param options - Optional refresh options
-   * @returns Dashboard metrics response
    */
   async getMetrics(options?: DashboardRefreshOptions): Promise<DashboardMetricsResponse> {
-    // Return cached data if valid and not forcing refresh
     if (!options?.force && isCacheValid() && cachedMetrics) {
       return cachedMetrics;
     }
 
-    const response = await ApiService.get<DashboardMetricsResponse>(
-      'dashboard.metrics'
-    );
-
-    // Update cache
+    const response = await ApiService.get<DashboardMetricsResponse>('dashboard.metrics');
     cachedMetrics = response.data;
     cacheTimestamp = Date.now();
-
     return response.data;
   },
 
   /**
    * Clears the dashboard metrics cache.
-   * Useful when data has been modified elsewhere.
    */
   clearCache(): void {
     cachedMetrics = null;
@@ -60,7 +87,6 @@ export const DashboardService = {
 
   /**
    * Forces a refresh of dashboard metrics.
-   * @returns Dashboard metrics response
    */
   async refresh(): Promise<DashboardMetricsResponse> {
     return this.getMetrics({ force: true });

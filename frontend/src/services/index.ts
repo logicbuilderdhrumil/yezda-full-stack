@@ -28,4 +28,14 @@ export { OrganizationsService } from './OrganizationsService';
 export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
 export { NotificationsService } from './NotificationsService';
+
+// Product feature services
+export { FileService } from './FileService';
+export { JobService, type PollOptions } from './JobService';
+export { ExportService, type ExportOptions } from './ExportService';
+export { FormService, type CreateFormRequest, type UpdateFormRequest } from './FormService';
+export { BillingService, type LedgerFilterOptions } from './BillingService';
+export { ChartService } from './ChartService';
+export { AssetService, type AssetUploadOptions, type AssetListOptions } from './AssetService';
 export { LedgerService } from './LedgerService';
+export { ChatService, type MessageListOptions } from './ChatService';
