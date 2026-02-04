@@ -16,3 +16,16 @@ export {
   PRESENCE_STATUS_LABELS,
   PRESENCE_STATUS_COLORS,
 } from './socket.constant';
+
+export {
+  ASSETS_BASE_PATH,
+  ASSET_PATHS,
+  TEMPLATE_PATHS,
+  PLACEHOLDER_ASSETS,
+  getImagePath,
+  getLogoPath,
+  getMapPath,
+  getSoundPath,
+  getTemplatePath,
+  type AssetType,
+} from './assets.constant';
