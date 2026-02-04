@@ -41,6 +41,13 @@ export const endpoints = {
   'candidates.update': { path: '/candidates/:id', version: 'v1' },
   'candidates.delete': { path: '/candidates/:id', version: 'v1' },
 
+  // Organizations endpoints
+  'organizations.list': { path: '/organizations', version: 'v1' },
+  'organizations.get': { path: '/organizations/:id', version: 'v1' },
+  'organizations.create': { path: '/organizations', version: 'v1' },
+  'organizations.update': { path: '/organizations/:id', version: 'v1' },
+  'organizations.delete': { path: '/organizations/:id', version: 'v1' },
+
   // Notification endpoints
   'notifications.list': { path: '/notifications', version: 'v1' },
   'notifications.get': { path: '/notifications/:id', version: 'v1' },

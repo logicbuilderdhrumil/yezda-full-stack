@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
 import { AppShell } from '@/components/layouts';
-import { ProtectedRoute, NotFoundView } from '@/components/route';
+import { ProtectedRoute, AuthorityGuard, NotFoundView } from '@/components/route';
 import { RouteLoadingFallback } from '@/components/ui';
 
 // Lazy load views for code splitting
@@ -18,6 +18,28 @@ const AccountIntegrationsView = lazy(() =>
   }))
 );
 
+// Organization views (admin only)
+const OrganizationsListView = lazy(() =>
+  import('@/views/organizations/OrganizationsListView').then((m) => ({
+    default: m.OrganizationsListView,
+  }))
+);
+const OrganizationCreateView = lazy(() =>
+  import('@/views/organizations/OrganizationCreateView').then((m) => ({
+    default: m.OrganizationCreateView,
+  }))
+);
+const OrganizationEditView = lazy(() =>
+  import('@/views/organizations/OrganizationEditView').then((m) => ({
+    default: m.OrganizationEditView,
+  }))
+);
+const OrganizationDetailsView = lazy(() =>
+  import('@/views/organizations/OrganizationDetailsView').then((m) => ({
+    default: m.OrganizationDetailsView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -26,6 +48,19 @@ function withSuspense(Component: React.ComponentType): React.ReactNode {
     <Suspense fallback={<RouteLoadingFallback />}>
       <Component />
     </Suspense>
+  );
+}
+
+/**
+ * Wraps a component with Suspense and AuthorityGuard for admin-only routes.
+ */
+function withAdminGuard(Component: React.ComponentType): React.ReactNode {
+  return (
+    <AuthorityGuard authority={['admin']}>
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Component />
+      </Suspense>
+    </AuthorityGuard>
   );
 }
 
@@ -60,6 +95,23 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'account/integrations',
         element: withSuspense(AccountIntegrationsView),
+      },
+      // Organization management routes (admin only)
+      {
+        path: 'organizations',
+        element: withAdminGuard(OrganizationsListView),
+      },
+      {
+        path: 'organizations/new',
+        element: withAdminGuard(OrganizationCreateView),
+      },
+      {
+        path: 'organizations/:id',
+        element: withAdminGuard(OrganizationDetailsView),
+      },
+      {
+        path: 'organizations/:id/edit',
+        element: withAdminGuard(OrganizationEditView),
       },
       // Additional protected routes will be added here
     ],
