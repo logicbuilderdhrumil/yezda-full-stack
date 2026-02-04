@@ -24,7 +24,15 @@ import type {
  */
 export async function list(req: Request, res: Response): Promise<void> {
   try {
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const result = await getApplications(candidateId);
     res.json(result);
   } catch (error) {
@@ -44,7 +52,15 @@ export async function list(req: Request, res: Response): Promise<void> {
 export async function get(req: Request, res: Response): Promise<void> {
   try {
     const { applicationId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
 
     const result = await getApplication(applicationId, candidateId);
 
@@ -75,7 +91,15 @@ export async function get(req: Request, res: Response): Promise<void> {
 export async function getDraft(req: Request, res: Response): Promise<void> {
   try {
     const { applicationId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
 
     const result = await getApplicationDraft(applicationId, candidateId);
     res.json(result);
@@ -96,7 +120,15 @@ export async function getDraft(req: Request, res: Response): Promise<void> {
 export async function saveDraft(req: Request, res: Response): Promise<void> {
   try {
     const { applicationId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const data: SaveDraftRequestDTO = req.body;
 
     if (!data.values || typeof data.values !== 'object') {
@@ -140,7 +172,15 @@ export async function saveDraft(req: Request, res: Response): Promise<void> {
 export async function submit(req: Request, res: Response): Promise<void> {
   try {
     const { applicationId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const data: SubmitApplicationRequestDTO = req.body;
 
     if (!data.values || typeof data.values !== 'object') {

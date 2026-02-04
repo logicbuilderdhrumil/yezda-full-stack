@@ -27,7 +27,15 @@ import type {
 export async function getPrompt(req: Request, res: Response): Promise<void> {
   try {
     const { applicationId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
 
     const prompt = await getConsentPrompt(applicationId, candidateId);
 
@@ -57,7 +65,15 @@ export async function getPrompt(req: Request, res: Response): Promise<void> {
  */
 export async function submit(req: Request, res: Response): Promise<void> {
   try {
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const data: ConsentSubmitDTO = req.body;
 
     // Validate request
@@ -124,7 +140,15 @@ export async function submit(req: Request, res: Response): Promise<void> {
  */
 export async function getStatus(req: Request, res: Response): Promise<void> {
   try {
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const result = await getConsentStatus(candidateId);
     res.json(result);
   } catch (error) {
@@ -144,7 +168,15 @@ export async function getStatus(req: Request, res: Response): Promise<void> {
 export async function getById(req: Request, res: Response): Promise<void> {
   try {
     const { consentId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
 
     const consent = await getConsentById(consentId, candidateId);
 
@@ -175,7 +207,15 @@ export async function getById(req: Request, res: Response): Promise<void> {
 export async function update(req: Request, res: Response): Promise<void> {
   try {
     const { consentId } = req.params;
-    const candidateId = (req as any).user?.id || 'candidate-001';
+    const candidateId = (req as any).user?.id;
+    if (!candidateId) {
+      const error: ApiErrorResponse = {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      };
+      res.status(401).json(error);
+      return;
+    }
     const data: ConsentUpdateDTO = req.body;
 
     const consent = await updateConsent(consentId, candidateId, data);
