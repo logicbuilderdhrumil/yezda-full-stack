@@ -6,7 +6,7 @@
 import { Router } from 'express';
 import type { ZodSchema } from 'zod';
 import * as viewComponentsController from '../controllers/view-components.controller.js';
-import { optionalAuth } from '../middleware/auth.middleware.js';
+import { requireAuthGuard } from '../middleware/route-guards.middleware.js';
 import { viewComponentsRateLimiter } from '../middleware/view-components-rate-limit.middleware.js';
 import { validateQuery } from '../middleware/validation.middleware.js';
 import {
@@ -30,27 +30,27 @@ router.get('/file/categories', viewComponentsController.getAvailableFileCategori
 
 /**
  * GET /api/v1/view-components/chat/summaries
- * Get chat summaries for view components (public, rate limited, cached)
+ * Get chat summaries for view components (authenticated, rate limited, cached)
  * Task 1.6: Rate limiting for chat summary endpoints
  */
 router.get(
   '/chat/summaries',
   viewComponentsRateLimiter,
   validateQuery(getChatSummaryQuerySchema as unknown as ZodSchema),
-  optionalAuth,
+  requireAuthGuard,
   viewComponentsController.getChatSummaries
 );
 
 /**
  * GET /api/v1/view-components/file/types
- * Get file type metadata (public, rate limited, cached)
+ * Get file type metadata (authenticated, rate limited, cached)
  * Task 1.6: Rate limiting for file type metadata endpoints
  */
 router.get(
   '/file/types',
   viewComponentsRateLimiter,
   validateQuery(getFileTypeMetadataQuerySchema as unknown as ZodSchema),
-  optionalAuth,
+  requireAuthGuard,
   viewComponentsController.getFileTypeMetadata
 );
 

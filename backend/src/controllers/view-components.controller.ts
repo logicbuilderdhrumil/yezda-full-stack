@@ -5,7 +5,7 @@
 
 import type { Request, Response } from 'express';
 import { viewComponentsService } from '../services/view-components.service.js';
-import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
+import type { AuthenticatedRoleRequest } from '../middleware/route-guards.middleware.js';
 import type { ChatConversationType, FileTypeCategory } from '../models/view-components.model.js';
 
 /**
@@ -20,14 +20,13 @@ function getClientInfo(req: Request) {
 }
 
 /**
- * Extract tenant ID from authenticated user or header
- * Task 1.4: Tenant scoping
+ * Extract tenant ID from authenticated user context
+ * Task 1.4: Tenant scoping - uses auth context to prevent tenant spoofing
  */
-function getTenantId(req: AuthenticatedRequest): string {
-  // Try header first (for multi-tenant scenarios)
-  const headerTenantId = req.get('x-tenant-id');
-  if (headerTenantId) {
-    return headerTenantId;
+function getTenantId(req: AuthenticatedRoleRequest): string {
+  // Use tenant from authenticated user context (prevents spoofing)
+  if (req.user?.tenantId) {
+    return req.user.tenantId;
   }
 
   // Default tenant for single-tenant or testing
@@ -39,14 +38,14 @@ function getTenantId(req: AuthenticatedRequest): string {
  * Get chat summary data for view components
  * Task 1.2: Fetch chat summaries
  */
-export async function getChatSummaries(req: AuthenticatedRequest, res: Response): Promise<void> {
+export async function getChatSummaries(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
   const tenantId = getTenantId(req);
   const conversationType = req.query.conversationType as ChatConversationType | undefined;
   const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
   const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : undefined;
 
-  // Optional auth - summaries can be fetched with or without auth
+  // Auth required - user context used for tenant scoping and access control
   const userId = req.user?.sub;
   const userType = req.user?.type;
 
@@ -75,12 +74,12 @@ export async function getChatSummaries(req: AuthenticatedRequest, res: Response)
  * Get file type metadata for view components
  * Task 1.2: Fetch file type metadata
  */
-export async function getFileTypeMetadata(req: AuthenticatedRequest, res: Response): Promise<void> {
+export async function getFileTypeMetadata(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { ipAddress } = getClientInfo(req);
   const tenantId = getTenantId(req);
   const category = req.query.category as FileTypeCategory | undefined;
 
-  // Optional auth
+  // Auth required - user context used for tenant scoping
   const userId = req.user?.sub;
   const userType = req.user?.type;
 

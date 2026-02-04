@@ -10,7 +10,10 @@ import { metricsService, VIEW_COMPONENTS_METRICS } from '../services/metrics.ser
 
 /**
  * In-memory fallback rate limiter for view component endpoints
+ * Bounded to prevent memory exhaustion
  */
+const MAX_RATE_LIMIT_ENTRIES = 10000;
+
 class ViewComponentsRateLimiter {
   private windows: Map<string, { count: number; resetAt: number }> = new Map();
   private cleanupInterval: NodeJS.Timeout | null = null;
@@ -29,6 +32,19 @@ class ViewComponentsRateLimiter {
     const window = this.windows.get(key);
 
     if (!window || window.resetAt < now) {
+      // Enforce maximum entries to prevent unbounded growth
+      if (this.windows.size >= MAX_RATE_LIMIT_ENTRIES) {
+        this.cleanup();
+        // If still at max after cleanup, evict oldest entries
+        if (this.windows.size >= MAX_RATE_LIMIT_ENTRIES) {
+          const entriesToRemove = Math.floor(MAX_RATE_LIMIT_ENTRIES * 0.1);
+          const iterator = this.windows.keys();
+          for (let i = 0; i < entriesToRemove; i++) {
+            const keyToRemove = iterator.next().value;
+            if (keyToRemove) this.windows.delete(keyToRemove);
+          }
+        }
+      }
       this.windows.set(key, { count: 1, resetAt: now + windowMs });
       return { allowed: true, remaining: limit - 1, resetAt: now + windowMs };
     }
@@ -85,7 +101,12 @@ export async function viewComponentsRateLimiter(
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
   const key = `rl:view-components:${ip}`;
 
-  let result: { allowed: boolean; remaining: number; resetAt: number };
+  // Initialize with memory fallback default to avoid non-null assertion
+  let result: { allowed: boolean; remaining: number; resetAt: number } = memoryLimiter.check(
+    key,
+    VIEW_COMPONENTS_RATE_LIMIT.maxRequests,
+    VIEW_COMPONENTS_RATE_LIMIT.windowMs
+  );
 
   // Check circuit breaker
   if (redisCircuitOpen) {
@@ -93,7 +114,6 @@ export async function viewComponentsRateLimiter(
       redisCircuitOpen = false;
       redisErrorCount = 0;
     } else {
-      result = memoryLimiter.check(key, VIEW_COMPONENTS_RATE_LIMIT.maxRequests, VIEW_COMPONENTS_RATE_LIMIT.windowMs);
       res.setHeader('X-RateLimit-Fallback', 'memory');
     }
   }
@@ -120,10 +140,10 @@ export async function viewComponentsRateLimiter(
 
   // Set standard rate limit headers
   res.setHeader('RateLimit-Limit', VIEW_COMPONENTS_RATE_LIMIT.maxRequests);
-  res.setHeader('RateLimit-Remaining', result!.remaining);
-  res.setHeader('RateLimit-Reset', Math.ceil(result!.resetAt / 1000));
+  res.setHeader('RateLimit-Remaining', result.remaining);
+  res.setHeader('RateLimit-Reset', Math.ceil(result.resetAt / 1000));
 
-  if (!result!.allowed) {
+  if (!result.allowed) {
     // Log excessive view component requests
     auditService.logAnomaly({
       description: 'Excessive view component requests',
