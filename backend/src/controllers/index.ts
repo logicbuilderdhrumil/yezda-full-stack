@@ -19,3 +19,4 @@ export * from './user-management.controller.js';
 export * from './org-management.controller.js';
 export * from './account-settings.controller.js';
 export * from './candidate-management.controller.js';
+export * from './form-builder.controller.js';

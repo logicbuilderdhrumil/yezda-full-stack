@@ -90,7 +90,13 @@ export type AuditEventType =
   // Access page audit events
   | 'ACCESS_DENIED'
   | 'ACCESS_NOT_FOUND'
-  | 'ACCESS_RATE_LIMITED';
+  | 'ACCESS_RATE_LIMITED'
+  // Form builder audit events
+  | 'FORM_CREATED'
+  | 'FORM_UPDATED'
+  | 'FORM_DELETED'
+  | 'FORM_ACCESSED'
+  | 'FORM_ACCESS_DENIED';
 
 export interface AuditEvent {
   id: string;
