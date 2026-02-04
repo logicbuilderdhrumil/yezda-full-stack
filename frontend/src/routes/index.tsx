@@ -112,6 +112,28 @@ const ArchivedCandidatesListView = lazy(() =>
   }))
 );
 
+// Forms views (admin only)
+const FormsListView = lazy(() =>
+  import('@/views/forms/FormsListView').then((m) => ({
+    default: m.FormsListView,
+  }))
+);
+const FormCreateView = lazy(() =>
+  import('@/views/forms/FormCreateView').then((m) => ({
+    default: m.FormCreateView,
+  }))
+);
+const FormEditView = lazy(() =>
+  import('@/views/forms/FormEditView').then((m) => ({
+    default: m.FormEditView,
+  }))
+);
+const FormDetailsView = lazy(() =>
+  import('@/views/forms/FormDetailsView').then((m) => ({
+    default: m.FormDetailsView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -258,6 +280,23 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'candidates/:id/edit',
         element: withCandidateGuard(CandidateEditView),
+      },
+      // Forms management routes (admin only)
+      {
+        path: 'forms',
+        element: withAdminGuard(FormsListView),
+      },
+      {
+        path: 'forms/new',
+        element: withAdminGuard(FormCreateView),
+      },
+      {
+        path: 'forms/:id',
+        element: withAdminGuard(FormDetailsView),
+      },
+      {
+        path: 'forms/:id/edit',
+        element: withAdminGuard(FormEditView),
       },
       // Additional protected routes will be added here
     ],

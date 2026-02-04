@@ -56,6 +56,13 @@ export const endpoints = {
   'notifications.markAsRead': { path: '/notifications/:id/read', version: 'v1' },
   'notifications.markAsUnread': { path: '/notifications/:id/unread', version: 'v1' },
   'notifications.markManyAsRead': { path: '/notifications/mark-read', version: 'v1' },
+
+  // Forms endpoints
+  'forms.list': { path: '/forms', version: 'v1' },
+  'forms.get': { path: '/forms/:id', version: 'v1' },
+  'forms.create': { path: '/forms', version: 'v1' },
+  'forms.update': { path: '/forms/:id', version: 'v1' },
+  'forms.delete': { path: '/forms/:id', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */
