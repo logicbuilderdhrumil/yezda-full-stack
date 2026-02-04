@@ -35,3 +35,7 @@ export * from './oauth.model.js';
 export * from './theme.model.js';
 export * from './org-management.model.js';
 export * from './account-settings.model.js';
+
+// Shared integration models
+export * from './job.model.js';
+export * from './export.model.js';
