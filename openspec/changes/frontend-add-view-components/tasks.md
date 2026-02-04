@@ -1,7 +1,7 @@
 ## 1. Implementation
-- [ ] 1.1 Define view component props and layout structure
-- [ ] 1.2 Implement chat box container and header
-- [ ] 1.3 Implement message list with grouping
-- [ ] 1.4 Implement composer input and action buttons
-- [ ] 1.5 Implement file icon resolver component
-- [ ] 1.6 Add exports and typing
+- [x] 1.1 Define view component props and layout structure
+- [x] 1.2 Implement chat box container and header
+- [x] 1.3 Implement message list with grouping
+- [x] 1.4 Implement composer input and action buttons
+- [x] 1.5 Implement file icon resolver component
+- [x] 1.6 Add exports and typing
