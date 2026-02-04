@@ -13,6 +13,18 @@ import userManagementRoutes from './user-management.routes.js';
 import orgManagementRoutes from './org-management.routes.js';
 import accountSettingsRoutes from './account-settings.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
+import appApplicationIntakeRoutes from './app-application-intake.routes.js';
+import viewComponentsRoutes from './view-components.routes.js';
+import candidateManagementRoutes from './candidate-management.routes.js';
+import formBuilderRoutes from './form-builder.routes.js';
+import fileManagementRoutes from './file-management.routes.js';
+import assetManagementRoutes from './asset-management.routes.js';
+import chatRoutes from './chat.routes.js';
+import chartingRoutes from './charting.routes.js';
+import billingLedgerRoutes from './billing-ledger.routes.js';
+import homeDashboardRoutes from './home-dashboard.routes.js';
+import sharedWidgetsRoutes from './shared-widgets.routes.js';
+import templateLayoutsRoutes from './template-layouts.routes.js';
 
 const router = Router();
 
@@ -30,5 +42,17 @@ router.use('/users', userManagementRoutes);
 router.use('/organizations', orgManagementRoutes);
 router.use('/account', accountSettingsRoutes);
 router.use('/consent', appConsentRoutes);
+router.use('/app/applications', appApplicationIntakeRoutes);
+router.use('/view-components', viewComponentsRoutes);
+router.use('/candidates', candidateManagementRoutes);
+router.use('/forms', formBuilderRoutes);
+router.use('/files', fileManagementRoutes);
+router.use('/assets', assetManagementRoutes);
+router.use('/chat', chatRoutes);
+router.use('/charts', chartingRoutes);
+router.use('/', billingLedgerRoutes);
+router.use('/dashboard', homeDashboardRoutes);
+router.use('/widgets', sharedWidgetsRoutes);
+router.use('/template-layouts', templateLayoutsRoutes);
 
 export default router;
