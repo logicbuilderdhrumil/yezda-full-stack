@@ -156,17 +156,26 @@ export function FormBuilderCanvas({
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-3" role="list">
                   {schema.fields.map((field, index) => (
                     <div
                       key={field.id}
+                      role="listitem"
+                      tabIndex={0}
                       className={cn(
-                        'group flex items-center gap-2 rounded-lg border p-3 transition-colors',
+                        'group flex items-center gap-2 rounded-lg border p-3 transition-colors cursor-pointer',
+                        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                         selectedFieldId === field.id
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                           : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                       )}
                       onClick={() => setSelectedFieldId(field.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedFieldId(field.id);
+                        }
+                      }}
                     >
                       <div className="flex flex-col gap-1">
                         <Button
@@ -213,7 +222,8 @@ export function FormBuilderCanvas({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="opacity-0 transition-opacity group-hover:opacity-100"
+                        className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                        aria-label={t('forms.builder.deleteField', { label: field.label })}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteField(field.id);

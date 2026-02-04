@@ -130,6 +130,13 @@ export function FormsListView(): ReactNode {
     [updateSearchParams]
   );
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel?.();
+    };
+  }, [debouncedSearch]);
+
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
     debouncedSearch(value);

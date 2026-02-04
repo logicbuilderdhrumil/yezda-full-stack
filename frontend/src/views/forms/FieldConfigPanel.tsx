@@ -1,7 +1,7 @@
 /**
  * Field configuration panel for editing field properties.
  */
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -9,13 +9,8 @@ import {
   Checkbox,
   FormField,
   FormSection,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from '@/components/ui';
-import type { FormField as FormFieldType, FieldType, SelectOption } from '@/@types/form';
+import type { FormField as FormFieldType, SelectOption } from '@/@types/form';
 
 export interface FieldConfigPanelProps {
   /** The field to configure. */
@@ -54,8 +49,8 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
     setOptions(field.options || []);
   }, [field]);
 
-  // Debounced update
-  const triggerUpdate = () => {
+  // Debounced update - wrapped in useCallback to avoid stale closures
+  const triggerUpdate = useCallback(() => {
     const updatedField: FormFieldType = {
       ...field,
       label,
@@ -76,7 +71,7 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
       ...(field.type === 'select' && { options }),
     };
     onUpdate(updatedField);
-  };
+  }, [field, label, placeholder, helperText, required, minLength, maxLength, min, max, options, onUpdate]);
 
   const handleAddOption = () => {
     const newOption: SelectOption = {
