@@ -4,6 +4,7 @@
 
 export * from './user.repository.js';
 export * from './session.repository.js';
+export * from './app-session.repository.js';
 export * from './password-reset.repository.js';
 export * from './mfa-enrollment.repository.js';
 export * from './backup-code.repository.js';

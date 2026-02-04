@@ -2,6 +2,7 @@ export * from './token.service.js';
 export * from './password.service.js';
 export * from './mfa.service.js';
 export * from './auth.service.js';
+export * from './app-auth.service.js';
 export * from './audit.service.js';
 export * from './metrics.service.js';
 export * from './crypto.service.js';
