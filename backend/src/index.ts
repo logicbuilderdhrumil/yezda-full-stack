@@ -6,6 +6,7 @@
 import { createServer } from 'http';
 import app from './app.js';
 import { socketService } from './services/socket.service.js';
+import { shutdownAccessErrorLimiter } from './middleware/error.middleware.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -25,6 +26,7 @@ httpServer.listen(PORT, () => {
 // Graceful shutdown handling
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down...');
+  shutdownAccessErrorLimiter();
   await socketService.shutdown();
   httpServer.close(() => {
     console.log('HTTP server closed');
@@ -34,6 +36,7 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down...');
+  shutdownAccessErrorLimiter();
   await socketService.shutdown();
   httpServer.close(() => {
     console.log('HTTP server closed');

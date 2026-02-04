@@ -18,6 +18,8 @@ export const ACCESS_ERROR_CODES = {
   NOT_FOUND: 'NOT_FOUND',
   /** Too many access errors from client */
   ACCESS_RATE_LIMITED: 'ACCESS_RATE_LIMITED',
+  /** Internal server error - do not expose details */
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;
 
 export type AccessErrorCode = typeof ACCESS_ERROR_CODES[keyof typeof ACCESS_ERROR_CODES];
@@ -39,12 +41,9 @@ export interface AccessErrorResponse {
 
 /**
  * Extended error response for not-found routes
- * Includes path for client-side debugging without exposing internals
+ * Does not include path to avoid information disclosure
  */
-export interface NotFoundErrorResponse extends AccessErrorResponse {
-  /** The requested path that was not found */
-  path: string;
-}
+export type NotFoundErrorResponse = AccessErrorResponse;
 
 /**
  * Internal access error with additional context for logging
@@ -81,6 +80,7 @@ export const ACCESS_ERROR_MESSAGES = {
   [ACCESS_ERROR_CODES.ACCESS_DENIED]: 'Access denied',
   [ACCESS_ERROR_CODES.NOT_FOUND]: 'The requested resource was not found',
   [ACCESS_ERROR_CODES.ACCESS_RATE_LIMITED]: 'Too many requests. Please try again later.',
+  [ACCESS_ERROR_CODES.INTERNAL_ERROR]: 'Internal server error',
 } as const;
 
 /**
@@ -101,17 +101,16 @@ export function createAccessErrorResponse(
 
 /**
  * Create a standardized not-found error response
+ * Does not include path to prevent information disclosure
  */
 export function createNotFoundErrorResponse(
   correlationId: string,
-  path: string,
   customMessage?: string
 ): NotFoundErrorResponse {
   return {
     error: customMessage || ACCESS_ERROR_MESSAGES[ACCESS_ERROR_CODES.NOT_FOUND],
     code: ACCESS_ERROR_CODES.NOT_FOUND,
     correlationId,
-    path,
     timestamp: new Date().toISOString(),
   };
 }

@@ -4,8 +4,13 @@
  * Implements access pages spec for standardized access denied and not-found responses.
  */
 
-import type { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import type { Request, Response, NextFunction, ErrorRequestHandler, RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+
+/** Maximum allowed length for correlation IDs to prevent header injection */
+const MAX_CORRELATION_ID_LENGTH = 128;
+/** Regex pattern for valid correlation ID format (UUID-like or alphanumeric with dashes) */
+const CORRELATION_ID_PATTERN = /^[a-zA-Z0-9-]+$/;
 import {
   ACCESS_ERROR_CODES,
   createAccessErrorResponse,
@@ -78,6 +83,26 @@ class AccessErrorLimiter {
 const accessErrorLimiter = new AccessErrorLimiter();
 
 /**
+ * Graceful shutdown for access error limiter
+ * Call this on process termination to clean up resources
+ */
+export function shutdownAccessErrorLimiter(): void {
+  accessErrorLimiter.destroy();
+}
+
+/**
+ * Async handler wrapper for Express 4.x
+ * Catches rejected promises and forwards to error middleware
+ */
+export function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>
+): RequestHandler {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+/**
  * Check rate limiting for access errors
  */
 async function checkAccessErrorRateLimit(ip: string): Promise<{
@@ -97,11 +122,17 @@ async function checkAccessErrorRateLimit(ip: string): Promise<{
 
 /**
  * Generate or reuse correlation ID from request
+ * Validates length and format to prevent header injection
  */
 function getCorrelationId(req: Request): string {
   // Check if correlation ID already exists on request (set by upstream)
   const existingId = req.headers['x-correlation-id'] || req.headers['x-request-id'];
-  if (typeof existingId === 'string' && existingId.length > 0) {
+  if (
+    typeof existingId === 'string' &&
+    existingId.length > 0 &&
+    existingId.length <= MAX_CORRELATION_ID_LENGTH &&
+    CORRELATION_ID_PATTERN.test(existingId)
+  ) {
     return existingId;
   }
   return uuidv4();
@@ -150,10 +181,10 @@ export const errorHandler: ErrorRequestHandler = async (
   } else if (statusCode === 429) {
     code = ACCESS_ERROR_CODES.ACCESS_RATE_LIMITED;
     message = 'Too many requests. Please try again later.';
-  } else if (statusCode === 500) {
+  } else if (statusCode >= 500) {
     // Sanitize internal errors - never expose details
     message = 'Internal server error';
-    code = 'FORBIDDEN' as AccessErrorCode; // Use generic code
+    code = ACCESS_ERROR_CODES.INTERNAL_ERROR;
   }
 
   // Record metrics for access errors
@@ -255,7 +286,7 @@ export async function notFoundHandler(req: Request, res: Response): Promise<void
   res.setHeader('X-Correlation-Id', correlationId);
 
   res.status(404).json(
-    createNotFoundErrorResponse(correlationId, req.path)
+    createNotFoundErrorResponse(correlationId)
   );
 }
 

@@ -8,7 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import routes from './routes/index.js';
 import { standardRateLimiter } from './middleware/rate-limit.middleware.js';
-import { errorHandler, notFoundHandler, correlationIdMiddleware } from './middleware/error.middleware.js';
+import { errorHandler, notFoundHandler, correlationIdMiddleware, asyncHandler } from './middleware/error.middleware.js';
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/v1', routes);
 
 // Error handling
-app.use(notFoundHandler);
+app.use(asyncHandler(notFoundHandler));
 app.use(errorHandler);
 
 export default app;
