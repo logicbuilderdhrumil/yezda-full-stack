@@ -1,16 +1,29 @@
 /**
  * Consent types for data reuse across screening applications.
  * Task 1.1: Define consent copy, scope descriptors, and disclosure text.
+ * 
+ * Re-exports shared DTOs and adds app-specific UI copy.
  */
 
-/** Scope of data that can be reused */
-export type ConsentScope =
-  | 'personal_info'
-  | 'employment_history'
-  | 'education_history'
-  | 'addresses'
-  | 'references'
-  | 'documents';
+// Re-export shared types for contract alignment
+export type {
+  ConsentScope,
+  ConsentStatus,
+  ConsentWorkflowState,
+  ConsentDecision,
+  ConsentPromptDTO as ConsentPromptRequest,
+  ConsentSubmitDTO as ConsentSubmitRequest,
+  ConsentSubmitResponseDTO as ConsentSubmitResponse,
+  ConsentUpdateDTO as ConsentUpdateRequest,
+  ConsentStatusResponseDTO as ConsentStatusResponse,
+  ValidationErrorDetail,
+  ApiErrorResponse,
+} from '@shared/consent.types';
+
+// Import ConsentScope for use in app-specific constants
+import type { ConsentScope } from '@shared/consent.types';
+
+// ----- App-specific UI copy and labels (not part of wire format) -----
 
 /** Human-readable labels for consent scopes */
 export const consentScopeLabels: Record<ConsentScope, string> = {
@@ -32,85 +45,7 @@ export const consentScopeDescriptions: Record<ConsentScope, string> = {
   documents: 'ID documents, certifications, and other uploaded files',
 };
 
-/** Consent decision status */
-export type ConsentStatus = 'pending' | 'granted' | 'denied' | 'withdrawn';
-
-/** Workflow state for consent processing (aligned with backend) */
-export type ConsentWorkflowState =
-  | 'awaiting_response'
-  | 'accepted'
-  | 'declined'
-  | 'expired'
-  | 'revoked';
-
-/** A single consent decision record */
-export interface ConsentDecision {
-  id: string;
-  candidateId: string;
-  applicationId: string;
-  sourceApplicationId: string;
-  scopes: ConsentScope[];
-  status: ConsentStatus;
-  workflowState: ConsentWorkflowState;
-  grantedAt?: number; // Unix timestamp in milliseconds
-  withdrawnAt?: number; // Unix timestamp in milliseconds
-  expiresAt?: number; // Unix timestamp in milliseconds
-  createdAt: number;
-  updatedAt: number;
-}
-
-/** Consent prompt request from backend */
-export interface ConsentPromptRequest {
-  applicationId: string;
-  sourceApplicationId: string;
-  availableScopes: ConsentScope[];
-  sourceOrganization: string;
-  targetOrganization: string;
-  sourceDate: string; // ISO date string
-  workflowState: ConsentWorkflowState;
-}
-
-/** Consent submission payload */
-export interface ConsentSubmitRequest {
-  applicationId: string;
-  sourceApplicationId: string;
-  acceptedScopes: ConsentScope[];
-  accepted: boolean;
-}
-
-/** Consent submission response */
-export interface ConsentSubmitResponse {
-  consent: ConsentDecision;
-  workflowState: ConsentWorkflowState;
-}
-
-/** Validation error detail for field-level errors */
-export interface ValidationErrorDetail {
-  field: string;
-  message: string;
-  code: string;
-}
-
-/** Standardized API error response */
-export interface ApiErrorResponse {
-  code: string;
-  message: string;
-  details?: ValidationErrorDetail[];
-}
-
-/** Consent update request (for modifying or withdrawing) */
-export interface ConsentUpdateRequest {
-  consentId: string;
-  scopes?: ConsentScope[];
-  withdraw?: boolean;
-}
-
-/** Consent status response */
-export interface ConsentStatusResponse {
-  consents: ConsentDecision[];
-}
-
-/** Prefilled field disclosure info */
+/** Prefilled field disclosure info (app-specific) */
 export interface PrefillDisclosure {
   fieldName: string;
   sourceApplicationId: string;
@@ -119,7 +54,7 @@ export interface PrefillDisclosure {
   value: string;
 }
 
-/** UI states for consent screens */
+/** UI states for consent screens (app-specific) */
 export type ConsentScreenState = 'idle' | 'loading' | 'error' | 'success';
 
 /** Consent copy and disclosure text */

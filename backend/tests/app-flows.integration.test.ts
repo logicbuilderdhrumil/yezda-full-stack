@@ -16,6 +16,11 @@ describe('App-Backend App Flows Integration', () => {
   beforeAll(() => {
     app = express();
     app.use(express.json());
+    // Mock auth middleware to inject test user
+    app.use((req, _res, next) => {
+      (req as any).user = { id: 'test-candidate-001' };
+      next();
+    });
     app.use('/api/v1/consent', consentRoutes);
     app.use('/api/v1/applications', applicationRoutes);
   });
@@ -285,6 +290,40 @@ describe('App-Backend App Flows Integration', () => {
             }),
           ]),
         });
+      });
+    });
+  });
+
+  describe('Authentication Requirements', () => {
+    let unauthenticatedApp: Express;
+
+    beforeAll(() => {
+      unauthenticatedApp = express();
+      unauthenticatedApp.use(express.json());
+      // No auth middleware - requests should fail with 401
+      unauthenticatedApp.use('/api/v1/consent', consentRoutes);
+      unauthenticatedApp.use('/api/v1/applications', applicationRoutes);
+    });
+
+    it('returns 401 for applications list without auth', async () => {
+      const response = await request(unauthenticatedApp)
+        .get('/api/v1/applications')
+        .expect(401);
+
+      expect(response.body).toMatchObject({
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
+      });
+    });
+
+    it('returns 401 for consent prompt without auth', async () => {
+      const response = await request(unauthenticatedApp)
+        .get('/api/v1/consent/prompt/app-001')
+        .expect(401);
+
+      expect(response.body).toMatchObject({
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required',
       });
     });
   });
