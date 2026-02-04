@@ -20,7 +20,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useId, useMemo, useSyncExternalStore } from 'react';
 import { cn } from '@/utils';
 import {
   type ChartConfig,
@@ -41,15 +41,37 @@ import {
 // HOOKS
 // ============================================================================
 
+/** Subscribe to matchMedia changes. */
+function subscribeToMediaQuery(
+  query: string,
+  callback: () => void
+): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const mql = window.matchMedia(query);
+  mql.addEventListener('change', callback);
+  return () => mql.removeEventListener('change', callback);
+}
+
+/** Get current dark mode state from matchMedia. */
+function getIsDarkMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+const darkModeSubscribe = (callback: () => void) =>
+  subscribeToMediaQuery('(prefers-color-scheme: dark)', callback);
+
 /**
  * Hook to get theme-aware chart colors.
  * Uses system preference when no theme context is available.
+ * Memoizes matchMedia usage and subscribes to changes.
  */
 export function useChartColors(): ChartColorPalette {
-  // Check for dark mode preference
-  const isDark =
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  const isDark = useSyncExternalStore(
+    darkModeSubscribe,
+    getIsDarkMode,
+    () => false // SSR fallback
+  );
 
   return isDark ? chartColorsByTheme.dark : chartColorsByTheme.light;
 }
@@ -392,7 +414,8 @@ export function Chart<T extends Record<string, unknown>>({
   dotSize = 4,
   ariaLabel = 'Line chart',
 }: LineChartProps<T>): ReactNode {
-  const palette = colors ?? useChartColors();
+  const defaultPalette = useChartColors();
+  const palette = colors ?? defaultPalette;
   const config = useMemo(() => mergeChartConfig(configOverrides), [configOverrides]);
 
   const isEmpty = empty || !data.length;
@@ -490,7 +513,8 @@ export function ChartBar<T extends Record<string, unknown>>({
   radius = 4,
   ariaLabel = 'Bar chart',
 }: BarChartProps<T>): ReactNode {
-  const palette = colors ?? useChartColors();
+  const defaultPalette = useChartColors();
+  const palette = colors ?? defaultPalette;
   const config = useMemo(() => mergeChartConfig(configOverrides), [configOverrides]);
 
   const isEmpty = empty || !data.length;
@@ -588,7 +612,8 @@ export function ChartArea<T extends Record<string, unknown>>({
   gradient = true,
   ariaLabel = 'Area chart',
 }: AreaChartProps<T>): ReactNode {
-  const palette = colors ?? useChartColors();
+  const defaultPalette = useChartColors();
+  const palette = colors ?? defaultPalette;
   const config = useMemo(() => mergeChartConfig(configOverrides), [configOverrides]);
 
   const isEmpty = empty || !data.length;
@@ -709,7 +734,8 @@ export function ChartPie<T extends Record<string, unknown>>({
   showLabels = true,
   ariaLabel = 'Pie chart',
 }: PieChartProps<T>): ReactNode {
-  const palette = colors ?? useChartColors();
+  const defaultPalette = useChartColors();
+  const palette = colors ?? defaultPalette;
   const config = useMemo(() => mergeChartConfig(configOverrides), [configOverrides]);
 
   const isEmpty = empty || !data.length;
@@ -778,6 +804,7 @@ export function Sparkline<T extends Record<string, unknown>>({
 }: SparklineProps<T>): ReactNode {
   const palette = useChartColors();
   const sparklineConfig = useMemo(() => mergeChartConfig(createSparklineConfig()), []);
+  const gradientId = useId();
   const fillColor = color ?? palette.series[0] ?? palette.positive;
 
   if (!data.length) return null;
@@ -792,7 +819,7 @@ export function Sparkline<T extends Record<string, unknown>>({
         ) : type === 'area' ? (
           <AreaChart data={data} margin={sparklineConfig.margin}>
             <defs>
-              <linearGradient id="sparkline-gradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={fillColor} stopOpacity={0.3} />
                 <stop offset="100%" stopColor={fillColor} stopOpacity={0.05} />
               </linearGradient>
@@ -802,7 +829,7 @@ export function Sparkline<T extends Record<string, unknown>>({
               dataKey={dataKey}
               stroke={fillColor}
               strokeWidth={1.5}
-              fill="url(#sparkline-gradient)"
+              fill={`url(#${gradientId})`}
             />
           </AreaChart>
         ) : (
