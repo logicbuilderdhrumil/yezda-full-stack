@@ -218,7 +218,19 @@ export function FormsListView(): ReactNode {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSort('name')}>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  tabIndex={0}
+                  role="columnheader"
+                  aria-sort={sortBy === 'name' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+                  onClick={() => handleSort('name')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSort('name');
+                    }
+                  }}
+                >
                   {t('forms.columns.name')}
                   {renderSortIcon('name')}
                 </TableHead>
@@ -226,7 +238,16 @@ export function FormsListView(): ReactNode {
                 <TableHead>{t('forms.columns.status')}</TableHead>
                 <TableHead
                   className="cursor-pointer select-none"
+                  tabIndex={0}
+                  role="columnheader"
+                  aria-sort={sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                   onClick={() => handleSort('createdAt')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSort('createdAt');
+                    }
+                  }}
                 >
                   {t('forms.columns.created')}
                   {renderSortIcon('createdAt')}
@@ -245,8 +266,15 @@ export function FormsListView(): ReactNode {
                 forms.map((form) => (
                   <TableRow
                     key={form.id}
-                    className="cursor-pointer"
+                    className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                    tabIndex={0}
                     onClick={() => handleRowClick(form.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleRowClick(form.id);
+                      }
+                    }}
                   >
                     <TableCell className="font-medium">{form.name}</TableCell>
                     <TableCell className="text-gray-500">{form.description || '—'}</TableCell>

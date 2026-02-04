@@ -182,6 +182,7 @@ export function FormBuilderCanvas({
                           variant="ghost"
                           size="sm"
                           className="h-6 w-6 p-0"
+                          aria-label={t('forms.builder.moveUp', { label: field.label })}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleMoveField(field.id, 'up');
@@ -194,6 +195,7 @@ export function FormBuilderCanvas({
                           variant="ghost"
                           size="sm"
                           className="h-6 w-6 p-0"
+                          aria-label={t('forms.builder.moveDown', { label: field.label })}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleMoveField(field.id, 'down');

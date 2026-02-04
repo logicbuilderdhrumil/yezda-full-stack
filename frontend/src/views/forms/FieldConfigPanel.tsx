@@ -203,6 +203,7 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
                 <Button
                   variant="ghost"
                   size="sm"
+                  aria-label={t('forms.config.removeOption', { label: option.label })}
                   onClick={() => {
                     handleRemoveOption(index);
                     setTimeout(triggerUpdate, 0);
