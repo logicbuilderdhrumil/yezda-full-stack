@@ -45,7 +45,8 @@ export function GlobalSearchInput({
 
   const handleClear = useCallback(() => {
     setQuery('');
-  }, []);
+    onSearch?.('');
+  }, [onSearch]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {

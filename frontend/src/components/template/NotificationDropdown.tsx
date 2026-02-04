@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Bell, ExternalLink } from 'lucide-react';
 import { useUnreadNotificationCount, useNotifications } from '@/views/notifications';
+import { toastError } from '@/components/ui/Toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,12 +49,20 @@ export function NotificationDropdown({
 
   const handleNotificationClick = async (notification: Notification) => {
     if (notification.status === 'unread') {
-      await markAsRead(notification.id);
+      try {
+        await markAsRead(notification.id);
+      } catch {
+        toastError(t('notifications.markReadError'));
+      }
     }
   };
 
   const handleMarkAllAsRead = async () => {
-    await markAllAsRead();
+    try {
+      await markAllAsRead();
+    } catch {
+      toastError(t('notifications.markAllReadError'));
+    }
   };
 
   const formatTimeAgo = (dateStr: string): string => {

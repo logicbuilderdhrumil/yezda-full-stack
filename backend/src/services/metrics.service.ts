@@ -184,6 +184,35 @@ export const UI_KIT_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
 } as const;
 
+// Task 1.7: Metric names for form builder
+export const FORM_BUILDER_METRICS = {
+  CREATE_REQUEST: 'form_builder_create_request_total',
+  UPDATE_REQUEST: 'form_builder_update_request_total',
+  GET_REQUEST: 'form_builder_get_request_total',
+  LIST_REQUEST: 'form_builder_list_request_total',
+  DELETE_REQUEST: 'form_builder_delete_request_total',
+  REQUEST_LATENCY: 'form_builder_request_latency_ms',
+  CACHE_HIT: 'form_builder_cache_hit_total',
+  CACHE_MISS: 'form_builder_cache_miss_total',
+  RATE_LIMIT_HIT: 'form_builder_rate_limit_hit_total',
+} as const;
+
+// Task 1.7: SLO targets for form builder endpoints
+export const FORM_BUILDER_SLOS = {
+  // Latency SLOs
+  REQUEST_LATENCY_P99_MS: 200,
+  REQUEST_LATENCY_P95_MS: 100,
+
+  // Availability SLOs
+  AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
+} as const;
+
 // SLO targets for OAuth endpoints
 export const OAUTH_SLOS = {
   // Latency SLOs
@@ -198,6 +227,29 @@ export const OAUTH_SLOS = {
 
   // Security SLOs
   MAX_INVALID_STATE_RATE_PER_MINUTE: 50,
+} as const;
+
+// Metric names for access error handling
+export const ACCESS_ERROR_METRICS = {
+  DENIED_TOTAL: 'access_error_denied_total',
+  NOT_FOUND_TOTAL: 'access_error_not_found_total',
+  RATE_LIMITED_TOTAL: 'access_error_rate_limited_total',
+  RESPONSE_LATENCY: 'access_error_response_latency_ms',
+} as const;
+
+// SLO targets for access error handling
+export const ACCESS_ERROR_SLOS = {
+  // Latency SLOs - error responses should be fast
+  RESPONSE_LATENCY_P99_MS: 50,
+  RESPONSE_LATENCY_P95_MS: 20,
+
+  // Availability SLOs - error handlers must be highly available
+  AVAILABILITY_RATE: 99.99,
+
+  // Rate limiting SLOs - max abuse before throttling kicks in
+  MAX_ACCESS_DENIED_RATE_PER_MINUTE: 100,
+  MAX_NOT_FOUND_RATE_PER_MINUTE: 200,
+  MAX_RATE_LIMITED_PER_MINUTE: 50,
 } as const;
 
 export class MetricsService {
@@ -915,6 +967,220 @@ export class MetricsService {
     if (rateLimitHits > UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
       violations.push(
         `UI Kit rate limit hits ${rateLimitHits}/min exceeds SLO ${UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+// Access error metrics methods
+
+  /**
+   * Record access denied error
+   */
+  recordAccessDenied(code: string, path: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.DENIED_TOTAL, { code, path });
+  }
+
+  /**
+   * Record not-found error
+   */
+  recordNotFound(path: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.NOT_FOUND_TOTAL, { path });
+  }
+
+  /**
+   * Record access rate limiting
+   */
+  recordAccessRateLimited(type: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.RATE_LIMITED_TOTAL, { type });
+  }
+
+  /**
+   * Record access error response latency
+   */
+  recordAccessErrorLatency(durationMs: number, type: string): void {
+    this.recordLatency(ACCESS_ERROR_METRICS.RESPONSE_LATENCY, durationMs, { type });
+  }
+
+  /**
+   * Get access denied count
+   */
+  getAccessDeniedCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.DENIED_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get not-found count
+   */
+  getNotFoundCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.NOT_FOUND_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get access rate limited count
+   */
+  getAccessRateLimitedCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.RATE_LIMITED_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get access error P99 latency
+   */
+  getAccessErrorP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === ACCESS_ERROR_METRICS.RESPONSE_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Check if access error SLOs are met
+   */
+  checkAccessErrorSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getAccessErrorP99Latency();
+    if (p99Latency > ACCESS_ERROR_SLOS.RESPONSE_LATENCY_P99_MS) {
+      violations.push(
+        `Access error P99 latency ${p99Latency}ms exceeds SLO ${ACCESS_ERROR_SLOS.RESPONSE_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const deniedCount = this.getAccessDeniedCount();
+    if (deniedCount > ACCESS_ERROR_SLOS.MAX_ACCESS_DENIED_RATE_PER_MINUTE) {
+      violations.push(
+        `Access denied rate ${deniedCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_ACCESS_DENIED_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    const notFoundCount = this.getNotFoundCount();
+    if (notFoundCount > ACCESS_ERROR_SLOS.MAX_NOT_FOUND_RATE_PER_MINUTE) {
+      violations.push(
+        `Not-found rate ${notFoundCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_NOT_FOUND_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    const rateLimitedCount = this.getAccessRateLimitedCount();
+    if (rateLimitedCount > ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE) {
+      violations.push(
+        `Access rate limited ${rateLimitedCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  // Task 1.7: Form builder metrics methods
+
+  /**
+   * Record form builder request
+   */
+  recordFormBuilderRequest(operation: string, success: boolean, durationMs: number): void {
+    this.recordLatency(FORM_BUILDER_METRICS.REQUEST_LATENCY, durationMs, { operation });
+    const metricName = success
+      ? `form_builder_${operation}_success`
+      : `form_builder_${operation}_failure`;
+    this.incrementCounter(metricName, { operation, success: String(success) });
+  }
+
+  /**
+   * Record form builder cache hit
+   */
+  recordFormBuilderCacheHit(): void {
+    this.incrementCounter(FORM_BUILDER_METRICS.CACHE_HIT);
+  }
+
+  /**
+   * Record form builder cache miss
+   */
+  recordFormBuilderCacheMiss(): void {
+    this.incrementCounter(FORM_BUILDER_METRICS.CACHE_MISS);
+  }
+
+  /**
+   * Get form builder P99 latency
+   */
+  getFormBuilderP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === FORM_BUILDER_METRICS.REQUEST_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get form builder cache hit rate
+   */
+  getFormBuilderCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === FORM_BUILDER_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === FORM_BUILDER_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Get form builder rate limit hit count
+   */
+  getFormBuilderRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === FORM_BUILDER_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if form builder SLOs are met
+   * Task 1.7: SLO monitoring for form endpoints
+   */
+  checkFormBuilderSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getFormBuilderP99Latency();
+    if (p99Latency > FORM_BUILDER_SLOS.REQUEST_LATENCY_P99_MS) {
+      violations.push(
+        `Form builder P99 latency ${p99Latency}ms exceeds SLO ${FORM_BUILDER_SLOS.REQUEST_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getFormBuilderCacheHitRate();
+    if (cacheHitRate < FORM_BUILDER_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `Form builder cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${FORM_BUILDER_SLOS.CACHE_HIT_RATE_MIN}%`
+      );
+    }
+
+    const rateLimitHits = this.getFormBuilderRateLimitHitCount();
+    if (rateLimitHits > FORM_BUILDER_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `Form builder rate limit hits ${rateLimitHits}/min exceeds SLO ${FORM_BUILDER_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
       );
     }
 

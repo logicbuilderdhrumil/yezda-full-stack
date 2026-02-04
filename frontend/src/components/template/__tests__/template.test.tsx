@@ -196,6 +196,21 @@ describe('GlobalSearchInput', () => {
     expect(input.value).toBe('');
   });
 
+  it('calls onSearch with empty string when clear button is clicked', () => {
+    const onSearch = vi.fn();
+    render(
+      <TestWrapper>
+        <GlobalSearchInput onSearch={onSearch} />
+      </TestWrapper>
+    );
+    const input = screen.getByTestId('global-search-input');
+    fireEvent.change(input, { target: { value: 'test' } });
+    
+    const clearButton = screen.getByLabelText(/clear/i);
+    fireEvent.click(clearButton);
+    expect(onSearch).toHaveBeenCalledWith('');
+  });
+
   it('calls onSearch callback when Enter is pressed', () => {
     const onSearch = vi.fn();
     render(

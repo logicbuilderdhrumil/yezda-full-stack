@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { User, Settings, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { toastError } from '@/components/ui/Toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +37,11 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
   }
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch {
+      toastError(t('common.signOutError'));
+    }
   };
 
   const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
