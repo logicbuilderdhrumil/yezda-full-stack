@@ -295,7 +295,8 @@ describe('AppApplicationIntakeService', () => {
   describe('submitApplication', () => {
     it('should submit application successfully when validation passes', async () => {
       const submittedAt = new Date();
-      const confirmationNumber = 'APP-12345-ABCD';
+      // Confirmation number is now a full UUID for unpredictability
+      const confirmationNumber = 'APP-550E8400-E29B-41D4-A716-446655440000';
 
       vi.mocked(appApplicationIntakeRepository.findApplicationById).mockResolvedValue(mockApplication);
       vi.mocked(appApplicationIntakeRepository.getRequiredFields).mockResolvedValue([
@@ -317,6 +318,7 @@ describe('AppApplicationIntakeService', () => {
       expect(result.success).toBe(true);
       expect(result.data?.submittedAt).toEqual(submittedAt);
       expect(result.data?.confirmationNumber).toBe(confirmationNumber);
+      expect(result.data?.confirmationNumber).toMatch(/^APP-[A-F0-9-]+$/i);
       expect(result.data?.applicationId).toBe(mockApplicationId);
     });
 

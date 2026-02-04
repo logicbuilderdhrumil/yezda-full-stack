@@ -7,14 +7,34 @@ import type { Response } from 'express';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 import { appApplicationIntakeService } from '../services/app-application-intake.service.js';
 
+// UUID v4 validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// Valid channels
+const VALID_CHANNELS = ['web', 'mobile', 'api'] as const;
+type Channel = typeof VALID_CHANNELS[number];
+
 /**
- * Get client info from request
+ * Validate UUID format
+ */
+function isValidUuid(value: string): boolean {
+  return UUID_REGEX.test(value);
+}
+
+/**
+ * Get client info from request with validated channel
  */
 function getClientInfo(req: AuthenticatedRequest) {
+  const rawChannel = req.get('x-channel') || 'mobile';
+  // Validate channel to prevent spoofing
+  const channel: Channel = VALID_CHANNELS.includes(rawChannel as Channel)
+    ? (rawChannel as Channel)
+    : 'mobile';
+
   return {
     ipAddress: req.ip || req.socket.remoteAddress,
     userAgent: req.get('user-agent'),
-    channel: (req.get('x-channel') || 'mobile') as 'web' | 'mobile' | 'api',
+    channel,
   };
 }
 
@@ -73,6 +93,11 @@ export async function loadApplicationForm(
     return;
   }
 
+  if (!isValidUuid(applicationId)) {
+    res.status(400).json({ error: 'Invalid application ID format', code: 'INVALID_ID' });
+    return;
+  }
+
   const { ipAddress, channel } = getClientInfo(req);
 
   const result = await appApplicationIntakeService.loadApplicationForm(
@@ -110,11 +135,13 @@ export async function saveDraft(
     return;
   }
 
-  const { responses } = req.body;
-  if (!responses || !Array.isArray(responses)) {
-    res.status(400).json({ error: 'Responses array required', code: 'INVALID_BODY' });
+  if (!isValidUuid(applicationId)) {
+    res.status(400).json({ error: 'Invalid application ID format', code: 'INVALID_ID' });
     return;
   }
+
+  // Body already validated by validateBody middleware
+  const { responses } = req.body;
 
   const { ipAddress, channel } = getClientInfo(req);
 
@@ -154,11 +181,13 @@ export async function submitApplication(
     return;
   }
 
-  const { responses } = req.body;
-  if (!responses || !Array.isArray(responses)) {
-    res.status(400).json({ error: 'Responses array required', code: 'INVALID_BODY' });
+  if (!isValidUuid(applicationId)) {
+    res.status(400).json({ error: 'Invalid application ID format', code: 'INVALID_ID' });
     return;
   }
+
+  // Body already validated by validateBody middleware
+  const { responses } = req.body;
 
   const { ipAddress, userAgent, channel } = getClientInfo(req);
 

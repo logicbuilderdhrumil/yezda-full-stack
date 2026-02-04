@@ -415,7 +415,12 @@ export class AppApplicationIntakeService {
         },
       };
     } catch (error) {
-      console.error('[AppApplicationIntakeService] Error submitting application:', error);
+      // Log with full error context for debugging
+      console.error('[AppApplicationIntakeService] Error submitting application:', {
+        applicationId,
+        candidateId: candidateId.substring(0, 8) + '...',
+        error: error instanceof Error ? error.stack : error,
+      });
 
       // Log error
       auditService.log({

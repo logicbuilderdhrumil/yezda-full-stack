@@ -8,7 +8,6 @@ import { getPool } from '../db/postgres.js';
 import type {
   Application,
   AssignedApplication,
-  ApplicationResponse,
   FormDefinition,
   FieldResponse,
 } from '../models/app-application-intake.model.js';
@@ -181,6 +180,7 @@ export class AppApplicationIntakeRepository {
 
   /**
    * Submit final responses for an application
+   * Uses transaction to ensure data consistency
    */
   async submitFinalResponses(
     applicationId: string,
@@ -188,8 +188,10 @@ export class AppApplicationIntakeRepository {
     responses: { fieldId: string; value: unknown }[]
   ): Promise<{ submittedAt: Date; confirmationNumber: string }> {
     const pool = getPool();
+    const client = await pool.connect();
     const now = new Date();
-    const confirmationNumber = `APP-${Date.now().toString(36).toUpperCase()}-${uuidv4().slice(0, 4).toUpperCase()}`;
+    // Use full UUID for unpredictable confirmation number
+    const confirmationNumber = `APP-${uuidv4().toUpperCase()}`;
 
     const fieldResponses: FieldResponse[] = responses.map((r) => ({
       fieldId: r.fieldId,
@@ -197,24 +199,34 @@ export class AppApplicationIntakeRepository {
       updatedAt: now,
     }));
 
-    // Save final responses
-    await pool.query(
-      `INSERT INTO application_responses (id, application_id, candidate_id, responses, is_draft, saved_at, submitted_at)
-      VALUES ($1, $2, $3, $4, false, $5, $5)
-      ON CONFLICT (application_id, candidate_id)
-      DO UPDATE SET responses = $4, saved_at = $5, submitted_at = $5, is_draft = false`,
-      [uuidv4(), applicationId, candidateId, JSON.stringify(fieldResponses), now]
-    );
+    try {
+      await client.query('BEGIN');
 
-    // Update application status to submitted
-    await pool.query(
-      `UPDATE applications 
-      SET status = 'submitted', submitted_at = $1, updated_at = $1
-      WHERE id = $2`,
-      [now, applicationId]
-    );
+      // Save final responses
+      await client.query(
+        `INSERT INTO application_responses (id, application_id, candidate_id, responses, is_draft, saved_at, submitted_at)
+        VALUES ($1, $2, $3, $4, false, $5, $5)
+        ON CONFLICT (application_id, candidate_id)
+        DO UPDATE SET responses = $4, saved_at = $5, submitted_at = $5, is_draft = false`,
+        [uuidv4(), applicationId, candidateId, JSON.stringify(fieldResponses), now]
+      );
 
-    return { submittedAt: now, confirmationNumber };
+      // Update application status to submitted
+      await client.query(
+        `UPDATE applications 
+        SET status = 'submitted', submitted_at = $1, updated_at = $1
+        WHERE id = $2`,
+        [now, applicationId]
+      );
+
+      await client.query('COMMIT');
+      return { submittedAt: now, confirmationNumber };
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   /**
