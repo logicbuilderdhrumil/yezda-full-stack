@@ -21,3 +21,4 @@ export * from './account-settings.controller.js';
 export * from './candidate-management.controller.js';
 export * from './form-builder.controller.js';
 export * from './file-management.controller.js';
+export * from './asset-management.controller.js';

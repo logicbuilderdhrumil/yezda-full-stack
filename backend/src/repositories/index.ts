@@ -19,3 +19,4 @@ export * from './org-management.repository.js';
 export * from './account-settings.repository.js';
 export * from './candidate-management.repository.js';
 export * from './file-management.repository.js';
+export * from './asset-management.repository.js';
