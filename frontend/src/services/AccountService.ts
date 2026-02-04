@@ -1,6 +1,6 @@
 /**
  * Account Service
- * Task 1.7: Implement AccountService for profile management
+ * Aligned with backend contract (account-settings.controller.ts).
  */
 import axios from 'axios';
 import type {
@@ -9,6 +9,10 @@ import type {
   AvatarUploadResponse,
   ChangePasswordPayload,
   AccountError,
+  IntegrationStatus,
+  IntegrationsResponse,
+  IntegrationProvider,
+  IntegrationVerifyPayload,
 } from '@/@types/account';
 
 const API_BASE = '/api/v1/account';
@@ -107,6 +111,65 @@ export const AccountService = {
   async changePassword(payload: ChangePasswordPayload): Promise<void> {
     try {
       await client.post('/password', payload);
+    } catch (err) {
+      throw extractError(err);
+    }
+  },
+
+  // Integration methods - aligned with backend routes
+
+  /**
+   * Get all integration statuses for current user.
+   */
+  async getIntegrations(): Promise<IntegrationStatus[]> {
+    try {
+      const response = await client.get<IntegrationsResponse>('/integrations');
+      return response.data.integrations;
+    } catch (err) {
+      throw extractError(err);
+    }
+  },
+
+  /**
+   * Get status of a specific integration.
+   * @param provider The integration provider.
+   */
+  async getIntegration(provider: IntegrationProvider): Promise<IntegrationStatus> {
+    try {
+      const response = await client.get<IntegrationStatus>(`/integrations/${provider}`);
+      return response.data;
+    } catch (err) {
+      throw extractError(err);
+    }
+  },
+
+  /**
+   * Verify an integration after OAuth flow.
+   * @param provider The integration provider.
+   * @param payload Verification result from OAuth callback.
+   */
+  async verifyIntegration(
+    provider: IntegrationProvider,
+    payload: IntegrationVerifyPayload
+  ): Promise<IntegrationStatus> {
+    try {
+      const response = await client.post<{ integration: IntegrationStatus }>(
+        `/integrations/${provider}/verify`,
+        payload
+      );
+      return response.data.integration;
+    } catch (err) {
+      throw extractError(err);
+    }
+  },
+
+  /**
+   * Disconnect an integration.
+   * @param provider The integration provider.
+   */
+  async disconnectIntegration(provider: IntegrationProvider): Promise<void> {
+    try {
+      await client.delete(`/integrations/${provider}`);
     } catch (err) {
       throw extractError(err);
     }

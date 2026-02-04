@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navigate, useLocation, Outlet, type Location } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { hasRole } from '@/@types/auth';
 import type { AppRouteConfig, RouteMeta, UserRole } from '@/@types';
 
 /**
@@ -135,7 +136,8 @@ interface AuthorityGuardProps {
 }
 
 /**
- * AuthorityGuard restricts access based on user role.
+ * AuthorityGuard restricts access based on user roles.
+ * Uses roles array aligned with backend route-guards.middleware.ts.
  * Displays access denied page if user lacks required authority.
  */
 export function AuthorityGuard({
@@ -150,8 +152,8 @@ export function AuthorityGuard({
     return <>{children}</>;
   }
 
-  // Check if user has any of the required roles
-  if (user && authority.includes(user.role)) {
+  // Check if user has any of the required roles using hasRole helper
+  if (hasRole(user, ...authority)) {
     return <>{children}</>;
   }
 

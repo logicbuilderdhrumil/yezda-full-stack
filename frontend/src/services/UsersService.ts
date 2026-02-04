@@ -1,14 +1,35 @@
 /**
  * Users service for API interactions.
+ * Aligned with backend contract (user-management.controller.ts).
  */
 import { ApiService } from './ApiService';
 import type {
   ManagedUser,
   UserListParams,
   UserListResponse,
+  UserListResult,
   CreateUserPayload,
   UpdateUserPayload,
 } from '@/@types/user';
+
+/** Default page size for user lists. */
+const DEFAULT_PAGE_SIZE = 20;
+
+/**
+ * Normalizes backend response to frontend format.
+ * Converts UserListResult to UserListResponse.
+ */
+function normalizeListResponse(result: UserListResult): UserListResponse {
+  return {
+    data: result.users,
+    meta: {
+      page: result.page,
+      pageSize: result.limit,
+      totalItems: result.total,
+      totalPages: result.totalPages,
+    },
+  };
+}
 
 /**
  * UsersService provides methods for user CRUD operations.
@@ -16,24 +37,31 @@ import type {
 export const UsersService = {
   /**
    * Fetches a paginated list of users.
+   * Translates frontend pagination to backend format.
    * @param params - Optional filter and pagination parameters
    * @returns Paginated list of users
    */
   async list(params?: UserListParams): Promise<UserListResponse> {
+    const page = params?.page ?? 1;
+    const pageSize = params?.pageSize ?? DEFAULT_PAGE_SIZE;
+
+    // Build query parameters matching backend UserSearchParams
     const queryParams: Record<string, string> = {};
-    if (params?.page !== undefined) queryParams.page = String(params.page);
-    if (params?.pageSize !== undefined) queryParams.pageSize = String(params.pageSize);
-    if (params?.search) queryParams.search = params.search;
+    queryParams.page = String(page);
+    queryParams.limit = String(pageSize);
+
+    // Filter parameters - backend uses 'q' for search query
+    if (params?.search) queryParams.q = params.search;
     if (params?.status) queryParams.status = params.status;
     if (params?.role) queryParams.role = params.role;
-    if (params?.organizationId) queryParams.organizationId = params.organizationId;
     if (params?.sortBy) queryParams.sortBy = params.sortBy;
     if (params?.sortOrder) queryParams.sortOrder = params.sortOrder;
 
-    const response = await ApiService.get<UserListResponse>('users.list', {
+    const response = await ApiService.get<UserListResult>('users.list', {
       params: queryParams,
     });
-    return response.data;
+
+    return normalizeListResponse(response.data);
   },
 
   /**
