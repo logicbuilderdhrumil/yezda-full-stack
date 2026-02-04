@@ -20,6 +20,7 @@ import chatRoutes from './chat.routes.js';
 import chartingRoutes from './charting.routes.js';
 import billingLedgerRoutes from './billing-ledger.routes.js';
 import homeDashboardRoutes from './home-dashboard.routes.js';
+import sharedWidgetsRoutes from './shared-widgets.routes.js';
 
 const router = Router();
 
@@ -44,5 +45,6 @@ router.use('/chat', chatRoutes);
 router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerRoutes);
 router.use('/dashboard', homeDashboardRoutes);
+router.use('/widgets', sharedWidgetsRoutes);
 
 export default router;

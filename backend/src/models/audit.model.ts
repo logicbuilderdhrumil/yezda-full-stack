@@ -131,7 +131,11 @@ export type AuditEventType =
   | 'DASHBOARD_ACTIVITY_ACCESSED'
   | 'DASHBOARD_TRENDS_ACCESSED'
   | 'DASHBOARD_ACCESS_DENIED'
-  | 'DASHBOARD_RATE_LIMITED';
+  | 'DASHBOARD_RATE_LIMITED'
+  // Shared widgets audit events
+  | 'WIDGET_DATA_ACCESSED'
+  | 'WIDGET_ACCESS_DENIED'
+  | 'WIDGET_RATE_LIMITED';
 
 export interface AuditEvent {
   id: string;
