@@ -8,7 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import routes from './routes/index.js';
 import { standardRateLimiter } from './middleware/rate-limit.middleware.js';
-import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
+import { errorHandler, notFoundHandler, correlationIdMiddleware } from './middleware/error.middleware.js';
 
 const app = express();
 
@@ -18,6 +18,9 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   credentials: true,
 }));
+
+// Correlation ID middleware - add early for request tracing
+app.use(correlationIdMiddleware);
 
 // Request parsing
 app.use(express.json({ limit: '10kb' }));
