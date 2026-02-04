@@ -119,7 +119,13 @@ export type AuditEventType =
   | 'MESSAGE_READ'
   | 'PARTICIPANT_ADDED'
   | 'PARTICIPANT_REMOVED'
-  | 'CHAT_RATE_LIMITED';
+  | 'CHAT_RATE_LIMITED'
+  // Charting audit events
+  | 'CHART_DATA_ACCESSED'
+  | 'CHART_ACCESS_DENIED'
+  | 'CHART_RATE_LIMITED'
+  | 'CHART_METRICS_LISTED'
+  | 'CHART_AGGREGATION_APPLIED';
 
 export interface AuditEvent {
   id: string;

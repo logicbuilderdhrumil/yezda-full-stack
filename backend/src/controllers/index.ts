@@ -31,3 +31,4 @@ export {
   getHealthSummary as getAssetHealthSummary,
 } from './asset-management.controller.js';
 export * from './chat.controller.js';
+export * from './charting.controller.js';
