@@ -2,31 +2,42 @@
  * Error Handling Middleware
  * Centralized error handling with correlation IDs, audit logging, and rate limiting.
  * Implements access pages spec for standardized access denied and not-found responses.
+ *
+ * @see shared/src/contracts/error-envelope.ts for contract definition
  */
 
 import type { Request, Response, NextFunction, ErrorRequestHandler, RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import type {
+  ErrorCode,
+  ValidationErrorDetail,
+  ApiErrorEnvelope,
+} from '@yezda/shared/contracts';
+import { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
 /** Maximum allowed length for correlation IDs to prevent header injection */
 const MAX_CORRELATION_ID_LENGTH = 128;
 /** Regex pattern for valid correlation ID format (UUID-like or alphanumeric with dashes) */
 const CORRELATION_ID_PATTERN = /^[a-zA-Z0-9-]+$/;
-import {
-  ACCESS_ERROR_CODES,
-  createAccessErrorResponse,
-  createNotFoundErrorResponse,
-  type AccessErrorCode,
-} from '../models/access-error.model.js';
+
 import { auditService } from '../services/audit.service.js';
 import { metricsService } from '../services/metrics.service.js';
 import { getClientIp } from '../utils/ip.util.js';
 import { checkRateLimit } from '../db/redis.js';
 
+/**
+ * Extended API error with envelope support.
+ */
 export interface ApiError extends Error {
   statusCode?: number;
-  code?: string;
+  code?: ErrorCode | string;
+  details?: ValidationErrorDetail[];
   correlationId?: string;
 }
+
+// Re-export shared types for convenience
+export type { ErrorCode, ValidationErrorDetail, ApiErrorEnvelope };
+export { isApiErrorEnvelope };
 
 // Rate limit settings for access errors
 const ACCESS_ERROR_WINDOW_MS = 60000; // 1 minute
@@ -139,7 +150,7 @@ function getCorrelationId(req: Request): string {
 }
 
 /**
- * Global error handler with correlation ID and audit logging
+ * Global error handler with correlation ID, audit logging, and consistent error envelope.
  */
 export const errorHandler: ErrorRequestHandler = async (
   err: ApiError,
@@ -165,26 +176,26 @@ export const errorHandler: ErrorRequestHandler = async (
   }));
 
   const statusCode = err.statusCode || 500;
-  let code: AccessErrorCode = ACCESS_ERROR_CODES.FORBIDDEN;
+  let code: ErrorCode | string = err.code || 'INTERNAL_ERROR';
   let message = err.message;
 
   // Map status codes to appropriate error codes
   if (statusCode === 401) {
-    code = ACCESS_ERROR_CODES.UNAUTHORIZED;
+    code = 'UNAUTHORIZED';
     message = 'Authentication required';
   } else if (statusCode === 403) {
-    code = ACCESS_ERROR_CODES.ACCESS_DENIED;
+    code = 'FORBIDDEN';
     message = 'Access denied';
   } else if (statusCode === 404) {
-    code = ACCESS_ERROR_CODES.NOT_FOUND;
+    code = 'NOT_FOUND';
     message = 'The requested resource was not found';
   } else if (statusCode === 429) {
-    code = ACCESS_ERROR_CODES.ACCESS_RATE_LIMITED;
+    code = 'RATE_LIMITED';
     message = 'Too many requests. Please try again later.';
   } else if (statusCode >= 500) {
     // Sanitize internal errors - never expose details
     message = 'Internal server error';
-    code = ACCESS_ERROR_CODES.INTERNAL_ERROR;
+    code = 'INTERNAL_ERROR';
   }
 
   // Record metrics for access errors
@@ -209,16 +220,25 @@ export const errorHandler: ErrorRequestHandler = async (
     });
   }
 
+  // Build consistent API error envelope
+  const envelope: ApiErrorEnvelope = {
+    code: code as ErrorCode,
+    message,
+    correlationId,
+    timestamp: new Date().toISOString(),
+  };
+
+  if (err.details && err.details.length > 0) {
+    envelope.details = err.details;
+  }
+
   // Set correlation ID header for response tracing
   res.setHeader('X-Correlation-Id', correlationId);
-
-  res.status(statusCode).json(
-    createAccessErrorResponse(code, correlationId, message)
-  );
+  res.status(statusCode).json(envelope);
 };
 
 /**
- * Not found handler with correlation ID, audit logging, and rate limiting
+ * Not found handler with correlation ID, audit logging, and rate limiting.
  */
 export async function notFoundHandler(req: Request, res: Response): Promise<void> {
   const correlationId = getCorrelationId(req);
@@ -246,11 +266,16 @@ export async function notFoundHandler(req: Request, res: Response): Promise<void
       errorMessage: 'Rate limited due to excessive not-found requests',
     });
 
+    const rateLimitEnvelope: ApiErrorEnvelope = {
+      code: 'RATE_LIMITED',
+      message: 'Too many requests. Please try again later.',
+      correlationId,
+      timestamp: new Date().toISOString(),
+    };
+
     res.setHeader('X-Correlation-Id', correlationId);
     res.setHeader('Retry-After', Math.ceil((rateCheck.resetAt - Date.now()) / 1000).toString());
-    res.status(429).json(
-      createAccessErrorResponse(ACCESS_ERROR_CODES.ACCESS_RATE_LIMITED, correlationId)
-    );
+    res.status(429).json(rateLimitEnvelope);
     return;
   }
 
@@ -282,52 +307,68 @@ export async function notFoundHandler(req: Request, res: Response): Promise<void
     ip,
   }));
 
-  // Set correlation ID header
-  res.setHeader('X-Correlation-Id', correlationId);
+  // Build consistent API error envelope
+  const envelope: ApiErrorEnvelope = {
+    code: 'NOT_FOUND',
+    message: `Not found: ${req.path}`,
+    correlationId,
+    timestamp: new Date().toISOString(),
+  };
 
-  res.status(404).json(
-    createNotFoundErrorResponse(correlationId)
-  );
+  res.setHeader('X-Correlation-Id', correlationId);
+  res.status(404).json(envelope);
 }
 
 /**
- * Create an API error with correlation ID
+ * Create an API error with consistent structure.
  */
 export function createError(
   message: string,
   statusCode: number,
-  code: string,
+  code: ErrorCode | string,
+  details?: ValidationErrorDetail[],
   correlationId?: string
 ): ApiError {
   const error: ApiError = new Error(message);
   error.statusCode = statusCode;
   error.code = code;
+  error.details = details;
   error.correlationId = correlationId;
   return error;
 }
 
 /**
- * Create access denied error with proper error code
+ * Create a validation error with field-level details.
+ */
+export function createValidationError(
+  details: ValidationErrorDetail[],
+  message = 'Validation failed'
+): ApiError {
+  return createError(message, 400, 'VALIDATION_ERROR', details);
+}
+
+/**
+ * Create access denied error with proper error code.
  */
 export function createAccessDeniedError(
   message = 'Access denied',
   correlationId?: string
 ): ApiError {
-  return createError(message, 403, ACCESS_ERROR_CODES.ACCESS_DENIED, correlationId);
+  return createError(message, 403, 'FORBIDDEN', undefined, correlationId);
 }
 
 /**
- * Create unauthorized error with proper error code
+ * Create unauthorized error with proper error code.
  */
 export function createUnauthorizedError(
   message = 'Authentication required',
   correlationId?: string
 ): ApiError {
-  return createError(message, 401, ACCESS_ERROR_CODES.UNAUTHORIZED, correlationId);
+  return createError(message, 401, 'UNAUTHORIZED', undefined, correlationId);
 }
 
 /**
- * Middleware to attach correlation ID to incoming requests
+ * Middleware to attach correlation ID to incoming requests.
  */
 export function correlationIdMiddleware(
   req: Request,
