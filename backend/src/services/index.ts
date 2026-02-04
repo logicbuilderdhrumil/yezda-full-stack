@@ -27,6 +27,7 @@ export * from './org-management.service.js';
 export * from './org-management-metrics.service.js';
 export * from './account-settings.service.js';
 export * from './account-settings-metrics.service.js';
+export * from './app-consent.service.js';
 export * from './app-application-intake.service.js';
 export * from './view-components.service.js';
 export * from './candidate-management.service.js';
