@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
 import { AppShell } from '@/components/layouts';
-import { ProtectedRoute, AuthorityGuard, NotFoundView } from '@/components/route';
+import { ProtectedRoute, AuthorityGuard } from '@/components/route';
 import { RouteLoadingFallback } from '@/components/ui';
 
 // Lazy load views for code splitting
@@ -11,6 +11,9 @@ const HomeView = lazy(() =>
 );
 const AccessDeniedView = lazy(() =>
   import('@/views/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
+);
+const NotFoundView = lazy(() =>
+  import('@/views/NotFoundView').then((m) => ({ default: m.NotFoundView }))
 );
 const AccountIntegrationsView = lazy(() =>
   import('@/views/account/AccountIntegrationsView').then((m) => ({
@@ -166,7 +169,7 @@ export const protectedRoutes: RouteObject[] = [
   },
   {
     path: '*',
-    element: <NotFoundView />,
+    element: withSuspense(NotFoundView),
   },
 ];
 

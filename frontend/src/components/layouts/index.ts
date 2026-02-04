@@ -2,3 +2,4 @@ export { AppShell } from './AppShell';
 export { Header } from './Header';
 export { Sidebar } from './Sidebar';
 export { PageContainer } from './PageContainer';
+export { ErrorPageLayout, type ErrorPageLayoutProps } from './ErrorPageLayout';

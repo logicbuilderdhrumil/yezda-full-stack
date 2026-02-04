@@ -291,7 +291,7 @@ describe('RouteGuards', () => {
       expect(screen.getByText('Admin Content')).toBeInTheDocument();
     });
 
-    it('shows access denied when user lacks required role', () => {
+    it('redirects to access denied page when user lacks authority', () => {
       useAuthStore.setState({
         session: mockSession, // role: 'user'
         isAuthenticated: true,
@@ -300,35 +300,22 @@ describe('RouteGuards', () => {
 
       render(
         <TestWrapper>
-          <AuthorityGuard authority={['admin']}>
-            <div>Admin Content</div>
-          </AuthorityGuard>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <AuthorityGuard authority={['admin']}>
+                  <div>Admin Content</div>
+                </AuthorityGuard>
+              }
+            />
+            <Route path="/access-denied" element={<div>Access Denied Page</div>} />
+          </Routes>
         </TestWrapper>
       );
 
+      expect(screen.getByText('Access Denied Page')).toBeInTheDocument();
       expect(screen.queryByText('Admin Content')).not.toBeInTheDocument();
-      expect(screen.getByText('403')).toBeInTheDocument();
-    });
-
-    it('uses custom access denied component', () => {
-      useAuthStore.setState({
-        session: mockSession, // role: 'user'
-        isAuthenticated: true,
-        isLoading: false,
-      });
-
-      render(
-        <TestWrapper>
-          <AuthorityGuard
-            authority={['admin']}
-            accessDeniedComponent={<div>Custom Denied</div>}
-          >
-            <div>Admin Content</div>
-          </AuthorityGuard>
-        </TestWrapper>
-      );
-
-      expect(screen.getByText('Custom Denied')).toBeInTheDocument();
     });
 
     it('allows access when user has one of multiple required roles', () => {
