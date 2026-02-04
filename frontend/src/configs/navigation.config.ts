@@ -79,6 +79,13 @@ export const navConfig: NavConfig = {
           icon: 'file-text',
           authorities: ['admin', 'manager'],
         },
+        {
+          id: 'files',
+          label: 'Files',
+          path: '/files',
+          icon: 'folder',
+          authorities: ['admin'],
+        },
       ],
     },
     {

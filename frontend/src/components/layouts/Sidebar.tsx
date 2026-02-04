@@ -18,13 +18,15 @@ import { cn } from '@/utils';
  */
 function filterByAuthority(
   items: NavItem[],
-  userRole: UserRole | undefined
+  userRoles: UserRole[] | undefined
 ): NavItem[] {
   return items.filter((item) => {
     // Empty authorities means all authenticated users can access
     if (item.authorities.length === 0) return true;
     // Check if user role is in allowed authorities
-    return userRole && item.authorities.includes(userRole);
+    return (userRoles?.length ?? 0) > 0
+      ? item.authorities.some((role) => userRoles!.includes(role))
+      : false;
   });
 }
 
@@ -33,12 +35,12 @@ function filterByAuthority(
  */
 function filterNavConfig(
   sections: NavSection[],
-  userRole: UserRole | undefined
+  userRoles: UserRole[] | undefined
 ): NavSection[] {
   return sections
     .map((section) => ({
       ...section,
-      items: filterByAuthority(section.items, userRole),
+      items: filterByAuthority(section.items, userRoles),
     }))
     .filter((section) => section.items.length > 0);
 }
@@ -91,8 +93,8 @@ export function Sidebar({ className }: SidebarProps): ReactNode {
 
   // Filter navigation based on user role
   const filteredSections = useMemo(
-    () => filterNavConfig(navConfig.sections, user?.role),
-    [user?.role]
+    () => filterNavConfig(navConfig.sections, user?.roles),
+    [user?.roles]
   );
 
   // Map section titles to translation keys

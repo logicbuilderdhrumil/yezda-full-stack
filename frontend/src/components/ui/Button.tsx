@@ -40,6 +40,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
 
+    // When asChild is true, Slot expects exactly one React element child.
+    // We must only render {children} to avoid React.Children.only errors.
+    if (asChild) {
+      return (
+        <Comp
+          ref={ref}
+          className={cn(buttonVariants({ variant, size }), className)}
+          disabled={disabled || isLoading}
+          aria-busy={isLoading}
+          {...props}
+        >
+          {children}
+        </Comp>
+      );
+    }
+
     return (
       <Comp
         ref={ref}

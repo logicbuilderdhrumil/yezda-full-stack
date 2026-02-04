@@ -106,7 +106,7 @@ export const endpoints = {
 
   // Home dashboard endpoints
   'dashboard.summary': { path: '/dashboard/summary', version: 'v1' },
-  'dashboard.widgets': { path: '/dashboard/widgets', version: 'v1' },
+  'dashboard.widgets': { path: '/widgets', version: 'v1' },
   'dashboard.activity': { path: '/dashboard/activity', version: 'v1' },
 
   // Shared widgets endpoints
@@ -117,18 +117,18 @@ export const endpoints = {
   'widgets.delete': { path: '/widgets/:id', version: 'v1' },
 
   // Template layouts endpoints
-  'templates.list': { path: '/templates', version: 'v1' },
-  'templates.get': { path: '/templates/:id', version: 'v1' },
-  'templates.create': { path: '/templates', version: 'v1' },
-  'templates.update': { path: '/templates/:id', version: 'v1' },
-  'templates.delete': { path: '/templates/:id', version: 'v1' },
+  'templates.list': { path: '/template-layouts', version: 'v1' },
+  'templates.get': { path: '/template-layouts/:id', version: 'v1' },
+  'templates.create': { path: '/template-layouts', version: 'v1' },
+  'templates.update': { path: '/template-layouts/:id', version: 'v1' },
+  'templates.delete': { path: '/template-layouts/:id', version: 'v1' },
 
   // View components endpoints
-  'views.list': { path: '/views', version: 'v1' },
-  'views.get': { path: '/views/:id', version: 'v1' },
-  'views.create': { path: '/views', version: 'v1' },
-  'views.update': { path: '/views/:id', version: 'v1' },
-  'views.delete': { path: '/views/:id', version: 'v1' },
+  'views.list': { path: '/view-components', version: 'v1' },
+  'views.get': { path: '/view-components/:id', version: 'v1' },
+  'views.create': { path: '/view-components', version: 'v1' },
+  'views.update': { path: '/view-components/:id', version: 'v1' },
+  'views.delete': { path: '/view-components/:id', version: 'v1' },
 
   // Jobs and async operations endpoints
   'jobs.status': { path: '/jobs/:jobId', version: 'v1' },
@@ -144,7 +144,7 @@ export const endpoints = {
   'ledger.export': { path: '/ledger/export', version: 'v1' },
 
   // Dashboard endpoints
-  'dashboard.metrics': { path: '/dashboard/metrics', version: 'v1' },
+  'dashboard.metrics': { path: '/dashboard/kpis', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

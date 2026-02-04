@@ -6,6 +6,7 @@
 import type { Request, Response } from 'express';
 import { authService } from '../services/auth.service.js';
 import { mfaService } from '../services/mfa.service.js';
+import { userManagementRepository } from '../repositories/user-management.repository.js';
 import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
 
 /**
@@ -292,11 +293,43 @@ export async function getCurrentUser(req: AuthenticatedRequest, res: Response): 
     return;
   }
 
+  // For users, fetch from managed_users to get full profile with roles
+  if (req.user.type === 'user') {
+    const managedUser = await userManagementRepository.findByIdWithoutTenantScope(req.user.sub);
+    if (!managedUser) {
+      res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
+      return;
+    }
+
+    // Return the profile in the format expected by the frontend
+    res.status(200).json({
+      id: managedUser.id,
+      email: managedUser.email,
+      firstName: managedUser.firstName,
+      lastName: managedUser.lastName,
+      displayName: managedUser.displayName,
+      role: managedUser.roles[0] ?? 'viewer', // Primary role
+      roles: managedUser.roles,
+      userType: 'user',
+      mfaEnabled: managedUser.mfaEnabled,
+      tenantId: managedUser.tenantId,
+      status: managedUser.status,
+      createdAt: managedUser.createdAt.toISOString(),
+      updatedAt: managedUser.updatedAt.toISOString(),
+    });
+    return;
+  }
+
+  // For candidates, use the basic auth user data
   const user = await authService.getUser(req.user.sub, req.user.type);
   if (!user) {
     res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
     return;
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    ...user,
+    userType: req.user.type,
+    role: 'candidate',
+  });
 }

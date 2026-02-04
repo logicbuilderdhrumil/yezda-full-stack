@@ -5,6 +5,8 @@ import type { AuthSession, AuthError, AuthState } from '@/@types/auth';
 const STORAGE_KEY = 'yezda-auth';
 
 interface AuthStore extends AuthState {
+  /** Whether the store has finished rehydrating from localStorage. */
+  hasHydrated: boolean;
   /** Set the authenticated session. */
   setSession: (session: AuthSession) => void;
   /** Clear the session and reset to initial state. */
@@ -21,6 +23,8 @@ interface AuthStore extends AuthState {
   getRefreshToken: () => string | null;
   /** Check if session is expired. */
   isSessionExpired: () => boolean;
+  /** Mark hydration as complete (internal use). */
+  _setHasHydrated: (state: boolean) => void;
 }
 
 const initialState: AuthState = {
@@ -40,6 +44,11 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       ...initialState,
+      hasHydrated: false,
+
+      _setHasHydrated: (state: boolean) => {
+        set({ hasHydrated: state });
+      },
 
       setSession: (session: AuthSession) => {
         set({
@@ -95,6 +104,29 @@ export const useAuthStore = create<AuthStore>()(
         session: state.session,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // Mark hydration complete once state is restored
+        state?._setHasHydrated(true);
+      },
     }
   )
 );
+
+/**
+ * Wait for the auth store to finish hydrating from localStorage.
+ * Resolves immediately if already hydrated.
+ */
+export function waitForAuthHydration(): Promise<void> {
+  return new Promise((resolve) => {
+    if (useAuthStore.getState().hasHydrated) {
+      resolve();
+      return;
+    }
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      if (state.hasHydrated) {
+        unsubscribe();
+        resolve();
+      }
+    });
+  });
+}

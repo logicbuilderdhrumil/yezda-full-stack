@@ -76,6 +76,7 @@ export interface SignInResponse {
 /** Password reset request payload. */
 export interface PasswordResetRequest {
   email: string;
+  userType?: 'user' | 'candidate';
 }
 
 /** Password reset completion payload. */

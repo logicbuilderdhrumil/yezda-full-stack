@@ -11,6 +11,7 @@ import { checkRateLimit } from '../db/redis.js';
 import { getClientIp } from '../utils/ip.util.js';
 import type { AccessTokenPayload } from '../models/auth.model.js';
 import type { AuthenticatedRequest } from './auth.middleware.js';
+import { userManagementRepository } from '../repositories/user-management.repository.js';
 
 // Re-export for consumers that import from route-guards
 export type { AuthenticatedRequest };
@@ -224,7 +225,22 @@ export async function requireAuthGuard(
     return;
   }
 
-  req.user = payload as AuthenticatedUserPayload;
+  // Enrich payload with roles for 'user' type by fetching from database
+  const enrichedPayload: AuthenticatedUserPayload = { ...payload };
+  if (payload.type === 'user') {
+    try {
+      const managedUser = await userManagementRepository.findByIdWithoutTenantScope(payload.sub);
+      if (managedUser) {
+        enrichedPayload.roles = managedUser.roles as UserRole[];
+        enrichedPayload.tenantId = managedUser.tenantId;
+      }
+    } catch (error) {
+      // Log but don't fail auth - roles will be empty
+      console.warn('[requireAuthGuard] Failed to fetch user roles:', error);
+    }
+  }
+
+  req.user = enrichedPayload;
   metricsService.incrementCounter(GUARD_METRICS.ACCESS_GRANTED, { type: 'auth' });
   logGuardAccessGranted(req);
   metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'granted' });

@@ -15,6 +15,12 @@ const AccessDeniedView = lazy(() =>
 const NotFoundView = lazy(() =>
   import('@/views/NotFoundView').then((m) => ({ default: m.NotFoundView }))
 );
+const TermsView = lazy(() =>
+  import('@/views/TermsView').then((m) => ({ default: m.TermsView }))
+);
+const PrivacyView = lazy(() =>
+  import('@/views/PrivacyView').then((m) => ({ default: m.PrivacyView }))
+);
 const AccountIntegrationsView = lazy(() =>
   import('@/views/account/AccountIntegrationsView').then((m) => ({
     default: m.AccountIntegrationsView,
@@ -141,6 +147,13 @@ const ChatView = lazy(() =>
   }))
 );
 
+// Files view
+const FilesListView = lazy(() =>
+  import('@/views/files/FilesListView').then((m) => ({
+    default: m.FilesListView,
+  }))
+);
+
 // Ledger views (admin only)
 const BilledLedgerListView = lazy(() =>
   import('@/views/ledger/BilledLedgerListView').then((m) => ({
@@ -198,6 +211,14 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/access-denied',
     element: withSuspense(AccessDeniedView),
+  },
+  {
+    path: '/terms',
+    element: withSuspense(TermsView),
+  },
+  {
+    path: '/privacy',
+    element: withSuspense(PrivacyView),
   },
   /**
    * Public candidate submission form.
@@ -321,6 +342,11 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'chat',
         element: withSuspense(ChatView),
+      },
+      // Files route (admin only)
+      {
+        path: 'files',
+        element: withAdminGuard(FilesListView),
       },
       // Ledger routes (admin only)
       {

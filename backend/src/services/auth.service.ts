@@ -14,6 +14,7 @@ import { passwordService } from './password.service.js';
 import { mfaService } from './mfa.service.js';
 import { auditService } from './audit.service.js';
 import { userRepository } from '../repositories/user.repository.js';
+import { userManagementRepository } from '../repositories/user-management.repository.js';
 import { passwordResetRepository } from '../repositories/password-reset.repository.js';
 import { storeMfaSession, consumeMfaSession } from '../db/redis.js';
 import { getClient } from '../db/postgres.js';
@@ -198,8 +199,15 @@ export class AuthService {
     entity.updatedAt = new Date();
     await userRepository.updateEntity(entity, userType);
 
+    // Fetch tenantId for user type from managed_users
+    let tenantId: string | undefined;
+    if (userType === 'user') {
+      const managedUser = await userManagementRepository.findByIdWithoutTenantScope(entity.id);
+      tenantId = managedUser?.tenantId;
+    }
+
     // Generate tokens
-    const { tokenPair } = await tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress);
+    const { tokenPair } = await tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress, tenantId);
 
     auditService.logSignInSuccess({
       userId: entity.id,
@@ -245,12 +253,20 @@ export class AuthService {
       return { success: false, error: 'Invalid MFA code', errorCode: 'INVALID_MFA' };
     }
 
+    // Fetch tenantId for user type from managed_users
+    let tenantId: string | undefined;
+    if (session.userType === 'user') {
+      const managedUser = await userManagementRepository.findByIdWithoutTenantScope(entity.id);
+      tenantId = managedUser?.tenantId;
+    }
+
     // Generate tokens
     const { tokenPair } = await tokenService.generateTokenPair(
       entity.id,
       session.userType,
       deviceInfo,
-      ipAddress
+      ipAddress,
+      tenantId
     );
 
     auditService.logSignInSuccess({

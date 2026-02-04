@@ -32,10 +32,12 @@ export const mockTokens = {
   expiresIn: 3600,
 };
 
-/** Mock sign-in response. */
+/** Mock sign-in response (backend format with flat tokens). */
 export const signInResponse = {
-  user: mockUser,
-  ...mockTokens,
+  accessToken: mockTokens.accessToken,
+  refreshToken: mockTokens.refreshToken,
+  expiresIn: mockTokens.expiresIn,
+  tokenType: 'Bearer' as const,
 };
 
 /** Mock sign-up response. */
@@ -65,7 +67,16 @@ export const refreshResponse = {
   ...mockTokens,
 };
 
-/** Mock current user (me) response. */
+/** Mock current user (me) response - backend format (flat user object). */
 export const meResponse = {
-  user: mockUser,
+  id: mockUser.id,
+  email: mockUser.email,
+  firstName: mockUser.firstName,
+  lastName: mockUser.lastName,
+  role: mockUser.roles[0],
+  userType: mockUser.type,
+  mfaEnabled: mockUser.mfaEnabled,
+  tenantId: mockUser.tenantId,
+  createdAt: mockUser.createdAt,
+  updatedAt: mockUser.updatedAt,
 };

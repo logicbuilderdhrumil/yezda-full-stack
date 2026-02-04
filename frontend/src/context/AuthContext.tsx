@@ -54,6 +54,7 @@ interface AuthProviderProps {
 
 /**
  * AuthProvider wraps the application and provides authentication state and actions.
+ * Waits for Zustand hydration before rendering children to avoid race conditions.
  */
 export function AuthProvider({ children }: AuthProviderProps): ReactNode {
   const {
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
     error,
     mfaPending,
     mfaToken,
+    hasHydrated,
     setSession,
     clearSession,
     setLoading,
@@ -72,8 +74,11 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
     isSessionExpired,
   } = useAuthStore();
 
-  // Try to restore session on mount
+  // Try to restore session on mount (after hydration)
   useEffect(() => {
+    // Don't attempt restore until hydration is complete
+    if (!hasHydrated) return;
+
     let isMounted = true;
 
     const restoreSession = async () => {
@@ -95,7 +100,12 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
     return () => {
       isMounted = false;
     };
-  }, [getRefreshToken, isSessionExpired, setLoading, setSession, clearSession]);
+  }, [hasHydrated, getRefreshToken, isSessionExpired, setLoading, setSession, clearSession]);
+
+  // Block rendering until hydration completes to prevent API calls with null tokens
+  if (!hasHydrated) {
+    return null;
+  }
 
   const signIn = useCallback(
     async (credentials: SignInCredentials): Promise<boolean> => {
@@ -111,6 +121,8 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
           setSession(response.session);
           return true;
         }
+        // No session returned, clear loading state
+        setLoading(false);
         return false;
       } catch (err) {
         setError(err as AuthError);

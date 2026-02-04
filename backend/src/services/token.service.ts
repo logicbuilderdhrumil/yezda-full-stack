@@ -16,6 +16,7 @@ import type {
   Session,
 } from '../models/auth.model.js';
 import { sessionRepository } from '../repositories/session.repository.js';
+import { userManagementRepository } from '../repositories/user-management.repository.js';
 import { cacheGet, cacheSet } from '../db/redis.js';
 import { config } from '../config/index.js';
 
@@ -53,7 +54,8 @@ export class TokenService {
     userId: string,
     userType: 'user' | 'candidate',
     deviceInfo?: string,
-    ipAddress?: string
+    ipAddress?: string,
+    tenantId?: string
   ): Promise<{ tokenPair: TokenPair; session: Session }> {
     const sessionId = uuidv4();
     const accessTokenJti = uuidv4();
@@ -63,6 +65,7 @@ export class TokenService {
     const accessPayload: AccessTokenPayload = {
       sub: userId,
       type: userType,
+      ...(tenantId && { tenantId }),
       iat: now,
       exp: now + config.jwt.accessTokenTtlSeconds,
       jti: accessTokenJti,
@@ -180,12 +183,20 @@ export class TokenService {
     oldSession.revokedAt = new Date();
     await sessionRepository.update(oldSession);
 
-    // Generate new token pair
+    // Fetch tenantId for user type from managed_users
+    let tenantId: string | undefined;
+    if (payload.type === 'user') {
+      const managedUser = await userManagementRepository.findByIdWithoutTenantScope(payload.sub);
+      tenantId = managedUser?.tenantId;
+    }
+
+    // Generate new token pair with tenantId
     const result = await this.generateTokenPair(
       payload.sub,
       payload.type,
       deviceInfo ?? oldSession.deviceInfo,
-      ipAddress ?? oldSession.ipAddress
+      ipAddress ?? oldSession.ipAddress,
+      tenantId
     );
 
     // Link to old session for audit trail

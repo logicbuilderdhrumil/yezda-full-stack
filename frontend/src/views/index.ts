@@ -2,6 +2,7 @@ export * from './auth';
 export * from './account';
 export * from './candidates';
 export * from './chat';
+export * from './files';
 export * from './forms';
 export * from './notifications';
 export * from './organizations';

@@ -97,6 +97,19 @@ export class UserManagementRepository {
   }
 
   /**
+   * Find user by ID without tenant scoping.
+   * Used for authenticated user profile lookup (/me endpoint).
+   * Safe because user is already authenticated via JWT.
+   */
+  async findByIdWithoutTenantScope(id: string): Promise<ManagedUser | undefined> {
+    const result = await query<ManagedUserRow>(
+      'SELECT * FROM managed_users WHERE id = $1',
+      [id]
+    );
+    return result.rows[0] ? rowToManagedUser(result.rows[0]) : undefined;
+  }
+
+  /**
    * Find user by email with tenant scoping
    */
   async findByEmail(email: string, tenantId: string): Promise<ManagedUser | undefined> {

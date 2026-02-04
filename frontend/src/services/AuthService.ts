@@ -25,6 +25,16 @@ function createClient(): AxiosInstance {
   });
 }
 
+/** Backend sign-in response (flat structure per shared contract). */
+interface BackendSignInResponse {
+  requiresMfa?: boolean;
+  mfaSessionToken?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  tokenType?: string;
+}
+
 /**
  * AuthService encapsulates all authentication-related API calls.
  * Error responses conform to the ApiErrorEnvelope contract.
@@ -35,15 +45,69 @@ function createClient(): AxiosInstance {
 export const AuthService = {
   /**
    * Sign in with email and password.
+   * Transforms backend response to frontend SignInResponse format.
    * @returns SignInResponse which may require MFA.
    * @throws {ApiErrorEnvelope} On authentication failure
    */
   async signIn(credentials: SignInCredentials): Promise<SignInResponse> {
     const client = createClient();
     try {
-      const response = await client.post<SignInResponse>('/sign-in', credentials);
-      return response.data;
+      console.log('[AuthService] Starting sign-in request');
+      const response = await client.post<BackendSignInResponse>('/sign-in', credentials);
+      const data = response.data;
+      console.log('[AuthService] Sign-in response:', { hasAccessToken: !!data.accessToken, hasRefreshToken: !!data.refreshToken, expiresIn: data.expiresIn, requiresMfa: data.requiresMfa });
+
+      // MFA required
+      if (data.requiresMfa && data.mfaSessionToken) {
+        console.log('[AuthService] MFA required');
+        return {
+          requiresMfa: true,
+          mfaToken: data.mfaSessionToken,
+        };
+      }
+
+      // Successful authentication - fetch user and construct session
+      if (data.accessToken && data.refreshToken && data.expiresIn !== undefined) {
+        console.log('[AuthService] Fetching user via /me');
+        const userResponse = await client.get<{ id: string; email: string; firstName?: string; lastName?: string; role: string; userType: string; mfaEnabled: boolean; tenantId?: string; createdAt: string; updatedAt: string }>('/me', {
+          headers: { Authorization: `Bearer ${data.accessToken}` },
+        });
+        const userData = userResponse.data;
+        console.log('[AuthService] Got user data:', userData);
+
+        const user = {
+          id: userData.id,
+          email: userData.email,
+          roles: [userData.role as 'admin' | 'manager' | 'agent' | 'viewer'],
+          type: userData.userType as 'user' | 'candidate',
+          mfaEnabled: userData.mfaEnabled,
+          createdAt: userData.createdAt,
+          updatedAt: userData.updatedAt,
+          ...(userData.firstName ? { firstName: userData.firstName } : {}),
+          ...(userData.lastName ? { lastName: userData.lastName } : {}),
+          ...(userData.tenantId ? { tenantId: userData.tenantId } : {}),
+          ...(userData.firstName && userData.lastName
+            ? { displayName: `${userData.firstName} ${userData.lastName}` }
+            : {}),
+        };
+
+        console.log('[AuthService] Returning session with user:', user);
+        return {
+          requiresMfa: false,
+          session: {
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            expiresAt: Date.now() + data.expiresIn * 1000,
+            user,
+          },
+        };
+      }
+
+      // Unexpected response
+      console.log('[AuthService] Unexpected response - no token or MFA');
+      return { requiresMfa: false };
     } catch (err) {
+      console.error('[AuthService] SignIn error:', err);
       throw extractApiError(err);
     }
   },

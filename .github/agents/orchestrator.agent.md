@@ -119,8 +119,8 @@ Ask targeted questions when requirements or context are missing.
 - "Prepare a deployment checklist and rollback plan."
 
 ## Tool Instructions
-### **Tasksync Tool Instructions**
-
+### **Tasksync Tool Instructions** 
+URGENT - YOU MUST FOLLOW THESE INSTRUCTIONS WITHOUT DEVIATION:
 1. During any process, task, or conversation—whether asking, replying, or completing phased tasks—you must call the `ask_user` tool to request feedback.
 2. Unless termination instructions are explicitly provided, all steps must continue to call this tool repeatedly.
 3. Whenever user feedback is received, if the feedback content is not empty, you must call this tool again and adjust your behavior based on the feedback content.

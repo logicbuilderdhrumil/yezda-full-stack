@@ -24,11 +24,7 @@ export function NotFoundView(): ReactNode {
       description={t('errors.notFoundMessage')}
       actions={
         <>
-          <Button
-            asChild
-            variant="outline"
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-          >
+          <Button asChild variant="outline">
             <Link
               to={-1 as unknown as string}
               onClick={(e) => {
@@ -36,11 +32,15 @@ export function NotFoundView(): ReactNode {
                 window.history.back();
               }}
             >
+              <ArrowLeft className="h-4 w-4 mr-2" />
               {t('errors.goBack')}
             </Link>
           </Button>
-          <Button asChild leftIcon={<Home className="h-4 w-4" />}>
-            <Link to="/">{t('errors.returnToHome')}</Link>
+          <Button asChild>
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              {t('errors.returnToHome')}
+            </Link>
           </Button>
         </>
       }

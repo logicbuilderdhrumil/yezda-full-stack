@@ -1,4 +1,6 @@
 import axios, { type AxiosInstance, type CreateAxiosDefaults } from 'axios';
+import { useAuthStore } from '@/store/authStore';
+import { setupInterceptors } from './interceptors';
 
 /**
  * Default Axios configuration.
@@ -33,3 +35,28 @@ export function createAxiosInstance(config?: CreateAxiosDefaults): AxiosInstance
  * The default shared Axios instance for API calls.
  */
 export const apiClient = createAxiosInstance();
+
+// Wire up interceptors with auth store integration
+setupInterceptors(apiClient, {
+  getAccessToken: () => useAuthStore.getState().getAccessToken(),
+  refreshToken: async () => {
+    const refreshToken = useAuthStore.getState().getRefreshToken();
+    if (!refreshToken) return null;
+    // Dynamic import to avoid circular dependency
+    const { AuthService } = await import('@/services/AuthService');
+    try {
+      const session = await AuthService.refreshToken(refreshToken);
+      useAuthStore.getState().setSession(session);
+      return session.accessToken;
+    } catch {
+      return null;
+    }
+  },
+  onAuthFailure: () => {
+    useAuthStore.getState().clearSession();
+    // Navigate to sign-in (use location.replace to avoid history issues)
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+      window.location.replace('/sign-in');
+    }
+  },
+});

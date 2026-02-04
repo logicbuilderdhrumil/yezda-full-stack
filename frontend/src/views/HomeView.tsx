@@ -181,12 +181,12 @@ export function HomeView(): ReactNode {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {isLoading && !data ? (
             Array.from({ length: 4 }).map((_, i) => <KPICardSkeleton key={i} />)
-          ) : data?.kpis.length === 0 ? (
+          ) : (data?.kpis?.length ?? 0) === 0 ? (
             <div className="col-span-full">
               <DashboardEmpty />
             </div>
           ) : (
-            data?.kpis.map((metric) => (
+            data?.kpis?.map((metric) => (
               <KPICard key={metric.id} metric={metric} />
             ))
           )}
@@ -202,8 +202,8 @@ export function HomeView(): ReactNode {
             Array.from({ length: 2 }).map((_, i) => (
               <ChartWidgetSkeleton key={i} />
             ))
-          ) : data?.charts.length === 0 ? null : (
-            data?.charts.map((chart) => (
+          ) : (data?.charts?.length ?? 0) === 0 ? null : (
+            data?.charts?.map((chart) => (
               <ChartWidget key={chart.id} chart={chart} />
             ))
           )}
