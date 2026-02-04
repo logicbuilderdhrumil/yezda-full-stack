@@ -141,6 +141,18 @@ const ChatView = lazy(() =>
   }))
 );
 
+// Ledger views (admin only)
+const BilledLedgerListView = lazy(() =>
+  import('@/views/ledger/BilledLedgerListView').then((m) => ({
+    default: m.BilledLedgerListView,
+  }))
+);
+const UnbilledLedgerListView = lazy(() =>
+  import('@/views/ledger/UnbilledLedgerListView').then((m) => ({
+    default: m.UnbilledLedgerListView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -309,6 +321,15 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'chat',
         element: withSuspense(ChatView),
+      },
+      // Ledger routes (admin only)
+      {
+        path: 'ledger/billed',
+        element: withAdminGuard(BilledLedgerListView),
+      },
+      {
+        path: 'ledger/unbilled',
+        element: withAdminGuard(UnbilledLedgerListView),
       },
       // Additional protected routes will be added here
     ],

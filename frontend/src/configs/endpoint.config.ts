@@ -63,6 +63,10 @@ export const endpoints = {
   'forms.create': { path: '/forms', version: 'v1' },
   'forms.update': { path: '/forms/:id', version: 'v1' },
   'forms.delete': { path: '/forms/:id', version: 'v1' },
+
+  // Ledger endpoints
+  'ledger.list': { path: '/ledger', version: 'v1' },
+  'ledger.export': { path: '/ledger/export', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */
