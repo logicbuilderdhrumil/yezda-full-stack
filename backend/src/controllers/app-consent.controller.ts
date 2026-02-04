@@ -4,7 +4,7 @@
  */
 
 import type { Response } from 'express';
-import type { AuthenticatedRequest } from '../middleware/auth.middleware.js';
+import type { AuthenticatedRoleRequest } from '../middleware/route-guards.middleware.js';
 import { appConsentService } from '../services/app-consent.service.js';
 import type {
   ConsentCaptureRequest,
@@ -15,7 +15,7 @@ import type {
 /**
  * Get client info from request
  */
-function getClientInfo(req: AuthenticatedRequest) {
+function getClientInfo(req: AuthenticatedRoleRequest) {
   return {
     ipAddress: req.ip || req.socket.remoteAddress,
     userAgent: req.get('user-agent'),
@@ -24,10 +24,17 @@ function getClientInfo(req: AuthenticatedRequest) {
 }
 
 /**
- * Extract tenant ID from request
+ * Extract tenant ID from authenticated user context
+ * Task 1.4: Tenant scoping - uses auth context to prevent tenant spoofing
  */
-function getTenantId(req: AuthenticatedRequest): string {
-  return req.get('x-tenant-id') || 'default';
+function getTenantId(req: AuthenticatedRoleRequest): string {
+  // Use tenant from authenticated user context (prevents spoofing)
+  if (req.user?.tenantId) {
+    return req.user.tenantId;
+  }
+
+  // Default tenant for single-tenant or testing
+  return 'default';
 }
 
 /**
@@ -35,7 +42,7 @@ function getTenantId(req: AuthenticatedRequest): string {
  * Capture consent decision from the app
  */
 export async function captureConsent(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {
@@ -73,7 +80,7 @@ export async function captureConsent(
  * Get current consent status for the authenticated candidate
  */
 export async function getConsentStatus(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {
@@ -113,7 +120,7 @@ export async function getConsentStatus(
  * Get consent status for a specific candidate (admin/user access)
  */
 export async function getCandidateConsentStatus(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {
@@ -153,7 +160,7 @@ export async function getCandidateConsentStatus(
  * Withdraw consent (candidate only)
  */
 export async function withdrawConsent(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {
@@ -198,7 +205,7 @@ export async function withdrawConsent(
  * Check if data reuse is allowed based on consent
  */
 export async function checkDataReuse(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRoleRequest,
   res: Response
 ): Promise<void> {
   if (!req.user) {
