@@ -68,7 +68,7 @@ export interface ChartWidget {
   /** Chart title. */
   title: string;
   /** Chart type. */
-  type: 'line' | 'bar' | 'area';
+  type: 'line' | 'bar';
   /** Data points. */
   data: ChartDataPoint[];
 }

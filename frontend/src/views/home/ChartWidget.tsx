@@ -81,6 +81,7 @@ function LineChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
   return (
     <div className="relative h-32">
       <svg
+        aria-label={`Line chart: ${data.length} data points`}
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-full"
         preserveAspectRatio="none"

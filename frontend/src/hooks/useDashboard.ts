@@ -38,6 +38,7 @@ export function useDashboard(): UseDashboardReturn {
   const isMounted = useRef(true);
 
   const fetchData = useCallback(async (force = false) => {
+    if (!isMounted.current) return;
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
