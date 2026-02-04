@@ -184,6 +184,32 @@ export const UI_KIT_SLOS = {
   MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
 } as const;
 
+// Metric names for View Components
+export const VIEW_COMPONENTS_METRICS = {
+  CHAT_REQUEST: 'view_components_chat_request_total',
+  FILE_REQUEST: 'view_components_file_request_total',
+  REQUEST_LATENCY: 'view_components_request_latency_ms',
+  CACHE_HIT: 'view_components_cache_hit_total',
+  CACHE_MISS: 'view_components_cache_miss_total',
+  RATE_LIMIT_HIT: 'view_components_rate_limit_hit_total',
+} as const;
+
+// SLO targets for View Components endpoints
+export const VIEW_COMPONENTS_SLOS = {
+  // Latency SLOs
+  REQUEST_LATENCY_P99_MS: 100,
+  REQUEST_LATENCY_P95_MS: 50,
+
+  // Availability SLOs
+  AVAILABILITY_RATE: 99.9,
+
+  // Cache efficiency SLOs
+  CACHE_HIT_RATE_MIN: 80,
+
+  // Rate limiting SLOs
+  MAX_RATE_LIMIT_HITS_PER_MINUTE: 120,
+} as const;
+
 // SLO targets for OAuth endpoints
 export const OAUTH_SLOS = {
   // Latency SLOs
@@ -915,6 +941,105 @@ export class MetricsService {
     if (rateLimitHits > UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
       violations.push(
         `UI Kit rate limit hits ${rateLimitHits}/min exceeds SLO ${UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  // View Components metrics methods
+
+  /**
+   * Record View Components request
+   */
+  recordViewComponentsRequest(operation: string, success: boolean, durationMs: number): void {
+    this.recordLatency(VIEW_COMPONENTS_METRICS.REQUEST_LATENCY, durationMs, { operation });
+    this.incrementCounter(
+      operation === 'file'
+        ? VIEW_COMPONENTS_METRICS.FILE_REQUEST
+        : VIEW_COMPONENTS_METRICS.CHAT_REQUEST,
+      { success: String(success) }
+    );
+  }
+
+  /**
+   * Record View Components cache hit
+   */
+  recordViewComponentsCacheHit(): void {
+    this.incrementCounter(VIEW_COMPONENTS_METRICS.CACHE_HIT);
+  }
+
+  /**
+   * Record View Components cache miss
+   */
+  recordViewComponentsCacheMiss(): void {
+    this.incrementCounter(VIEW_COMPONENTS_METRICS.CACHE_MISS);
+  }
+
+  /**
+   * Get View Components P99 latency
+   */
+  getViewComponentsP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === VIEW_COMPONENTS_METRICS.REQUEST_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Get View Components cache hit rate
+   */
+  getViewComponentsCacheHitRate(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const hits = recentMetrics.filter((m) => m.name === VIEW_COMPONENTS_METRICS.CACHE_HIT).length;
+    const misses = recentMetrics.filter((m) => m.name === VIEW_COMPONENTS_METRICS.CACHE_MISS).length;
+    const total = hits + misses;
+    return total > 0 ? (hits / total) * 100 : 100;
+  }
+
+  /**
+   * Get View Components rate limit hit count
+   */
+  getViewComponentsRateLimitHitCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === VIEW_COMPONENTS_METRICS.RATE_LIMIT_HIT
+    ).length;
+  }
+
+  /**
+   * Check if View Components SLOs are met
+   */
+  checkViewComponentsSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getViewComponentsP99Latency();
+    if (p99Latency > VIEW_COMPONENTS_SLOS.REQUEST_LATENCY_P99_MS) {
+      violations.push(
+        `View Components P99 latency ${p99Latency}ms exceeds SLO ${VIEW_COMPONENTS_SLOS.REQUEST_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const cacheHitRate = this.getViewComponentsCacheHitRate();
+    if (cacheHitRate < VIEW_COMPONENTS_SLOS.CACHE_HIT_RATE_MIN) {
+      violations.push(
+        `View Components cache hit rate ${cacheHitRate.toFixed(2)}% below SLO ${VIEW_COMPONENTS_SLOS.CACHE_HIT_RATE_MIN}%`
+      );
+    }
+
+    const rateLimitHits = this.getViewComponentsRateLimitHitCount();
+    if (rateLimitHits > VIEW_COMPONENTS_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
+      violations.push(
+        `View Components rate limit hits ${rateLimitHits}/min exceeds SLO ${VIEW_COMPONENTS_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
       );
     }
 

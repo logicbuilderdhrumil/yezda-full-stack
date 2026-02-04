@@ -682,6 +682,65 @@ export class AuditService {
       errorMessage: params.reason,
     });
   }
+
+  // View Components audit logging methods
+
+  /**
+   * Log view component access
+   */
+  logViewComponentAccess(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    componentType: 'chat' | 'file';
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        componentType: params.componentType,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log view component access denied (cross-tenant attempt)
+   */
+  logViewComponentAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    attemptedTenantId: string;
+    actualTenantId: string;
+    componentType: 'chat' | 'file';
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        attemptedTenantId: params.attemptedTenantId,
+        actualTenantId: params.actualTenantId,
+        componentType: params.componentType,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
 }
 
 export const auditService = new AuditService();
