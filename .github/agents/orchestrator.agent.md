@@ -24,6 +24,10 @@ handoffs:
     agent: app-implementer
     prompt: "Implement approved app tasks with minimal, focused edits."
     send: true
+  - label: Implement integration changes
+    agent: integration-implementer
+    prompt: "Implement approved integration alignment tasks across frontend, backend, and app."
+    send: true
   - label: Review frontend changes
     agent: frontend-reviewer
     prompt: "Review frontend changes for correctness, security, performance, and testing gaps."
@@ -35,6 +39,10 @@ handoffs:
   - label: Review app changes
     agent: app-reviewer
     prompt: "Review app changes for correctness, security, performance, and testing gaps."
+    send: true
+  - label: Review integration changes
+    agent: integration-reviewer
+    prompt: "Review integration changes for correctness, UX, security, performance, and testing gaps."
     send: true
   - label: Deploy and maintain
     agent: ops-maintainer
@@ -79,9 +87,11 @@ Ask targeted questions when requirements or context are missing.
 - Use planner first when scope is unclear or multi-step.
 - Use spec-writer when the change is new/behavioral or impacts OpenSpec.
 - After OpenSpec approval, use frontend-implementer, backend-implementer, and/or app-implementer in parallel across domains (only route to the implementer(s) whose work is needed; parallelize between domains, not within a domain).
+- Use integration-implementer for cross-surface integration alignment tasks (frontend-backend or app-backend).
 - Use frontend-reviewer for frontend changes before ops-maintainer.
 - Use backend-reviewer for backend changes before ops-maintainer.
 - Use app-reviewer for app changes before ops-maintainer.
+- Use integration-reviewer for integration changes before ops-maintainer.
 - Subagents are responsible for worktree setup, branching, and PR flow.
 - Spawn only one subagent per change proposal at a time; do not batch multiple proposals in a single handoff to avoid context overload.
 - If reviewers confirm they are satisfied but cannot formally approve (AI self-review limits), treat an explicit "APPROVED (AI) - ready to merge" comment as approval and proceed to merge.
@@ -95,9 +105,11 @@ Ask targeted questions when requirements or context are missing.
 | **Frontend implementation** | frontend-implementer | After OpenSpec approval | UI/component changes, styling, client-side logic |
 | **Backend implementation** | backend-implementer | After OpenSpec approval | API changes, database, server logic, business rules |
 | **App implementation** | app-implementer | After OpenSpec approval | Mobile/customer app changes, native features |
+| **Integration implementation** | integration-implementer | After OpenSpec approval | Cross-surface alignment, contract sync, integration fixes |
 | **Frontend quality gate** | frontend-reviewer | Before ops-maintainer | Post-implementation, before release |
 | **Backend quality gate** | backend-reviewer | Before ops-maintainer | Post-implementation, before release |
 | **App quality gate** | app-reviewer | Before ops-maintainer | Post-implementation, before release |
+| **Integration quality gate** | integration-reviewer | Before ops-maintainer | Post-integration changes, before release |
 | **Release/deployment** | ops-maintainer | After all reviews pass | Rollout steps, validation, maintenance plan |
 
 ## Usage Examples
