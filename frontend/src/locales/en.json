@@ -302,5 +302,60 @@
         "passwordMinLength": "Password must be at least 8 characters"
       }
     }
+  },
+  "account": {
+    "title": "Account Settings",
+    "description": "Manage your profile and account preferences",
+    "fetchError": "Failed to load profile",
+    "loadError": "Unable to load your profile. Please try again.",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "description": "Update your personal details and profile picture"
+    },
+    "security": {
+      "title": "Security Settings",
+      "description": "Manage your password and security preferences",
+      "comingSoon": "Security settings will be available soon."
+    },
+    "form": {
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "email": "Email address",
+      "emailHelper": "Email cannot be changed. Contact support for assistance.",
+      "phone": "Phone number",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "sections": {
+        "avatar": "Profile Picture",
+        "avatarDescription": "Upload a profile picture to personalize your account",
+        "personal": "Personal Information",
+        "personalDescription": "Your basic profile details"
+      },
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "phoneInvalid": "Please enter a valid phone number"
+      }
+    },
+    "avatar": {
+      "upload": "Upload",
+      "remove": "Remove",
+      "hint": "JPG, PNG, WebP or GIF. Max 5MB.",
+      "uploading": "Uploading avatar...",
+      "uploadSuccess": "Avatar uploaded successfully",
+      "uploadError": "Failed to upload avatar",
+      "removing": "Removing avatar...",
+      "removeSuccess": "Avatar removed",
+      "removeError": "Failed to remove avatar",
+      "invalidType": "Please upload a valid image file (JPG, PNG, WebP, or GIF)",
+      "tooLarge": "Image must be less than 5MB"
+    }
   }
 }

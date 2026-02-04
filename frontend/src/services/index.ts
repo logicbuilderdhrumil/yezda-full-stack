@@ -1,3 +1,4 @@
+export { AccountService } from './AccountService';
 export { AuthService } from './AuthService';
 export { OAuthService } from './OAuthService';
 export {
