@@ -117,19 +117,19 @@ describe('Access Pages', () => {
       });
     });
 
-    it('should create not-found error response with path', () => {
+    it('should create not-found error response without path (security)', () => {
       const response = createNotFoundErrorResponse(
-        'test-correlation-456',
-        '/unknown/route'
+        'test-correlation-456'
       );
 
       expect(response).toEqual({
         error: 'The requested resource was not found',
         code: 'NOT_FOUND',
         correlationId: 'test-correlation-456',
-        path: '/unknown/route',
         timestamp: expect.any(String),
       });
+      // Verify path is NOT included to prevent information disclosure
+      expect('path' in response).toBe(false);
     });
 
     it('should support custom error messages', () => {
@@ -205,10 +205,12 @@ describe('Access Pages', () => {
         expect.objectContaining({
           error: 'The requested resource was not found',
           code: 'NOT_FOUND',
-          path: '/api/v1/test',
           timestamp: expect.any(String),
         })
       );
+      // Verify path is NOT included to prevent information disclosure
+      const responseBody = jsonSpy.mock.calls[0][0];
+      expect('path' in responseBody).toBe(false);
     });
 
     it('should set X-Correlation-Id header with value', async () => {
@@ -495,6 +497,7 @@ describe('Access Pages', () => {
         ACCESS_DENIED: 'ACCESS_DENIED',
         NOT_FOUND: 'NOT_FOUND',
         ACCESS_RATE_LIMITED: 'ACCESS_RATE_LIMITED',
+        INTERNAL_ERROR: 'INTERNAL_ERROR',
       });
     });
   });
@@ -517,18 +520,21 @@ describe('Access Pages', () => {
       expect(JSON.stringify(responseBody)).not.toContain('db.ts');
     });
 
-    it('should not expose path traversal in not-found responses', async () => {
+    it('should not expose path in not-found responses (security hardening)', async () => {
       const reqWithPath = { ...mockReq, path: '/api/../../etc/passwd' };
 
       await notFoundHandler(reqWithPath as Request, mockRes as Response);
 
-      // Path is shown but error message is sanitized
+      // Path should NOT be included to prevent information disclosure
       expect(jsonSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           error: 'The requested resource was not found',
-          path: '/api/../../etc/passwd',
+          code: 'NOT_FOUND',
         })
       );
+      // Verify path is NOT exposed
+      const responseBody = jsonSpy.mock.calls[0][0];
+      expect('path' in responseBody).toBe(false);
     });
   });
 });
