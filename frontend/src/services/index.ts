@@ -2,6 +2,7 @@ export { AccountService } from './AccountService';
 export { AuthService } from './AuthService';
 export { CandidatesService } from './CandidatesService';
 export { ChatService } from './ChatService';
+export { DashboardService } from './DashboardService';
 export { FormsService } from './FormsService';
 export { OAuthService } from './OAuthService';
 export {

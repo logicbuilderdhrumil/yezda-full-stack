@@ -67,6 +67,9 @@ export const endpoints = {
   // Ledger endpoints
   'ledger.list': { path: '/ledger', version: 'v1' },
   'ledger.export': { path: '/ledger/export', version: 'v1' },
+
+  // Dashboard endpoints
+  'dashboard.metrics': { path: '/dashboard/metrics', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

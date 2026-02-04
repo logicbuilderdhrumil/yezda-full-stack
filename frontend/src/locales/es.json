@@ -82,7 +82,18 @@
       "title": "Inicio",
       "description": "Bienvenido a tu panel",
       "welcomeBack": "¡Bienvenido de nuevo, {{name}}!",
-      "dashboardIntro": "Este es tu panel principal. Navega usando la barra lateral para acceder a las diferentes secciones de la aplicación."
+      "dashboardIntro": "Este es tu panel principal. Navega usando la barra lateral para acceder a las diferentes secciones de la aplicación.",
+      "recentActivity": "Actividad Reciente",
+      "noActivity": "Sin actividad reciente",
+      "noChartData": "No hay datos disponibles",
+      "noData": "No hay datos del panel disponibles",
+      "lastUpdated": "Última actualización {{time}}",
+      "refresh": "Actualizar",
+      "refreshError": "Error al actualizar el panel",
+      "retry": "Reintentar",
+      "kpiSection": "Indicadores Clave de Rendimiento",
+      "chartsSection": "Gráficos de Tendencias",
+      "activitySection": "Actividad Reciente"
     }
   },
   "languages": {

@@ -99,7 +99,18 @@
       "title": "Home",
       "description": "Welcome to your dashboard",
       "welcomeBack": "Welcome back, {{name}}!",
-      "dashboardIntro": "This is your home dashboard. Navigate using the sidebar to access different sections of the application."
+      "dashboardIntro": "This is your home dashboard. Navigate using the sidebar to access different sections of the application.",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity",
+      "noChartData": "No data available",
+      "noData": "No dashboard data available",
+      "lastUpdated": "Last updated {{time}}",
+      "refresh": "Refresh",
+      "refreshError": "Failed to refresh dashboard",
+      "retry": "Retry",
+      "kpiSection": "Key Performance Indicators",
+      "chartsSection": "Trend Charts",
+      "activitySection": "Recent Activity"
     }
   },
   "languages": {
