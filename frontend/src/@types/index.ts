@@ -2,6 +2,7 @@ export * from './account';
 export * from './auth';
 export * from './candidate';
 export * from './chat';
+export * from './dashboard';
 export * from './form';
 export * from './ledger';
 export * from './notification.types';
