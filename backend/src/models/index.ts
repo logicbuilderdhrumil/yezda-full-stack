@@ -41,3 +41,4 @@ export * from './file-management.model.js';
 export * from './asset-management.model.js';
 export * from './chat.model.js';
 export * from './charting.model.js';
+export * from './billing-ledger.model.js';

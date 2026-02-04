@@ -18,6 +18,7 @@ import fileManagementRoutes from './file-management.routes.js';
 import assetManagementRoutes from './asset-management.routes.js';
 import chatRoutes from './chat.routes.js';
 import chartingRoutes from './charting.routes.js';
+import billingLedgerRoutes from './billing-ledger.routes.js';
 
 const router = Router();
 
@@ -40,5 +41,6 @@ router.use('/files', fileManagementRoutes);
 router.use('/assets', assetManagementRoutes);
 router.use('/chat', chatRoutes);
 router.use('/charts', chartingRoutes);
+router.use('/', billingLedgerRoutes);
 
 export default router;
