@@ -13,6 +13,9 @@
     "settings": "Settings",
     "management": "Management",
     "analytics": "Analytics",
+    "billing": "Billing",
+    "ledgerBilled": "Billed Ledger",
+    "ledgerUnbilled": "Unbilled Ledger",
     "system": "System",
     "collapse": "Collapse",
     "expandSidebar": "Expand sidebar",
@@ -627,6 +630,47 @@
       "noFields": "This form has no fields",
       "selectPlaceholder": "Select an option..."
     }
+  },
+  "ledger": {
+    "billed": {
+      "title": "Billed Ledger",
+      "description": "View billed ledger entries and totals",
+      "noResults": "No billed entries found",
+      "fetchError": "Failed to load billed entries"
+    },
+    "unbilled": {
+      "title": "Unbilled Ledger",
+      "description": "View unbilled ledger entries and totals",
+      "noResults": "No unbilled entries found",
+      "fetchError": "Failed to load unbilled entries"
+    },
+    "columns": {
+      "organization": "Organization",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "billedAt": "Billed Date",
+      "created": "Created"
+    },
+    "status": {
+      "billed": "Billed",
+      "unbilled": "Unbilled",
+      "pending": "Pending",
+      "void": "Void"
+    },
+    "summary": {
+      "totalAmount": "Total Amount",
+      "entryCount": "Entries"
+    },
+    "filters": {
+      "dateFrom": "From Date",
+      "dateTo": "To Date",
+      "organization": "Organization"
+    },
+    "export": "Export CSV",
+    "exporting": "Exporting...",
+    "exportSuccess": "Ledger exported successfully",
+    "exportError": "Failed to export ledger"
   },
   "errors": {
     "accessDenied": "Access Denied",

@@ -27,3 +27,4 @@ export { OrganizationsService } from './OrganizationsService';
 export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
 export { NotificationsService } from './NotificationsService';
+export { LedgerService } from './LedgerService';
