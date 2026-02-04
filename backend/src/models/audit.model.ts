@@ -138,7 +138,13 @@ export type AuditEventType =
   // Shared widgets audit events
   | 'WIDGET_DATA_ACCESSED'
   | 'WIDGET_ACCESS_DENIED'
-  | 'WIDGET_RATE_LIMITED';
+  | 'WIDGET_RATE_LIMITED'
+  // App application intake audit events
+  | 'APP_APPLICATION_LIST_VIEWED'
+  | 'APP_APPLICATION_FORM_LOADED'
+  | 'APP_APPLICATION_DRAFT_SAVED'
+  | 'APP_APPLICATION_SUBMITTED'
+  | 'APP_APPLICATION_SUBMISSION_FAILED';
 
 export interface AuditEvent {
   id: string;
