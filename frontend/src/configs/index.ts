@@ -23,3 +23,23 @@ export {
   isFirebaseConfigValid,
   type FirebaseConfig,
 } from './firebase.config';
+export {
+  type ChartType,
+  type ChartAxisConfig,
+  type ChartGridConfig,
+  type ChartLegendConfig,
+  type ChartTooltipConfig,
+  type ChartAnimationConfig,
+  type ChartConfig,
+  type PartialChartConfig,
+  defaultXAxisConfig,
+  defaultYAxisConfig,
+  defaultGridConfig,
+  defaultLegendConfig,
+  defaultTooltipConfig,
+  defaultAnimationConfig,
+  defaultChartConfig,
+  mergeChartConfig,
+  createSparklineConfig,
+  createDashboardChartConfig,
+} from './chart.config';

@@ -130,18 +130,18 @@ interface AuthorityGuardProps {
   children: ReactNode;
   /** Required roles for access. If empty or undefined, no role check is performed. */
   authority?: UserRole[] | undefined;
-  /** Component to render if access is denied. Defaults to AccessDeniedView. */
-  accessDeniedComponent?: ReactNode;
+  /** Redirect path when access is denied. Defaults to /access-denied. */
+  redirectTo?: string;
 }
 
 /**
  * AuthorityGuard restricts access based on user role.
- * Displays access denied page if user lacks required authority.
+ * Redirects to access denied page if user lacks required authority.
  */
 export function AuthorityGuard({
   children,
   authority,
-  accessDeniedComponent = <AccessDeniedView />,
+  redirectTo = '/access-denied',
 }: AuthorityGuardProps): ReactNode {
   const { user } = useAuth();
 
@@ -155,7 +155,7 @@ export function AuthorityGuard({
     return <>{children}</>;
   }
 
-  return <>{accessDeniedComponent}</>;
+  return <Navigate to={redirectTo} replace />;
 }
 
 interface AppRouteProps {

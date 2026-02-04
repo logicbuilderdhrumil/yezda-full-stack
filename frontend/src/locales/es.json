@@ -82,7 +82,18 @@
       "title": "Inicio",
       "description": "Bienvenido a tu panel",
       "welcomeBack": "¡Bienvenido de nuevo, {{name}}!",
-      "dashboardIntro": "Este es tu panel principal. Navega usando la barra lateral para acceder a las diferentes secciones de la aplicación."
+      "dashboardIntro": "Este es tu panel principal. Navega usando la barra lateral para acceder a las diferentes secciones de la aplicación.",
+      "recentActivity": "Actividad Reciente",
+      "noActivity": "Sin actividad reciente",
+      "noChartData": "No hay datos disponibles",
+      "noData": "No hay datos del panel disponibles",
+      "lastUpdated": "Última actualización {{time}}",
+      "refresh": "Actualizar",
+      "refreshError": "Error al actualizar el panel",
+      "retry": "Reintentar",
+      "kpiSection": "Indicadores Clave de Rendimiento",
+      "chartsSection": "Gráficos de Tendencias",
+      "activitySection": "Actividad Reciente"
     }
   },
   "languages": {
@@ -115,5 +126,16 @@
     "connectError": "Error al conectar {{provider}}",
     "loadError": "Error al cargar integraciones",
     "noProviders": "No hay integraciones disponibles"
+  },
+  "errors": {
+    "accessDenied": "Acceso Denegado",
+    "accessDeniedMessage": "No tienes permiso para ver esta página.",
+    "notFound": "Página No Encontrada",
+    "notFoundMessage": "La página que buscas no existe o ha sido movida.",
+    "genericError": "Algo Salió Mal",
+    "genericErrorMessage": "Ocurrió un error inesperado. Por favor, intenta de nuevo más tarde.",
+    "goBack": "Volver",
+    "returnToHome": "Volver al Inicio",
+    "tryAgain": "Intentar de Nuevo"
   }
 }

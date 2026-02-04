@@ -94,6 +94,25 @@ export const navConfig: NavConfig = {
       ],
     },
     {
+      title: 'Billing',
+      items: [
+        {
+          id: 'ledger-billed',
+          label: 'Billed Ledger',
+          path: '/ledger/billed',
+          icon: 'credit-card',
+          authorities: ['admin'],
+        },
+        {
+          id: 'ledger-unbilled',
+          label: 'Unbilled Ledger',
+          path: '/ledger/unbilled',
+          icon: 'credit-card',
+          authorities: ['admin'],
+        },
+      ],
+    },
+    {
       title: 'System',
       items: [
         {

@@ -683,7 +683,7 @@ export class AuditService {
     });
   }
 
-  // App auth session audit logging methods
+// App auth session audit logging methods
 
   /**
    * Log successful app sign-in
@@ -840,6 +840,221 @@ export class AuditService {
         appVersion: params.appVersion,
       },
       success: true,
+    });
+  }
+
+  // View Components audit logging methods
+
+  /**
+   * Log view component access
+   */
+  logViewComponentAccess(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    componentType: 'chat' | 'file';
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        componentType: params.componentType,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log view component access denied (cross-tenant attempt)
+   */
+  logViewComponentAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    attemptedTenantId: string;
+    actualTenantId: string;
+    componentType: 'chat' | 'file';
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'VIEW_COMPONENT_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        attemptedTenantId: params.attemptedTenantId,
+        actualTenantId: params.actualTenantId,
+        componentType: params.componentType,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
+    });
+  }
+
+  // Form builder audit logging methods
+
+  /**
+   * Log form created
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormCreated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    fieldCount: number;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_CREATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        fieldCount: params.fieldCount,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form updated
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormUpdated(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    previousVersion: number;
+    newVersion: number;
+    changes: string[];
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_UPDATED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+        previousVersion: params.previousVersion,
+        newVersion: params.newVersion,
+        changes: params.changes,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form deleted (archived)
+   * Task 1.5: Audit logging for form definition changes
+   */
+  logFormDeleted(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    formName: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_DELETED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        formName: params.formName,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form accessed
+   * Task 1.5: Audit logging for form access
+   */
+  logFormAccessed(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    cached: boolean;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESSED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        cached: params.cached,
+      },
+      success: true,
+    });
+  }
+
+  /**
+   * Log form access denied (cross-tenant attempt)
+   * Task 1.5: Audit logging for form access denials
+   */
+  logFormAccessDenied(params: {
+    userId: string;
+    userType: 'user' | 'candidate';
+    tenantId: string;
+    formId: string;
+    reason: string;
+    channel: 'web' | 'mobile' | 'api';
+    ipAddress?: string;
+  }): AuditEvent {
+    return this.log({
+      eventType: 'FORM_ACCESS_DENIED',
+      actorId: params.userId,
+      actorType: params.userType,
+      targetId: params.formId,
+      targetType: 'form',
+      channel: params.channel,
+      ipAddress: params.ipAddress,
+      metadata: {
+        tenantId: params.tenantId,
+        reason: params.reason,
+      },
+      success: false,
+      errorMessage: params.reason,
     });
   }
 }
