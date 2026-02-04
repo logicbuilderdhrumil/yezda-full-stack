@@ -26,7 +26,13 @@
     "toggleMobileMenu": "Toggle mobile menu",
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode",
-    "language": "Language"
+    "language": "Language",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "back": "Back"
   },
   "auth": {
     "signIn": "Sign in",
@@ -91,5 +97,92 @@
     "fr": "Français",
     "de": "Deutsch",
     "pt": "Português"
+  },
+  "organizations": {
+    "list": {
+      "title": "Organizations",
+      "description": "Manage tenant organizations in the platform",
+      "searchPlaceholder": "Search organizations...",
+      "filterStatus": "Filter by status",
+      "createButton": "Create Organization",
+      "noResults": "No organizations found",
+      "fetchError": "Failed to load organizations"
+    },
+    "create": {
+      "title": "Create Organization",
+      "description": "Add a new organization to the platform",
+      "success": "Organization created successfully",
+      "error": "Failed to create organization"
+    },
+    "edit": {
+      "title": "Edit Organization",
+      "description": "Update organization: {{name}}",
+      "success": "Organization updated successfully",
+      "error": "Failed to update organization",
+      "fetchError": "Failed to load organization"
+    },
+    "details": {
+      "title": "Organization Details",
+      "description": "View organization information",
+      "fetchError": "Failed to load organization",
+      "id": "ID",
+      "createdAt": "Created",
+      "updatedAt": "Last Updated",
+      "contactTitle": "Contact Information",
+      "addressTitle": "Address",
+      "noContact": "No contact information provided",
+      "noAddress": "No address provided"
+    },
+    "columns": {
+      "name": "Name",
+      "slug": "Slug",
+      "status": "Status",
+      "email": "Email",
+      "created": "Created"
+    },
+    "status": {
+      "all": "All Statuses",
+      "active": "Active",
+      "pending": "Pending",
+      "suspended": "Suspended"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter organization name",
+      "slug": "Slug",
+      "slugPlaceholder": "organization-slug",
+      "slugHelper": "URL-friendly identifier (lowercase, hyphens only)",
+      "status": "Status",
+      "email": "Email",
+      "emailPlaceholder": "contact@example.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "website": "Website",
+      "websitePlaceholder": "https://example.com",
+      "address": "Street Address",
+      "addressPlaceholder": "123 Main Street",
+      "city": "City",
+      "cityPlaceholder": "New York",
+      "state": "State / Province",
+      "statePlaceholder": "NY",
+      "country": "Country",
+      "countryPlaceholder": "United States",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "10001",
+      "sections": {
+        "basicInfo": "Basic Information",
+        "basicInfoDescription": "Primary details about the organization",
+        "contact": "Contact Details",
+        "contactDescription": "How to reach this organization",
+        "address": "Location",
+        "addressDescription": "Physical address of the organization"
+      },
+      "validation": {
+        "nameRequired": "Organization name is required",
+        "slugRequired": "Slug is required",
+        "slugInvalid": "Slug must contain only lowercase letters, numbers, and hyphens",
+        "emailInvalid": "Please enter a valid email address"
+      }
+    }
   }
 }

@@ -40,6 +40,13 @@ export const endpoints = {
   'candidates.create': { path: '/candidates', version: 'v1' },
   'candidates.update': { path: '/candidates/:id', version: 'v1' },
   'candidates.delete': { path: '/candidates/:id', version: 'v1' },
+
+  // Organizations endpoints
+  'organizations.list': { path: '/organizations', version: 'v1' },
+  'organizations.get': { path: '/organizations/:id', version: 'v1' },
+  'organizations.create': { path: '/organizations', version: 'v1' },
+  'organizations.update': { path: '/organizations/:id', version: 'v1' },
+  'organizations.delete': { path: '/organizations/:id', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

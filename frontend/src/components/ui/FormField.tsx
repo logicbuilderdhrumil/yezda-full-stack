@@ -36,7 +36,7 @@ export interface FormFieldProps {
   /** Field label. */
   label?: string;
   /** Error message. */
-  error?: string;
+  error?: string | undefined;
   /** Helper text. */
   helperText?: string;
   /** Mark as required. */
