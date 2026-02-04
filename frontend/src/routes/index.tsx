@@ -134,6 +134,13 @@ const FormDetailsView = lazy(() =>
   }))
 );
 
+// Chat view
+const ChatView = lazy(() =>
+  import('@/views/chat/ChatView').then((m) => ({
+    default: m.ChatView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -297,6 +304,11 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'forms/:id/edit',
         element: withAdminGuard(FormEditView),
+      },
+      // Chat route
+      {
+        path: 'chat',
+        element: withSuspense(ChatView),
       },
       // Additional protected routes will be added here
     ],

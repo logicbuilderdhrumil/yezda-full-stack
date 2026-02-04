@@ -1,6 +1,7 @@
 export * from './account';
 export * from './auth';
 export * from './candidate';
+export * from './chat';
 export * from './form';
 export * from './notification.types';
 export * from './oauth';
