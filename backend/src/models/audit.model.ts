@@ -68,7 +68,15 @@ export type AuditEventType =
   | 'MOCK_ENDPOINT_CALLED'
   // UI Kit-related audit events
   | 'UI_CONFIG_ACCESSED'
-  | 'UI_CONFIG_ACCESS_DENIED';
+  | 'UI_CONFIG_ACCESS_DENIED'
+  // Organization management audit events
+  | 'ORG_CREATED'
+  | 'ORG_UPDATED'
+  | 'ORG_STATUS_CHANGED'
+  | 'ORG_ACCESSED'
+  | 'ORG_LIST_ACCESSED'
+  | 'ORG_ACCESS_DENIED'
+  | 'ORG_RATE_LIMITED';
 
 export interface AuditEvent {
   id: string;
