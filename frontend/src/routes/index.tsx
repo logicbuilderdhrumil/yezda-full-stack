@@ -17,6 +17,11 @@ const AccountIntegrationsView = lazy(() =>
     default: m.AccountIntegrationsView,
   }))
 );
+const AccountSettingsView = lazy(() =>
+  import('@/views/account/AccountSettingsView').then((m) => ({
+    default: m.AccountSettingsView,
+  }))
+);
 
 // Organization views (admin only)
 const OrganizationsListView = lazy(() =>
@@ -113,6 +118,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         index: true,
         element: withSuspense(HomeView),
+      },
+      {
+        path: 'account/settings',
+        element: withSuspense(AccountSettingsView),
       },
       {
         path: 'account/integrations',
