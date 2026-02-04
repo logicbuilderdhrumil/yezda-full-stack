@@ -53,6 +53,7 @@ export interface AuthSession {
 export interface SignInCredentials {
   email: string;
   password: string;
+  userType?: 'user' | 'candidate';
 }
 
 /** Credentials for sign-up. */

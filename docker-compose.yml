@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yezda-postgres
+    environment:
+      POSTGRES_DB: yezda
+      POSTGRES_USER: yezda
+      POSTGRES_PASSWORD: yezda
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yezda -d yezda"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: yezda-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: node:20-alpine
+    container_name: yezda-backend
+    working_dir: /workspace/backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./:/workspace
+      # Isolate node_modules to prevent host/container native binary conflicts
+      - /workspace/node_modules
+      - /workspace/backend/node_modules
+      - /workspace/shared/node_modules
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: yezda
+      DB_USER: yezda
+      DB_PASSWORD: yezda
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ADMIN_SEED_EMAIL: admin@yezda.com
+      ADMIN_SEED_PASSWORD: DataWyse26!
+      ADMIN_SEED_TENANT_ID: 00000000-0000-0000-0000-000000000001
+      ADMIN_SEED_DISPLAY_NAME: Yezda Admin
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && cd /workspace/shared && npm install && npm run build && cd /workspace/backend && npm run migrate && npm run seed:admin && npm run dev"
+
+  frontend:
+    image: node:20-alpine
+    container_name: yezda-frontend
+    working_dir: /workspace/frontend
+    depends_on:
+      - backend
+    volumes:
+      - ./:/workspace
+      # Isolate node_modules to prevent host/container native binary conflicts
+      - /workspace/node_modules
+      - /workspace/frontend/node_modules
+      - /workspace/shared/node_modules
+    environment:
+      VITE_API_TARGET: http://backend:3000
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+
+  app-render:
+    image: node:20-alpine
+    container_name: yezda-app-render
+    working_dir: /workspace/app
+    depends_on:
+      - backend
+    volumes:
+      - ./:/workspace
+      # Isolate node_modules to prevent host/container native binary conflicts
+      - /workspace/node_modules
+      - /workspace/app/node_modules
+      - /workspace/shared/node_modules
+    environment:
+      EXPO_PUBLIC_API_URL: http://backend:3000/api
+    ports:
+      - "19006:19006"
+    command: sh -c "npm install && npx expo start --web --host lan --port 19006"
+
+volumes:
+  postgres_data:
+  redis_data:
