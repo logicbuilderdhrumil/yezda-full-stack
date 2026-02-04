@@ -8,8 +8,9 @@ import type {
   PasswordResetPayload,
   CandidatePasswordResetPayload,
   TotpVerifyPayload,
-  AuthError,
 } from '@/@types/auth';
+import { extractApiError } from '@/@types/api-error';
+import type { ApiErrorEnvelope } from '@/@types/api-error';
 
 const API_BASE = '/api/v1/auth';
 
@@ -24,31 +25,18 @@ function createClient(): AxiosInstance {
   });
 }
 
-/** Extracts a structured error from an axios error response. */
-function extractError(err: unknown): AuthError {
-  if (axios.isAxiosError<Partial<AuthError>>(err)) {
-    const data = err.response?.data;
-    if (data) {
-      return {
-        code: data.code ?? 'AUTH_ERROR',
-        message: data.message ?? 'An unexpected error occurred',
-        ...(data.field !== undefined ? { field: data.field } : {}),
-      };
-    }
-  }
-  return {
-    code: 'NETWORK_ERROR',
-    message: 'Unable to connect to the server',
-  };
-}
-
 /**
  * AuthService encapsulates all authentication-related API calls.
+ * Error responses conform to the ApiErrorEnvelope contract.
+ *
+ * @see shared/src/contracts/auth.ts for request/response types
+ * @see shared/src/contracts/error-envelope.ts for error format
  */
 export const AuthService = {
   /**
    * Sign in with email and password.
    * @returns SignInResponse which may require MFA.
+   * @throws {ApiErrorEnvelope} On authentication failure
    */
   async signIn(credentials: SignInCredentials): Promise<SignInResponse> {
     const client = createClient();
@@ -56,13 +44,14 @@ export const AuthService = {
       const response = await client.post<SignInResponse>('/sign-in', credentials);
       return response.data;
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Sign up a new user account.
    * @returns The created session.
+   * @throws {ApiErrorEnvelope} On validation or registration failure
    */
   async signUp(credentials: SignUpCredentials): Promise<AuthSession> {
     const client = createClient();
@@ -70,49 +59,53 @@ export const AuthService = {
       const response = await client.post<AuthSession>('/sign-up', credentials);
       return response.data;
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Request a password reset link.
+   * @throws {ApiErrorEnvelope} On request failure
    */
   async requestPasswordReset(payload: PasswordResetRequest): Promise<void> {
     const client = createClient();
     try {
       await client.post('/forgot-password', payload);
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Complete password reset with token and new password.
+   * @throws {ApiErrorEnvelope} On reset failure
    */
   async resetPassword(payload: PasswordResetPayload): Promise<void> {
     const client = createClient();
     try {
       await client.post('/reset-password', payload);
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Complete candidate password reset with token, candidateId, and new password.
+   * @throws {ApiErrorEnvelope} On reset failure
    */
   async resetCandidatePassword(payload: CandidatePasswordResetPayload): Promise<void> {
     const client = createClient();
     try {
       await client.post('/candidate-reset-password', payload);
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Verify TOTP code for MFA.
    * @returns The authenticated session after successful verification.
+   * @throws {ApiErrorEnvelope} On MFA verification failure
    */
   async verifyTotp(payload: TotpVerifyPayload): Promise<AuthSession> {
     const client = createClient();
@@ -120,12 +113,13 @@ export const AuthService = {
       const response = await client.post<AuthSession>('/verify-totp', payload);
       return response.data;
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
   /**
    * Sign out the current user.
+   * Ignores errors as local state should be cleared regardless.
    */
   async signOut(): Promise<void> {
     const client = createClient();
@@ -139,6 +133,7 @@ export const AuthService = {
   /**
    * Refresh the access token using the refresh token.
    * @returns The new session with updated tokens.
+   * @throws {ApiErrorEnvelope} On refresh failure (e.g., token expired)
    */
   async refreshToken(refreshToken: string): Promise<AuthSession> {
     const client = createClient();
@@ -146,7 +141,7 @@ export const AuthService = {
       const response = await client.post<AuthSession>('/refresh', { refreshToken });
       return response.data;
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 
@@ -154,6 +149,7 @@ export const AuthService = {
    * Get the current user from the server.
    * Used to validate an existing session on app load.
    * @param accessToken The access token to validate.
+   * @throws {ApiErrorEnvelope} On authentication failure
    */
   async getCurrentUser(accessToken: string): Promise<AuthSession> {
     const client = createClient();
@@ -165,7 +161,10 @@ export const AuthService = {
       });
       return response.data;
     } catch (err) {
-      throw extractError(err);
+      throw extractApiError(err);
     }
   },
 };
+
+/** Re-export error type for consumers */
+export type { ApiErrorEnvelope };

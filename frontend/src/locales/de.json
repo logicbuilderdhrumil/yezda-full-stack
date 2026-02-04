@@ -82,7 +82,18 @@
       "title": "Startseite",
       "description": "Willkommen in Ihrem Dashboard",
       "welcomeBack": "Willkommen zurück, {{name}}!",
-      "dashboardIntro": "Dies ist Ihr Haupt-Dashboard. Navigieren Sie über die Seitenleiste, um auf verschiedene Bereiche der Anwendung zuzugreifen."
+      "dashboardIntro": "Dies ist Ihr Haupt-Dashboard. Navigieren Sie über die Seitenleiste, um auf verschiedene Bereiche der Anwendung zuzugreifen.",
+      "recentActivity": "Letzte Aktivität",
+      "noActivity": "Keine aktuelle Aktivität",
+      "noChartData": "Keine Daten verfügbar",
+      "noData": "Keine Dashboard-Daten verfügbar",
+      "lastUpdated": "Zuletzt aktualisiert {{time}}",
+      "refresh": "Aktualisieren",
+      "refreshError": "Dashboard-Aktualisierung fehlgeschlagen",
+      "retry": "Erneut versuchen",
+      "kpiSection": "Key Performance Indicators",
+      "chartsSection": "Trenddiagramme",
+      "activitySection": "Letzte Aktivität"
     }
   },
   "languages": {
@@ -115,5 +126,16 @@
     "connectError": "{{provider}} konnte nicht verbunden werden",
     "loadError": "Integrationen konnten nicht geladen werden",
     "noProviders": "Keine Integrationen verfügbar"
+  },
+  "errors": {
+    "accessDenied": "Zugriff Verweigert",
+    "accessDeniedMessage": "Sie haben keine Berechtigung, diese Seite anzuzeigen.",
+    "notFound": "Seite Nicht Gefunden",
+    "notFoundMessage": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "genericError": "Etwas ist Schiefgelaufen",
+    "genericErrorMessage": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+    "goBack": "Zurück",
+    "returnToHome": "Zur Startseite",
+    "tryAgain": "Erneut Versuchen"
   }
 }

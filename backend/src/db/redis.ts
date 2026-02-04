@@ -155,6 +155,10 @@ export interface MfaSession {
   userId: string;
   userType: 'user' | 'candidate';
   expiresAt: number;
+  // App-specific fields for mobile MFA flows
+  deviceId?: string;
+  platform?: 'ios' | 'android';
+  appVersion?: string;
 }
 
 /**

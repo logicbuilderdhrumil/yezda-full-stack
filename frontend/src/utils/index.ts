@@ -29,6 +29,7 @@ export {
   formatTime,
   formatRelativeTime,
   formatISODate,
+  formatCurrency,
   toDate,
   isToday,
   isPast,
