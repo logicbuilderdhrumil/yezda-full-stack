@@ -200,6 +200,29 @@ export const OAUTH_SLOS = {
   MAX_INVALID_STATE_RATE_PER_MINUTE: 50,
 } as const;
 
+// Metric names for access error handling
+export const ACCESS_ERROR_METRICS = {
+  DENIED_TOTAL: 'access_error_denied_total',
+  NOT_FOUND_TOTAL: 'access_error_not_found_total',
+  RATE_LIMITED_TOTAL: 'access_error_rate_limited_total',
+  RESPONSE_LATENCY: 'access_error_response_latency_ms',
+} as const;
+
+// SLO targets for access error handling
+export const ACCESS_ERROR_SLOS = {
+  // Latency SLOs - error responses should be fast
+  RESPONSE_LATENCY_P99_MS: 50,
+  RESPONSE_LATENCY_P95_MS: 20,
+
+  // Availability SLOs - error handlers must be highly available
+  AVAILABILITY_RATE: 99.99,
+
+  // Rate limiting SLOs - max abuse before throttling kicks in
+  MAX_ACCESS_DENIED_RATE_PER_MINUTE: 100,
+  MAX_NOT_FOUND_RATE_PER_MINUTE: 200,
+  MAX_RATE_LIMITED_PER_MINUTE: 50,
+} as const;
+
 export class MetricsService {
   /**
    * Record a counter metric
@@ -915,6 +938,122 @@ export class MetricsService {
     if (rateLimitHits > UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE) {
       violations.push(
         `UI Kit rate limit hits ${rateLimitHits}/min exceeds SLO ${UI_KIT_SLOS.MAX_RATE_LIMIT_HITS_PER_MINUTE}/min`
+      );
+    }
+
+    return {
+      met: violations.length === 0,
+      violations,
+    };
+  }
+
+  // Access error metrics methods
+
+  /**
+   * Record access denied error
+   */
+  recordAccessDenied(code: string, path: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.DENIED_TOTAL, { code, path });
+  }
+
+  /**
+   * Record not-found error
+   */
+  recordNotFound(path: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.NOT_FOUND_TOTAL, { path });
+  }
+
+  /**
+   * Record access rate limiting
+   */
+  recordAccessRateLimited(type: string): void {
+    this.incrementCounter(ACCESS_ERROR_METRICS.RATE_LIMITED_TOTAL, { type });
+  }
+
+  /**
+   * Record access error response latency
+   */
+  recordAccessErrorLatency(durationMs: number, type: string): void {
+    this.recordLatency(ACCESS_ERROR_METRICS.RESPONSE_LATENCY, durationMs, { type });
+  }
+
+  /**
+   * Get access denied count
+   */
+  getAccessDeniedCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.DENIED_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get not-found count
+   */
+  getNotFoundCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.NOT_FOUND_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get access rate limited count
+   */
+  getAccessRateLimitedCount(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    return recentMetrics.filter(
+      (m) => m.name === ACCESS_ERROR_METRICS.RATE_LIMITED_TOTAL
+    ).length;
+  }
+
+  /**
+   * Get access error P99 latency
+   */
+  getAccessErrorP99Latency(windowMs = 60000): number {
+    const recentMetrics = this.getMetrics(windowMs);
+    const latencies = recentMetrics
+      .filter((m) => m.name === ACCESS_ERROR_METRICS.RESPONSE_LATENCY)
+      .map((m) => m.value)
+      .sort((a, b) => a - b);
+
+    if (latencies.length === 0) return 0;
+
+    const p99Index = Math.floor(latencies.length * 0.99);
+    return latencies[p99Index] || latencies[latencies.length - 1];
+  }
+
+  /**
+   * Check if access error SLOs are met
+   */
+  checkAccessErrorSLOs(): { met: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    const p99Latency = this.getAccessErrorP99Latency();
+    if (p99Latency > ACCESS_ERROR_SLOS.RESPONSE_LATENCY_P99_MS) {
+      violations.push(
+        `Access error P99 latency ${p99Latency}ms exceeds SLO ${ACCESS_ERROR_SLOS.RESPONSE_LATENCY_P99_MS}ms`
+      );
+    }
+
+    const deniedCount = this.getAccessDeniedCount();
+    if (deniedCount > ACCESS_ERROR_SLOS.MAX_ACCESS_DENIED_RATE_PER_MINUTE) {
+      violations.push(
+        `Access denied rate ${deniedCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_ACCESS_DENIED_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    const notFoundCount = this.getNotFoundCount();
+    if (notFoundCount > ACCESS_ERROR_SLOS.MAX_NOT_FOUND_RATE_PER_MINUTE) {
+      violations.push(
+        `Not-found rate ${notFoundCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_NOT_FOUND_RATE_PER_MINUTE}/min`
+      );
+    }
+
+    const rateLimitedCount = this.getAccessRateLimitedCount();
+    if (rateLimitedCount > ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE) {
+      violations.push(
+        `Access rate limited ${rateLimitedCount}/min exceeds SLO ${ACCESS_ERROR_SLOS.MAX_RATE_LIMITED_PER_MINUTE}/min`
       );
     }
 

@@ -86,7 +86,11 @@ export type AuditEventType =
   | 'INTEGRATION_VERIFIED'
   | 'INTEGRATION_VERIFICATION_FAILED'
   | 'INTEGRATION_DISCONNECTED'
-  | 'INTEGRATION_ACCESS_DENIED';
+  | 'INTEGRATION_ACCESS_DENIED'
+  // Access page audit events
+  | 'ACCESS_DENIED'
+  | 'ACCESS_NOT_FOUND'
+  | 'ACCESS_RATE_LIMITED';
 
 export interface AuditEvent {
   id: string;
