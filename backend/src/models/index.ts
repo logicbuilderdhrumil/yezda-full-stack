@@ -43,3 +43,4 @@ export * from './chat.model.js';
 export * from './charting.model.js';
 export * from './billing-ledger.model.js';
 export * from './home-dashboard.model.js';
+export * from './template-layouts.model.js';

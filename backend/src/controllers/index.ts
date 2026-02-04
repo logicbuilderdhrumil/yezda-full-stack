@@ -34,3 +34,9 @@ export * from './chat.controller.js';
 export * from './charting.controller.js';
 export * from './billing-ledger.controller.js';
 export * from './home-dashboard.controller.js';
+// Template layouts controller exports explicitly to avoid getHealthSummary naming conflict
+export {
+  getLayoutNavigation,
+  getProfileSummary,
+  getHealthSummary as getTemplateLayoutsHealthSummary,
+} from './template-layouts.controller.js';

@@ -30,3 +30,4 @@ export * from './file-management-rate-limit.middleware.js';
 export * from './asset-management-rate-limit.middleware.js';
 export * from './chat-rate-limit.middleware.js';
 export * from './home-dashboard-rate-limit.middleware.js';
+export * from './template-layouts-rate-limit.middleware.js';

@@ -43,3 +43,5 @@ export * from './billing-ledger.service.js';
 export * from './billing-ledger-metrics.service.js';
 export * from './home-dashboard.service.js';
 export * from './home-dashboard-metrics.service.js';
+export * from './template-layouts.service.js';
+export * from './template-layouts-metrics.service.js';

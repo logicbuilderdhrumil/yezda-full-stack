@@ -21,6 +21,7 @@ import chartingRoutes from './charting.routes.js';
 import billingLedgerRoutes from './billing-ledger.routes.js';
 import homeDashboardRoutes from './home-dashboard.routes.js';
 import sharedWidgetsRoutes from './shared-widgets.routes.js';
+import templateLayoutsRoutes from './template-layouts.routes.js';
 
 const router = Router();
 
@@ -46,5 +47,6 @@ router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerRoutes);
 router.use('/dashboard', homeDashboardRoutes);
 router.use('/widgets', sharedWidgetsRoutes);
+router.use('/template-layouts', templateLayoutsRoutes);
 
 export default router;
