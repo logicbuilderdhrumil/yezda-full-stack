@@ -9,8 +9,31 @@ import {
   useCallback,
   useRef,
 } from 'react';
+import DOMPurify from 'dompurify';
 import { cn } from '@/utils';
-import { Button } from '@/components/ui';
+import { Button, Input, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Label } from '@/components/ui';
+
+// ============================================================================
+// SANITIZATION
+// ============================================================================
+
+/**
+ * Sanitize HTML content to prevent XSS attacks.
+ */
+function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      'p', 'br', 'b', 'i', 'u', 's', 'strong', 'em', 'span',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li',
+      'a', 'img',
+      'blockquote', 'pre', 'code',
+      'div',
+    ],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style', 'target', 'rel'],
+    ALLOW_DATA_ATTR: false,
+  });
+}
 
 // ============================================================================
 // TYPES
@@ -147,6 +170,8 @@ export function RichTextEditor({
 }: RichTextEditorProps): ReactNode {
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
 
   const minHeightStyle = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
   const maxHeightStyle = maxHeight ? (typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight) : undefined;
@@ -193,13 +218,21 @@ export function RichTextEditor({
         else if (action.align === 'justify') execCommand('justifyFull');
         break;
       case 'link':
-        const url = prompt('Enter URL:');
-        if (url) execCommand('createLink', url);
+        setLinkDialogOpen(true);
         break;
     }
   }, [execCommand]);
 
+  const handleInsertLink = useCallback(() => {
+    if (linkUrl) {
+      execCommand('createLink', linkUrl);
+    }
+    setLinkUrl('');
+    setLinkDialogOpen(false);
+  }, [linkUrl, execCommand]);
+
   return (
+    <>
     <div
       className={cn(
         'border rounded-md overflow-hidden',
@@ -223,6 +256,7 @@ export function RichTextEditor({
               onClick={() => handleToolbarAction(action)}
               disabled={disabled}
               title={action.label}
+              aria-label={action.label ?? action.type}
             >
               {getToolbarIcon(action)}
             </Button>
@@ -247,10 +281,45 @@ export function RichTextEditor({
         onInput={handleInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        dangerouslySetInnerHTML={{ __html: value }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(value) }}
         data-placeholder={placeholder}
+        role="textbox"
+        aria-multiline="true"
+        aria-label={placeholder}
       />
     </div>
+
+    {/* Link Dialog */}
+    <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Insert Link</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <Label htmlFor="link-url">URL</Label>
+          <Input
+            id="link-url"
+            type="url"
+            placeholder="https://example.com"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleInsertLink();
+              }
+            }}
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setLinkDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleInsertLink}>Insert</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 
@@ -274,7 +343,7 @@ export function RichTextViewer({
   return (
     <div
       className={cn('prose prose-sm dark:prose-invert max-w-none', className)}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
       {...props}
     />
   );

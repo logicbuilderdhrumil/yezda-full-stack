@@ -137,6 +137,7 @@ export function Map({
                     key={marker.id}
                     onClick={() => onMarkerClick?.(marker)}
                     className="text-xs px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded hover:bg-primary-200 dark:hover:bg-primary-800"
+                    aria-label={`View marker: ${marker.label ?? `Location at ${marker.lat.toFixed(2)}, ${marker.lng.toFixed(2)}`}`}
                   >
                     {marker.label ?? `${marker.lat.toFixed(2)}, ${marker.lng.toFixed(2)}`}
                   </button>
@@ -292,6 +293,7 @@ export function Gantt({
                         backgroundColor: task.color ?? '#3b82f6',
                       }}
                       title={`${task.name}: ${task.start.toLocaleDateString()} - ${task.end.toLocaleDateString()}`}
+                      aria-label={`Task: ${task.name}, from ${task.start.toLocaleDateString()} to ${task.end.toLocaleDateString()}${task.progress !== undefined ? `, ${task.progress}% complete` : ''}`}
                     >
                       {task.progress !== undefined && (
                         <div
