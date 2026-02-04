@@ -18,3 +18,4 @@ export * from './user-management.repository.js';
 export * from './org-management.repository.js';
 export * from './account-settings.repository.js';
 export * from './candidate-management.repository.js';
+export * from './file-management.repository.js';

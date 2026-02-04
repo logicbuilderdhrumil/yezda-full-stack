@@ -30,3 +30,6 @@ export * from './account-settings-metrics.service.js';
 export * from './candidate-management.service.js';
 export * from './candidate-management-metrics.service.js';
 export * from './form-builder.service.js';
+export * from './file-management.service.js';
+export * from './file-management-metrics.service.js';
+export * from './local-storage.adapter.js';

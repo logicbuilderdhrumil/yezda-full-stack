@@ -14,6 +14,7 @@ import orgManagementRoutes from './org-management.routes.js';
 import accountSettingsRoutes from './account-settings.routes.js';
 import candidateManagementRoutes from './candidate-management.routes.js';
 import formBuilderRoutes from './form-builder.routes.js';
+import fileManagementRoutes from './file-management.routes.js';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/organizations', orgManagementRoutes);
 router.use('/account', accountSettingsRoutes);
 router.use('/candidates', candidateManagementRoutes);
 router.use('/forms', formBuilderRoutes);
+router.use('/files', fileManagementRoutes);
 
 export default router;

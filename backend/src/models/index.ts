@@ -37,3 +37,4 @@ export * from './org-management.model.js';
 export * from './account-settings.model.js';
 export * from './candidate-management.model.js';
 export * from './form-builder.model.js';
+export * from './file-management.model.js';
