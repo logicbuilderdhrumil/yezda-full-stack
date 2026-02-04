@@ -15,3 +15,4 @@ export {
   getHealthSummary as getThemeHealthSummary,
 } from './theme.controller.js';
 export * from './ui-kit.controller.js';
+export * from './user-management.controller.js';

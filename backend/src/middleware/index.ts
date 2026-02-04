@@ -20,3 +20,5 @@ export * from './notification-rate-limit.middleware.js';
 export * from './localization-rate-limit.middleware.js';
 export * from './mock-mode.middleware.js';
 export * from './theme-rate-limit.middleware.js';
+export * from './user-management-rate-limit.middleware.js';
+export * from './user-management-validation.middleware.js';
