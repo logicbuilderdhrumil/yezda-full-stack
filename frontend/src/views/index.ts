@@ -2,5 +2,6 @@ export * from './auth';
 export * from './account';
 export * from './notifications';
 export * from './organizations';
+export * from './users';
 export { AccessDeniedView } from './AccessDeniedView';
 export { HomeView } from './HomeView';

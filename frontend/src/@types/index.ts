@@ -6,3 +6,4 @@ export * from './route';
 export * from './socket';
 export * from './stores';
 export * from './navigation';
+export * from './user';
