@@ -70,9 +70,9 @@ services:
     volumes:
       - ./:/workspace
       # Isolate node_modules to prevent host/container native binary conflicts
-      - /workspace/node_modules
-      - /workspace/frontend/node_modules
-      - /workspace/shared/node_modules
+      - ./workspace/node_modules
+      - ./workspace/frontend/node_modules
+      - ./workspace/shared/node_modules
     environment:
       VITE_API_TARGET: http://backend:3000
     ports:
@@ -88,9 +88,9 @@ services:
     volumes:
       - ./:/workspace
       # Isolate node_modules to prevent host/container native binary conflicts
-      - /workspace/node_modules
-      - /workspace/app/node_modules
-      - /workspace/shared/node_modules
+      - ./workspace/node_modules
+      - ./workspace/app/node_modules
+      - ./workspace/shared/node_modules
     environment:
       EXPO_PUBLIC_API_URL: http://backend:3000/api
     ports:
