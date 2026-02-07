@@ -35,7 +35,7 @@ export function UserCreateView(): ReactNode {
     try {
       const created = await UsersService.create(data);
       toastSuccess(t('users.create.success'));
-      navigate(`/users/${created.id}`);
+      navigate(`/admin/users/${created.id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('users.create.error'));
@@ -45,7 +45,7 @@ export function UserCreateView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate('/users');
+    navigate('/admin/users');
   };
 
   return (

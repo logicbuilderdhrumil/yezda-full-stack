@@ -46,7 +46,7 @@ export function FormEditView(): ReactNode {
       } catch (error) {
         toastError(t('forms.edit.fetchError'));
         console.error('Failed to fetch form:', error);
-        navigate('/forms');
+        navigate('/admin/forms');
       } finally {
         setIsLoading(false);
       }
@@ -70,7 +70,7 @@ export function FormEditView(): ReactNode {
     try {
       await FormsService.update(id, formData);
       toastSuccess(t('forms.edit.success'));
-      navigate(`/forms/${id}`);
+      navigate(`/admin/forms/${id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('forms.edit.error'));
@@ -83,7 +83,7 @@ export function FormEditView(): ReactNode {
     if (step === 'builder') {
       setStep('metadata');
     } else {
-      navigate(`/forms/${id}`);
+      navigate(`/admin/forms/${id}`);
     }
   };
 

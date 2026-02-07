@@ -24,7 +24,7 @@ export function OrganizationCreateView(): ReactNode {
     try {
       const created = await OrganizationsService.create(data);
       toastSuccess(t('organizations.create.success'));
-      navigate(`/organizations/${created.id}`);
+      navigate(`/admin/organizations/${created.id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('organizations.create.error'));
@@ -34,7 +34,7 @@ export function OrganizationCreateView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate('/organizations');
+    navigate('/admin/organizations');
   };
 
   return (

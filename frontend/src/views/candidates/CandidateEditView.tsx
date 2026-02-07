@@ -34,7 +34,7 @@ export function CandidateEditView(): ReactNode {
 
     const fetchCandidate = async () => {
       if (!id) {
-        navigate('/candidates');
+        navigate('/admin/candidates');
         return;
       }
 
@@ -46,7 +46,7 @@ export function CandidateEditView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('candidates.edit.fetchError'));
-        navigate('/candidates');
+        navigate('/admin/candidates');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -79,7 +79,7 @@ export function CandidateEditView(): ReactNode {
       }
       await CandidatesService.update(id, updatePayload);
       toastSuccess(t('candidates.edit.success'));
-      navigate(`/candidates/${id}`);
+      navigate(`/admin/candidates/${id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('candidates.edit.error'));
@@ -89,7 +89,7 @@ export function CandidateEditView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate(id ? `/candidates/${id}` : '/candidates');
+    navigate(id ? `/admin/candidates/${id}` : '/admin/candidates');
   };
 
   if (isLoading) {

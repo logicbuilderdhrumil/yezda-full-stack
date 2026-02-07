@@ -34,7 +34,7 @@ export function OrganizationEditView(): ReactNode {
 
     const fetchOrganization = async () => {
       if (!id) {
-        navigate('/organizations');
+        navigate('/admin/organizations');
         return;
       }
 
@@ -46,7 +46,7 @@ export function OrganizationEditView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('organizations.edit.fetchError'));
-        navigate('/organizations');
+        navigate('/admin/organizations');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -68,7 +68,7 @@ export function OrganizationEditView(): ReactNode {
     try {
       await OrganizationsService.update(id, data);
       toastSuccess(t('organizations.edit.success'));
-      navigate(`/organizations/${id}`);
+      navigate(`/admin/organizations/${id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('organizations.edit.error'));
@@ -78,7 +78,7 @@ export function OrganizationEditView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate(id ? `/organizations/${id}` : '/organizations');
+    navigate(id ? `/admin/organizations/${id}` : '/admin/organizations');
   };
 
   if (isLoading) {

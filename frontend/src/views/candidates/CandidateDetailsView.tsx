@@ -114,7 +114,7 @@ export function CandidateDetailsView(): ReactNode {
 
     const fetchData = async () => {
       if (!id) {
-        navigate('/candidates');
+        navigate('/admin/candidates');
         return;
       }
 
@@ -126,7 +126,7 @@ export function CandidateDetailsView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('candidates.details.fetchError'));
-        navigate('/candidates');
+        navigate('/admin/candidates');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -202,12 +202,12 @@ export function CandidateDetailsView(): ReactNode {
 
   const handleEdit = () => {
     if (id) {
-      navigate(`/candidates/${id}/edit`);
+      navigate(`/admin/candidates/${id}/edit`);
     }
   };
 
   const handleBack = () => {
-    navigate('/candidates');
+    navigate('/admin/candidates');
   };
 
   if (isLoading) {

@@ -67,7 +67,7 @@ export function OrganizationDetailsView(): ReactNode {
 
     const fetchOrganization = async () => {
       if (!id) {
-        navigate('/organizations');
+        navigate('/admin/organizations');
         return;
       }
 
@@ -79,7 +79,7 @@ export function OrganizationDetailsView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('organizations.details.fetchError'));
-        navigate('/organizations');
+        navigate('/admin/organizations');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -96,12 +96,12 @@ export function OrganizationDetailsView(): ReactNode {
 
   const handleEdit = () => {
     if (id) {
-      navigate(`/organizations/${id}/edit`);
+      navigate(`/admin/organizations/${id}/edit`);
     }
   };
 
   const handleBack = () => {
-    navigate('/organizations');
+    navigate('/admin/organizations');
   };
 
   if (isLoading) {

@@ -167,11 +167,11 @@ export function OrganizationsListView(): ReactNode {
   };
 
   const handleRowClick = (id: string) => {
-    navigate(`/organizations/${id}`);
+    navigate(`/admin/organizations/${id}`);
   };
 
   const handleCreate = () => {
-    navigate('/organizations/new');
+    navigate('/admin/organizations/new');
   };
 
   const renderSortIcon = (column: OrganizationListParams['sortBy']) => {
@@ -266,7 +266,7 @@ export function OrganizationsListView(): ReactNode {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/organizations/${org.id}/edit`);
+                          navigate(`/admin/organizations/${org.id}/edit`);
                         }}
                       >
                         {t('common.edit')}

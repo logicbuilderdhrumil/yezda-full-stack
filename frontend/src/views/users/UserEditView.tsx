@@ -34,7 +34,7 @@ export function UserEditView(): ReactNode {
 
     const fetchUser = async () => {
       if (!id) {
-        navigate('/users');
+        navigate('/admin/users');
         return;
       }
 
@@ -46,7 +46,7 @@ export function UserEditView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('users.edit.fetchError'));
-        navigate('/users');
+        navigate('/admin/users');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -80,7 +80,7 @@ export function UserEditView(): ReactNode {
       }
       await UsersService.update(id, updatePayload);
       toastSuccess(t('users.edit.success'));
-      navigate(`/users/${id}`);
+      navigate(`/admin/users/${id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('users.edit.error'));
@@ -90,7 +90,7 @@ export function UserEditView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate(id ? `/users/${id}` : '/users');
+    navigate(id ? `/admin/users/${id}` : '/admin/users');
   };
 
   if (isLoading) {

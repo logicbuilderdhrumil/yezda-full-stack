@@ -35,7 +35,7 @@ export function CandidateCreateView(): ReactNode {
     try {
       const created = await CandidatesService.create(data);
       toastSuccess(t('candidates.create.success'));
-      navigate(`/candidates/${created.id}`);
+      navigate(`/admin/candidates/${created.id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('candidates.create.error'));
@@ -45,7 +45,7 @@ export function CandidateCreateView(): ReactNode {
   };
 
   const handleCancel = () => {
-    navigate('/candidates');
+    navigate('/admin/candidates');
   };
 
   return (

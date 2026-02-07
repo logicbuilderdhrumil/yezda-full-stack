@@ -287,7 +287,7 @@ export function CandidateBulkCreateView(): ReactNode {
   };
 
   const handleBack = () => {
-    navigate('/candidates');
+    navigate('/admin/candidates');
   };
 
   const renderResultBadge = (result: BulkCreateResultItem) => {
@@ -512,7 +512,7 @@ export function CandidateBulkCreateView(): ReactNode {
                 <Button variant="outline" onClick={handleReset}>
                   {t('candidates.bulkCreate.uploadMore')}
                 </Button>
-                <Button onClick={() => navigate('/candidates')}>
+                <Button onClick={() => navigate('/admin/candidates')}>
                   {t('candidates.bulkCreate.viewCandidates')}
                 </Button>
               </div>

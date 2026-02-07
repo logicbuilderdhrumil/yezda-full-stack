@@ -188,11 +188,11 @@ export function UsersListView(): ReactNode {
   };
 
   const handleRowClick = (id: string) => {
-    navigate(`/users/${id}`);
+    navigate(`/admin/users/${id}`);
   };
 
   const handleCreate = () => {
-    navigate('/users/new');
+    navigate('/admin/users/new');
   };
 
   const renderSortIcon = (column: UserListParams['sortBy']) => {
@@ -201,7 +201,8 @@ export function UsersListView(): ReactNode {
   };
 
   const getUserFullName = (user: ManagedUser) => {
-    return `${user.firstName} ${user.lastName}`.trim() || user.email;
+    const parts = [user.firstName, user.lastName].filter(Boolean);
+    return parts.length > 0 ? parts.join(' ') : ((user as ManagedUser & { displayName?: string }).displayName || user.email);
   };
 
   return (
@@ -320,7 +321,7 @@ export function UsersListView(): ReactNode {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/users/${user.id}/edit`);
+                          navigate(`/admin/users/${user.id}/edit`);
                         }}
                       >
                         {t('common.edit')}

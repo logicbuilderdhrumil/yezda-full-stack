@@ -43,7 +43,7 @@ export function FormCreateView(): ReactNode {
     try {
       const created = await FormsService.create(formData);
       toastSuccess(t('forms.create.success'));
-      navigate(`/forms/${created.id}`);
+      navigate(`/admin/forms/${created.id}`);
     } catch (error) {
       handleApiError(error);
       toastError(t('forms.create.error'));
@@ -56,7 +56,7 @@ export function FormCreateView(): ReactNode {
     if (step === 'builder') {
       setStep('metadata');
     } else {
-      navigate('/forms');
+      navigate('/admin/forms');
     }
   };
 

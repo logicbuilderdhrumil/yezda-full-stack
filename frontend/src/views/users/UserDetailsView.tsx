@@ -81,7 +81,7 @@ export function UserDetailsView(): ReactNode {
 
     const fetchUser = async () => {
       if (!id) {
-        navigate('/users');
+        navigate('/admin/users');
         return;
       }
 
@@ -93,7 +93,7 @@ export function UserDetailsView(): ReactNode {
       } catch (error) {
         handleApiError(error);
         toastError(t('users.details.fetchError'));
-        navigate('/users');
+        navigate('/admin/users');
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -110,12 +110,12 @@ export function UserDetailsView(): ReactNode {
 
   const handleEdit = () => {
     if (id) {
-      navigate(`/users/${id}/edit`);
+      navigate(`/admin/users/${id}/edit`);
     }
   };
 
   const handleBack = () => {
-    navigate('/users');
+    navigate('/admin/users');
   };
 
   if (isLoading) {

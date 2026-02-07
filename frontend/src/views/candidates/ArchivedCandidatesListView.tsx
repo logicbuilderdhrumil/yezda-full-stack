@@ -123,11 +123,11 @@ export function ArchivedCandidatesListView(): ReactNode {
   };
 
   const handleRowClick = (id: string) => {
-    navigate(`/candidates/${id}`);
+    navigate(`/admin/candidates/${id}`);
   };
 
   const handleBack = () => {
-    navigate('/candidates');
+    navigate('/admin/candidates');
   };
 
   const renderSortIcon = (column: CandidateListParams['sortBy']) => {
@@ -236,7 +236,7 @@ export function ArchivedCandidatesListView(): ReactNode {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/candidates/${candidate.id}`);
+                          navigate(`/admin/candidates/${candidate.id}`);
                         }}
                       >
                         {t('common.view')}

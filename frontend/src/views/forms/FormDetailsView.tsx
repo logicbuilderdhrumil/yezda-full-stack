@@ -55,7 +55,7 @@ export function FormDetailsView(): ReactNode {
       } catch (error) {
         toastError(t('forms.details.fetchError'));
         console.error('Failed to fetch form:', error);
-        navigate('/forms');
+        navigate('/admin/forms');
       } finally {
         setIsLoading(false);
       }
@@ -86,10 +86,10 @@ export function FormDetailsView(): ReactNode {
       <div className="space-y-6">
         {/* Actions */}
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => navigate('/forms')}>
+          <Button variant="outline" onClick={() => navigate('/admin/forms')}>
             {t('common.back')}
           </Button>
-          <Button onClick={() => navigate(`/forms/${id}/edit`)}>
+          <Button onClick={() => navigate(`/admin/forms/${id}/edit`)}>
             {t('common.edit')}
           </Button>
         </div>

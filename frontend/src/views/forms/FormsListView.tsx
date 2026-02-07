@@ -171,11 +171,11 @@ export function FormsListView(): ReactNode {
   };
 
   const handleRowClick = (id: string) => {
-    navigate(`/forms/${id}`);
+    navigate(`/admin/forms/${id}`);
   };
 
   const handleCreate = () => {
-    navigate('/forms/new');
+    navigate('/admin/forms/new');
   };
 
   const renderSortIcon = (column: FormListParams['sortBy']) => {
@@ -290,7 +290,7 @@ export function FormsListView(): ReactNode {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/forms/${form.id}/edit`);
+                          navigate(`/admin/forms/${form.id}/edit`);
                         }}
                       >
                         {t('common.edit')}
