@@ -3,7 +3,7 @@ name: release-check
 description: Generate a release checklist with validation and rollback steps.
 agent: ops-maintainer
 tools: ['search', 'fetch', 'usages']
-model: Claude Opus 4.5 (copilot)
+model: Claude Opus 4.6 (copilot)
 ---
 
 $ARGUMENTS

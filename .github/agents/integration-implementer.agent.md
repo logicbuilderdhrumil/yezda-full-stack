@@ -2,7 +2,7 @@
 name: integration-implementer
 description: Implement approved integration work across frontend, backend, and app with minimal, focused edits. Examples: "Align API contracts", "Wire app-backend flows", "Update shared integration services".
 tools: ['execute', 'read', 'edit', 'search', 'web', 'context7/*', 'figma/*', 'github/*', 'sequential-thinking/*', 'shadcn-ui/*', 'tavily/*', 'markitdown/*', 'github.vscode-pull-request-github/copilotCodingAgent', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/suggest-fix', 'github.vscode-pull-request-github/searchSyntax', 'github.vscode-pull-request-github/doSearch', 'github.vscode-pull-request-github/renderIssues', 'github.vscode-pull-request-github/activePullRequest', 'github.vscode-pull-request-github/openPullRequest', 'mijur.copilot-terminal-tools/listTerminals', 'mijur.copilot-terminal-tools/createTerminal', 'mijur.copilot-terminal-tools/sendCommand', 'mijur.copilot-terminal-tools/deleteTerminal', 'mijur.copilot-terminal-tools/cancelCommand', 'todo']
-model: Claude Opus 4.5 (copilot)
+model: Claude Opus 4.6 (copilot)
 user-invokable: true
 disable-model-invocation: false
 handoffs:

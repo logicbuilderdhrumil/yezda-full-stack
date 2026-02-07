@@ -4,7 +4,7 @@
  */
 
 /** Supported user roles - matches backend UserRole. */
-export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer';
+export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'client_admin';
 
 /** User profile returned after successful authentication - aligned with backend. */
 export interface User {
@@ -34,7 +34,7 @@ export function hasRole(user: User | null | undefined, ...requiredRoles: UserRol
  * Returns the highest-priority role.
  */
 export function getPrimaryRole(user: User): UserRole | undefined {
-  const rolePriority: UserRole[] = ['admin', 'manager', 'agent', 'viewer'];
+  const rolePriority: UserRole[] = ['admin', 'manager', 'agent', 'viewer', 'client_admin', 'client'];
   for (const role of rolePriority) {
     if (user.roles.includes(role)) return role;
   }
