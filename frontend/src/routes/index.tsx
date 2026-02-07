@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
-import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
-import { AppShell } from '@/components/layouts';
+import { AdminShell } from '@/components/layouts';
 import { ProtectedRoute, AuthorityGuard } from '@/components/route';
 import { RouteLoadingFallback } from '@/components/ui';
 
@@ -252,14 +252,20 @@ export const publicRoutes: RouteObject[] = [
 
 /**
  * Protected routes that require authentication.
- * Wrapped with AppShell layout.
+ * Admin routes are wrapped with AdminShell layout under /admin prefix.
  */
 export const protectedRoutes: RouteObject[] = [
+  // Root redirect to admin area (temporary until client portal is added in Phase 2)
   {
     path: '/',
+    element: <Navigate to="/admin" replace />,
+  },
+  // Admin area routes
+  {
+    path: '/admin',
     element: (
       <ProtectedRoute>
-        <AppShell />
+        <AdminShell />
       </ProtectedRoute>
     ),
     children: [
@@ -389,8 +395,76 @@ export const protectedRoutes: RouteObject[] = [
         path: 'settings',
         element: withSuspense(SettingsView),
       },
-      // Additional protected routes will be added here
     ],
+  },
+  // Backward compatibility redirects for old paths
+  {
+    path: '/candidates',
+    element: <Navigate to="/admin/candidates" replace />,
+  },
+  {
+    path: '/candidates/*',
+    element: <Navigate to="/admin/candidates" replace />,
+  },
+  {
+    path: '/organizations',
+    element: <Navigate to="/admin/organizations" replace />,
+  },
+  {
+    path: '/organizations/*',
+    element: <Navigate to="/admin/organizations" replace />,
+  },
+  {
+    path: '/users',
+    element: <Navigate to="/admin/users" replace />,
+  },
+  {
+    path: '/users/*',
+    element: <Navigate to="/admin/users" replace />,
+  },
+  {
+    path: '/forms',
+    element: <Navigate to="/admin/forms" replace />,
+  },
+  {
+    path: '/forms/*',
+    element: <Navigate to="/admin/forms" replace />,
+  },
+  {
+    path: '/screening',
+    element: <Navigate to="/admin/screening" replace />,
+  },
+  {
+    path: '/files',
+    element: <Navigate to="/admin/files" replace />,
+  },
+  {
+    path: '/chat',
+    element: <Navigate to="/admin/chat" replace />,
+  },
+  {
+    path: '/reports',
+    element: <Navigate to="/admin/reports" replace />,
+  },
+  {
+    path: '/settings',
+    element: <Navigate to="/admin/settings" replace />,
+  },
+  {
+    path: '/ledger/billed',
+    element: <Navigate to="/admin/ledger/billed" replace />,
+  },
+  {
+    path: '/ledger/unbilled',
+    element: <Navigate to="/admin/ledger/unbilled" replace />,
+  },
+  {
+    path: '/account/settings',
+    element: <Navigate to="/admin/account/settings" replace />,
+  },
+  {
+    path: '/account/integrations',
+    element: <Navigate to="/admin/account/integrations" replace />,
   },
   {
     path: '*',

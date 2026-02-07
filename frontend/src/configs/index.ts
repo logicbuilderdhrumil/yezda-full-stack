@@ -18,6 +18,7 @@ export {
   defaultRadius,
 } from './theme.config';
 export { iconMap, navConfig } from './navigation.config';
+export { adminNavConfig } from './admin-navigation.config';
 export {
   getFirebaseConfig,
   isFirebaseConfigValid,
