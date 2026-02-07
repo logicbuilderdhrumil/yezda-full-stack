@@ -15,6 +15,7 @@ import {
   Bell,
   Folder,
   Calendar,
+  ArrowLeft,
   type LucideIcon,
 } from 'lucide-react';
 import type { NavIconName, NavConfig } from '@/@types/navigation';
@@ -35,6 +36,7 @@ export const iconMap: Record<NavIconName, LucideIcon> = {
   bell: Bell,
   folder: Folder,
   calendar: Calendar,
+  'arrow-left': ArrowLeft,
 };
 
 /**

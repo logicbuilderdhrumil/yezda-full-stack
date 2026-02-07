@@ -166,11 +166,21 @@ const UnbilledLedgerListView = lazy(() =>
     default: m.UnbilledLedgerListView,
   }))
 );
+const LedgerView = lazy(() =>
+  import('@/views/ledger/LedgerView').then((m) => ({
+    default: m.LedgerView,
+  }))
+);
 
 // Placeholder views
 const ScreeningListView = lazy(() =>
   import('@/views/screening/ScreeningListView').then((m) => ({
     default: m.ScreeningListView,
+  }))
+);
+const AdminScreeningListView = lazy(() =>
+  import('@/views/screening/AdminScreeningListView').then((m) => ({
+    default: m.AdminScreeningListView,
   }))
 );
 const ReportsView = lazy(() =>
@@ -391,6 +401,24 @@ export const protectedRoutes: RouteObject[] = [
             path: 'organizations/:id/edit',
             element: withAdminGuard(OrganizationEditView),
           },
+          // Organization-context routes (admin only)
+          // These reuse existing views but scope them to a specific org
+          {
+            path: 'organizations/:orgId/candidates',
+            element: withCandidateGuard(CandidatesListView),
+          },
+          {
+            path: 'organizations/:orgId/screening',
+            element: withAdminGuard(AdminScreeningListView),
+          },
+          {
+            path: 'organizations/:orgId/files',
+            element: withAdminGuard(FilesListView),
+          },
+          {
+            path: 'organizations/:orgId/users',
+            element: withAdminGuard(UsersListView),
+          },
           // User management routes (admin only)
           {
             path: 'users',
@@ -466,6 +494,10 @@ export const protectedRoutes: RouteObject[] = [
           },
           // Ledger routes (admin only)
           {
+            path: 'ledger',
+            element: withAdminGuard(LedgerView),
+          },
+          {
             path: 'ledger/billed',
             element: withAdminGuard(BilledLedgerListView),
           },
@@ -473,10 +505,10 @@ export const protectedRoutes: RouteObject[] = [
             path: 'ledger/unbilled',
             element: withAdminGuard(UnbilledLedgerListView),
           },
-          // Screening route (admin and manager)
+          // Screening route (admin and manager) - uses admin endpoint
           {
             path: 'screening',
-            element: withCandidateGuard(ScreeningListView),
+            element: withCandidateGuard(AdminScreeningListView),
           },
           // Pipeline management routes (admin only)
           {
