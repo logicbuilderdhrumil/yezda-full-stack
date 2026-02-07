@@ -285,13 +285,17 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
 
     const socketService = new SocketService({
       getToken: () => getAccessToken(),
-      namespace: '/chat',
+      // Use root namespace - backend Socket.IO doesn't define a /chat namespace
+      namespace: '/',
       onStatusChange: (status) => {
         if (status === 'error') {
-          setState((prev) => ({
-            ...prev,
-            error: 'Connection lost. Reconnecting...',
-          }));
+          // Only show error if no conversations loaded yet
+          setState((prev) => {
+            if (prev.conversations.length === 0 && !prev.isLoadingConversations) {
+              return { ...prev, error: 'Connection lost. Reconnecting...' };
+            }
+            return prev;
+          });
         } else if (status === 'connected') {
           setState((prev) => ({ ...prev, error: null }));
         }

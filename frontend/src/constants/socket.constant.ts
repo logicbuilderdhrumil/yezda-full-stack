@@ -6,10 +6,11 @@
 import { SOCKET_NAMESPACES } from '@/@types/socket';
 
 /**
- * Default socket server URL - uses environment variable or defaults to localhost
+ * Default socket server URL - uses environment variable or defaults to same origin
+ * (proxied through Vite dev server via /socket.io proxy rule)
  */
 export const SOCKET_SERVER_URL =
-  import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+  import.meta.env.VITE_SOCKET_URL || '';
 
 /**
  * Default connection options
