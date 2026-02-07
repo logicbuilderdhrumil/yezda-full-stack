@@ -2,7 +2,8 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
 import { AdminShell, ClientShell } from '@/components/layouts';
-import { ProtectedRoute, AuthorityGuard } from '@/components/route';
+import { AuthorityGuard } from '@/components/route';
+import { AdminGuard, ClientGuard, AdminRedirectWrapper } from '@/components/guards';
 import { RouteLoadingFallback } from '@/components/ui';
 
 // Lazy load views for code splitting
@@ -259,176 +260,182 @@ export const protectedRoutes: RouteObject[] = [
   // Client portal routes (for screening clients and org staff)
   {
     path: '/',
-    element: (
-      <ProtectedRoute>
-        <ClientShell />
-      </ProtectedRoute>
-    ),
+    element: <ClientGuard />,
     children: [
       {
-        index: true,
-        element: withSuspense(HomeView),
-      },
-      {
-        path: 'candidates',
-        element: withSuspense(CandidatesListView),
-      },
-      {
-        path: 'candidates/:id',
-        element: withSuspense(CandidateDetailsView),
-      },
-      {
-        path: 'screening',
-        element: withSuspense(ScreeningListView),
-      },
-      {
-        path: 'reports',
-        element: withSuspense(ReportsView),
-      },
-      {
-        path: 'settings',
-        element: withSuspense(SettingsView),
-      },
-      {
-        path: 'account',
-        element: withSuspense(AccountSettingsView),
+        element: <ClientShell />,
+        children: [
+          {
+            index: true,
+            element: (
+              <AdminRedirectWrapper>
+                {withSuspense(HomeView)}
+              </AdminRedirectWrapper>
+            ),
+          },
+          {
+            path: 'candidates',
+            element: withSuspense(CandidatesListView),
+          },
+          {
+            path: 'candidates/:id',
+            element: withSuspense(CandidateDetailsView),
+          },
+          {
+            path: 'screening',
+            element: withSuspense(ScreeningListView),
+          },
+          {
+            path: 'reports',
+            element: withSuspense(ReportsView),
+          },
+          {
+            path: 'settings',
+            element: withSuspense(SettingsView),
+          },
+          {
+            path: 'account',
+            element: withSuspense(AccountSettingsView),
+          },
+        ],
       },
     ],
   },
   // Admin area routes
   {
     path: '/admin',
-    element: (
-      <ProtectedRoute>
-        <AdminShell />
-      </ProtectedRoute>
-    ),
+    element: <AdminGuard />,
     children: [
       {
-        index: true,
-        element: withSuspense(HomeView),
-      },
-      {
-        path: 'account/settings',
-        element: withSuspense(AccountSettingsView),
-      },
-      {
-        path: 'account/integrations',
-        element: withSuspense(AccountIntegrationsView),
-      },
-      // Organization management routes (admin only)
-      {
-        path: 'organizations',
-        element: withAdminGuard(OrganizationsListView),
-      },
-      {
-        path: 'organizations/new',
-        element: withAdminGuard(OrganizationCreateView),
-      },
-      {
-        path: 'organizations/:id',
-        element: withAdminGuard(OrganizationDetailsView),
-      },
-      {
-        path: 'organizations/:id/edit',
-        element: withAdminGuard(OrganizationEditView),
-      },
-      // User management routes (admin only)
-      {
-        path: 'users',
-        element: withAdminGuard(UsersListView),
-      },
-      {
-        path: 'users/new',
-        element: withAdminGuard(UserCreateView),
-      },
-      {
-        path: 'users/:id',
-        element: withAdminGuard(UserDetailsView),
-      },
-      {
-        path: 'users/:id/edit',
-        element: withAdminGuard(UserEditView),
-      },
-      // Candidate management routes (admin and manager)
-      {
-        path: 'candidates',
-        element: withCandidateGuard(CandidatesListView),
-      },
-      {
-        path: 'candidates/new',
-        element: withCandidateGuard(CandidateCreateView),
-      },
-      {
-        path: 'candidates/bulk-create',
-        element: withCandidateGuard(CandidateBulkCreateView),
-      },
-      {
-        path: 'candidates/certified',
-        element: withCandidateGuard(CertifiedCandidatesListView),
-      },
-      {
-        path: 'candidates/archived',
-        element: withCandidateGuard(ArchivedCandidatesListView),
-      },
-      {
-        path: 'candidates/:id',
-        element: withCandidateGuard(CandidateDetailsView),
-      },
-      {
-        path: 'candidates/:id/edit',
-        element: withCandidateGuard(CandidateEditView),
-      },
-      // Forms management routes (admin only)
-      {
-        path: 'forms',
-        element: withAdminGuard(FormsListView),
-      },
-      {
-        path: 'forms/new',
-        element: withAdminGuard(FormCreateView),
-      },
-      {
-        path: 'forms/:id',
-        element: withAdminGuard(FormDetailsView),
-      },
-      {
-        path: 'forms/:id/edit',
-        element: withAdminGuard(FormEditView),
-      },
-      // Chat route
-      {
-        path: 'chat',
-        element: withSuspense(ChatView),
-      },
-      // Files route (admin only)
-      {
-        path: 'files',
-        element: withAdminGuard(FilesListView),
-      },
-      // Ledger routes (admin only)
-      {
-        path: 'ledger/billed',
-        element: withAdminGuard(BilledLedgerListView),
-      },
-      {
-        path: 'ledger/unbilled',
-        element: withAdminGuard(UnbilledLedgerListView),
-      },
-      // Screening route (admin and manager)
-      {
-        path: 'screening',
-        element: withCandidateGuard(ScreeningListView),
-      },
-      // Reports route (admin and manager)
-      {
-        path: 'reports',
-        element: withCandidateGuard(ReportsView),
-      },
-      // Settings route
-      {
-        path: 'settings',
-        element: withSuspense(SettingsView),
+        element: <AdminShell />,
+        children: [
+          {
+            index: true,
+            element: withSuspense(HomeView),
+          },
+          {
+            path: 'account/settings',
+            element: withSuspense(AccountSettingsView),
+          },
+          {
+            path: 'account/integrations',
+            element: withSuspense(AccountIntegrationsView),
+          },
+          // Organization management routes (admin only)
+          {
+            path: 'organizations',
+            element: withAdminGuard(OrganizationsListView),
+          },
+          {
+            path: 'organizations/new',
+            element: withAdminGuard(OrganizationCreateView),
+          },
+          {
+            path: 'organizations/:id',
+            element: withAdminGuard(OrganizationDetailsView),
+          },
+          {
+            path: 'organizations/:id/edit',
+            element: withAdminGuard(OrganizationEditView),
+          },
+          // User management routes (admin only)
+          {
+            path: 'users',
+            element: withAdminGuard(UsersListView),
+          },
+          {
+            path: 'users/new',
+            element: withAdminGuard(UserCreateView),
+          },
+          {
+            path: 'users/:id',
+            element: withAdminGuard(UserDetailsView),
+          },
+          {
+            path: 'users/:id/edit',
+            element: withAdminGuard(UserEditView),
+          },
+          // Candidate management routes (admin and manager)
+          {
+            path: 'candidates',
+            element: withCandidateGuard(CandidatesListView),
+          },
+          {
+            path: 'candidates/new',
+            element: withCandidateGuard(CandidateCreateView),
+          },
+          {
+            path: 'candidates/bulk-create',
+            element: withCandidateGuard(CandidateBulkCreateView),
+          },
+          {
+            path: 'candidates/certified',
+            element: withCandidateGuard(CertifiedCandidatesListView),
+          },
+          {
+            path: 'candidates/archived',
+            element: withCandidateGuard(ArchivedCandidatesListView),
+          },
+          {
+            path: 'candidates/:id',
+            element: withCandidateGuard(CandidateDetailsView),
+          },
+          {
+            path: 'candidates/:id/edit',
+            element: withCandidateGuard(CandidateEditView),
+          },
+          // Forms management routes (admin only)
+          {
+            path: 'forms',
+            element: withAdminGuard(FormsListView),
+          },
+          {
+            path: 'forms/new',
+            element: withAdminGuard(FormCreateView),
+          },
+          {
+            path: 'forms/:id',
+            element: withAdminGuard(FormDetailsView),
+          },
+          {
+            path: 'forms/:id/edit',
+            element: withAdminGuard(FormEditView),
+          },
+          // Chat route
+          {
+            path: 'chat',
+            element: withSuspense(ChatView),
+          },
+          // Files route (admin only)
+          {
+            path: 'files',
+            element: withAdminGuard(FilesListView),
+          },
+          // Ledger routes (admin only)
+          {
+            path: 'ledger/billed',
+            element: withAdminGuard(BilledLedgerListView),
+          },
+          {
+            path: 'ledger/unbilled',
+            element: withAdminGuard(UnbilledLedgerListView),
+          },
+          // Screening route (admin and manager)
+          {
+            path: 'screening',
+            element: withCandidateGuard(ScreeningListView),
+          },
+          // Reports route (admin and manager)
+          {
+            path: 'reports',
+            element: withCandidateGuard(ReportsView),
+          },
+          // Settings route
+          {
+            path: 'settings',
+            element: withSuspense(SettingsView),
+          },
+        ],
       },
     ],
   },
