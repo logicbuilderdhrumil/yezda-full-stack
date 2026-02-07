@@ -226,11 +226,19 @@ export class StateStoreMetricsService {
    * Clear old metrics
    */
   cleanup(retentionMs = 3600000): void {
-    const cutoff = new Date(Date.now() - retentionMs);
     const count = metrics.length;
-    const indexToCut = metrics.findIndex((m) => m.timestamp > cutoff);
-    if (indexToCut > 0) {
-      metrics.splice(0, indexToCut);
+    if (retentionMs === 0) {
+      // Clear all metrics
+      metrics.length = 0;
+    } else {
+      const cutoff = new Date(Date.now() - retentionMs);
+      const indexToCut = metrics.findIndex((m) => m.timestamp > cutoff);
+      if (indexToCut > 0) {
+        metrics.splice(0, indexToCut);
+      } else if (indexToCut === -1 && metrics.length > 0) {
+        // All metrics are older than cutoff
+        metrics.length = 0;
+      }
     }
     console.log(`[StateStoreMetrics] Cleaned up ${count - metrics.length} old metrics`);
   }

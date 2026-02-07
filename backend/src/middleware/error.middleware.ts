@@ -184,7 +184,7 @@ export const errorHandler: ErrorRequestHandler = async (
     code = 'UNAUTHORIZED';
     message = 'Authentication required';
   } else if (statusCode === 403) {
-    code = 'FORBIDDEN';
+    code = 'ACCESS_DENIED';
     message = 'Access denied';
   } else if (statusCode === 404) {
     code = 'NOT_FOUND';
@@ -220,21 +220,23 @@ export const errorHandler: ErrorRequestHandler = async (
     });
   }
 
-  // Build consistent API error envelope
-  const envelope: ApiErrorEnvelope = {
-    code: code as ErrorCode,
+  // Build consistent error response
+  // Include both 'error' and 'message' fields for cross-contract compatibility
+  const response: Record<string, unknown> = {
+    error: message,
     message,
+    code: code as string,
     correlationId,
     timestamp: new Date().toISOString(),
   };
 
   if (err.details && err.details.length > 0) {
-    envelope.details = err.details;
+    response.details = err.details;
   }
 
   // Set correlation ID header for response tracing
   res.setHeader('X-Correlation-Id', correlationId);
-  res.status(statusCode).json(envelope);
+  res.status(statusCode).json(response);
 };
 
 /**
@@ -266,16 +268,16 @@ export async function notFoundHandler(req: Request, res: Response): Promise<void
       errorMessage: 'Rate limited due to excessive not-found requests',
     });
 
-    const rateLimitEnvelope: ApiErrorEnvelope = {
-      code: 'RATE_LIMITED',
-      message: 'Too many requests. Please try again later.',
+    const rateLimitResponse = {
+      error: 'Too many requests. Please try again later.',
+      code: 'ACCESS_RATE_LIMITED',
       correlationId,
       timestamp: new Date().toISOString(),
     };
 
     res.setHeader('X-Correlation-Id', correlationId);
     res.setHeader('Retry-After', Math.ceil((rateCheck.resetAt - Date.now()) / 1000).toString());
-    res.status(429).json(rateLimitEnvelope);
+    res.status(429).json(rateLimitResponse);
     return;
   }
 
@@ -307,16 +309,18 @@ export async function notFoundHandler(req: Request, res: Response): Promise<void
     ip,
   }));
 
-  // Build consistent API error envelope
-  const envelope: ApiErrorEnvelope = {
-    code: 'NOT_FOUND',
+  // Build not-found response
+  // Include both 'error' (generic) and 'message' (with path for API contract) fields
+  const response = {
+    error: 'The requested resource was not found',
     message: `Not found: ${req.path}`,
+    code: 'NOT_FOUND',
     correlationId,
     timestamp: new Date().toISOString(),
   };
 
   res.setHeader('X-Correlation-Id', correlationId);
-  res.status(404).json(envelope);
+  res.status(404).json(response);
 }
 
 /**
@@ -326,14 +330,21 @@ export function createError(
   message: string,
   statusCode: number,
   code: ErrorCode | string,
-  details?: ValidationErrorDetail[],
-  correlationId?: string
+  detailsOrCorrelationId?: ValidationErrorDetail[] | string,
+  extraDetails?: ValidationErrorDetail[]
 ): ApiError {
   const error: ApiError = new Error(message);
   error.statusCode = statusCode;
   error.code = code;
-  error.details = details;
-  error.correlationId = correlationId;
+  // Support both calling conventions:
+  // createError(msg, status, code, correlationId) - string as 4th
+  // createError(msg, status, code, details) - array as 4th
+  if (typeof detailsOrCorrelationId === 'string') {
+    error.correlationId = detailsOrCorrelationId;
+    error.details = extraDetails;
+  } else if (Array.isArray(detailsOrCorrelationId)) {
+    error.details = detailsOrCorrelationId;
+  }
   return error;
 }
 
@@ -354,7 +365,7 @@ export function createAccessDeniedError(
   message = 'Access denied',
   correlationId?: string
 ): ApiError {
-  return createError(message, 403, 'FORBIDDEN', undefined, correlationId);
+  return createError(message, 403, 'ACCESS_DENIED', correlationId);
 }
 
 /**
@@ -364,7 +375,7 @@ export function createUnauthorizedError(
   message = 'Authentication required',
   correlationId?: string
 ): ApiError {
-  return createError(message, 401, 'UNAUTHORIZED', undefined, correlationId);
+  return createError(message, 401, 'UNAUTHORIZED', correlationId);
 }
 
 /**

@@ -253,6 +253,9 @@ vi.mock('../src/repositories/user-management.repository.js', () => ({
       if (!user || user.tenantId !== tenantId) return undefined;
       return user;
     }),
+    findByIdWithoutTenantScope: vi.fn(async (id: string) => {
+      return managedUsers.get(id);
+    }),
     findByEmail: vi.fn(async (email: string, tenantId: string) => {
       const lower = email.toLowerCase();
       for (const user of managedUsers.values()) {
