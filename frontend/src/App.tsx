@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { RouterProvider } from 'react-router-dom';
-import { AuthProvider, ThemeProvider, I18nProvider } from '@/context';
+import { AuthProvider, ThemeProvider, I18nProvider, OrgPerspectiveProvider } from '@/context';
 import { router } from '@/routes';
 
 /**
@@ -12,7 +12,9 @@ export function App() {
       <ThemeProvider>
         <I18nProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <OrgPerspectiveProvider>
+              <RouterProvider router={router} />
+            </OrgPerspectiveProvider>
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>

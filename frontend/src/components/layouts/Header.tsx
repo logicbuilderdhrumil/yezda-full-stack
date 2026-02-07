@@ -3,7 +3,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,8 @@ import {
   ThemeConfigurator,
   GlobalSearchInput,
 } from '@/components/template';
+import { OrgPerspectiveSwitcher } from '@/components/OrgPerspectiveSwitcher';
+import { hasRole } from '@/@types/auth';
 import { cn } from '@/utils';
 
 interface HeaderProps {
@@ -31,6 +33,12 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toggleMobile, toggleCollapsed, isCollapsed } = useSidebar();
+  const location = useLocation();
+
+  // Show org perspective switcher for admin/manager users on client routes
+  const isOnClientRoutes = !location.pathname.startsWith('/admin');
+  const isAdminOrManager = hasRole(user, 'admin', 'manager');
+  const showOrgSwitcher = isOnClientRoutes && isAdminOrManager;
 
   return (
     <header
@@ -83,6 +91,9 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
       <div className="flex items-center gap-1">
         {/* Global search on mobile (icon only would be an enhancement) */}
         
+        {/* Org perspective switcher (admin/manager only on client routes) */}
+        {showOrgSwitcher && <OrgPerspectiveSwitcher />}
+
         {/* Notification dropdown */}
         {user && <NotificationDropdown />}
 

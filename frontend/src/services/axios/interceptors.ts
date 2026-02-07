@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { extractApiError, ErrorCodes } from '@/utils/errorHandler';
+import { ORG_PERSPECTIVE_STORAGE_KEY } from '@/context/OrgPerspectiveContext';
 
 /** Type for the token getter function. */
 export type TokenGetter = () => string | null;
@@ -47,6 +48,19 @@ export function setupRequestInterceptors(
       if (config.getLocale) {
         const locale = config.getLocale();
         requestConfig.headers['Accept-Language'] = locale;
+      }
+
+      // Add org perspective header if in perspective mode
+      try {
+        const stored = sessionStorage.getItem(ORG_PERSPECTIVE_STORAGE_KEY);
+        if (stored) {
+          const { orgId } = JSON.parse(stored);
+          if (orgId) {
+            requestConfig.headers['X-Org-Perspective'] = orgId;
+          }
+        }
+      } catch {
+        // Ignore storage errors
       }
 
       return requestConfig;

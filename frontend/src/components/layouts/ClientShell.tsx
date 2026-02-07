@@ -6,6 +6,7 @@
 import type { ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SidebarProvider } from '@/context/SidebarContext';
+import { useOrgPerspective } from '@/context/OrgPerspectiveContext';
 import { Header } from './Header';
 import { ClientSidebar } from './ClientSidebar';
 import { cn } from '@/utils';
@@ -28,6 +29,8 @@ export function ClientShell({
   children,
   showSearch = true,
 }: ClientShellProps): ReactNode {
+  const { isPerspectiveMode, activeOrgName, clearPerspective } = useOrgPerspective();
+
   return (
     <SidebarProvider>
       <div
@@ -38,6 +41,21 @@ export function ClientShell({
         <div className="flex flex-1 overflow-hidden">
           <ClientSidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
+            {/* Org perspective banner */}
+            {isPerspectiveMode && (
+              <div className="bg-amber-600 px-4 py-1.5 text-sm text-white flex items-center justify-between shrink-0">
+                <span>
+                  Viewing as: <strong>{activeOrgName}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={clearPerspective}
+                  className="text-white/80 hover:text-white underline text-xs"
+                >
+                  Exit Perspective
+                </button>
+              </div>
+            )}
             <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
               {children ?? <Outlet />}
             </main>
