@@ -40,7 +40,7 @@ import type { ClientCandidate, ClientCandidateListResponse } from '@/services/Cl
 const PAGE_SIZE = 10;
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
+  { value: 'all', label: 'All Statuses' },
   { value: 'pending', label: 'Pending' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
@@ -124,7 +124,7 @@ export function ClientCandidatesListView(): ReactNode {
   // Read initial state from URL search params
   const initialPage = Number(searchParams.get('page') ?? '1');
   const initialSearch = searchParams.get('search') ?? '';
-  const initialStatus = searchParams.get('status') ?? '';
+  const initialStatus = searchParams.get('status') ?? 'all';
 
   const [data, setData] = useState<ClientCandidateListResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -148,7 +148,7 @@ export function ClientCandidatesListView(): ReactNode {
     const params = new URLSearchParams();
     if (page > 1) params.set('page', String(page));
     if (debouncedSearch) params.set('search', debouncedSearch);
-    if (status) params.set('status', status);
+    if (status && status !== 'all') params.set('status', status);
     setSearchParams(params, { replace: true });
   }, [page, debouncedSearch, status, setSearchParams]);
 
@@ -160,7 +160,7 @@ export function ClientCandidatesListView(): ReactNode {
         page,
         limit: PAGE_SIZE,
         search: debouncedSearch || undefined,
-        status: status || undefined,
+        status: status && status !== 'all' ? status : undefined,
       });
       setData(result);
     } catch {
@@ -251,7 +251,7 @@ export function ClientCandidatesListView(): ReactNode {
           ) : candidates.length === 0 ? (
             <div className="py-12 text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {debouncedSearch || status
+                {debouncedSearch || (status && status !== 'all')
                   ? 'No candidates match your filters.'
                   : 'No candidates yet.'}
               </p>
