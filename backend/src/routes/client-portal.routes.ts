@@ -44,6 +44,16 @@ router.get('/candidates', ...clientReadGuards, clientPortalController.listCandid
 /** GET /api/v1/client/candidates/:id */
 router.get('/candidates/:id', ...clientReadGuards, clientPortalController.getCandidateDetail);
 
+// ── Screenings ───────────────────────────────────────────────────
+
+/** GET /api/v1/client/screenings */
+router.get('/screenings', ...clientReadGuards, clientPortalController.listScreenings);
+
+// ── Reports ──────────────────────────────────────────────────────
+
+/** GET /api/v1/client/reports */
+router.get('/reports', ...clientReadGuards, clientPortalController.getReport);
+
 // ── Org settings ─────────────────────────────────────────────────
 
 /** GET /api/v1/client/org/settings */

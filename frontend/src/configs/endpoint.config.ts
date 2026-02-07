@@ -163,6 +163,8 @@ export const endpoints = {
   'client.candidates.get': { path: '/client/candidates/:id', version: 'v1' },
   'client.org.settings': { path: '/client/org/settings', version: 'v1' },
   'client.org.updateSettings': { path: '/client/org/settings', version: 'v1' },
+  'client.screenings.list': { path: '/client/screenings', version: 'v1' },
+  'client.reports': { path: '/client/reports', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

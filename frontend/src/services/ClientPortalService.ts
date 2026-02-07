@@ -94,6 +94,47 @@ export interface ClientOrgSettings {
 /** Payload for updating org settings (client_admin only). */
 export type UpdateOrgSettingsPayload = Partial<ClientOrgSettings>;
 
+/** A screening request record visible to the client portal. */
+export interface ScreeningRequest {
+  id: string;
+  candidateId: string;
+  candidateName: string;
+  type: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  requestedAt: string;
+  completedAt: string | null;
+  result: 'pass' | 'fail' | 'pending' | null;
+}
+
+/** Paginated screening list response. */
+export interface ScreeningListResponse {
+  data: ScreeningRequest[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}
+
+/** Parameters for listing screenings. */
+export interface ScreeningListParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  type?: string;
+}
+
+/** Screening report aggregate data. */
+export interface ScreeningReportData {
+  summary: {
+    totalScreenings: number;
+    completed: number;
+    inProgress: number;
+    pending: number;
+    failed: number;
+    passRate: number;
+    averageDaysToComplete: number;
+  };
+  byType: Array<{ type: string; count: number; passRate: number }>;
+  monthlyTrend: Array<{ month: string; completed: number; submitted: number }>;
+}
+
 // -----------------------------------------------------------------------------
 // Service
 // -----------------------------------------------------------------------------
@@ -162,6 +203,34 @@ export const ClientPortalService = {
       'client.org.updateSettings',
       data
     );
+    return response.data;
+  },
+
+  /**
+   * Fetches a paginated list of screenings for the client org.
+   * @param params - Optional filter and pagination parameters
+   * @returns Paginated screening list
+   */
+  async getScreenings(params?: ScreeningListParams): Promise<ScreeningListResponse> {
+    const queryParams: Record<string, string> = {};
+    if (params?.page !== undefined) queryParams.page = String(params.page);
+    if (params?.limit !== undefined) queryParams.limit = String(params.limit);
+    if (params?.status) queryParams.status = params.status;
+    if (params?.type) queryParams.type = params.type;
+
+    const response = await ApiService.get<ScreeningListResponse>(
+      'client.screenings.list',
+      { params: queryParams }
+    );
+    return response.data;
+  },
+
+  /**
+   * Fetches screening report / analytics data for the client org.
+   * @returns Report data with summary, by-type breakdown, and monthly trend
+   */
+  async getReport(): Promise<ScreeningReportData> {
+    const response = await ApiService.get<ScreeningReportData>('client.reports');
     return response.data;
   },
 };

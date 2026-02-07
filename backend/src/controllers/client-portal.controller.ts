@@ -102,13 +102,61 @@ export async function getOrgSettings(req: TenantScopedRequest, res: Response): P
 export async function updateOrgSettings(req: TenantScopedRequest, res: Response): Promise<void> {
   try {
     const tenantId = req.tenantScope!;
-    const { orgName, contactEmail, notificationPrefs } = req.body;
+    const { name, contactEmail, contactPhone, address, notificationPreferences } = req.body;
 
     const result = clientPortalService.updateOrgSettings(tenantId, {
-      orgName,
+      name,
       contactEmail,
-      notificationPrefs,
+      contactPhone,
+      address,
+      notificationPreferences,
     });
+
+    if (!result.success) {
+      res.status(500).json({ error: result.error, code: result.errorCode });
+      return;
+    }
+
+    res.status(200).json(result.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
+  }
+}
+
+/**
+ * GET /api/v1/client/screenings
+ * Returns paginated, filterable screening requests scoped to the tenant.
+ */
+export async function listScreenings(req: TenantScopedRequest, res: Response): Promise<void> {
+  try {
+    const tenantId = req.tenantScope!;
+    const page = req.query.page ? Number(req.query.page) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const status = req.query.status as string | undefined;
+    const type = req.query.type as string | undefined;
+    const candidateId = req.query.candidateId as string | undefined;
+
+    const result = clientPortalService.listScreenings(tenantId, { page, limit, status, type, candidateId });
+
+    if (!result.success) {
+      res.status(500).json({ error: result.error, code: result.errorCode });
+      return;
+    }
+
+    res.status(200).json(result.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
+  }
+}
+
+/**
+ * GET /api/v1/client/reports
+ * Returns screening analytics / report for the tenant.
+ */
+export async function getReport(req: TenantScopedRequest, res: Response): Promise<void> {
+  try {
+    const tenantId = req.tenantScope!;
+    const result = clientPortalService.getReport(tenantId);
 
     if (!result.success) {
       res.status(500).json({ error: result.error, code: result.errorCode });
