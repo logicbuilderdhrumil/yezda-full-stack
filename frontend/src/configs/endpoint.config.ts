@@ -144,7 +144,8 @@ export const endpoints = {
   'ledger.export': { path: '/ledger/export', version: 'v1' },
 
   // Dashboard endpoints
-  'dashboard.metrics': { path: '/dashboard/kpis', version: 'v1' },
+  'dashboard.metrics': { path: '/dashboard/summary', version: 'v1' },
+  'dashboard.trends': { path: '/dashboard/trends', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

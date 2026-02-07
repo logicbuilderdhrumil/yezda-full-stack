@@ -86,6 +86,20 @@ export const navConfig: NavConfig = {
           icon: 'folder',
           authorities: ['admin'],
         },
+        {
+          id: 'users',
+          label: 'Users',
+          path: '/users',
+          icon: 'shield',
+          authorities: ['admin'],
+        },
+        {
+          id: 'forms',
+          label: 'Forms',
+          path: '/forms',
+          icon: 'file-text',
+          authorities: ['admin'],
+        },
       ],
     },
     {
@@ -96,6 +110,18 @@ export const navConfig: NavConfig = {
           label: 'Reports',
           path: '/reports',
           icon: 'bar-chart',
+          authorities: ['admin', 'manager'],
+        },
+      ],
+    },
+    {
+      title: 'Communication',
+      items: [
+        {
+          id: 'chat',
+          label: 'Chat',
+          path: '/chat',
+          icon: 'message-circle',
           authorities: ['admin', 'manager'],
         },
       ],
