@@ -15,3 +15,4 @@ export * from './stores';
 export * from './navigation';
 export * from './user';
 export * from './pipeline';
+export * from './custom-components';

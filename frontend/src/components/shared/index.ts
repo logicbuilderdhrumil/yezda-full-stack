@@ -69,6 +69,18 @@ export {
   type GanttProps,
 } from './Visualizations';
 
+// Organization selector
+export { OrganizationSelector } from './OrganizationSelector';
+
+// Document preview dialog
+export { DocumentPreviewDialog } from './DocumentPreviewDialog';
+
+// App download button
+export { AppDownloadButton } from './AppDownloadButton';
+
+// Online status indicator
+export { OnlineStatusIndicator } from './OnlineStatusIndicator';
+
 // Utilities
 export {
   // Pagination
