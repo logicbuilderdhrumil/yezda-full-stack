@@ -156,6 +156,13 @@ export const endpoints = {
   'screening-pipelines.assignmentProgress': { path: '/screening-pipelines/assignments/:id/progress', version: 'v1' },
   'screening-pipelines.candidateAssignments': { path: '/screening-pipelines/candidates/:candidateId/assignments', version: 'v1' },
   'screening-pipelines.completeStage': { path: '/screening-pipelines/assignments/:assignmentId/stages/:stageId/complete', version: 'v1' },
+
+  // Client portal endpoints
+  'client.dashboard': { path: '/client/dashboard', version: 'v1' },
+  'client.candidates.list': { path: '/client/candidates', version: 'v1' },
+  'client.candidates.get': { path: '/client/candidates/:id', version: 'v1' },
+  'client.org.settings': { path: '/client/org/settings', version: 'v1' },
+  'client.org.updateSettings': { path: '/client/org/settings', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */
