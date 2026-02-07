@@ -75,6 +75,10 @@ export const AuthService = {
         const userData = userResponse.data;
         console.log('[AuthService] Got user data:', userData);
 
+        const displayName = userData.firstName && userData.lastName
+          ? `${userData.firstName} ${userData.lastName}`
+          : (userData as Record<string, unknown>).displayName as string | undefined;
+
         const user = {
           id: userData.id,
           email: userData.email,
@@ -86,9 +90,7 @@ export const AuthService = {
           ...(userData.firstName ? { firstName: userData.firstName } : {}),
           ...(userData.lastName ? { lastName: userData.lastName } : {}),
           ...(userData.tenantId ? { tenantId: userData.tenantId } : {}),
-          ...(userData.firstName && userData.lastName
-            ? { displayName: `${userData.firstName} ${userData.lastName}` }
-            : {}),
+          ...(displayName ? { displayName } : {}),
         };
 
         console.log('[AuthService] Returning session with user:', user);
@@ -227,6 +229,10 @@ export const AuthService = {
       });
       const userData = userResponse.data;
 
+      const displayName = userData.firstName && userData.lastName
+        ? `${userData.firstName} ${userData.lastName}`
+        : (userData as Record<string, unknown>).displayName as string | undefined;
+
       const user = {
         id: userData.id,
         email: userData.email,
@@ -238,9 +244,7 @@ export const AuthService = {
         ...(userData.firstName ? { firstName: userData.firstName } : {}),
         ...(userData.lastName ? { lastName: userData.lastName } : {}),
         ...(userData.tenantId ? { tenantId: userData.tenantId } : {}),
-        ...(userData.firstName && userData.lastName
-          ? { displayName: `${userData.firstName} ${userData.lastName}` }
-          : {}),
+        ...(displayName ? { displayName } : {}),
       };
 
       return {

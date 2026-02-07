@@ -13,6 +13,8 @@ const adminEmail = process.env.ADMIN_SEED_EMAIL ?? 'admin@yezda.com';
 const adminPassword = process.env.ADMIN_SEED_PASSWORD ?? 'DataWyse26!';
 const adminTenantId = process.env.ADMIN_SEED_TENANT_ID ?? 'tenant-1';
 const adminDisplayName = process.env.ADMIN_SEED_DISPLAY_NAME ?? 'Yezda Admin';
+const adminFirstName = process.env.ADMIN_SEED_FIRST_NAME ?? 'Yezda';
+const adminLastName = process.env.ADMIN_SEED_LAST_NAME ?? 'Admin';
 
 async function seedAdmin(): Promise<void> {
   const passwordHash = await passwordService.hash(adminPassword);
@@ -52,6 +54,8 @@ async function seedAdmin(): Promise<void> {
       roles: ['admin'],
       status: 'active',
       displayName: adminDisplayName,
+      firstName: adminFirstName,
+      lastName: adminLastName,
       createdBy: undefined,
       passwordHash,
     });
