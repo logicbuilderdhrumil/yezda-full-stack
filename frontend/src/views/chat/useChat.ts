@@ -16,7 +16,56 @@ import type {
   NewMessagePayload,
   MessageStatusUpdatePayload,
   ConversationUpdatePayload,
+  ChatParticipant,
 } from '@/@types/chat';
+import type {
+  ConversationDTO,
+  MessageDTO,
+  ParticipantDTO,
+} from '@/@types/contracts';
+
+// ============================================================================
+// DTO Mappers
+// ============================================================================
+
+/** Map ParticipantDTO to ChatParticipant */
+function mapParticipant(dto: ParticipantDTO): ChatParticipant {
+  return {
+    id: dto.id,
+    name: dto.name,
+    avatarUrl: dto.avatarUrl,
+    role: dto.type === 'candidate' ? 'candidate' : 'user',
+  };
+}
+
+/** Map MessageDTO to Message */
+function mapMessage(dto: MessageDTO, participants: ParticipantDTO[]): Message {
+  const sender = participants.find(p => p.id === dto.senderId);
+  return {
+    id: dto.id,
+    conversationId: dto.conversationId,
+    content: dto.content,
+    createdAt: dto.createdAt,
+    sender: sender ? mapParticipant(sender) : { id: dto.senderId, name: 'Unknown' },
+    status: dto.readBy.length > 0 ? 'read' : 'delivered',
+  };
+}
+
+/** Map ConversationDTO to Conversation */
+function mapConversation(dto: ConversationDTO): Conversation {
+  const participants = dto.participants.map(mapParticipant);
+  const title = dto.participants.map(p => p.name).join(', ') || 'Conversation';
+  return {
+    id: dto.id,
+    title,
+    participants,
+    lastMessage: dto.lastMessage ? mapMessage(dto.lastMessage, dto.participants) : undefined,
+    unreadCount: dto.unreadCount,
+    isGroup: dto.participants.length > 2,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+  };
+}
 
 // ============================================================================
 // Socket Events
@@ -124,9 +173,9 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
   const { session, getAccessToken } = useAuthStore();
   const user = session?.user;
 
-  // Refs for pagination cursors
-  const conversationsCursorRef = useRef<string | undefined>(undefined);
-  const messagesCursorRef = useRef<string | undefined>(undefined);
+  // Refs for pagination offsets
+  const conversationsOffsetRef = useRef<number>(0);
+  const messagesOffsetRef = useRef<number>(0);
   // Ref for pending messages (for retries)
   const pendingMessagesRef = useRef<Map<string, { content: string; conversationId: string }>>(
     new Map()
@@ -296,7 +345,7 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
   // ============================================================================
 
   const loadConversations = useCallback(
-    async (filters?: ConversationFilters, loadMore = false) => {
+    async (_filters?: ConversationFilters, loadMore = false) => {
       setState((prev) => ({
         ...prev,
         isLoadingConversations: !loadMore,
@@ -305,18 +354,20 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
       }));
 
       try {
-        const cursor = loadMore ? conversationsCursorRef.current : undefined;
-        const pagination = cursor ? { limit: 20, cursor } : { limit: 20 };
-        const result = await ChatService.listConversations(filters, pagination);
+        const offset = loadMore ? conversationsOffsetRef.current : 0;
+        const limit = 20;
+        const result = await ChatService.listConversations({ limit, offset });
 
-        conversationsCursorRef.current = result.nextCursor;
+        conversationsOffsetRef.current = offset + result.conversations.length;
+        const hasMore = offset + result.conversations.length < result.meta.total;
+        const mappedConversations = result.conversations.map(mapConversation);
 
         setState((prev) => ({
           ...prev,
           conversations: loadMore
-            ? [...prev.conversations, ...result.conversations]
-            : result.conversations,
-          hasMoreConversations: result.hasMore,
+            ? [...prev.conversations, ...mappedConversations]
+            : mappedConversations,
+          hasMoreConversations: hasMore,
           isLoadingConversations: false,
           isLoadingMoreConversations: false,
         }));
@@ -341,7 +392,7 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
       messages: [],
       hasMoreMessages: false,
     }));
-    messagesCursorRef.current = undefined;
+    messagesOffsetRef.current = 0;
 
     // Join the conversation room via socket
     if (socketRef.current?.isConnected()) {
@@ -364,18 +415,30 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
       }));
 
       try {
-        const cursor = loadMore ? messagesCursorRef.current : undefined;
-        const pagination = cursor ? { limit: 50, cursor } : { limit: 50 };
-        const result = await ChatService.listMessages(conversationId, pagination);
+        const offset = loadMore ? messagesOffsetRef.current : 0;
+        const limit = 50;
+        const result = await ChatService.getMessages(conversationId, { limit });
 
-        messagesCursorRef.current = result.nextCursor;
+        messagesOffsetRef.current = offset + result.messages.length;
+        const hasMore = offset + result.messages.length < result.meta.total;
+
+        // Get participants from the selected conversation for mapping
+        const selectedConv = state.conversations.find(c => c.id === conversationId);
+        const participantDTOs: ParticipantDTO[] = selectedConv?.participants.map(p => ({
+          id: p.id,
+          name: p.name,
+          avatarUrl: p.avatarUrl,
+          type: (p.role === 'candidate' ? 'candidate' : 'user') as 'user' | 'candidate',
+        })) ?? [];
+
+        const mappedMessages = result.messages.map(m => mapMessage(m, participantDTOs));
 
         setState((prev) => ({
           ...prev,
           messages: loadMore
-            ? [...result.messages.reverse(), ...prev.messages]
-            : result.messages.reverse(),
-          hasMoreMessages: result.hasMore,
+            ? [...mappedMessages.reverse(), ...prev.messages]
+            : mappedMessages.reverse(),
+          hasMoreMessages: hasMore,
           isLoadingMessages: false,
           isLoadingMoreMessages: false,
         }));
@@ -390,7 +453,7 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
         }));
       }
     },
-    [state.selectedConversationId]
+    [state.selectedConversationId, state.conversations]
   );
 
   const sendMessage = useCallback(
@@ -426,16 +489,27 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
       }));
 
       try {
-        const sentMessage = await ChatService.sendMessage(
+        const sentMessageDTO = await ChatService.sendMessage(
           conversationId,
-          content.trim()
+          { content: content.trim() }
         );
+
+        // Map the sent message using current user as sender
+        const mappedSentMessage: Message = {
+          id: sentMessageDTO.id,
+          conversationId: sentMessageDTO.conversationId,
+          content: sentMessageDTO.content,
+          createdAt: sentMessageDTO.createdAt,
+          sender: optimisticMessage.sender,
+          status: 'sent',
+          tempId,
+        };
 
         // Replace optimistic message with real one
         setState((prev) => ({
           ...prev,
           messages: prev.messages.map((msg) =>
-            msg.tempId === tempId ? { ...sentMessage, tempId } : msg
+            msg.tempId === tempId ? mappedSentMessage : msg
           ),
           isSending: false,
         }));
@@ -473,18 +547,31 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
     }));
 
     try {
-      const sentMessage = await ChatService.sendMessage(
+      const sentMessageDTO = await ChatService.sendMessage(
         pending.conversationId,
-        pending.content
+        { content: pending.content }
       );
 
-      setState((prev) => ({
-        ...prev,
-        messages: prev.messages.map((msg) =>
-          msg.tempId === tempId ? { ...sentMessage, tempId } : msg
-        ),
-        isSending: false,
-      }));
+      setState((prev) => {
+        // Find the original message to preserve sender info
+        const originalMsg = prev.messages.find(m => m.tempId === tempId);
+        const mappedMessage: Message = {
+          id: sentMessageDTO.id,
+          conversationId: sentMessageDTO.conversationId,
+          content: sentMessageDTO.content,
+          createdAt: sentMessageDTO.createdAt,
+          sender: originalMsg?.sender ?? { id: 'unknown', name: 'Unknown' },
+          status: 'sent',
+          tempId,
+        };
+        return {
+          ...prev,
+          messages: prev.messages.map((msg) =>
+            msg.tempId === tempId ? mappedMessage : msg
+          ),
+          isSending: false,
+        };
+      });
 
       pendingMessagesRef.current.delete(tempId);
     } catch {
@@ -569,7 +656,7 @@ export function useUnreadChatCount(): number {
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const result = await ChatService.listConversations({}, { limit: 100 });
+        const result = await ChatService.listConversations({ limit: 100 });
         const total = result.conversations.reduce(
           (sum, conv) => sum + conv.unreadCount,
           0

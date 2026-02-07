@@ -7,7 +7,7 @@ export * from './dashboard';
 export * from './form';
 export * from './ledger';
 export * from './notification.types';
-export * from './oauth';
+export { type OAuthProvider, type OAuthAuthorizeResponse, type OAuthCallbackResult, type OAuthProviderInfo, type OAuthError } from './oauth';
 export * from './organization';
 export * from './route';
 export * from './socket';

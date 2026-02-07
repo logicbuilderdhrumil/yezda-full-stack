@@ -155,8 +155,8 @@ export function UserDetailsView(): ReactNode {
                 <CardDescription>{user.email}</CardDescription>
               </div>
               <div className="flex gap-2">
-                <Badge variant={getRoleVariant(user.role)}>
-                  {t(`users.role.${user.role}`)}
+                <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
+                  {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
                 </Badge>
                 <Badge variant={getStatusVariant(user.status)}>
                   {t(`users.status.${user.status}`)}

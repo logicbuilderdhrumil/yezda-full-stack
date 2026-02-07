@@ -70,7 +70,7 @@ export const ExportService = {
     const initial = await this.request(data);
 
     // Poll for completion
-    const completed = await JobService.pollUntilComplete(initial.exportId, {
+    await JobService.pollUntilComplete(initial.exportId, {
       interval: options?.interval,
       timeout: options?.timeout,
       signal: options?.signal,

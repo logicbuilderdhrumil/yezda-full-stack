@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { PresenceStatus, PresenceState } from '@/@types/stores';
+import type { PresenceState } from '@/@types/stores';
+import type { PresenceStatus } from '@/@types/socket';
 
 interface PresenceStore extends PresenceState {
   /** Set the user's presence status. */

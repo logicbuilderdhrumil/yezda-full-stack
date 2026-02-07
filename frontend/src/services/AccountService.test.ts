@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import axios from 'axios';
 import type {
   AccountProfile,
@@ -34,6 +34,8 @@ describe('AccountService', () => {
     avatarUrl: 'https://example.com/avatar.jpg',
     timezone: 'America/New_York',
     locale: 'en',
+    notificationsEnabled: true,
+    emailNotificationsEnabled: true,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-15T00:00:00Z',
   };

@@ -7,11 +7,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrganizationsService } from '../OrganizationsService';
 import { UsersService } from '../UsersService';
-import { AccountService } from '../AccountService';
 import { ApiService } from '../ApiService';
 import type { OrganizationListResult } from '@/@types/organization';
 import type { UserListResult } from '@/@types/user';
-import type { AccountProfile, IntegrationStatus } from '@/@types/account';
+import type { AccountProfile } from '@/@types/account';
+import type { InternalAxiosRequestConfig } from 'axios';
+
+// Helper to create mock responses with full AxiosResponse shape
+const mockAxiosResponse = <T>(data: T) => ({
+  data,
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {} as InternalAxiosRequestConfig,
+});
 
 // Mock ApiService
 vi.mock('../ApiService', () => ({
@@ -48,7 +57,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
         hasMore: false,
       };
 
-      vi.mocked(ApiService.get).mockResolvedValue({ data: mockBackendResponse });
+      vi.mocked(ApiService.get).mockResolvedValue(mockAxiosResponse(mockBackendResponse));
 
       const result = await OrganizationsService.list({ page: 2, pageSize: 10 });
 
@@ -75,7 +84,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
         hasMore: false,
       };
 
-      vi.mocked(ApiService.get).mockResolvedValue({ data: mockBackendResponse });
+      vi.mocked(ApiService.get).mockResolvedValue(mockAxiosResponse(mockBackendResponse));
 
       await OrganizationsService.list({
         plan: 'enterprise',
@@ -100,7 +109,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
         nextCursor: 'cursor-xyz',
       };
 
-      vi.mocked(ApiService.get).mockResolvedValue({ data: mockBackendResponse });
+      vi.mocked(ApiService.get).mockResolvedValue(mockAxiosResponse(mockBackendResponse));
 
       const result = await OrganizationsService.list({ cursor: 'cursor-abc' });
 
@@ -136,7 +145,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
         totalPages: 1,
       };
 
-      vi.mocked(ApiService.get).mockResolvedValue({ data: mockBackendResponse });
+      vi.mocked(ApiService.get).mockResolvedValue(mockAxiosResponse(mockBackendResponse));
 
       const result = await UsersService.list({
         page: 1,
@@ -184,11 +193,11 @@ describe('Core Domains Integration - Contract Alignment', () => {
         totalPages: 1,
       };
 
-      vi.mocked(ApiService.get).mockResolvedValue({ data: mockBackendResponse });
+      vi.mocked(ApiService.get).mockResolvedValue(mockAxiosResponse(mockBackendResponse));
 
       const result = await UsersService.list({ status: 'suspended' });
 
-      expect(result.data[0].status).toBe('suspended');
+      expect(result.data[0]!.status).toBe('suspended');
     });
   });
 

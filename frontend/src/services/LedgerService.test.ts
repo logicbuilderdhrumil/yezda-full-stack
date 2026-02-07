@@ -4,6 +4,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LedgerService } from './LedgerService';
 import { ApiService } from './ApiService';
+import type { InternalAxiosRequestConfig } from 'axios';
+
+// Helper to create mock responses with full AxiosResponse shape
+const mockAxiosResponse = <T>(data: T) => ({
+  data,
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {} as InternalAxiosRequestConfig,
+});
 
 vi.mock('./ApiService', () => ({
   ApiService: {
@@ -38,7 +48,7 @@ describe('LedgerService', () => {
           summary: { totalAmount: 100, entryCount: 1, currency: 'USD' },
         },
       };
-      vi.mocked(ApiService.get).mockResolvedValueOnce(mockResponse);
+      vi.mocked(ApiService.get).mockResolvedValueOnce(mockAxiosResponse(mockResponse.data));
 
       const result = await LedgerService.listBilled({ page: 1, pageSize: 10 });
 
@@ -53,7 +63,7 @@ describe('LedgerService', () => {
       const mockResponse = {
         data: { data: [], meta: { page: 1, pageSize: 10, totalItems: 0, totalPages: 0 }, summary: { totalAmount: 0, entryCount: 0, currency: 'USD' } },
       };
-      vi.mocked(ApiService.get).mockResolvedValueOnce(mockResponse);
+      vi.mocked(ApiService.get).mockResolvedValueOnce(mockAxiosResponse(mockResponse.data));
 
       await LedgerService.listBilled({ dateFrom: '2025-01-01', dateTo: '2025-01-31' });
 
@@ -84,7 +94,7 @@ describe('LedgerService', () => {
           summary: { totalAmount: 50, entryCount: 1, currency: 'USD' },
         },
       };
-      vi.mocked(ApiService.get).mockResolvedValueOnce(mockResponse);
+      vi.mocked(ApiService.get).mockResolvedValueOnce(mockAxiosResponse(mockResponse.data));
 
       const result = await LedgerService.listUnbilled({ page: 1 });
 
@@ -99,7 +109,7 @@ describe('LedgerService', () => {
       const mockResponse = {
         data: { data: [], meta: { page: 1, pageSize: 10, totalItems: 0, totalPages: 0 }, summary: { totalAmount: 0, entryCount: 0, currency: 'USD' } },
       };
-      vi.mocked(ApiService.get).mockResolvedValueOnce(mockResponse);
+      vi.mocked(ApiService.get).mockResolvedValueOnce(mockAxiosResponse(mockResponse.data));
 
       await LedgerService.listUnbilled({ organizationId: 'org123' });
 
@@ -112,7 +122,7 @@ describe('LedgerService', () => {
   describe('exportCsv', () => {
     it('requests CSV export with filters', async () => {
       const mockBlob = new Blob(['id,amount'], { type: 'text/csv' });
-      vi.mocked(ApiService.get).mockResolvedValueOnce({ data: mockBlob });
+      vi.mocked(ApiService.get).mockResolvedValueOnce(mockAxiosResponse(mockBlob));
 
       const result = await LedgerService.exportCsv({ status: 'billed', organizationId: 'org1' });
 

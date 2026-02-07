@@ -137,8 +137,8 @@ export type ExportFormat = 'csv' | 'xlsx' | 'pdf' | 'json';
 /** Export request. */
 export interface ExportRequestDTO {
   format: ExportFormat;
-  filters?: Record<string, unknown>;
-  columns?: string[];
+  filters?: Record<string, unknown> | undefined;
+  columns?: string[] | undefined;
 }
 
 /** Export status response. */
@@ -146,11 +146,11 @@ export interface ExportStatusDTO {
   exportId: string;
   status: JobStatus;
   format: ExportFormat;
-  progress?: JobProgress;
-  downloadUrl?: string;
-  expiresAt?: string;
+  progress?: JobProgress | undefined;
+  downloadUrl?: string | undefined;
+  expiresAt?: string | undefined;
   createdAt: string;
-  completedAt?: string;
+  completedAt?: string | undefined;
 }
 
 // =============================================================================
@@ -293,7 +293,7 @@ export type MessageType = 'text' | 'file' | 'system';
 export interface ConversationDTO {
   id: string;
   participants: ParticipantDTO[];
-  lastMessage?: MessageDTO;
+  lastMessage?: MessageDTO | undefined;
   unreadCount: number;
   createdAt: string;
   updatedAt: string;
@@ -303,7 +303,7 @@ export interface ConversationDTO {
 export interface ParticipantDTO {
   id: string;
   name: string;
-  avatarUrl?: string;
+  avatarUrl?: string | undefined;
   type: 'user' | 'candidate';
 }
 

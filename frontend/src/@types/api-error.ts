@@ -45,7 +45,7 @@ export function extractApiError(error: unknown): ApiErrorEnvelope {
     const data = axiosError.response?.data as Record<string, unknown> | undefined;
     if (data) {
       return {
-        code: (data.code as string) || 'INTERNAL_ERROR',
+        code: (data.code as ErrorCode) || 'INTERNAL_ERROR',
         message: (data.message as string) || (data.error as string) || 'An unexpected error occurred',
         correlationId,
         timestamp: new Date().toISOString(),

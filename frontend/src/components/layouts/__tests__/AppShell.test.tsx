@@ -202,8 +202,8 @@ describe('Role-based filtering', () => {
     expect(filtered.find((i) => i.id === '2')).toBeUndefined();
   });
 
-  it('shows only public items to user', () => {
-    const filtered = filterByAuthority(testItems, 'user');
+  it('shows only public items to viewer', () => {
+    const filtered = filterByAuthority(testItems, 'viewer');
     expect(filtered.length).toBe(1);
     expect(filtered[0]?.id).toBe('1');
   });

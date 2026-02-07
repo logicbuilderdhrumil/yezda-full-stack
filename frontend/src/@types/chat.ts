@@ -13,8 +13,8 @@
 export interface ChatParticipant {
   id: string;
   name: string;
-  avatarUrl?: string;
-  role?: 'user' | 'admin' | 'candidate';
+  avatarUrl?: string | undefined;
+  role?: 'user' | 'admin' | 'candidate' | undefined;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface Conversation {
   /** Participants in the conversation */
   participants: ChatParticipant[];
   /** Last message in the conversation, if any */
-  lastMessage?: Message;
+  lastMessage?: Message | undefined;
   /** Count of unread messages for the current user */
   unreadCount: number;
   /** Whether the conversation is a group chat */

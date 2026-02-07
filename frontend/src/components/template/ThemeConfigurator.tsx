@@ -5,7 +5,7 @@
 
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Settings, Sun, Moon, Monitor, Check } from 'lucide-react';
+import { Sun, Moon, Monitor, Check } from 'lucide-react';
 import { useThemeStore, selectThemeMode, type ThemeStore } from '@/store';
 import {
   DropdownMenu,

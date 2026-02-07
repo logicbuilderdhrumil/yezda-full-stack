@@ -304,8 +304,8 @@ export function UsersListView(): ReactNode {
                     <TableCell className="font-medium">{getUserFullName(user)}</TableCell>
                     <TableCell className="text-gray-500">{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getRoleVariant(user.role)}>
-                        {t(`users.role.${user.role}`)}
+                      <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
+                        {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -44,7 +44,8 @@ const mockSession: AuthSession = {
     email: 'test@example.com',
     firstName: 'Test',
     lastName: 'User',
-    role: 'user',
+    roles: ['viewer'],
+    type: 'user',
     mfaEnabled: false,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
@@ -55,7 +56,7 @@ const mockAdminSession: AuthSession = {
   ...mockSession,
   user: {
     ...mockSession.user,
-    role: 'admin',
+    roles: ['admin'],
   },
 };
 
@@ -327,7 +328,7 @@ describe('RouteGuards', () => {
 
       render(
         <TestWrapper>
-          <AuthorityGuard authority={['admin', 'user']}>
+          <AuthorityGuard authority={['admin', 'viewer']}>
             <div>Multi-role Content</div>
           </AuthorityGuard>
         </TestWrapper>

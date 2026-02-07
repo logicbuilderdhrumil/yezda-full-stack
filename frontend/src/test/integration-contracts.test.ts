@@ -7,7 +7,7 @@
  * @see shared/src/contracts for contract definitions
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import type { ApiErrorEnvelope } from '@yezda/shared/contracts';
 import { isApiErrorEnvelope } from '@yezda/shared/contracts';
 
@@ -37,7 +37,7 @@ describe('Foundation Contracts', () => {
 
       expect(isApiErrorEnvelope(envelopeWithDetails)).toBe(true);
       expect(envelopeWithDetails.details).toHaveLength(2);
-      expect(envelopeWithDetails.details![0].field).toBe('email');
+      expect(envelopeWithDetails.details![0]!.field).toBe('email');
     });
 
     it('should reject invalid error envelope without code', () => {

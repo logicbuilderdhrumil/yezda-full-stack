@@ -323,7 +323,7 @@ describe('useChartColors', () => {
       return <div data-testid="primary">{colors.series[0]}</div>;
     }
     render(<TestComponent />);
-    expect(screen.getByTestId('primary')).toHaveTextContent(lightChartColors.series[0]);
+    expect(screen.getByTestId('primary')).toHaveTextContent(lightChartColors.series[0]!);
   });
 
   it('returns dark colors when in dark mode', () => {
@@ -333,6 +333,6 @@ describe('useChartColors', () => {
       return <div data-testid="primary">{colors.series[0]}</div>;
     }
     render(<TestComponent />);
-    expect(screen.getByTestId('primary')).toHaveTextContent(darkChartColors.series[0]);
+    expect(screen.getByTestId('primary')).toHaveTextContent(darkChartColors.series[0]!);
   });
 });

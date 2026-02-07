@@ -96,6 +96,7 @@ export class SocketService {
 
       this.socket = io(fullUrl, {
         ...DEFAULT_SOCKET_OPTIONS,
+        transports: [...DEFAULT_SOCKET_OPTIONS.transports],
         auth: { token },
         autoConnect: true,
       });

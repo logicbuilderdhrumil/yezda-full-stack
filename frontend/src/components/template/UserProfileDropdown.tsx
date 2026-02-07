@@ -91,7 +91,7 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
             <span>{t('nav.settings')}</span>
           </Link>
         </DropdownMenuItem>
-        {user.role === 'admin' && (
+        {user.roles.includes('admin') && (
           <DropdownMenuItem asChild>
             <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
               <Shield className="h-4 w-4" />

@@ -14,17 +14,17 @@ export interface KPIMetric {
   /** Current value of the metric. */
   value: number | string;
   /** Optional formatted value for display. */
-  formattedValue?: string;
+  formattedValue?: string | undefined;
   /** Change from previous period. */
-  delta?: number;
+  delta?: number | undefined;
   /** Direction of change. */
-  deltaDirection?: DeltaDirection;
+  deltaDirection?: DeltaDirection | undefined;
   /** Delta percentage text (e.g., "+12%"). */
-  deltaText?: string;
+  deltaText?: string | undefined;
   /** Optional icon name or component key. */
-  icon?: string;
+  icon?: string | undefined;
   /** Optional link to detailed view. */
-  href?: string;
+  href?: string | undefined;
 }
 
 /** Activity types for the activity feed. */
@@ -48,9 +48,9 @@ export interface ActivityItem {
   /** Timestamp of the activity. */
   timestamp: string;
   /** Optional actor name or user who performed the action. */
-  actor?: string;
+  actor?: string | undefined;
   /** Optional link to related resource. */
-  href?: string;
+  href?: string | undefined;
 }
 
 /** Chart data point for trend visualization. */
@@ -88,5 +88,5 @@ export interface DashboardMetricsResponse {
 /** Dashboard refresh options. */
 export interface DashboardRefreshOptions {
   /** Force refresh, bypassing cache. */
-  force?: boolean;
+  force?: boolean | undefined;
 }

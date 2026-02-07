@@ -28,14 +28,14 @@ export interface LedgerSummary {
 
 /** Filter parameters for listing ledger entries. */
 export interface LedgerListParams {
-  page?: number;
-  pageSize?: number;
-  status?: LedgerEntryStatus;
-  organizationId?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  sortBy?: 'createdAt' | 'billedAt' | 'amount' | 'organizationName';
-  sortOrder?: 'asc' | 'desc';
+  page?: number | undefined;
+  pageSize?: number | undefined;
+  status?: LedgerEntryStatus | undefined;
+  organizationId?: string | undefined;
+  dateFrom?: string | undefined;
+  dateTo?: string | undefined;
+  sortBy?: 'createdAt' | 'billedAt' | 'amount' | 'organizationName' | undefined;
+  sortOrder?: 'asc' | 'desc' | undefined;
 }
 
 /** Paginated list response for ledger entries. */

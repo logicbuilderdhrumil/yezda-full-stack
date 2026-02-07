@@ -32,7 +32,7 @@ export type UserFormSubmitData = CreateUserPayload | (UpdateUserPayload & {
   email: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
+  roles: UserRole[];
 });
 
 export interface UserFormProps {
@@ -122,7 +122,7 @@ export function UserForm({
   const [email, setEmail] = useState(initialData?.email || '');
   const [firstName, setFirstName] = useState(initialData?.firstName || '');
   const [lastName, setLastName] = useState(initialData?.lastName || '');
-  const [role, setRole] = useState<UserRole>(initialData?.role || 'user');
+  const [role, setRole] = useState<UserRole>(initialData?.roles?.[0] || 'viewer');
   const [status, setStatus] = useState<UserStatus>(initialData?.status || 'pending');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [password, setPassword] = useState('');
@@ -164,7 +164,7 @@ export function UserForm({
       email: email.trim(),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      role,
+      roles: [role],
       ...(phone.trim() && { phone: phone.trim() }),
       ...(!isEdit && !sendInvitation && password.trim() && { password: password.trim() }),
       ...(!isEdit && { sendInvitation }),

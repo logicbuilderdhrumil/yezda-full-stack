@@ -1,18 +1,12 @@
 /**
  * Chat Service Tests
- * Task 1.5: Tests for ChatService list/send methods
+ * Task 1.5: Tests for ChatService methods
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChatService } from './ChatService';
 import { ApiService } from '@/services/ApiService';
-import type {
-  Conversation,
-  ConversationListResponse,
-  Message,
-  MessageListResponse,
-  SendMessageResponse,
-} from '@/@types/chat';
+import type { ConversationDTO, MessageDTO, ResponseMeta } from '@/@types/contracts';
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 vi.mock('@/services/ApiService');
@@ -31,25 +25,30 @@ function mockAxiosResponse<T>(data: T): AxiosResponse<T> {
 }
 
 describe('ChatService', () => {
-  const mockConversation: Conversation = {
+  const mockMeta: ResponseMeta = {
+    total: 1,
+    limit: 20,
+    offset: 0,
+  };
+
+  const mockConversation: ConversationDTO = {
     id: 'conv-1',
-    title: 'Test Conversation',
     participants: [
-      { id: 'user-1', name: 'User 1' },
-      { id: 'user-2', name: 'User 2' },
+      { id: 'user-1', name: 'User 1', type: 'user' },
+      { id: 'user-2', name: 'User 2', type: 'user' },
     ],
     unreadCount: 0,
-    isGroup: false,
     createdAt: '2026-02-01T00:00:00Z',
     updatedAt: '2026-02-04T00:00:00Z',
   };
 
-  const mockMessage: Message = {
+  const mockMessage: MessageDTO = {
     id: 'msg-1',
     conversationId: 'conv-1',
-    sender: { id: 'user-1', name: 'User 1' },
+    senderId: 'user-1',
+    type: 'text',
     content: 'Hello',
-    status: 'sent',
+    readBy: [],
     createdAt: '2026-02-04T10:00:00Z',
   };
 
@@ -58,42 +57,32 @@ describe('ChatService', () => {
   });
 
   describe('listConversations', () => {
-    it('should list conversations without filters', async () => {
-      const mockResponse: ConversationListResponse = {
+    it('should list conversations without options', async () => {
+      const mockResponse = {
         conversations: [mockConversation],
-        total: 1,
-        hasMore: false,
+        meta: mockMeta,
       };
       mockApiService.get.mockResolvedValue(mockAxiosResponse(mockResponse));
 
       const result = await ChatService.listConversations();
 
-      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversations.list', {
-        params: {},
+      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversations', {
+        params: undefined,
       });
       expect(result.conversations).toHaveLength(1);
     });
 
-    it('should list conversations with filters and pagination', async () => {
-      const mockResponse: ConversationListResponse = {
+    it('should list conversations with options', async () => {
+      const mockResponse = {
         conversations: [],
-        total: 0,
-        hasMore: false,
+        meta: { ...mockMeta, total: 0 },
       };
       mockApiService.get.mockResolvedValue(mockAxiosResponse(mockResponse));
 
-      await ChatService.listConversations(
-        { search: 'test', participantId: 'user-1' },
-        { limit: 10, cursor: 'abc123' }
-      );
+      await ChatService.listConversations({ limit: 10, offset: 5 });
 
-      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversations.list', {
-        params: {
-          search: 'test',
-          participantId: 'user-1',
-          limit: '10',
-          cursor: 'abc123',
-        },
+      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversations', {
+        params: { limit: 10, offset: 5 },
       });
     });
   });
@@ -104,93 +93,89 @@ describe('ChatService', () => {
 
       const result = await ChatService.getConversation('conv-1');
 
-      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversations.get', {
+      expect(mockApiService.get).toHaveBeenCalledWith('chat.conversation', {
         pathParams: { id: 'conv-1' },
       });
       expect(result.id).toBe('conv-1');
     });
   });
 
-  describe('listMessages', () => {
-    it('should list messages in a conversation', async () => {
-      const mockResponse: MessageListResponse = {
+  describe('getMessages', () => {
+    it('should get messages in a conversation', async () => {
+      const mockResponse = {
         messages: [mockMessage],
-        total: 1,
-        hasMore: false,
+        meta: mockMeta,
       };
       mockApiService.get.mockResolvedValue(mockAxiosResponse(mockResponse));
 
-      const result = await ChatService.listMessages('conv-1');
+      const result = await ChatService.getMessages('conv-1');
 
-      expect(mockApiService.get).toHaveBeenCalledWith('chat.messages.list', {
-        pathParams: { conversationId: 'conv-1' },
-        params: {},
+      expect(mockApiService.get).toHaveBeenCalledWith('chat.messages', {
+        pathParams: { id: 'conv-1' },
+        params: undefined,
       });
       expect(result.messages).toHaveLength(1);
     });
 
-    it('should list messages with pagination', async () => {
-      const mockResponse: MessageListResponse = {
+    it('should get messages with options', async () => {
+      const mockResponse = {
         messages: [],
-        total: 0,
-        hasMore: false,
+        meta: { ...mockMeta, total: 0 },
       };
       mockApiService.get.mockResolvedValue(mockAxiosResponse(mockResponse));
 
-      await ChatService.listMessages('conv-1', { limit: 20, cursor: 'xyz' });
+      await ChatService.getMessages('conv-1', { limit: 20, before: 'msg-5' });
 
-      expect(mockApiService.get).toHaveBeenCalledWith('chat.messages.list', {
-        pathParams: { conversationId: 'conv-1' },
-        params: { limit: '20', cursor: 'xyz' },
+      expect(mockApiService.get).toHaveBeenCalledWith('chat.messages', {
+        pathParams: { id: 'conv-1' },
+        params: { limit: 20, before: 'msg-5' },
       });
     });
   });
 
   describe('sendMessage', () => {
     it('should send a message', async () => {
-      const mockResponse: SendMessageResponse = {
-        message: {
-          ...mockMessage,
-          id: 'msg-new',
-          content: 'Hello!',
-        },
-      };
-      mockApiService.post.mockResolvedValue(mockAxiosResponse(mockResponse));
+      const newMessage = { ...mockMessage, id: 'msg-new', content: 'Hello!' };
+      mockApiService.post.mockResolvedValue(mockAxiosResponse(newMessage));
 
-      const result = await ChatService.sendMessage('conv-1', 'Hello!');
+      const result = await ChatService.sendMessage('conv-1', { content: 'Hello!' });
 
-      expect(mockApiService.post).toHaveBeenCalledWith('chat.messages.send', {
-        conversationId: 'conv-1',
-        content: 'Hello!',
-      });
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        'chat.send',
+        { content: 'Hello!' },
+        { pathParams: { id: 'conv-1' } }
+      );
       expect(result.content).toBe('Hello!');
     });
   });
 
   describe('markAsRead', () => {
-    it('should mark all messages as read', async () => {
-      mockApiService.post.mockResolvedValue(mockAxiosResponse({ count: 5 }));
+    it('should mark conversation as read', async () => {
+      mockApiService.post.mockResolvedValue(mockAxiosResponse(undefined));
 
-      const result = await ChatService.markAsRead('conv-1');
+      await ChatService.markAsRead('conv-1');
 
       expect(mockApiService.post).toHaveBeenCalledWith(
-        'chat.messages.markAsRead',
-        {},
-        { pathParams: { conversationId: 'conv-1' } }
+        'chat.markRead',
+        undefined,
+        { pathParams: { id: 'conv-1' } }
       );
-      expect(result.count).toBe(5);
     });
+  });
 
-    it('should mark specific messages as read', async () => {
-      mockApiService.post.mockResolvedValue(mockAxiosResponse({ count: 2 }));
-
-      await ChatService.markAsRead('conv-1', ['msg-1', 'msg-2']);
-
-      expect(mockApiService.post).toHaveBeenCalledWith(
-        'chat.messages.markAsRead',
-        { messageIds: ['msg-1', 'msg-2'] },
-        { pathParams: { conversationId: 'conv-1' } }
+  describe('getUnreadCount', () => {
+    it('should get total unread count', async () => {
+      const conversations = [
+        { ...mockConversation, unreadCount: 3 },
+        { ...mockConversation, id: 'conv-2', unreadCount: 2 },
+      ];
+      mockApiService.get.mockResolvedValue(
+        mockAxiosResponse({ conversations, meta: mockMeta })
       );
+
+      const result = await ChatService.getUnreadCount();
+
+      expect(result).toBe(5);
     });
   });
 });

@@ -7,16 +7,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useChat } from './useChat';
 import { ChatService } from '@/services/ChatService';
-import type { Conversation, Message } from '@/@types/chat';
+import type { ConversationDTO, MessageDTO, ParticipantDTO } from '@/@types/contracts';
 
 // Mock services
 vi.mock('@/services/ChatService', () => ({
   ChatService: {
     listConversations: vi.fn(),
     getConversation: vi.fn(),
-    listMessages: vi.fn(),
+    getMessages: vi.fn(),
     sendMessage: vi.fn(),
     markAsRead: vi.fn(),
+    getUnreadCount: vi.fn(),
   },
 }));
 
@@ -40,25 +41,26 @@ vi.mock('@/store', () => ({
   }),
 }));
 
-const mockConversation: Conversation = {
+const mockParticipants: ParticipantDTO[] = [
+  { id: 'user-1', name: 'User 1', type: 'user' },
+  { id: 'user-2', name: 'User 2', type: 'user' },
+];
+
+const mockConversation: ConversationDTO = {
   id: 'conv-1',
-  title: 'Test Conversation',
-  participants: [
-    { id: 'user-1', name: 'User 1' },
-    { id: 'user-2', name: 'User 2' },
-  ],
+  participants: mockParticipants,
   unreadCount: 2,
-  isGroup: false,
   createdAt: '2026-02-01T00:00:00Z',
   updatedAt: '2026-02-04T00:00:00Z',
 };
 
-const mockMessage: Message = {
+const mockMessage: MessageDTO = {
   id: 'msg-1',
   conversationId: 'conv-1',
-  sender: { id: 'user-2', name: 'User 2' },
+  senderId: 'user-2',
+  type: 'text',
   content: 'Hello!',
-  status: 'read',
+  readBy: ['user-1'],
   createdAt: '2026-02-04T10:00:00Z',
 };
 
@@ -67,13 +69,11 @@ describe('useChat', () => {
     vi.clearAllMocks();
     vi.mocked(ChatService.listConversations).mockResolvedValue({
       conversations: [mockConversation],
-      total: 1,
-      hasMore: false,
+      meta: { total: 1, limit: 50, offset: 0 },
     });
-    vi.mocked(ChatService.listMessages).mockResolvedValue({
+    vi.mocked(ChatService.getMessages).mockResolvedValue({
       messages: [mockMessage],
-      total: 1,
-      hasMore: false,
+      meta: { total: 1, limit: 50, offset: 0 },
     });
   });
 
@@ -128,17 +128,18 @@ describe('useChat', () => {
       await result.current.loadMessages();
     });
 
-    expect(ChatService.listMessages).toHaveBeenCalledWith('conv-1', expect.any(Object));
+    expect(ChatService.getMessages).toHaveBeenCalledWith('conv-1', expect.any(Object));
     expect(result.current.messages).toHaveLength(1);
   });
 
   it('should send a message with optimistic update', async () => {
-    const sentMessage: Message = {
+    const sentMessage: MessageDTO = {
       id: 'msg-new',
       conversationId: 'conv-1',
-      sender: { id: 'user-1', name: 'Test User' },
+      senderId: 'user-1',
+      type: 'text',
       content: 'Hello back!',
-      status: 'sent',
+      readBy: [],
       createdAt: '2026-02-04T10:01:00Z',
     };
     vi.mocked(ChatService.sendMessage).mockResolvedValue(sentMessage);
@@ -190,8 +191,7 @@ describe('useChat', () => {
         { ...mockConversation, unreadCount: 5 },
         { ...mockConversation, id: 'conv-2', unreadCount: 3 },
       ],
-      total: 2,
-      hasMore: false,
+      meta: { total: 2, limit: 50, offset: 0 },
     });
 
     const { result } = renderHook(() => useChat({ autoConnect: false }));

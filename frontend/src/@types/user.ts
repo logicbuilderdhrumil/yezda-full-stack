@@ -19,9 +19,11 @@ export interface ManagedUser {
   displayName?: string;
   firstName?: string;
   lastName?: string;
+  phone?: string;
   status: UserStatus;
   roles: UserRole[];
   tenantId: string;
+  organizationName?: string;
   mfaEnabled: boolean;
   lockedUntil?: string;
   lastLoginAt?: string;
@@ -38,18 +40,21 @@ export interface CreateUserPayload {
   displayName?: string;
   firstName?: string;
   lastName?: string;
+  phone?: string;
   status?: UserStatus;
   roles: UserRole[];
   password?: string;
+  sendInvitation?: boolean;
 }
 
 /** Payload for updating a user - aligned with backend UpdateUserInput. */
 export interface UpdateUserPayload {
-  displayName?: string;
-  firstName?: string;
-  lastName?: string;
-  status?: UserStatus;
-  roles?: UserRole[];
+  displayName?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  phone?: string | undefined;
+  status?: UserStatus | undefined;
+  roles?: UserRole[] | undefined;
 }
 
 /** Filter parameters for listing users - aligned with backend UserSearchParams. */

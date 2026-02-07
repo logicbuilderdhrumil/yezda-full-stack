@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Navigate, useLocation, type Location } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import type { UserRole } from '@/@types/auth';
+import { hasRole } from '@/@types/auth';
 
 /**
  * Type guard to safely access location state with `from` property.
@@ -114,8 +115,8 @@ export function RequireAuthority({
     return <>{children}</>;
   }
 
-  // Check if user role is in allowed authorities
-  if (user && authorities.includes(user.role)) {
+  // Check if user has any of the required roles
+  if (user && hasRole(user, ...authorities)) {
     return <>{children}</>;
   }
 

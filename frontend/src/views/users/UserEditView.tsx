@@ -70,7 +70,7 @@ export function UserEditView(): ReactNode {
       const updatePayload: UpdateUserPayload = {
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role,
+        roles: data.roles,
       };
       if ('phone' in data && data.phone) {
         updatePayload.phone = data.phone;

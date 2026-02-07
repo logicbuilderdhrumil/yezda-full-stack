@@ -4,6 +4,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DashboardService } from './DashboardService';
 import { ApiService } from './ApiService';
+import type { InternalAxiosRequestConfig } from 'axios';
+
+// Helper to create mock responses with full AxiosResponse shape
+const mockAxiosResponse = <T>(data: T) => ({
+  data,
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {} as InternalAxiosRequestConfig,
+});
 
 // Mock ApiService
 vi.mock('./ApiService', () => ({
@@ -70,10 +80,10 @@ const mockBackendTrends = {
 function mockApiGet() {
   vi.mocked(ApiService.get).mockImplementation((endpoint: string) => {
     if (endpoint === 'dashboard.metrics') {
-      return Promise.resolve({ data: mockBackendSummary });
+      return Promise.resolve(mockAxiosResponse(mockBackendSummary));
     }
     if (endpoint === 'dashboard.trends') {
-      return Promise.resolve({ data: mockBackendTrends });
+      return Promise.resolve(mockAxiosResponse(mockBackendTrends));
     }
     return Promise.reject(new Error(`Unexpected endpoint: ${endpoint}`));
   });
@@ -139,10 +149,10 @@ describe('DashboardService', () => {
 
       // Verify charts transformed correctly
       expect(result.charts).toHaveLength(1);
-      expect(result.charts[0].id).toBe('completed_tasks');
-      expect(result.charts[0].title).toBe('Weekly Screenings');
-      expect(result.charts[0].type).toBe('line'); // first item, index 0 -> line
-      expect(result.charts[0].data).toHaveLength(3);
+      expect(result.charts[0]!.id).toBe('completed_tasks');
+      expect(result.charts[0]!.title).toBe('Weekly Screenings');
+      expect(result.charts[0]!.type).toBe('line'); // first item, index 0 -> line
+      expect(result.charts[0]!.data).toHaveLength(3);
 
       // Verify lastUpdated
       expect(result.lastUpdated).toBe('2026-02-04T10:30:00Z');
@@ -193,7 +203,7 @@ describe('DashboardService', () => {
     it('handles trends endpoint failure gracefully', async () => {
       vi.mocked(ApiService.get).mockImplementation((endpoint: string) => {
         if (endpoint === 'dashboard.metrics') {
-          return Promise.resolve({ data: mockBackendSummary });
+          return Promise.resolve(mockAxiosResponse(mockBackendSummary));
         }
         if (endpoint === 'dashboard.trends') {
           return Promise.reject(new Error('Trends unavailable'));

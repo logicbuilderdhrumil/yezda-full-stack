@@ -28,6 +28,13 @@ export interface Organization {
   plan: OrganizationPlan;
   logoUrl?: string;
   website?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
   primaryContactEmail: string;
   primaryContactName?: string;
   metadata?: Record<string, unknown>;
@@ -46,7 +53,14 @@ export interface CreateOrganizationPayload {
   plan?: OrganizationPlan;
   logoUrl?: string;
   website?: string;
-  primaryContactEmail: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  primaryContactEmail?: string;
   primaryContactName?: string;
   settings?: Partial<OrganizationSettings>;
   metadata?: Record<string, unknown>;
@@ -107,7 +121,7 @@ export interface OrganizationListResponse {
     totalItems: number;
     totalPages: number;
     hasMore: boolean;
-    nextCursor?: string;
+    nextCursor?: string | undefined;
   };
 }
 

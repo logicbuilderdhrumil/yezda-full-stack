@@ -14,20 +14,20 @@ import type {
 /** Options for job polling. */
 export interface PollOptions {
   /** Polling interval in milliseconds (default: 2000). */
-  interval?: number;
+  interval?: number | undefined;
   /** Maximum polling duration in milliseconds (default: 300000 = 5 minutes). */
-  timeout?: number;
+  timeout?: number | undefined;
   /** Callback for progress updates. */
-  onProgress?: (job: JobStatusDTO) => void;
+  onProgress?: ((job: JobStatusDTO) => void) | undefined;
   /** Abort signal for cancellation. */
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }
 
 /** Job list options. */
 export interface JobListOptions {
-  status?: JobStatus;
-  limit?: number;
-  offset?: number;
+  status?: JobStatus | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
 }
 
 /**

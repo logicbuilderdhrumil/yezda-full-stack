@@ -100,7 +100,7 @@ export function formatRelativeTime(date: Date | string | number, locale = 'en-US
  */
 export function formatISODate(date: Date | string | number): string {
   const d = toDate(date);
-  return d.toISOString().split('T')[0];
+  return d.toISOString().split('T')[0] ?? '';
 }
 
 /**

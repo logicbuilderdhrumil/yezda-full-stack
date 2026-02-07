@@ -45,7 +45,7 @@ function BarChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
         >
           <div
             className="w-full bg-primary-500 dark:bg-primary-400 rounded-t transition-all duration-300"
-            style={{ height: `${Math.max(heights[index], 4)}%` }}
+            style={{ height: `${Math.max(heights[index] ?? 0, 4)}%` }}
             title={`${point.label}: ${point.value}`}
           />
           <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate w-full text-center">
@@ -96,15 +96,16 @@ function LineChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
         {heights.map((h, i) => {
           const x = padding + (i / (data.length - 1 || 1)) * chartWidth;
           const y = height - padding - 16 - (h / 100) * chartHeight;
-          return (
+          const dataPoint = data[i];
+          return dataPoint ? (
             <circle
-              key={data[i].label}
+              key={dataPoint.label}
               cx={x}
               cy={y}
               r="3"
               className="fill-primary-500 dark:fill-primary-400"
             />
-          );
+          ) : null;
         })}
       </svg>
       <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2">

@@ -9,12 +9,15 @@ export type IntegrationProvider = 'google' | 'microsoft' | 'slack' | 'github';
 /** Account profile data returned from API - aligned with backend ProfileResponse. */
 export interface AccountProfile {
   id: string;
-  displayName?: string;
-  avatarUrl?: string;
-  phone?: string;
-  timezone?: string;
-  locale?: string;
-  bio?: string;
+  email?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  displayName?: string | undefined;
+  avatarUrl?: string | undefined;
+  phone?: string | undefined;
+  timezone?: string | undefined;
+  locale?: string | undefined;
+  bio?: string | undefined;
   notificationsEnabled: boolean;
   emailNotificationsEnabled: boolean;
   createdAt: string;
@@ -23,6 +26,8 @@ export interface AccountProfile {
 
 /** Payload for updating account profile - aligned with backend ProfileUpdateRequest. */
 export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
   displayName?: string;
   avatarUrl?: string | null;
   phone?: string | null;

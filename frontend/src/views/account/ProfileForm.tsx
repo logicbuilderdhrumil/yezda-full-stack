@@ -89,28 +89,28 @@ export function ProfileForm({
   const isAvatarLoading = isLoading ?? false;
 
   // Form state
-  const [firstName, setFirstName] = useState(profile.firstName);
-  const [lastName, setLastName] = useState(profile.lastName);
+  const [firstName, setFirstName] = useState(profile.firstName ?? '');
+  const [lastName, setLastName] = useState(profile.lastName ?? '');
   const [phone, setPhone] = useState(profile.phone || '');
 
   const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
 
   // Sync form state when profile prop changes (e.g., after successful save)
   useEffect(() => {
-    setFirstName(profile.firstName);
-    setLastName(profile.lastName);
+    setFirstName(profile.firstName ?? '');
+    setLastName(profile.lastName ?? '');
     setPhone(profile.phone || '');
   }, [profile.firstName, profile.lastName, profile.phone]);
 
-  const displayName = `${firstName} ${lastName}`.trim() || profile.email;
+  const displayName = `${firstName} ${lastName}`.trim() || profile.email || '';
 
   const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
 
     const formData: UpdateProfilePayload = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      phone: phone.trim() || undefined,
+      firstName: firstName.trim() || '',
+      lastName: lastName.trim() || '',
+      phone: phone.trim() || null,
     };
 
     const validationErrors = validateForm(formData, t);
@@ -124,15 +124,15 @@ export function ProfileForm({
   };
 
   const handleReset = (): void => {
-    setFirstName(profile.firstName);
-    setLastName(profile.lastName);
+    setFirstName(profile.firstName ?? '');
+    setLastName(profile.lastName ?? '');
     setPhone(profile.phone || '');
     setErrors(EMPTY_ERRORS);
   };
 
   const hasChanges =
-    firstName !== profile.firstName ||
-    lastName !== profile.lastName ||
+    firstName !== (profile.firstName ?? '') ||
+    lastName !== (profile.lastName ?? '') ||
     phone !== (profile.phone || '');
 
   return (
