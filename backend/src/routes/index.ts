@@ -29,6 +29,7 @@ import templateLayoutsRoutes from './template-layouts.routes.js';
 import consentRoutes from './consent.routes.js';
 import applicationRoutes from './application.routes.js';
 import screeningPipelineRoutes from './screening-pipeline.routes.js';
+import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
 
 const router = Router();
 
@@ -62,5 +63,6 @@ router.use('/template-layouts', templateLayoutsRoutes);
 router.use('/consent', consentRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/screening-pipelines', screeningPipelineRoutes);
+router.use('/global-candidates', globalCandidateIdentityRoutes);
 
 export default router;

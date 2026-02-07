@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { candidateManagementRepository } from '../repositories/candidate-management.repository.js';
 import { auditService } from './audit.service.js';
 import { metricsService } from './metrics.service.js';
+import { globalCandidateIdentityService } from './global-candidate-identity.service.js';
 import type {
   ManagedCandidate,
   CreateCandidateInput,
@@ -211,6 +212,21 @@ export class CandidateManagementService {
         tenantId: ctx.tenantId,
         createdBy: ctx.actorId,
       });
+
+      // Resolve or create global identity for cross-org tracking
+      try {
+        await globalCandidateIdentityService.resolveOrCreateGlobalIdentity(
+          input.email,
+          input.firstName,
+          input.lastName,
+          ctx.tenantId,
+          candidateId,
+          ctx.actorId
+        );
+      } catch (globalIdError) {
+        // Non-blocking: log but don't fail the candidate creation
+        console.error('[CandidateManagement] Global identity resolution failed (non-blocking):', globalIdError);
+      }
 
       // Task 1.6: Audit log creation
       auditService.log({
