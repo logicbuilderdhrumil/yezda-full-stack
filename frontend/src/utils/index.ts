@@ -85,3 +85,19 @@ export {
   fuzzySearch,
   highlightMatches,
 } from './search';
+
+// File utilities
+export {
+  formatFileSize,
+  parseFileSize,
+  getFileCategory,
+  isFileType,
+  getFileExtension,
+  isPreviewable,
+  extractFileMetadata,
+  calculateUploadProgress,
+  FILE_CATEGORIES,
+  type FileCategory,
+  type FileMetadata,
+  type UploadProgress,
+} from './fileUtils';
