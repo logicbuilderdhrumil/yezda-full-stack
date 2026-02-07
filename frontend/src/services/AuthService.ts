@@ -196,14 +196,59 @@ export const AuthService = {
 
   /**
    * Refresh the access token using the refresh token.
-   * @returns The new session with updated tokens.
+   * Transforms the flat backend response into a full AuthSession by fetching user data.
+   * @returns The new session with updated tokens and user profile.
    * @throws {ApiErrorEnvelope} On refresh failure (e.g., token expired)
    */
   async refreshToken(refreshToken: string): Promise<AuthSession> {
     const client = createClient();
     try {
-      const response = await client.post<AuthSession>('/refresh', { refreshToken });
-      return response.data;
+      const response = await client.post<BackendSignInResponse>('/refresh', { refreshToken });
+      const data = response.data;
+
+      if (!data.accessToken || !data.refreshToken || data.expiresIn === undefined) {
+        throw new Error('Invalid refresh response');
+      }
+
+      // Fetch user profile with the new access token
+      const userResponse = await client.get<{
+        id: string;
+        email: string;
+        firstName?: string;
+        lastName?: string;
+        role: string;
+        userType: string;
+        mfaEnabled: boolean;
+        tenantId?: string;
+        createdAt: string;
+        updatedAt: string;
+      }>('/me', {
+        headers: { Authorization: `Bearer ${data.accessToken}` },
+      });
+      const userData = userResponse.data;
+
+      const user = {
+        id: userData.id,
+        email: userData.email,
+        roles: [userData.role as 'admin' | 'manager' | 'agent' | 'viewer'],
+        type: userData.userType as 'user' | 'candidate',
+        mfaEnabled: userData.mfaEnabled,
+        createdAt: userData.createdAt,
+        updatedAt: userData.updatedAt,
+        ...(userData.firstName ? { firstName: userData.firstName } : {}),
+        ...(userData.lastName ? { lastName: userData.lastName } : {}),
+        ...(userData.tenantId ? { tenantId: userData.tenantId } : {}),
+        ...(userData.firstName && userData.lastName
+          ? { displayName: `${userData.firstName} ${userData.lastName}` }
+          : {}),
+      };
+
+      return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        expiresAt: Date.now() + data.expiresIn * 1000,
+        user,
+      };
     } catch (err) {
       throw extractApiError(err);
     }

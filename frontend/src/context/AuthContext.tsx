@@ -83,8 +83,12 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
 
     const restoreSession = async () => {
       const refreshToken = getRefreshToken();
-      // Only refresh if we have a token and the session is expired
-      if (!refreshToken || !isSessionExpired()) return;
+      if (!refreshToken) return;
+
+      // Refresh if session is expired OR if the hydrated session is corrupted
+      // (e.g., missing user data from a previous bug or interrupted refresh)
+      const needsRefresh = isSessionExpired() || !session?.user;
+      if (!needsRefresh) return;
 
       setLoading(true);
       try {
@@ -100,7 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps): ReactNode {
     return () => {
       isMounted = false;
     };
-  }, [hasHydrated, getRefreshToken, isSessionExpired, setLoading, setSession, clearSession]);
+  }, [hasHydrated, session, getRefreshToken, isSessionExpired, setLoading, setSession, clearSession]);
 
   // Block rendering until hydration completes to prevent API calls with null tokens
   if (!hasHydrated) {
