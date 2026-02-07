@@ -184,6 +184,28 @@ const SettingsView = lazy(() =>
   }))
 );
 
+// Pipeline views (admin only)
+const PipelinesListView = lazy(() =>
+  import('@/views/pipelines/PipelinesListView').then((m) => ({
+    default: m.PipelinesListView,
+  }))
+);
+const PipelineCreateView = lazy(() =>
+  import('@/views/pipelines/PipelineCreateView').then((m) => ({
+    default: m.PipelineCreateView,
+  }))
+);
+const PipelineDetailsView = lazy(() =>
+  import('@/views/pipelines/PipelineDetailsView').then((m) => ({
+    default: m.PipelineDetailsView,
+  }))
+);
+const PipelineEditView = lazy(() =>
+  import('@/views/pipelines/PipelineEditView').then((m) => ({
+    default: m.PipelineEditView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -424,6 +446,23 @@ export const protectedRoutes: RouteObject[] = [
           {
             path: 'screening',
             element: withCandidateGuard(ScreeningListView),
+          },
+          // Pipeline management routes (admin only)
+          {
+            path: 'pipelines',
+            element: withAdminGuard(PipelinesListView),
+          },
+          {
+            path: 'pipelines/create',
+            element: withAdminGuard(PipelineCreateView),
+          },
+          {
+            path: 'pipelines/:id',
+            element: withAdminGuard(PipelineDetailsView),
+          },
+          {
+            path: 'pipelines/:id/edit',
+            element: withAdminGuard(PipelineEditView),
           },
           // Reports route (admin and manager)
           {

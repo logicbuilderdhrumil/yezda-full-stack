@@ -146,6 +146,16 @@ export const endpoints = {
   // Dashboard endpoints
   'dashboard.metrics': { path: '/dashboard/summary', version: 'v1' },
   'dashboard.trends': { path: '/dashboard/trends', version: 'v1' },
+
+  // Screening pipelines endpoints
+  'screening-pipelines.list': { path: '/screening-pipelines', version: 'v1' },
+  'screening-pipelines.detail': { path: '/screening-pipelines/:id', version: 'v1' },
+  'screening-pipelines.activate': { path: '/screening-pipelines/:id/activate', version: 'v1' },
+  'screening-pipelines.archive': { path: '/screening-pipelines/:id/archive', version: 'v1' },
+  'screening-pipelines.assign': { path: '/screening-pipelines/:id/assign', version: 'v1' },
+  'screening-pipelines.assignmentProgress': { path: '/screening-pipelines/assignments/:id/progress', version: 'v1' },
+  'screening-pipelines.candidateAssignments': { path: '/screening-pipelines/candidates/:candidateId/assignments', version: 'v1' },
+  'screening-pipelines.completeStage': { path: '/screening-pipelines/assignments/:assignmentId/stages/:stageId/complete', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

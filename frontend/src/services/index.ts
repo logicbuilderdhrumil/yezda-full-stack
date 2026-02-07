@@ -38,3 +38,4 @@ export { ChartService } from './ChartService';
 export { AssetService, type AssetUploadOptions, type AssetListOptions } from './AssetService';
 export { LedgerService } from './LedgerService';
 export { ChatService, type MessageListOptions } from './ChatService';
+export { PipelineService } from './PipelineService';

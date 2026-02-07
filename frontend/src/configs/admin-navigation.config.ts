@@ -48,6 +48,13 @@ export const adminNavConfig: NavConfig = {
           authorities: ['admin', 'manager'],
         },
         {
+          id: 'pipelines',
+          label: 'Pipelines',
+          path: '/admin/pipelines',
+          icon: 'shield',
+          authorities: ['admin'],
+        },
+        {
           id: 'files',
           label: 'Files',
           path: '/admin/files',
