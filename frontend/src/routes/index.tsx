@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
-import { AdminShell } from '@/components/layouts';
+import { AdminShell, ClientShell } from '@/components/layouts';
 import { ProtectedRoute, AuthorityGuard } from '@/components/route';
 import { RouteLoadingFallback } from '@/components/ui';
 
@@ -252,13 +252,48 @@ export const publicRoutes: RouteObject[] = [
 
 /**
  * Protected routes that require authentication.
+ * Client portal routes use ClientShell layout at root (/).
  * Admin routes are wrapped with AdminShell layout under /admin prefix.
  */
 export const protectedRoutes: RouteObject[] = [
-  // Root redirect to admin area (temporary until client portal is added in Phase 2)
+  // Client portal routes (for screening clients and org staff)
   {
     path: '/',
-    element: <Navigate to="/admin" replace />,
+    element: (
+      <ProtectedRoute>
+        <ClientShell />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: withSuspense(HomeView),
+      },
+      {
+        path: 'candidates',
+        element: withSuspense(CandidatesListView),
+      },
+      {
+        path: 'candidates/:id',
+        element: withSuspense(CandidateDetailsView),
+      },
+      {
+        path: 'screening',
+        element: withSuspense(ScreeningListView),
+      },
+      {
+        path: 'reports',
+        element: withSuspense(ReportsView),
+      },
+      {
+        path: 'settings',
+        element: withSuspense(SettingsView),
+      },
+      {
+        path: 'account',
+        element: withSuspense(AccountSettingsView),
+      },
+    ],
   },
   // Admin area routes
   {
@@ -397,15 +432,7 @@ export const protectedRoutes: RouteObject[] = [
       },
     ],
   },
-  // Backward compatibility redirects for old paths
-  {
-    path: '/candidates',
-    element: <Navigate to="/admin/candidates" replace />,
-  },
-  {
-    path: '/candidates/*',
-    element: <Navigate to="/admin/candidates" replace />,
-  },
+  // Backward compatibility redirects for admin-only paths
   {
     path: '/organizations',
     element: <Navigate to="/admin/organizations" replace />,
@@ -431,10 +458,6 @@ export const protectedRoutes: RouteObject[] = [
     element: <Navigate to="/admin/forms" replace />,
   },
   {
-    path: '/screening',
-    element: <Navigate to="/admin/screening" replace />,
-  },
-  {
     path: '/files',
     element: <Navigate to="/admin/files" replace />,
   },
@@ -443,24 +466,12 @@ export const protectedRoutes: RouteObject[] = [
     element: <Navigate to="/admin/chat" replace />,
   },
   {
-    path: '/reports',
-    element: <Navigate to="/admin/reports" replace />,
-  },
-  {
-    path: '/settings',
-    element: <Navigate to="/admin/settings" replace />,
-  },
-  {
     path: '/ledger/billed',
     element: <Navigate to="/admin/ledger/billed" replace />,
   },
   {
     path: '/ledger/unbilled',
     element: <Navigate to="/admin/ledger/unbilled" replace />,
-  },
-  {
-    path: '/account/settings',
-    element: <Navigate to="/admin/account/settings" replace />,
   },
   {
     path: '/account/integrations',
