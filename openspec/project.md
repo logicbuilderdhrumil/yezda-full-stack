@@ -78,7 +78,7 @@ Full-stack Employment Screening Service monorepo with a React + Vite admin dashb
 
 ## Important Constraints
 - Secure handling of PII and sensitive candidate data; comply with GDPR, CCPA, and local regulations.
-- API calls between frontend and backend via `/api` in dev (Vite proxy to localhost:3000).
+- API calls between frontend and backend via `/api` in dev (Vite proxy to localhost:6312).
 - Keep compatibility with React 19 and Tailwind 4.
 - Backend services must validate and sanitize all inputs.
 - Audit logging for sensitive operations (e.g., data access, report generation).

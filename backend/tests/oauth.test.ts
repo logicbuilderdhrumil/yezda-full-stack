@@ -72,7 +72,7 @@ vi.mock('../src/config/index.js', () => ({
     oauth: {
       stateExpiryMinutes: 10,
       tokenEncryptionKey: 'test-encryption-key-for-oauth-32ch',
-      baseRedirectUri: 'http://localhost:3000/api/v1/oauth/callback',
+      baseRedirectUri: 'http://localhost:6312/api/v1/oauth/callback',
       providers: {
         google: {
           clientId: 'test-google-client-id',

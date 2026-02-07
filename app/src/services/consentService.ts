@@ -14,7 +14,7 @@ import {
 } from '../types/consent.types';
 import { getStoredTokens } from '../utils/secureStorage';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:6312/api';
 const REQUEST_TIMEOUT_MS = 30000;
 
 /**

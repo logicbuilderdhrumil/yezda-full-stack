@@ -62,7 +62,7 @@ export class SocketService {
       return envOrigins.split(',').map((o) => o.trim()).filter(Boolean);
     }
     // Safe defaults for development - never use wildcard with credentials
-    return ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'];
+    return ['http://localhost:6312', 'http://localhost:6313', 'http://127.0.0.1:6312', 'http://127.0.0.1:6313'];
   }
 
   /**

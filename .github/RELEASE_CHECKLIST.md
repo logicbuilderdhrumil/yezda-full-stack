@@ -367,8 +367,8 @@ psql -h $env:DB_HOST -U $env:DB_USER -d $env:DB_NAME
 ### Health Checks
 ```bash
 # Backend health
-curl http://localhost:3000/api/v1/health
+curl http://localhost:6312/api/v1/health
 
 # Frontend (dev server)
-curl http://localhost:5173
+curl http://localhost:6313
 ```

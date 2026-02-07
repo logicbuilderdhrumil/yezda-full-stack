@@ -34,6 +34,21 @@ export const CandidatesService = {
     const response = await ApiService.get<CandidateListResponse>('candidates.list', {
       params: queryParams,
     });
+
+    // Normalize backend response to expected frontend shape
+    const raw = response.data as unknown as Record<string, unknown>;
+    if (raw && Array.isArray(raw.candidates) && !Array.isArray(raw.data)) {
+      return {
+        data: raw.candidates as Candidate[],
+        meta: {
+          page: (raw.page as number) || 1,
+          pageSize: (raw.limit as number) || (params?.pageSize ?? 10),
+          totalItems: (raw.total as number) || 0,
+          totalPages: (raw.totalPages as number) || 1,
+        },
+      };
+    }
+
     return response.data;
   },
 

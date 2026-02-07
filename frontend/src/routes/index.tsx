@@ -166,6 +166,23 @@ const UnbilledLedgerListView = lazy(() =>
   }))
 );
 
+// Placeholder views
+const ScreeningListView = lazy(() =>
+  import('@/views/screening/ScreeningListView').then((m) => ({
+    default: m.ScreeningListView,
+  }))
+);
+const ReportsView = lazy(() =>
+  import('@/views/reports/ReportsView').then((m) => ({
+    default: m.ReportsView,
+  }))
+);
+const SettingsView = lazy(() =>
+  import('@/views/settings/SettingsView').then((m) => ({
+    default: m.SettingsView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -356,6 +373,21 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'ledger/unbilled',
         element: withAdminGuard(UnbilledLedgerListView),
+      },
+      // Screening route (admin and manager)
+      {
+        path: 'screening',
+        element: withCandidateGuard(ScreeningListView),
+      },
+      // Reports route (admin and manager)
+      {
+        path: 'reports',
+        element: withCandidateGuard(ReportsView),
+      },
+      // Settings route
+      {
+        path: 'settings',
+        element: withSuspense(SettingsView),
       },
       // Additional protected routes will be added here
     ],

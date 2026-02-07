@@ -14,7 +14,7 @@ import type {
 } from '../types/api.types';
 import { Platform } from 'react-native';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:3000/api' : undefined);
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:6312/api' : undefined);
 
 if (!API_BASE_URL) {
   throw new Error('EXPO_PUBLIC_API_URL environment variable is required');

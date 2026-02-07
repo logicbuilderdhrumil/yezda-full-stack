@@ -5,7 +5,39 @@ import { ApiService } from './ApiService';
 import type {
   LedgerListParams,
   LedgerListResponse,
+  LedgerEntry,
+  LedgerSummary,
 } from '@/@types/ledger';
+
+/**
+ * Normalizes backend ledger response to the expected frontend shape.
+ * Backend returns: { entries, totals, pagination: { page, pageSize, totalPages, totalCount } }
+ * Frontend expects: { data, meta: { page, pageSize, totalItems, totalPages }, summary }
+ */
+function normalizeLedgerResponse(raw: unknown): LedgerListResponse {
+  const r = raw as Record<string, unknown>;
+
+  // If already in expected shape, return as-is
+  if (Array.isArray(r?.data) && r?.meta) {
+    return r as unknown as LedgerListResponse;
+  }
+
+  // Normalize from backend shape
+  const entries = (r?.entries as LedgerEntry[]) || [];
+  const pagination = (r?.pagination as Record<string, number>) || {};
+  const totals = r?.totals as LedgerSummary | undefined;
+
+  return {
+    data: entries,
+    meta: {
+      page: pagination.page || 1,
+      pageSize: pagination.pageSize || 50,
+      totalItems: pagination.totalCount || 0,
+      totalPages: pagination.totalPages || 1,
+    },
+    summary: totals || { totalAmount: 0, entryCount: 0, currency: 'GBP' },
+  };
+}
 
 /**
  * LedgerService provides methods for ledger entry operations.
@@ -29,7 +61,7 @@ export const LedgerService = {
     const response = await ApiService.get<LedgerListResponse>('ledger.list', {
       params: queryParams,
     });
-    return response.data;
+    return normalizeLedgerResponse(response.data);
   },
 
   /**
@@ -50,7 +82,7 @@ export const LedgerService = {
     const response = await ApiService.get<LedgerListResponse>('ledger.list', {
       params: queryParams,
     });
-    return response.data;
+    return normalizeLedgerResponse(response.data);
   },
 
   /**

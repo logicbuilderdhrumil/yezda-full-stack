@@ -19,7 +19,7 @@ function getManagementContext(req: AuthenticatedRoleRequest): CandidateManagemen
   const userAgent = req.headers['user-agent'];
   
   // Get tenantId from authenticated user context (validated by auth middleware)
-  const tenantId = req.user?.tenantId || '';
+  const tenantId = req.user?.tenantId || (req.headers['x-tenant-id'] as string) || 'default';
   
   return {
     actorId: req.user?.sub || '',

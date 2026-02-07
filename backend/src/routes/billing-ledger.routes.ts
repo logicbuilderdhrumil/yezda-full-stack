@@ -102,6 +102,34 @@ router.post(
   billingLedgerController.finalizeEntry
 );
 
+// Non-organization-scoped ledger list (uses default org from tenant header)
+// GET /api/v1/ledger?status=billed|unbilled
+router.get(
+  '/ledger',
+  requireAuth,
+  validateQuery(ledgerFilterSchema.extend({ status: z.enum(['billed', 'unbilled']).optional() })),
+  async (req, res) => {
+    const status = (req.query as Record<string, string>).status;
+    if (status === 'unbilled') {
+      return billingLedgerController.getUnbilledEntries(req as any, res);
+    }
+    return billingLedgerController.getBilledEntries(req as any, res);
+  }
+);
+
+// Non-organization-scoped ledger export
+// GET /api/v1/ledger/export?format=csv
+router.get(
+  '/ledger/export',
+  requireAuth,
+  async (req, res) => {
+    // Return empty CSV for now - placeholder for future implementation
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="ledger-export.csv"');
+    res.status(200).send('date,description,amount,status\n');
+  }
+);
+
 // Health and metrics endpoints (not organization-scoped)
 router.get('/ledger/health', billingLedgerController.getHealthSummary);
 router.get('/ledger/metrics', billingLedgerController.getMetrics);

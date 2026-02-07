@@ -22,10 +22,10 @@ type FileUploadRequest = AuthenticatedRequest & {
 };
 
 /**
- * Get tenant ID from request (header or user context)
+ * Get tenant ID from request (header, user context, or JWT payload)
  */
-function getTenantId(req: AuthenticatedRequest): string | undefined {
-  return (req.headers['x-tenant-id'] as string) || (req as any).tenantId;
+function getTenantId(req: AuthenticatedRequest): string {
+  return (req.headers['x-tenant-id'] as string) || (req as any).tenantId || req.user?.tenantId || 'default';
 }
 
 /**

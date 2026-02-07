@@ -24,7 +24,7 @@ function getClientInfo(req: AuthenticatedRequest) {
  * Extract tenant ID from request
  */
 function getTenantId(req: AuthenticatedRequest): string {
-  return req.get('x-tenant-id') || 'default';
+  return req.user?.tenantId || req.get('x-tenant-id') || 'default';
 }
 
 /**
@@ -42,6 +42,10 @@ function getUserRoles(req: AuthenticatedRequest): string[] {
   const rolesHeader = req.get('x-user-roles');
   if (rolesHeader) {
     return rolesHeader.split(',').map((r) => r.trim());
+  }
+  // System-level users (from users table, type=user) get system_admin role by default
+  if (req.user?.type === 'user') {
+    return ['system_admin'];
   }
   // Default to empty roles if not provided
   return [];

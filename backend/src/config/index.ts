@@ -157,7 +157,7 @@ export const config: AuthConfig = {
   },
   database: {
     host: getEnvOrDefault('DB_HOST', 'localhost'),
-    port: getEnvIntOrDefault('DB_PORT', 5432),
+    port: getEnvIntOrDefault('DB_PORT', 6310),
     name: getEnvOrDefault('DB_NAME', 'yezda'),
     user: getEnvOrDefault('DB_USER', 'postgres'),
     password: getEnvOrDefault('DB_PASSWORD', ''),
@@ -165,14 +165,14 @@ export const config: AuthConfig = {
   },
   redis: {
     host: getEnvOrDefault('REDIS_HOST', 'localhost'),
-    port: getEnvIntOrDefault('REDIS_PORT', 6379),
+    port: getEnvIntOrDefault('REDIS_PORT', 6311),
     password: getEnvOrDefault('REDIS_PASSWORD', ''),
     db: getEnvIntOrDefault('REDIS_DB', 0),
   },
   oauth: {
     stateExpiryMinutes: getEnvIntOrDefault('OAUTH_STATE_EXPIRY_MINUTES', 10),
     tokenEncryptionKey: oauthTokenEncryptionKey,
-    baseRedirectUri: getEnvOrDefault('OAUTH_BASE_REDIRECT_URI', 'http://localhost:3000/api/v1/oauth/callback'),
+    baseRedirectUri: getEnvOrDefault('OAUTH_BASE_REDIRECT_URI', 'http://localhost:6312/api/v1/oauth/callback'),
     providers: {
       google: loadOAuthProvider('OAUTH_GOOGLE'),
       microsoft: loadOAuthProvider('OAUTH_MICROSOFT'),
