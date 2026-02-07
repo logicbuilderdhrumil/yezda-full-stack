@@ -43,7 +43,17 @@
     "view": "View",
     "reset": "Reset",
     "success": "Success",
-    "failed": "Failed"
+    "failed": "Failed",
+    "userMenu": "User menu"
+  },
+  "search": {
+    "placeholder": "Search..."
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "theme": {
+    "toggle": "Toggle theme"
   },
   "auth": {
     "signIn": "Sign in",

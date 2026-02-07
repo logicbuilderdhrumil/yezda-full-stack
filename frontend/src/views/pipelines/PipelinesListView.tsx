@@ -94,9 +94,9 @@ export function PipelinesListView(): ReactNode {
       if (status) params.status = status;
 
       const response = await PipelineService.list(params);
-      setPipelines(response.data);
-      setTotalItems(response.meta.totalItems);
-      setTotalPages(response.meta.totalPages);
+      setPipelines(response?.data ?? []);
+      setTotalItems(response?.meta?.totalItems ?? 0);
+      setTotalPages(response?.meta?.totalPages ?? 0);
     } catch (error) {
       toastError(t('pipelines.list.fetchError', 'Failed to load pipelines'));
       console.error('Failed to fetch pipelines:', error);

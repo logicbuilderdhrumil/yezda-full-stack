@@ -91,9 +91,9 @@ export function FormsListView(): ReactNode {
       if (status) params.status = status;
 
       const response = await FormsService.list(params);
-      setForms(response.data);
-      setTotalItems(response.meta.totalItems);
-      setTotalPages(response.meta.totalPages);
+      setForms(response?.data ?? []);
+      setTotalItems(response?.meta?.totalItems ?? 0);
+      setTotalPages(response?.meta?.totalPages ?? 0);
     } catch (error) {
       toastError(t('forms.list.fetchError'));
       console.error('Failed to fetch forms:', error);
