@@ -19,7 +19,7 @@ export type { AuthenticatedRequest };
 /**
  * Role types for authorization
  */
-export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer';
+export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'client_admin';
 
 /**
  * Extended user payload with roles and tenant context
@@ -411,6 +411,57 @@ export function requireRoleOrOwnerGuard(
 
     next();
   };
+}
+
+/**
+ * Convenience guard: require `client` or `client_admin` role.
+ * Chain after requireAuthGuard.
+ */
+export const requireClientGuard = requireRoleGuard('client', 'client_admin');
+
+/**
+ * Convenience guard: require `client_admin` role only.
+ * Chain after requireAuthGuard.
+ */
+export const requireClientAdminGuard = requireRoleGuard('client_admin');
+
+/**
+ * Extended request with tenant scope.
+ * Populated by requireTenantScopeGuard.
+ */
+export interface TenantScopedRequest extends AuthenticatedRoleRequest {
+  tenantScope?: string;
+}
+
+/**
+ * Require tenant scoping.
+ * Ensures the authenticated user has a tenantId and exposes it as `req.tenantScope`.
+ * Chain after requireAuthGuard.
+ */
+export async function requireTenantScopeGuard(
+  req: TenantScopedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  if (!req.user) {
+    res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
+  const tenantId = req.user.tenantId;
+
+  if (!tenantId) {
+    metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'missing_tenant' });
+    logGuardDenial(req, 'auth', req.user.sub, req.user.type);
+    res.status(403).json({
+      error: 'Tenant scope required. User is not associated with a tenant.',
+      code: 'TENANT_REQUIRED',
+    });
+    return;
+  }
+
+  req.tenantScope = tenantId;
+  next();
 }
 
 /**
