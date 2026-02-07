@@ -184,6 +184,33 @@ const SettingsView = lazy(() =>
   }))
 );
 
+// Client portal views
+const ClientDashboardView = lazy(() =>
+  import('@/views/client/ClientDashboardView').then((m) => ({
+    default: m.ClientDashboardView,
+  }))
+);
+const ClientCandidatesListView = lazy(() =>
+  import('@/views/client/ClientCandidatesListView').then((m) => ({
+    default: m.ClientCandidatesListView,
+  }))
+);
+const ClientCandidateDetailView = lazy(() =>
+  import('@/views/client/ClientCandidateDetailView').then((m) => ({
+    default: m.ClientCandidateDetailView,
+  }))
+);
+const ClientOrgSettingsView = lazy(() =>
+  import('@/views/client/ClientOrgSettingsView').then((m) => ({
+    default: m.ClientOrgSettingsView,
+  }))
+);
+const ClientProfileView = lazy(() =>
+  import('@/views/client/ClientProfileView').then((m) => ({
+    default: m.ClientProfileView,
+  }))
+);
+
 /**
  * Wraps a component with Suspense for lazy loading.
  */
@@ -269,17 +296,17 @@ export const protectedRoutes: RouteObject[] = [
             index: true,
             element: (
               <AdminRedirectWrapper>
-                {withSuspense(HomeView)}
+                {withSuspense(ClientDashboardView)}
               </AdminRedirectWrapper>
             ),
           },
           {
             path: 'candidates',
-            element: withSuspense(CandidatesListView),
+            element: withSuspense(ClientCandidatesListView),
           },
           {
             path: 'candidates/:id',
-            element: withSuspense(CandidateDetailsView),
+            element: withSuspense(ClientCandidateDetailView),
           },
           {
             path: 'screening',
@@ -291,7 +318,11 @@ export const protectedRoutes: RouteObject[] = [
           },
           {
             path: 'settings',
-            element: withSuspense(SettingsView),
+            element: withSuspense(ClientOrgSettingsView),
+          },
+          {
+            path: 'profile',
+            element: withSuspense(ClientProfileView),
           },
           {
             path: 'account',

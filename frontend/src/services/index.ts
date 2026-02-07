@@ -38,3 +38,15 @@ export { ChartService } from './ChartService';
 export { AssetService, type AssetUploadOptions, type AssetListOptions } from './AssetService';
 export { LedgerService } from './LedgerService';
 export { ChatService, type MessageListOptions } from './ChatService';
+export {
+  ClientPortalService,
+  type ClientDashboardData,
+  type ClientActivityItem,
+  type ClientCandidateListParams,
+  type ClientCandidateListResponse,
+  type ClientCandidate,
+  type ClientCandidateDetail,
+  type ScreeningStep,
+  type ClientOrgSettings,
+  type UpdateOrgSettingsPayload,
+} from './ClientPortalService';

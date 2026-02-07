@@ -4,7 +4,7 @@
  */
 
 /** Supported user roles - matches backend UserRole. */
-export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer';
+export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'client_admin';
 
 /** User profile returned after successful authentication - aligned with backend. */
 export interface User {
