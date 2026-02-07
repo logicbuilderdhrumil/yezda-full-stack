@@ -144,9 +144,10 @@ export function AdminScreeningListView({ orgId: propOrgId }: AdminScreeningListV
         params.status = status as 'draft' | 'active' | 'archived';
       }
       const result = await PipelineService.list(params);
-      setPipelines(result.data);
-      setTotalPages(result.meta?.totalPages ?? 1);
-      setTotalItems(result.meta?.totalItems ?? result.data.length);
+      const items = Array.isArray(result?.data) ? result.data : Array.isArray(result) ? result : [];
+      setPipelines(items);
+      setTotalPages(result?.meta?.totalPages ?? 1);
+      setTotalItems(result?.meta?.totalItems ?? items.length);
     } catch {
       setError('Failed to load screenings. Please try again.');
     } finally {
