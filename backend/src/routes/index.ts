@@ -5,6 +5,8 @@ import { screeningPipelineRouter } from '../modules/screening-pipeline/index.js'
 import { createFormBuilderModule } from '../modules/form-builder/index.js';
 import { createUserManagementModule } from '../modules/user-management/index.js';
 import { createOrgManagementModule } from '../modules/org-management/index.js';
+import { createChatModule } from '../modules/chat/index.js';
+import { createNotificationModule } from '../modules/notification/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -12,7 +14,7 @@ import appProfileRoutes from './app-profile.routes.js';
 import stateStoreRoutes from './state-store.routes.js';
 import shellRoutes from './shell.routes.js';
 import firebaseRoutes from './firebase.routes.js';
-import notificationRoutes from './notification.routes.js';
+// notification routes replaced by Clean Architecture module
 import localizationRoutes from './localization.routes.js';
 import oauthRoutes from './oauth.routes.js';
 import mockRoutes from './mock.routes.js';
@@ -27,7 +29,7 @@ import viewComponentsRoutes from './view-components.routes.js';
 // form-builder routes replaced by Clean Architecture module
 import fileManagementRoutes from './file-management.routes.js';
 import assetManagementRoutes from './asset-management.routes.js';
-import chatRoutes from './chat.routes.js';
+// chat routes replaced by Clean Architecture module
 import chartingRoutes from './charting.routes.js';
 import billingLedgerRoutes from './billing-ledger.routes.js';
 import homeDashboardRoutes from './home-dashboard.routes.js';
@@ -47,6 +49,8 @@ const candidateManagementModule = createCandidateManagementModule();
 const formBuilderModule = createFormBuilderModule();
 const userManagementModule = createUserManagementModule();
 const orgManagementModule = createOrgManagementModule();
+const chatModule = createChatModule();
+const notificationModule = createNotificationModule();
 
 const router = Router();
 
@@ -58,7 +62,7 @@ router.use('/app/profile', appProfileRoutes);
 router.use('/state', stateStoreRoutes);
 router.use('/shell', shellRoutes);
 router.use('/firebase', firebaseRoutes);
-router.use('/notifications', notificationRoutes);
+router.use('/notifications', notificationModule.routes);
 router.use('/localization', localizationRoutes);
 router.use('/oauth', oauthRoutes);
 router.use('/mock', mockRoutes);
@@ -74,7 +78,7 @@ router.use('/candidates', candidateManagementModule.routes);
 router.use('/forms', formBuilderModule.routes);
 router.use('/files', fileManagementRoutes);
 router.use('/assets', assetManagementRoutes);
-router.use('/chat', chatRoutes);
+router.use('/chat', chatModule.routes);
 router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerRoutes);
 router.use('/dashboard', homeDashboardRoutes);
