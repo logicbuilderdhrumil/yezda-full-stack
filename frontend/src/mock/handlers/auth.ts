@@ -41,6 +41,6 @@ export function registerAuthHandlers(mock: MockAdapter): void {
   // POST /api/v1/auth/refresh
   mock.onPost('/api/v1/auth/refresh').reply(200, refreshResponse);
 
-  // GET /api/v1/auth/me
-  mock.onGet('/api/v1/auth/me').reply(200, meResponse);
+  // GET /api/v1/auth/me (regex to handle optional query params)
+  mock.onGet(/\/api\/v1\/auth\/me(\?.*)?$/).reply(200, meResponse);
 }

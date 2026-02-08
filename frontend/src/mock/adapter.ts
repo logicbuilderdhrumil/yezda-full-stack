@@ -18,6 +18,7 @@ import { registerLedgerHandlers } from './handlers/ledger';
 import { registerFormHandlers } from './handlers/forms';
 import { registerAccountHandlers } from './handlers/account';
 import { registerChartHandlers } from './handlers/charts';
+import { registerScreeningHandlers } from './handlers/screenings';
 
 /** Active mock adapter instance. */
 let mockInstance: MockAdapter | null = null;
@@ -56,6 +57,7 @@ export function setupMockAdapter(axiosInstance: AxiosInstance): MockAdapter | nu
   registerFormHandlers(mockInstance);
   registerAccountHandlers(mockInstance);
   registerChartHandlers(mockInstance);
+  registerScreeningHandlers(mockInstance);
 
   if (config.logRequests) {
     console.log('[MockAPI] Mock adapter initialized with latency:', config.latencyMs, 'ms');
@@ -107,5 +109,6 @@ export function resetMockHandlers(): void {
     registerFormHandlers(mockInstance);
     registerAccountHandlers(mockInstance);
     registerChartHandlers(mockInstance);
+    registerScreeningHandlers(mockInstance);
   }
 }

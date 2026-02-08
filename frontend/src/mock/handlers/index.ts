@@ -14,3 +14,4 @@ export { registerLedgerHandlers } from './ledger';
 export { registerFormHandlers } from './forms';
 export { registerAccountHandlers } from './account';
 export { registerChartHandlers } from './charts';
+export { registerScreeningHandlers } from './screenings';
