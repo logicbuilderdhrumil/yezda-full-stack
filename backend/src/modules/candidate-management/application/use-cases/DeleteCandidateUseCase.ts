@@ -69,7 +69,7 @@ export class DeleteCandidateUseCase {
       }
 
       this.auditService.log({
-        eventType: 'SHELL_PREFERENCE_UPDATED',
+        eventType: 'CANDIDATE_DELETED',
         actorId: ctx.actorId,
         actorType: ctx.actorType,
         targetId: candidateId,

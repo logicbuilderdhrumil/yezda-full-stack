@@ -64,7 +64,7 @@ router.use('/account', accountSettingsRoutes);
 router.use('/jobs', jobRoutes);
 router.use('/exports', exportRoutes);
 router.use('/view-components', viewComponentsRoutes);
-router.use('/candidates', candidateManagementRoutes);
+router.use('/candidates', candidateManagementModule.routes);
 router.use('/forms', formBuilderRoutes);
 router.use('/files', fileManagementRoutes);
 router.use('/assets', assetManagementRoutes);

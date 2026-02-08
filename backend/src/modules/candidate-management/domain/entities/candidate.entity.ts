@@ -88,6 +88,7 @@ export interface CandidateListResult {
 export type CandidateManagementAuditEventType =
   | 'CANDIDATE_CREATED'
   | 'CANDIDATE_UPDATED'
+  | 'CANDIDATE_DELETED'
   | 'CANDIDATE_STATUS_CHANGED'
   | 'CANDIDATE_CERTIFIED'
   | 'CANDIDATE_ARCHIVED'

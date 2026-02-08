@@ -3,18 +3,14 @@
  * Wraps Redis MFA session storage behind a clean interface
  */
 import { storeMfaSession, consumeMfaSession, type MfaSession } from '../../../../shared/infrastructure/database/redis.js';
-
-export interface IMfaSessionStore {
-  store(token: string, session: MfaSession): Promise<void>;
-  consume(token: string): Promise<MfaSession | null>;
-}
+import type { IMfaSessionStore, MfaSessionData } from '../../domain/ports/IMfaSessionStore.js';
 
 export class RedisMfaSessionAdapter implements IMfaSessionStore {
-  async store(token: string, session: MfaSession): Promise<void> {
-    return storeMfaSession(token, session);
+  async store(token: string, session: MfaSessionData): Promise<void> {
+    return storeMfaSession(token, session as MfaSession);
   }
 
-  async consume(token: string): Promise<MfaSession | null> {
+  async consume(token: string): Promise<MfaSessionData | null> {
     return consumeMfaSession(token);
   }
 }

@@ -5,6 +5,7 @@
 import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { PasswordResetToken } from '../../domain/entities/PasswordResetToken.js';
 import type { IPasswordResetRepository } from '../../domain/ports/IPasswordResetRepository.js';
+import type { ITransactionClient } from '../../domain/ports/ITransactionManager.js';
 
 type PasswordResetRow = {
   id: string;
@@ -74,5 +75,9 @@ export class PostgresPasswordResetRepository implements IPasswordResetRepository
        WHERE expires_at < NOW() OR used_at IS NOT NULL`,
     );
     return result.rowCount ?? 0;
+  }
+
+  async deleteInTransaction(client: ITransactionClient, id: string): Promise<void> {
+    await client.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
   }
 }

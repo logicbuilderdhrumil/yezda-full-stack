@@ -9,6 +9,7 @@ import type { IPasswordResetRepository } from '../../domain/ports/IPasswordReset
 import type { IPasswordService } from '../../domain/ports/IPasswordService.js';
 import type { ITokenService } from '../../domain/ports/ITokenService.js';
 import type { IAuditService } from '../../domain/ports/IAuditService.js';
+import type { ITransactionManager } from '../../domain/ports/ITransactionManager.js';
 
 function hashToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex');
@@ -20,23 +21,6 @@ function secureCompare(a: string, b: string): boolean {
     return false;
   }
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
-}
-
-/**
- * Postgres client interface — thin contract so domain doesn't depend on pg.
- */
-export interface ITransactionClient {
-  query(text: string, values?: unknown[]): Promise<unknown>;
-}
-
-export interface ITransactionManager {
-  getClient(): Promise<{
-    client: ITransactionClient;
-    begin(): Promise<void>;
-    commit(): Promise<void>;
-    rollback(): Promise<void>;
-    release(): void;
-  }>;
 }
 
 export class CompletePasswordResetUseCase {
@@ -96,17 +80,16 @@ export class CompletePasswordResetUseCase {
     try {
       await begin();
 
-      // Update user password
-      const table = resetTokenData.userType === 'user' ? 'users' : 'candidates';
-      await client.query(
-        `UPDATE ${table}
-         SET password_hash = $1, updated_at = NOW(), failed_attempts = 0, locked_until = NULL
-         WHERE id = $2`,
-        [newPasswordHash, entity.id],
+      // Update user password via repository port
+      await this.userRepo.resetPasswordInTransaction(
+        client,
+        entity.id,
+        resetTokenData.userType,
+        newPasswordHash,
       );
 
-      // Delete reset token
-      await client.query('DELETE FROM password_reset_tokens WHERE id = $1', [resetTokenData.id]);
+      // Delete reset token via repository port
+      await this.passwordResetRepo.deleteInTransaction(client, resetTokenData.id);
 
       await commit();
     } catch (error) {

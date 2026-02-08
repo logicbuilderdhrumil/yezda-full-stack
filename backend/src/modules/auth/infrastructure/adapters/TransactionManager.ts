@@ -3,7 +3,7 @@
  * Wraps Postgres client pool transaction methods behind a clean interface
  */
 import { getClient } from '../../../../shared/infrastructure/database/postgres.js';
-import type { ITransactionManager } from '../../application/use-cases/CompletePasswordResetUseCase.js';
+import type { ITransactionManager } from '../../domain/ports/ITransactionManager.js';
 
 export class PostgresTransactionManager implements ITransactionManager {
   async getClient() {

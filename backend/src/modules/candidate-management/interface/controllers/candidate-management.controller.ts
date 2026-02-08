@@ -4,9 +4,8 @@
  */
 
 import type { Request, Response } from 'express';
-import { getClientIp } from '../../../../utils/ip.util.js';
-import type { AuthenticatedRoleRequest } from '../../../../middleware/route-guards.middleware.js';
-import type { UserRole } from '../../../../middleware/route-guards.middleware.js';
+import { getClientIp } from '../../../../shared/infrastructure/utils/index.js';
+import type { AuthenticatedRoleRequest, UserRole } from '../../../../shared/infrastructure/middleware/index.js';
 import type {
   CandidateSearchParams,
   CandidateStatus,

@@ -66,7 +66,7 @@ export class SubmitCandidateFormUseCase {
       });
 
       this.auditService.log({
-        eventType: 'AUTH_SIGN_UP',
+        eventType: 'CANDIDATE_SUBMISSION_RECEIVED',
         actorType: 'candidate',
         targetId: candidateId,
         targetType: 'candidate',

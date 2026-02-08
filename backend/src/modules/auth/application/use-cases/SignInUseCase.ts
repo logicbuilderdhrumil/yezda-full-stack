@@ -8,17 +8,10 @@ import type { IPasswordService } from '../../domain/ports/IPasswordService.js';
 import type { IMfaService } from '../../domain/ports/IMfaService.js';
 import type { ITokenService } from '../../domain/ports/ITokenService.js';
 import type { IAuditService } from '../../domain/ports/IAuditService.js';
-import type { IMfaSessionStore } from '../../infrastructure/adapters/MfaSessionAdapter.js';
+import type { IMfaSessionStore } from '../../domain/ports/IMfaSessionStore.js';
+import type { IUserManagementLookup } from '../../domain/ports/IUserManagementLookup.js';
 import type { SignInInput, AuthResult } from '../dtos/AuthDtos.js';
 import type { User, Candidate } from '../../domain/entities/index.js';
-
-/**
- * External dependency for resolving tenantId from managed_users table.
- * Injected to avoid coupling the auth module to the user-management module.
- */
-export interface IUserManagementLookup {
-  findByIdWithoutTenantScope(id: string): Promise<{ tenantId?: string } | undefined>;
-}
 
 export class SignInUseCase {
   constructor(

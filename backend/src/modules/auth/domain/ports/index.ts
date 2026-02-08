@@ -6,3 +6,6 @@ export type { ITokenService } from './ITokenService.js';
 export type { IPasswordService } from './IPasswordService.js';
 export type { IMfaService } from './IMfaService.js';
 export type { IAuditService } from './IAuditService.js';
+export type { IMfaSessionStore, MfaSessionData } from './IMfaSessionStore.js';
+export type { ITransactionManager, ITransactionClient } from './ITransactionManager.js';
+export type { IUserManagementLookup } from './IUserManagementLookup.js';

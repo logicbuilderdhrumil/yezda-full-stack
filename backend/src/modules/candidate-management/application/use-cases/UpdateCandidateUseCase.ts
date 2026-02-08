@@ -10,20 +10,12 @@ import type {
   UpdateCandidateInput,
   CandidateManagementResult,
   CandidateManagementContext,
-  UserRole,
 } from '../../domain/entities/candidate.entity.js';
-
-function canManageCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager') || roles.includes('agent');
-}
-
-function canCertifyCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
-}
-
-function canArchiveCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
-}
+import {
+  canManageCandidates,
+  canCertifyCandidates,
+  canArchiveCandidates,
+} from '../../domain/services/candidate-authorization.service.js';
 
 export class UpdateCandidateUseCase {
   constructor(
@@ -101,7 +93,7 @@ export class UpdateCandidateUseCase {
       }
 
       this.auditService.log({
-        eventType: 'SHELL_PREFERENCE_UPDATED',
+        eventType: 'CANDIDATE_UPDATED',
         actorId: ctx.actorId,
         actorType: ctx.actorType,
         targetId: candidateId,

@@ -10,12 +10,8 @@ import type {
   CandidateListResult,
   CandidateManagementResult,
   CandidateManagementContext,
-  UserRole,
 } from '../../domain/entities/candidate.entity.js';
-
-function canManageCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager') || roles.includes('agent');
-}
+import { canManageCandidates } from '../../domain/services/candidate-authorization.service.js';
 
 export class ListCandidatesUseCase {
   constructor(

@@ -5,12 +5,12 @@
 
 import { Router } from 'express';
 import type { CandidateManagementController } from '../controllers/candidate-management.controller.js';
-import { requireAuthGuard, requireRoleGuard } from '../../../../middleware/route-guards.middleware.js';
+import { requireAuthGuard, requireRoleGuard } from '../../../../shared/infrastructure/middleware/index.js';
 import {
   validateBody,
   validateQuery,
   validateParams,
-} from '../../../../middleware/validation.middleware.js';
+} from '../../../../shared/infrastructure/middleware/index.js';
 import {
   candidateManagementListRateLimiter,
   candidateManagementCreateRateLimiter,

@@ -5,6 +5,7 @@
 import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { User, Candidate } from '../../domain/entities/index.js';
 import type { IUserRepository } from '../../domain/ports/IUserRepository.js';
+import type { ITransactionClient } from '../../domain/ports/ITransactionManager.js';
 
 type UserRow = {
   id: string;
@@ -211,5 +212,20 @@ export class PostgresUserRepository implements IUserRepository {
     return userType === 'user'
       ? this.emailExistsForUser(email)
       : this.emailExistsForCandidate(email);
+  }
+
+  async resetPasswordInTransaction(
+    client: ITransactionClient,
+    userId: string,
+    userType: 'user' | 'candidate',
+    passwordHash: string,
+  ): Promise<void> {
+    const table = userType === 'user' ? 'users' : 'candidates';
+    await client.query(
+      `UPDATE ${table}
+       SET password_hash = $1, updated_at = NOW(), failed_attempts = 0, locked_until = NULL
+       WHERE id = $2`,
+      [passwordHash, userId],
+    );
   }
 }

@@ -6,8 +6,8 @@ import type { IUserRepository } from '../../domain/ports/IUserRepository.js';
 import type { IMfaService } from '../../domain/ports/IMfaService.js';
 import type { ITokenService } from '../../domain/ports/ITokenService.js';
 import type { IAuditService } from '../../domain/ports/IAuditService.js';
-import type { IMfaSessionStore } from '../../infrastructure/adapters/MfaSessionAdapter.js';
-import type { IUserManagementLookup } from './SignInUseCase.js';
+import type { IMfaSessionStore } from '../../domain/ports/IMfaSessionStore.js';
+import type { IUserManagementLookup } from '../../domain/ports/IUserManagementLookup.js';
 import type { AuthResult } from '../dtos/AuthDtos.js';
 
 export class CompleteMfaSignInUseCase {
