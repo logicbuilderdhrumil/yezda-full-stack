@@ -11,13 +11,14 @@ import { useProfileStore } from '../store/profileStore';
 // Mock the profile store
 jest.mock('../store/profileStore', () => ({
   useProfileStore: jest.fn(),
-  selectProfile: jest.fn((state) => state?.profile ?? null),
-  selectProfileScreenState: jest.fn((state) => state?.screenState ?? 'idle'),
-  selectProfileError: jest.fn((state) => state?.error ?? null),
-  selectProfileSuccess: jest.fn((state) => state?.successMessage ?? null),
+  selectProfile: jest.fn((state: Record<string, unknown>) => state?.profile ?? null),
+  selectProfileScreenState: jest.fn((state: Record<string, unknown>) => state?.screenState ?? 'idle'),
+  selectProfileError: jest.fn((state: Record<string, unknown>) => state?.error ?? null),
+  selectProfileSuccess: jest.fn((state: Record<string, unknown>) => state?.successMessage ?? null),
 }));
 
-const mockUseProfileStore = useProfileStore as jest.MockedFunction<typeof useProfileStore>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockUseProfileStore = useProfileStore as unknown as jest.MockedFunction<(...args: any[]) => any>;
 
 describe('ProfileEditScreen', () => {
   const mockUpdateProfile = jest.fn();

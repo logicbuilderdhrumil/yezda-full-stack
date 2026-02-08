@@ -287,6 +287,9 @@ describe('updateConsent', () => {
       sourceApplicationId: 'app-456',
       scopes: ['personal_info'],
       status: 'granted',
+      workflowState: 'accepted',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -294,8 +297,7 @@ describe('updateConsent', () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await updateConsent({
-      consentId: 'consent-123',
+    const result = await updateConsent('consent-123', {
       scopes: ['personal_info'],
     });
 

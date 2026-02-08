@@ -35,6 +35,7 @@ export function PrefillDisclosureBadge({
     >
       {/* Prefill indicator icon */}
       <View className="mr-2">
+        {/* @ts-expect-error Ionicons type incompatibility with React 19 types */}
         <Ionicons
           name="refresh-circle"
           size={compact ? 14 : 18}

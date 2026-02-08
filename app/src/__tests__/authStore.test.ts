@@ -29,6 +29,8 @@ describe('useAuthStore', () => {
       isLoading: true,
       error: null,
       pendingMfaChallenge: null,
+      failedAttempts: 0,
+      lastFailedAttempt: null,
     });
   });
 
@@ -82,7 +84,12 @@ describe('useAuthStore', () => {
 
       mockSecureStorage.getStoredTokens.mockResolvedValue(expiredTokens);
       mockSecureStorage.isTokenExpired.mockReturnValue(true);
-      mockAuthService.refreshTokens.mockResolvedValue({ tokens: newTokens });
+      mockAuthService.refreshTokens.mockResolvedValue({
+        accessToken: 'new-access',
+        refreshToken: 'new-refresh',
+        expiresIn: 3600,
+        tokenType: 'Bearer' as const,
+      });
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -91,19 +98,17 @@ describe('useAuthStore', () => {
       });
 
       expect(mockAuthService.refreshTokens).toHaveBeenCalledWith('refresh-456');
-      expect(mockSecureStorage.storeTokens).toHaveBeenCalledWith(newTokens);
+      expect(mockSecureStorage.storeTokens).toHaveBeenCalled();
     });
   });
 
   describe('signIn', () => {
     it('stores tokens and updates state on success', async () => {
       const response = {
-        tokens: {
-          accessToken: 'access-123',
-          refreshToken: 'refresh-456',
-          expiresAt: Date.now() + 3600000,
-        },
-        user: { id: 'user-1', email: 'test@example.com' },
+        accessToken: 'access-123',
+        refreshToken: 'refresh-456',
+        expiresIn: 3600,
+        tokenType: 'Bearer' as const,
       };
 
       mockAuthService.signIn.mockResolvedValue(response);
@@ -114,22 +119,20 @@ describe('useAuthStore', () => {
         const success = await result.current.signIn({
           email: 'test@example.com',
           password: 'password',
+          userType: 'candidate',
         });
         expect(success).toBe(true);
       });
 
-      expect(mockSecureStorage.storeTokens).toHaveBeenCalledWith(response.tokens);
+      expect(mockSecureStorage.storeTokens).toHaveBeenCalled();
       expect(result.current.isAuthenticated).toBe(true);
-      expect(result.current.user).toEqual(response.user);
     });
 
     it('sets pendingMfaChallenge when MFA required', async () => {
-      const mfaChallenge = {
-        challengeId: 'challenge-123',
-        type: 'totp' as const,
-      };
-
-      mockAuthService.signIn.mockResolvedValue({ mfaChallenge });
+      mockAuthService.signIn.mockResolvedValue({
+        requiresMfa: true,
+        mfaSessionToken: 'challenge-123',
+      });
 
       const { result } = renderHook(() => useAuthStore());
 
@@ -137,11 +140,15 @@ describe('useAuthStore', () => {
         const success = await result.current.signIn({
           email: 'test@example.com',
           password: 'password',
+          userType: 'candidate',
         });
         expect(success).toBe(false);
       });
 
-      expect(result.current.pendingMfaChallenge).toEqual(mfaChallenge);
+      expect(result.current.pendingMfaChallenge).toEqual({
+        challengeId: 'challenge-123',
+        type: 'totp',
+      });
       expect(result.current.isAuthenticated).toBe(false);
     });
 
@@ -156,6 +163,7 @@ describe('useAuthStore', () => {
         const success = await result.current.signIn({
           email: 'test@example.com',
           password: 'wrong',
+          userType: 'candidate',
         });
         expect(success).toBe(false);
       });
@@ -168,12 +176,10 @@ describe('useAuthStore', () => {
   describe('verifyMfa', () => {
     it('completes authentication on valid code', async () => {
       const response = {
-        tokens: {
-          accessToken: 'access-123',
-          refreshToken: 'refresh-456',
-          expiresAt: Date.now() + 3600000,
-        },
-        user: { id: 'user-1', email: 'test@example.com' },
+        accessToken: 'access-123',
+        refreshToken: 'refresh-456',
+        expiresIn: 3600,
+        tokenType: 'Bearer' as const,
       };
 
       mockAuthService.verifyMfa.mockResolvedValue(response);

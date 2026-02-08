@@ -164,10 +164,11 @@ export async function getConsentById(consentId: string): Promise<ConsentDecision
  * Update consent (modify scopes or withdraw).
  */
 export async function updateConsent(
+  consentId: string,
   request: ConsentUpdateRequest
 ): Promise<ConsentDecision> {
   try {
-    return await apiRequest<ConsentDecision>(`/v1/consent/${request.consentId}`, {
+    return await apiRequest<ConsentDecision>(`/v1/consent/${consentId}`, {
       method: 'PATCH',
       body: JSON.stringify({
         scopes: request.scopes,
@@ -189,5 +190,5 @@ export async function updateConsent(
  * Withdraw consent entirely.
  */
 export async function withdrawConsent(consentId: string): Promise<ConsentDecision> {
-  return updateConsent({ consentId, withdraw: true });
+  return updateConsent(consentId, { withdraw: true });
 }

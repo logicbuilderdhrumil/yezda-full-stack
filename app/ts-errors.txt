@@ -1,0 +1,2 @@
+src/__tests__/consentService.test.ts(317,1): error TS1128: Declaration or statement expected.
+src/__tests__/consentService.test.ts(317,2): error TS1128: Declaration or statement expected.

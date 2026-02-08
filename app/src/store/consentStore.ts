@@ -191,7 +191,7 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
     set({ screenState: 'loading', error: null });
 
     try {
-      const updated = await apiUpdateConsent({ consentId, scopes });
+      const updated = await apiUpdateConsent(consentId, { scopes });
 
       set((state) => ({
         consents: state.consents.map((c) =>

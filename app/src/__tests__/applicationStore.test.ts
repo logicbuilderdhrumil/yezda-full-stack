@@ -50,6 +50,7 @@ describe('useApplicationStore', () => {
           id: 'app-1',
           title: 'Background Check',
           status: 'pending' as const,
+          lifecycleState: 'draft' as const,
           dueDate: '2026-02-10',
           progress: 0,
           createdAt: '2026-01-01',
@@ -103,6 +104,7 @@ describe('useApplicationStore', () => {
       id: 'app-1',
       title: 'Background Check',
       status: 'in_progress' as const,
+      lifecycleState: 'draft' as const,
       dueDate: '2026-02-10',
       progress: 25,
       sections: [
@@ -211,6 +213,7 @@ describe('useApplicationStore', () => {
       mockApplicationService.saveApplicationDraft.mockResolvedValue({
         success: true,
         savedAt,
+        lifecycleState: 'draft' as const,
       });
 
       const { result } = renderHook(() => useApplicationStore());
@@ -259,6 +262,7 @@ describe('useApplicationStore', () => {
         success: true,
         submittedAt,
         message: 'Application submitted successfully!',
+        lifecycleState: 'submitted' as const,
       });
 
       const { result } = renderHook(() => useApplicationStore());

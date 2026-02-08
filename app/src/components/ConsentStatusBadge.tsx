@@ -68,6 +68,7 @@ export function ConsentStatusBadge({
       className={`${config.bgColor} border ${config.borderColor} rounded-lg p-3`}
     >
       <View className="flex-row items-center">
+        {/* @ts-expect-error Ionicons type incompatibility with React 19 types */}
         <Ionicons
           name={config.iconName}
           size={18}

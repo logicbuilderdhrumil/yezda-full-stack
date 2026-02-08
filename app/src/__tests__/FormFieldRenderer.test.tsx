@@ -6,23 +6,17 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { FormFieldRenderer } from '../screens/components/FormFieldRenderer';
-import type {
-  TextField,
-  TextareaField,
-  DateField,
-  SelectField,
-  RadioField,
-  CheckboxField,
-} from '../types/application.types';
+import type { FormField } from '../types/application.types';
 
 describe('FormFieldRenderer', () => {
   describe('TextField', () => {
-    const textField: TextField = {
+    const textField: FormField = {
       id: 'name',
       type: 'text',
       label: 'Full Name',
       placeholder: 'Enter your name',
       required: true,
+      order: 1,
       helpText: 'Enter your legal name',
     };
 
@@ -124,11 +118,13 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('TextareaField', () => {
-    const textareaField: TextareaField = {
+    const textareaField: FormField = {
       id: 'bio',
       type: 'textarea',
       label: 'Biography',
       placeholder: 'Tell us about yourself',
+      required: false,
+      order: 1,
       rows: 4,
       maxLength: 500,
     };
@@ -170,11 +166,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('DateField', () => {
-    const dateField: DateField = {
+    const dateField: FormField = {
       id: 'birthdate',
       type: 'date',
       label: 'Date of Birth',
       required: true,
+      order: 1,
     };
 
     it('renders date field with YYYY-MM-DD placeholder', () => {
@@ -205,11 +202,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('SelectField', () => {
-    const selectField: SelectField = {
+    const selectField: FormField = {
       id: 'country',
       type: 'select',
       label: 'Country',
       required: true,
+      order: 1,
       options: [
         { value: 'us', label: 'United States' },
         { value: 'ca', label: 'Canada' },
@@ -261,10 +259,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('RadioField', () => {
-    const radioField: RadioField = {
+    const radioField: FormField = {
       id: 'gender',
       type: 'radio',
       label: 'Gender',
+      required: false,
+      order: 1,
       options: [
         { value: 'male', label: 'Male' },
         { value: 'female', label: 'Female' },
@@ -316,11 +316,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('CheckboxField - Single', () => {
-    const singleCheckbox: CheckboxField = {
+    const singleCheckbox: FormField = {
       id: 'terms',
       type: 'checkbox',
       label: 'I agree to the terms and conditions',
       required: true,
+      order: 1,
     };
 
     it('renders single checkbox', () => {
@@ -373,10 +374,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('CheckboxField - Multiple', () => {
-    const multiCheckbox: CheckboxField = {
+    const multiCheckbox: FormField = {
       id: 'skills',
       type: 'checkbox',
       label: 'Skills',
+      required: false,
+      order: 1,
       options: [
         { value: 'js', label: 'JavaScript' },
         { value: 'ts', label: 'TypeScript' },
@@ -449,11 +452,12 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('Error display', () => {
-    const textField: TextField = {
+    const textField: FormField = {
       id: 'email',
       type: 'email',
       label: 'Email',
       required: true,
+      order: 1,
     };
 
     it('displays error message', () => {
@@ -470,7 +474,7 @@ describe('FormFieldRenderer', () => {
     });
 
     it('hides help text when error is shown', () => {
-      const fieldWithHelp: TextField = {
+      const fieldWithHelp: FormField = {
         ...textField,
         helpText: 'We will send updates here',
       };
@@ -490,7 +494,7 @@ describe('FormFieldRenderer', () => {
   });
 
   describe('Disabled state', () => {
-    const textField: TextField = {
+    const textField: FormField = {
       id: 'readonly',
       type: 'text',
       label: 'Read Only Field',

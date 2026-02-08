@@ -138,7 +138,8 @@ function validateDateField(field: { label: string; minDate?: string; maxDate?: s
 /**
  * Validate select field.
  */
-function validateSelectField(field: { label: string; options: { value: string }[]; multiple?: boolean }, value: string | string[]): string | undefined {
+function validateSelectField(field: { label: string; options?: { value: string }[]; multiple?: boolean }, value: string | string[]): string | undefined {
+  if (!field.options) return undefined;
   const values = Array.isArray(value) ? value : [value];
   const validValues = field.options.map((opt) => opt.value);
 
@@ -154,7 +155,8 @@ function validateSelectField(field: { label: string; options: { value: string }[
 /**
  * Validate radio field.
  */
-function validateRadioField(field: { label: string; options: { value: string }[] }, value: string): string | undefined {
+function validateRadioField(field: { label: string; options?: { value: string }[] }, value: string): string | undefined {
+  if (!field.options) return undefined;
   const validValues = field.options.map((opt) => opt.value);
   if (!validValues.includes(value)) {
     return `${field.label} contains an invalid option`;
