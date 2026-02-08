@@ -14,7 +14,7 @@ import {
   selectIsAuthenticated,
   selectIsLoading,
   selectPendingMfa,
-} from '@/store/authStore';
+} from '@/features/auth';
 
 /**
  * Handles auth-based redirects using expo-router segments.

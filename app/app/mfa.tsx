@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { MfaChallengeScreen } from '@/screens/MfaChallengeScreen';
+import { MfaChallengeScreen } from '@/features/auth';
 
 export default function MfaRoute() {
   return <MfaChallengeScreen />;

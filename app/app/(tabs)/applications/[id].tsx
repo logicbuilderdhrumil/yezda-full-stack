@@ -5,7 +5,7 @@
 
 import React, { useCallback } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ApplicationDetailScreen } from '@/screens/ApplicationDetailScreen';
+import { ApplicationDetailScreen } from '@/features/applications';
 
 export default function ApplicationDetailRoute() {
   const router = useRouter();

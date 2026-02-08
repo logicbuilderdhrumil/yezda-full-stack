@@ -6,7 +6,7 @@ import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/features/auth';
 
 interface SettingsItemProps {
   icon: string;

@@ -7,7 +7,7 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ConsentPromptScreen } from '@/screens/ConsentPromptScreen';
+import { ConsentPromptScreen } from '@/features/consent';
 
 export default function ConsentRoute() {
   const router = useRouter();
