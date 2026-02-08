@@ -7,6 +7,7 @@ import { createUserManagementModule } from '../modules/user-management/index.js'
 import { createOrgManagementModule } from '../modules/org-management/index.js';
 import { createChatModule } from '../modules/chat/index.js';
 import { createNotificationModule } from '../modules/notification/index.js';
+import { createFileManagementModule } from '../modules/file-management/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -27,7 +28,7 @@ import jobRoutes from './job.routes.js';
 import exportRoutes from './export.routes.js';
 import viewComponentsRoutes from './view-components.routes.js';
 // form-builder routes replaced by Clean Architecture module
-import fileManagementRoutes from './file-management.routes.js';
+// file-management routes replaced by Clean Architecture module
 import assetManagementRoutes from './asset-management.routes.js';
 // chat routes replaced by Clean Architecture module
 import chartingRoutes from './charting.routes.js';
@@ -51,6 +52,7 @@ const userManagementModule = createUserManagementModule();
 const orgManagementModule = createOrgManagementModule();
 const chatModule = createChatModule();
 const notificationModule = createNotificationModule();
+const fileManagementModule = createFileManagementModule();
 
 const router = Router();
 
@@ -76,7 +78,7 @@ router.use('/exports', exportRoutes);
 router.use('/view-components', viewComponentsRoutes);
 router.use('/candidates', candidateManagementModule.routes);
 router.use('/forms', formBuilderModule.routes);
-router.use('/files', fileManagementRoutes);
+router.use('/files', fileManagementModule.routes);
 router.use('/assets', assetManagementRoutes);
 router.use('/chat', chatModule.routes);
 router.use('/charts', chartingRoutes);
