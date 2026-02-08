@@ -69,8 +69,8 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
     setSelectedConsentId(null);
   }, []);
 
-  const activeConsents = consents.filter((c) => c.status === 'granted');
-  const historyConsents = consents.filter((c) => c.status !== 'granted');
+  const activeConsents = (consents ?? []).filter((c) => c.status === 'granted');
+  const historyConsents = (consents ?? []).filter((c) => c.status !== 'granted');
 
   if (screenState === 'loading' && consents.length === 0) {
     return (

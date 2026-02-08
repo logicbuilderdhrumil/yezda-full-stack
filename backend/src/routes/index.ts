@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes.js';
 import appAuthRoutes from './app-auth.routes.js';
+import appApplicationIntakeRoutes from './app-application-intake.routes.js';
+import appConsentRoutes from './app-consent.routes.js';
+import appProfileRoutes from './app-profile.routes.js';
 import stateStoreRoutes from './state-store.routes.js';
 import shellRoutes from './shell.routes.js';
 import firebaseRoutes from './firebase.routes.js';
@@ -39,6 +42,9 @@ const router = Router();
 
 router.use('/auth', authRoutes);
 router.use('/app/auth', appAuthRoutes);
+router.use('/app/applications', appApplicationIntakeRoutes);
+router.use('/app/consent', appConsentRoutes);
+router.use('/app/profile', appProfileRoutes);
 router.use('/state', stateStoreRoutes);
 router.use('/shell', shellRoutes);
 router.use('/firebase', firebaseRoutes);

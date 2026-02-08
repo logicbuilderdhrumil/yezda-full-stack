@@ -40,7 +40,7 @@ export async function getConsentPrompt(
 ): Promise<ConsentPromptRequest | null> {
   try {
     return await apiRequest<ConsentPromptRequest>(
-      `/v1/consent/prompt/${applicationId}`,
+      `/v1/app/consent/prompt/${applicationId}`,
       { method: 'GET' },
       consentRequestConfig
     );
@@ -59,7 +59,7 @@ export async function submitConsent(
   request: ConsentSubmitRequest
 ): Promise<ConsentSubmitResponse> {
   try {
-    return await apiRequest<ConsentSubmitResponse>('/v1/consent', {
+    return await apiRequest<ConsentSubmitResponse>('/v1/app/consent', {
       method: 'POST',
       body: JSON.stringify(request),
     }, consentRequestConfig);
@@ -80,7 +80,7 @@ export async function submitConsent(
  * Get all consent decisions for the current user.
  */
 export async function getConsentStatus(): Promise<ConsentStatusResponse> {
-  return await apiRequest<ConsentStatusResponse>('/v1/consent', {
+  return await apiRequest<ConsentStatusResponse>('/v1/app/consent', {
     method: 'GET',
   }, consentRequestConfig);
 }
@@ -89,7 +89,7 @@ export async function getConsentStatus(): Promise<ConsentStatusResponse> {
  * Get a single consent decision by ID.
  */
 export async function getConsentById(consentId: string): Promise<ConsentDecision> {
-  return await apiRequest<ConsentDecision>(`/v1/consent/${consentId}`, {
+  return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
     method: 'GET',
   }, consentRequestConfig);
 }
@@ -102,7 +102,7 @@ export async function updateConsent(
   request: ConsentUpdateRequest
 ): Promise<ConsentDecision> {
   try {
-    return await apiRequest<ConsentDecision>(`/v1/consent/${consentId}`, {
+    return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
       method: 'PATCH',
       body: JSON.stringify({
         scopes: request.scopes,

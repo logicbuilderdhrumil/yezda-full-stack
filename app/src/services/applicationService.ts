@@ -39,7 +39,7 @@ const appRequestConfig: ApiRequestConfig = {
  */
 export async function getApplications(accessToken: string): Promise<ApplicationListResponse> {
   try {
-    return await apiRequest<ApplicationListResponse>('/v1/applications', {
+    return await apiRequest<ApplicationListResponse>('/v1/app/applications', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -74,7 +74,7 @@ export async function getApplication(
   applicationId: string
 ): Promise<ApplicationDetailResponse> {
   try {
-    return await apiRequest<ApplicationDetailResponse>(`/v1/applications/${applicationId}`, {
+    return await apiRequest<ApplicationDetailResponse>(`/v1/app/applications/${applicationId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -116,7 +116,7 @@ export async function getApplicationDraft(
   applicationId: string
 ): Promise<ApplicationDraftResponse> {
   try {
-    return await apiRequest<ApplicationDraftResponse>(`/v1/applications/${applicationId}/draft`, {
+    return await apiRequest<ApplicationDraftResponse>(`/v1/app/applications/${applicationId}/draft`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -156,7 +156,7 @@ export async function saveApplicationDraft(
   data: SaveDraftRequest
 ): Promise<SaveDraftResponse> {
   try {
-    return await apiRequest<SaveDraftResponse>(`/v1/applications/${applicationId}/draft`, {
+    return await apiRequest<SaveDraftResponse>(`/v1/app/applications/${applicationId}/draft`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -193,7 +193,7 @@ export async function submitApplication(
   data: SubmitApplicationRequest
 ): Promise<SubmitApplicationResponse> {
   try {
-    return await apiRequest<SubmitApplicationResponse>(`/v1/applications/${applicationId}/submit`, {
+    return await apiRequest<SubmitApplicationResponse>(`/v1/app/applications/${applicationId}/submit`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,

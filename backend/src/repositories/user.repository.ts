@@ -14,6 +14,7 @@ type UserRow = {
   mfa_secret: string | null;
   locked_until: Date | null;
   failed_attempts: number;
+  tenant_id?: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -41,6 +42,7 @@ function rowToCandidate(row: UserRow): Candidate {
     mfaSecret: row.mfa_secret ?? undefined,
     lockedUntil: row.locked_until ?? undefined,
     failedAttempts: row.failed_attempts,
+    tenantId: row.tenant_id ?? undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -119,8 +121,8 @@ export class UserRepository {
 
   async createCandidate(candidate: Candidate): Promise<void> {
     await query(
-      `INSERT INTO candidates (id, email, password_hash, mfa_enabled, mfa_secret, locked_until, failed_attempts, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      `INSERT INTO candidates (id, email, password_hash, mfa_enabled, mfa_secret, locked_until, failed_attempts, tenant_id, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         candidate.id,
         candidate.email,
@@ -129,6 +131,7 @@ export class UserRepository {
         candidate.mfaSecret ?? null,
         candidate.lockedUntil ?? null,
         candidate.failedAttempts,
+        candidate.tenantId ?? null,
         candidate.createdAt,
         candidate.updatedAt,
       ]

@@ -34,7 +34,7 @@ export class AppApplicationIntakeRepository {
         a.submitted_at as "submittedAt",
         a.created_at as "createdAt",
         a.updated_at as "updatedAt",
-        fd.title as "formTitle",
+        fd.name as "formTitle",
         COALESCE(ar.saved_at, NULL) as "lastSavedAt"
       FROM applications a
       LEFT JOIN form_definitions fd ON fd.id = a.form_definition_id
@@ -95,9 +95,9 @@ export class AppApplicationIntakeRepository {
     const result = await pool.query(
       `SELECT 
         id,
-        title,
+        name as title,
         description,
-        sections,
+        schema as sections,
         version,
         created_at as "createdAt",
         updated_at as "updatedAt"
@@ -111,9 +111,10 @@ export class AppApplicationIntakeRepository {
     }
 
     const row = result.rows[0];
+    const sections = typeof row.sections === 'string' ? JSON.parse(row.sections) : (row.sections || []);
     return {
       ...row,
-      sections: typeof row.sections === 'string' ? JSON.parse(row.sections) : row.sections,
+      sections: Array.isArray(sections) ? sections : [],
     };
   }
 

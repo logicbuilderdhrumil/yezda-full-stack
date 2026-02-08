@@ -30,6 +30,7 @@ async function seedCandidate(): Promise<void> {
     passwordHash,
     mfaEnabled: false,
     failedAttempts: 0,
+    tenantId: process.env.ADMIN_SEED_TENANT_ID ?? '00000000-0000-0000-0000-000000000001',
     createdAt: now,
     updatedAt: now,
   });
