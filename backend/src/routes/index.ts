@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createAuthModule } from '../modules/auth/index.js';
+import { createCandidateManagementModule } from '../modules/candidate-management/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -19,7 +20,6 @@ import accountSettingsRoutes from './account-settings.routes.js';
 import jobRoutes from './job.routes.js';
 import exportRoutes from './export.routes.js';
 import viewComponentsRoutes from './view-components.routes.js';
-import candidateManagementRoutes from './candidate-management.routes.js';
 import formBuilderRoutes from './form-builder.routes.js';
 import fileManagementRoutes from './file-management.routes.js';
 import assetManagementRoutes from './asset-management.routes.js';
@@ -40,6 +40,7 @@ import reviewTaskRoutes from './review-task.routes.js';
 
 // Initialize Clean Architecture modules
 const authModule = createAuthModule();
+const candidateManagementModule = createCandidateManagementModule();
 
 const router = Router();
 
