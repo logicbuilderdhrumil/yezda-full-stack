@@ -6,6 +6,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import type { PipelineNodeData } from './types';
+import { FormPickerDialog } from './FormPickerDialog';
 
 interface ModuleConfigPanelProps {
   nodeId: string;
@@ -113,15 +114,46 @@ interface ConfigFieldsProps {
 
 function FormConfigFields({ config, onUpdate }: ConfigFieldsProps): ReactNode {
   const { t } = useTranslation();
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const formId = (config.formDefinitionId as string) ?? '';
+  const formName = (config.formName as string) ?? '';
+
+  const handleFormSelect = (selectedId: string, selectedName: string) => {
+    onUpdate('formDefinitionId', selectedId);
+    onUpdate('formName', selectedName);
+  };
+
   return (
     <>
       <div className="space-y-1">
-        <Label>{t('pipelines.builder.formId', 'Form Definition ID')}</Label>
-        <Input
-          value={(config.formDefinitionId as string) ?? ''}
-          onChange={(e) => onUpdate('formDefinitionId', e.target.value)}
-          placeholder="UUID of the form"
-        />
+        <Label>{t('pipelines.builder.formId', 'Form Definition')}</Label>
+        {formId ? (
+          <div className="flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 p-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {formName || t('forms.picker.unnamed')}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate font-mono">
+                {formId}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPickerOpen(true)}
+            >
+              {t('forms.picker.change')}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            className="w-full justify-start text-gray-500"
+            onClick={() => setPickerOpen(true)}
+          >
+            {t('forms.picker.selectForm')}
+          </Button>
+        )}
       </div>
       <div className="space-y-1">
         <Label>{t('pipelines.builder.formVersion', 'Form Version')}</Label>
@@ -134,6 +166,12 @@ function FormConfigFields({ config, onUpdate }: ConfigFieldsProps): ReactNode {
           placeholder="Latest"
         />
       </div>
+      <FormPickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        onSelect={handleFormSelect}
+        selectedFormId={formId || undefined}
+      />
     </>
   );
 }

@@ -668,6 +668,93 @@
       "untitled": "Untitled Form",
       "noFields": "This form has no fields",
       "selectPlaceholder": "Select an option..."
+    },
+    "picker": {
+      "title": "Select Form",
+      "description": "Pick an existing form or create a new one for this pipeline stage.",
+      "searchPlaceholder": "Search forms...",
+      "noResults": "No forms found matching your search.",
+      "fetchError": "Failed to load forms",
+      "fieldCount": "{{count}} field(s)",
+      "lastEdited": "Edited {{date}}",
+      "selectButton": "Select",
+      "selectForm": "Select a form…",
+      "createNew": "Create New",
+      "change": "Change",
+      "unnamed": "Unnamed Form"
+    }
+  },
+  "pipelines": {
+    "list": {
+      "title": "Screening Pipelines",
+      "description": "Manage screening workflow pipelines",
+      "createButton": "Create Pipeline",
+      "builderButton": "Visual Builder",
+      "noResults": "No pipelines found",
+      "fetchError": "Failed to load pipelines",
+      "searchPlaceholder": "Search pipelines...",
+      "filterStatus": "Filter by status"
+    },
+    "builder": {
+      "modules": "Modules",
+      "configTitle": "Module Settings",
+      "label": "Label",
+      "deleteNode": "Remove Module",
+      "validationFailed": "Please fix validation errors before saving",
+      "updated": "Pipeline updated",
+      "created": "Pipeline created",
+      "saveError": "Failed to save pipeline",
+      "activated": "Pipeline activated",
+      "activateError": "Failed to activate pipeline",
+      "backToPipelines": "Back to Pipelines",
+      "back": "Back",
+      "formId": "Form Definition",
+      "formVersion": "Form Version",
+      "provider": "Provider",
+      "endpoint": "Endpoint URL",
+      "apiKeyRef": "API Key Ref",
+      "timeout": "Timeout (ms)",
+      "processor": "Processor",
+      "assigneeRole": "Assignee Role",
+      "decisionOptions": "Decision Options (comma-separated)",
+      "timeoutHours": "Timeout (hours)",
+      "escalation": "Escalation Policy",
+      "channel": "Channel",
+      "templateId": "Template ID",
+      "recipientType": "Recipient",
+      "triggerOn": "Trigger On",
+      "pipelineName": "Pipeline Name",
+      "pipelineDescription": "Description",
+      "save": "Save",
+      "activate": "Activate",
+      "emptyState": "Drag modules from the sidebar to build your pipeline",
+      "undoHint": "Ctrl+Z to undo, Ctrl+Shift+Z to redo, Ctrl+S to save"
+    },
+    "module": {
+      "form": "Form",
+      "external_service": "External Service",
+      "internal_processing": "Internal Processing",
+      "human_review": "Human Review",
+      "notification": "Notification"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "details": {
+      "title": "Pipeline Details",
+      "overview": "Overview",
+      "stages": "Stages"
+    },
+    "templates": {
+      "title": "Pipeline Templates",
+      "description": "Start from a pre-built template",
+      "useTemplate": "Use Template",
+      "standard_dbs": "Standard DBS Check",
+      "right_to_work": "Right to Work",
+      "full_background": "Full Background Check",
+      "simple_form": "Simple Form Collection"
     }
   },
   "ledger": {

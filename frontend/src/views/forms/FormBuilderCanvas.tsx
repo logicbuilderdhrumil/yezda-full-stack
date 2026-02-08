@@ -1,10 +1,12 @@
 /**
  * Form builder canvas with field palette and configuration panel.
+ * Supports split-view live preview, drag-and-drop field reordering,
+ * responsive modal layout, and version display.
  */
-import { useState, type ReactNode } from 'react';
+import { useState, useRef, useCallback, type ReactNode, type DragEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, CardContent, CardHeader, CardTitle, LoadingSpinner } from '@/components/ui';
-import { cn } from '@/utils';
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle, LoadingSpinner } from '@/components/ui';
+import { cn, formatDate } from '@/utils';
 import type { FormSchema, FormField } from '@/@types/form';
 import { FieldPalette } from './FieldPalette';
 import { FieldConfigPanel } from './FieldConfigPanel';
@@ -23,6 +25,10 @@ export interface FormBuilderCanvasProps {
   isSubmitting?: boolean;
   /** Form name for display. */
   formName?: string;
+  /** Last edited timestamp. */
+  updatedAt?: string;
+  /** Whether canvas is rendered inside a modal (compact mode). */
+  compact?: boolean;
 }
 
 /**
