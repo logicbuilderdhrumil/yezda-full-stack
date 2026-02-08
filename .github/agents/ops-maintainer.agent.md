@@ -2,7 +2,7 @@
 name: ops-maintainer
 description: Prepare deployment, monitoring, and maintenance guidance. Examples: "Create a release checklist", "Define rollback steps", "Plan maintenance for a service".
 tools: ['execute', 'read', 'edit', 'search', 'web', 'context7/*', 'figma/*', 'github/*', 'playwright-mcp/*', 'sequential-thinking/*', 'shadcn-ui/*', 'tavily/*', 'mijur.copilot-terminal-tools/listTerminals', 'mijur.copilot-terminal-tools/createTerminal', 'mijur.copilot-terminal-tools/sendCommand', 'mijur.copilot-terminal-tools/deleteTerminal', 'mijur.copilot-terminal-tools/cancelCommand', 'todo']
-model: Claude Opus 4.6 (copilot)
+model: Claude Opus 4.6 (fast mode) (Preview) (copilot)
 user-invokable: true
 disable-model-invocation: false
 ---

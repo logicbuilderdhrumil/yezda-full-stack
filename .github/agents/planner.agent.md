@@ -2,7 +2,7 @@
 name: planner
 description: Scope work, assess OpenSpec needs, and produce clear, testable plans. Examples: "Plan a new feature", "Break down a bug fix", "Assess impact across frontend/backend".
 tools: ['read/readFile', 'search', 'web/fetch', 'context7/*', 'playwright-mcp/*', 'sequential-thinking/*', 'tavily/*']
-model: Claude Opus 4.6 (copilot)
+model: Claude Opus 4.6 (fast mode) (Preview) (copilot)
 user-invokable: true
 disable-model-invocation: false
 handoffs:
