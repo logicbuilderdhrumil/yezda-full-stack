@@ -20,7 +20,9 @@ import type {
   AssignmentProgress,
   StageStatus,
   ModuleType,
+  PipelineGraph,
 } from '../models/screening-pipeline.model.js';
+import type { StageInput } from '../models/screening-pipeline.model.js';
 
 /**
  * Check if actor has permission to manage pipelines
@@ -44,6 +46,41 @@ function canAssignPipelines(roles: string[]): boolean {
 }
 
 export class ScreeningPipelineService {
+  /**
+   * Validate module configs for an array of stage inputs via the module registry.
+   * Returns null on success, or an error result on failure.
+   */
+  private validateStageModuleConfigs(
+    stages: StageInput[]
+  ): PipelineOperationResult | null {
+    for (const stage of stages) {
+      const moduleType = stage.moduleType ?? 'form';
+
+      // If moduleConfig is provided, validate it against the registry
+      if (stage.moduleConfig && Object.keys(stage.moduleConfig).length > 0) {
+        const result = moduleRegistry.validate(moduleType, stage.moduleConfig);
+        if (!result.valid) {
+          return {
+            success: false,
+            error: `Invalid config for stage "${stage.name}" (module type: ${moduleType}): ${result.errors?.join('; ')}`,
+            errorCode: 'INVALID_MODULE_CONFIG',
+          };
+        }
+      } else if (moduleType === 'form') {
+        // For form modules, auto-build config from formDefinitionId
+        // (backward-compatible — no explicit moduleConfig required)
+      } else {
+        // Non-form module types require explicit moduleConfig
+        return {
+          success: false,
+          error: `Module config is required for stage "${stage.name}" (module type: ${moduleType})`,
+          errorCode: 'MISSING_MODULE_CONFIG',
+        };
+      }
+    }
+    return null;
+  }
+
   /**
    * List all pipelines for a tenant
    */
@@ -185,40 +222,40 @@ export class ScreeningPipelineService {
         };
       }
 
+      // Validate module configs for each stage
+      const configError = this.validateStageModuleConfigs(dto.stages);
+      if (configError) {
+        return configError;
+      }
+
       const now = new Date();
       const pipelineId = uuidv4();
 
-      // Validate module configs via registry
-      for (const stageInput of dto.stages) {
-        const moduleType = (stageInput as { moduleType?: ModuleType }).moduleType || 'form';
-        const moduleConfig = (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig;
-        if (moduleConfig && moduleRegistry.has(moduleType)) {
-          const validationError = moduleRegistry.validate(moduleType, moduleConfig);
-          if (validationError) {
-            return {
-              success: false,
-              error: validationError,
-              errorCode: 'INVALID_MODULE_CONFIG',
-            };
-          }
-        }
-      }
+      // Create stages with proper IDs, including moduleType and moduleConfig
+      const stages: PipelineStage[] = dto.stages.map((stageInput) => {
+        const moduleType: ModuleType = stageInput.moduleType ?? 'form';
+        const moduleConfig =
+          stageInput.moduleConfig && Object.keys(stageInput.moduleConfig).length > 0
+            ? stageInput.moduleConfig
+            : moduleType === 'form'
+              ? { formDefinitionId: stageInput.formDefinitionId }
+              : {};
 
-      // Create stages with proper IDs
-      const stages: PipelineStage[] = dto.stages.map((stageInput) => ({
-        id: uuidv4(),
-        pipelineId,
-        formDefinitionId: stageInput.formDefinitionId,
-        name: stageInput.name,
-        description: stageInput.description,
-        order: stageInput.order,
-        isRequired: stageInput.isRequired ?? true,
-        estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
-        moduleType: ((stageInput as { moduleType?: ModuleType }).moduleType || 'form') as ModuleType,
-        moduleConfig: (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig,
-        createdAt: now,
-        updatedAt: now,
-      }));
+        return {
+          id: uuidv4(),
+          pipelineId,
+          formDefinitionId: stageInput.formDefinitionId,
+          name: stageInput.name,
+          description: stageInput.description,
+          order: stageInput.order,
+          isRequired: stageInput.isRequired ?? true,
+          estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
+          moduleType,
+          moduleConfig: moduleConfig as Record<string, unknown>,
+          createdAt: now,
+          updatedAt: now,
+        };
+      });
 
       // Sort stages by order
       stages.sort((a, b) => a.order - b.order);
@@ -229,9 +266,9 @@ export class ScreeningPipelineService {
         name: dto.name,
         description: dto.description,
         stages,
+        graph: dto.graph ?? null,
         status: 'draft',
         version: 1,
-        graph: (dto as { graph?: ScreeningPipeline['graph'] }).graph,
         createdBy: ctx.actorId,
         createdAt: now,
         updatedAt: now,
@@ -332,47 +369,41 @@ export class ScreeningPipelineService {
 
       if (dto.name !== undefined) updateData.name = dto.name;
       if (dto.description !== undefined) updateData.description = dto.description;
+      if (dto.graph !== undefined) updateData.graph = dto.graph;
 
-      // If stages are being updated, recreate them
+      // If stages are being updated, validate configs and recreate them
       if (dto.stages) {
-        // Validate module configs via registry
-        for (const stageInput of dto.stages) {
-          const moduleType = (stageInput as { moduleType?: ModuleType }).moduleType || 'form';
-          const moduleConfig = (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig;
-          if (moduleConfig && moduleRegistry.has(moduleType)) {
-            const validationError = moduleRegistry.validate(moduleType, moduleConfig);
-            if (validationError) {
-              return {
-                success: false,
-                error: validationError,
-                errorCode: 'INVALID_MODULE_CONFIG',
-              };
-            }
-          }
+        const configError = this.validateStageModuleConfigs(dto.stages);
+        if (configError) {
+          return configError;
         }
 
-        const stages: PipelineStage[] = dto.stages.map((stageInput) => ({
-          id: uuidv4(),
-          pipelineId: id,
-          formDefinitionId: stageInput.formDefinitionId,
-          name: stageInput.name,
-          description: stageInput.description,
-          order: stageInput.order,
-          isRequired: stageInput.isRequired ?? true,
-          estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
-          moduleType: ((stageInput as { moduleType?: ModuleType }).moduleType || 'form') as ModuleType,
-          moduleConfig: (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig,
-          createdAt: now,
-          updatedAt: now,
-        }));
+        const stages: PipelineStage[] = dto.stages.map((stageInput) => {
+          const moduleType: ModuleType = stageInput.moduleType ?? 'form';
+          const moduleConfig =
+            stageInput.moduleConfig && Object.keys(stageInput.moduleConfig).length > 0
+              ? stageInput.moduleConfig
+              : moduleType === 'form'
+                ? { formDefinitionId: stageInput.formDefinitionId }
+                : {};
+
+          return {
+            id: uuidv4(),
+            pipelineId: id,
+            formDefinitionId: stageInput.formDefinitionId,
+            name: stageInput.name,
+            description: stageInput.description,
+            order: stageInput.order,
+            isRequired: stageInput.isRequired ?? true,
+            estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
+            moduleType,
+            moduleConfig: moduleConfig as Record<string, unknown>,
+            createdAt: now,
+            updatedAt: now,
+          };
+        });
         stages.sort((a, b) => a.order - b.order);
         updateData.stages = stages;
-      }
-
-      // Store graph data if provided
-      const graph = (dto as { graph?: ScreeningPipeline['graph'] }).graph;
-      if (graph !== undefined) {
-        updateData.graph = graph;
       }
 
       const updated = await screeningPipelineRepository.update(id, updateData);

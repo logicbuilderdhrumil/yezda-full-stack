@@ -4,10 +4,19 @@
  */
 
 import { z } from 'zod';
+import type {
+  ModuleType,
+  PipelineGraph,
+} from '../../../shared/@types/pipeline-modules.js';
 
-/**
- * Module type enum for pipeline stages
- */
+// Re-export shared types for convenience
+export type { ModuleType, PipelineGraph } from '../../../shared/@types/pipeline-modules.js';
+
+// ---------------------------------------------------------------------------
+// Module Type Enum & Per-Module Config Schemas (Zod)
+// ---------------------------------------------------------------------------
+
+/** Valid module types */
 export const ModuleTypeEnum = z.enum([
   'form',
   'external_service',
@@ -16,49 +25,113 @@ export const ModuleTypeEnum = z.enum([
   'notification',
 ]);
 
-export type ModuleType = z.infer<typeof ModuleTypeEnum>;
-
-/**
- * Module config schemas by type
- */
+/** Form module config schema */
 export const FormModuleConfigSchema = z.object({
   formDefinitionId: z.string().uuid(),
-  formVersion: z.number().int().optional(),
+  formVersion: z.number().int().min(1).optional(),
 });
 
+/** Field mapping entry schema */
+export const FieldMappingEntrySchema = z.object({
+  sourceField: z.string().min(1),
+  targetField: z.string().min(1),
+});
+
+/** External service module config schema */
 export const ExternalServiceModuleConfigSchema = z.object({
   provider: z.string().min(1),
-  apiKeyRef: z.string().optional(),
-  endpoint: z.string().url().optional(),
-  fieldMapping: z.record(z.string()).optional(),
+  apiKeyRef: z.string().min(1),
+  endpoint: z.string().url(),
+  fieldMapping: z.array(FieldMappingEntrySchema),
   webhookUrl: z.string().url().optional(),
-  timeout: z.number().int().min(1000).optional(),
+  timeout: z.number().int().min(1000).max(300_000), // 1s – 5min
 });
 
+/** Internal processing module config schema */
 export const InternalProcessingModuleConfigSchema = z.object({
   processor: z.string().min(1),
-  inputMapping: z.record(z.string()).optional(),
-  outputMapping: z.record(z.string()).optional(),
-  timeout: z.number().int().min(1000).optional(),
+  inputMapping: z.record(z.string(), z.string()),
+  outputMapping: z.record(z.string(), z.string()),
+  timeout: z.number().int().min(1000).max(600_000), // 1s – 10min
 });
 
+/** Escalation policy schema */
+export const EscalationPolicySchema = z.object({
+  action: z.enum(['reassign', 'notify_manager', 'auto_approve', 'auto_reject']),
+  targetRole: z.string().optional(),
+});
+
+/** Human review module config schema */
 export const HumanReviewModuleConfigSchema = z.object({
   assigneeRole: z.string().min(1),
   reviewFormId: z.string().uuid().optional(),
-  decisionOptions: z.array(z.string()).min(1),
-  timeoutHours: z.number().int().min(1).optional(),
-  escalationPolicy: z.enum(['reassign', 'notify_manager', 'auto_approve']).optional(),
+  decisionOptions: z.array(z.string().min(1)).min(1),
+  timeoutHours: z.number().min(0.5).max(720), // 30 min – 30 days
+  escalationPolicy: EscalationPolicySchema,
 });
 
+/** Notification module config schema */
 export const NotificationModuleConfigSchema = z.object({
   channel: z.enum(['email', 'sms', 'in_app']),
-  templateId: z.string().optional(),
+  templateId: z.string().min(1),
   recipientType: z.enum(['candidate', 'assignee', 'manager', 'custom']),
-  triggerOn: z.enum(['enter', 'complete', 'error']).optional(),
+  triggerOn: z.enum([
+    'stage_started',
+    'stage_completed',
+    'stage_failed',
+    'assignment_completed',
+  ]),
 });
 
 /**
+ * Discriminated union — picks the correct config schema based on `moduleType`.
+ */
+export const ModuleConfigSchema = z.discriminatedUnion('moduleType', [
+  z.object({ moduleType: z.literal('form'), config: FormModuleConfigSchema }),
+  z.object({ moduleType: z.literal('external_service'), config: ExternalServiceModuleConfigSchema }),
+  z.object({ moduleType: z.literal('internal_processing'), config: InternalProcessingModuleConfigSchema }),
+  z.object({ moduleType: z.literal('human_review'), config: HumanReviewModuleConfigSchema }),
+  z.object({ moduleType: z.literal('notification'), config: NotificationModuleConfigSchema }),
+]);
+
+// ---------------------------------------------------------------------------
+// Pipeline Graph Schema (React Flow layout)
+// ---------------------------------------------------------------------------
+
+export const PipelineNodeSchema = z.object({
+  id: z.string().min(1),
+  type: ModuleTypeEnum,
+  position: z.object({ x: z.number(), y: z.number() }),
+  data: z.object({
+    stageId: z.string(),
+    label: z.string(),
+    moduleConfig: ModuleConfigSchema,
+  }),
+});
+
+export const PipelineEdgeSchema = z.object({
+  id: z.string().min(1),
+  source: z.string().min(1),
+  target: z.string().min(1),
+  sourceHandle: z.string().optional(),
+  targetHandle: z.string().optional(),
+});
+
+export const PipelineGraphSchema = z.object({
+  nodes: z.array(PipelineNodeSchema),
+  edges: z.array(PipelineEdgeSchema),
+  viewport: z
+    .object({ x: z.number(), y: z.number(), zoom: z.number() })
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Pipeline Stage
+// ---------------------------------------------------------------------------
+
+/**
  * Pipeline stage - one step in a screening pipeline
+ * Now includes moduleType and moduleConfig columns.
  */
 export const PipelineStageSchema = z.object({
   id: z.string().uuid(),
@@ -70,7 +143,7 @@ export const PipelineStageSchema = z.object({
   isRequired: z.boolean().default(true),
   estimatedDurationMinutes: z.number().int().min(0).optional(),
   moduleType: ModuleTypeEnum.default('form'),
-  moduleConfig: z.record(z.unknown()).optional(),
+  moduleConfig: z.record(z.unknown()).default({}),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -84,42 +157,17 @@ export type PipelineStatus = 'draft' | 'active' | 'archived';
 
 /**
  * Screening pipeline - the overall workflow template
+ * Now includes an optional `graph` column for the React Flow layout.
  */
-/**
- * Pipeline graph for React Flow layout serialization
- */
-export const PipelineGraphSchema = z.object({
-  nodes: z.array(z.object({
-    id: z.string(),
-    type: z.string(),
-    position: z.object({ x: z.number(), y: z.number() }),
-    data: z.record(z.unknown()),
-  })),
-  edges: z.array(z.object({
-    id: z.string(),
-    source: z.string(),
-    target: z.string(),
-    sourceHandle: z.string().optional(),
-    targetHandle: z.string().optional(),
-  })),
-  viewport: z.object({
-    x: z.number(),
-    y: z.number(),
-    zoom: z.number(),
-  }).optional(),
-});
-
-export type PipelineGraph = z.infer<typeof PipelineGraphSchema>;
-
 export const ScreeningPipelineSchema = z.object({
   id: z.string().uuid(),
   tenantId: z.string().uuid(),
   name: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   stages: z.array(PipelineStageSchema),
+  graph: PipelineGraphSchema.optional().nullable(),
   status: z.enum(['draft', 'active', 'archived']),
   version: z.number().int().min(1).default(1),
-  graph: PipelineGraphSchema.optional(),
   createdBy: z.string().uuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -159,7 +207,8 @@ export const PipelineAssignmentSchema = z.object({
 export type PipelineAssignment = z.infer<typeof PipelineAssignmentSchema>;
 
 /**
- * Stage input for creating/updating pipeline stages
+ * Stage input for creating/updating pipeline stages.
+ * Now supports moduleType + moduleConfig alongside legacy formDefinitionId.
  */
 export const StageInputSchema = z.object({
   formDefinitionId: z.string().uuid(),
@@ -175,26 +224,31 @@ export const StageInputSchema = z.object({
 export type StageInput = z.infer<typeof StageInputSchema>;
 
 /**
- * Create pipeline DTO
+ * Create pipeline DTO — now includes optional graph
  */
 export const CreatePipelineDtoSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   stages: z.array(StageInputSchema).min(1, 'At least one stage is required'),
-  graph: PipelineGraphSchema.optional(),
+  graph: PipelineGraphSchema.optional().nullable(),
 });
 
 export type CreatePipelineDto = z.infer<typeof CreatePipelineDtoSchema>;
 
 /**
- * Update pipeline DTO
+ * Update pipeline DTO — now includes optional graph
  */
 export const UpdatePipelineDtoSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().max(1000).optional(),
   stages: z.array(StageInputSchema).min(1).optional(),
+  graph: PipelineGraphSchema.optional().nullable(),
 }).refine(
-  (data) => data.name !== undefined || data.description !== undefined || data.stages !== undefined,
+  (data) =>
+    data.name !== undefined ||
+    data.description !== undefined ||
+    data.stages !== undefined ||
+    data.graph !== undefined,
   { message: 'At least one field must be provided for update' }
 );
 

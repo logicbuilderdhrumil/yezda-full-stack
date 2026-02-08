@@ -1,11 +1,13 @@
 /**
  * Module Registry
- * Validates module configs by type using a registry pattern.
- * Extensible — register new module types without schema migrations.
+ *
+ * Central registry for pipeline module types.
+ * Each module type has a Zod schema that validates its `moduleConfig` shape.
+ * The registry supports `register()`, `validate()`, and `getSchema()`.
  */
 
-import { z } from 'zod';
-import type { ModuleType } from '../models/screening-pipeline.model.js';
+import type { ZodSchema } from 'zod';
+import type { ModuleType } from '../../../shared/@types/pipeline-modules.js';
 import {
   FormModuleConfigSchema,
   ExternalServiceModuleConfigSchema,
@@ -14,95 +16,127 @@ import {
   NotificationModuleConfigSchema,
 } from '../models/screening-pipeline.model.js';
 
-/** Module validator entry */
-interface ModuleRegistryEntry {
-  type: ModuleType;
-  schema: z.ZodSchema;
+export interface ModuleRegistryEntry {
+  /** Human-readable label for admin UI */
   label: string;
+  /** Whether the module produces candidate-visible stages */
+  candidateVisible: boolean;
+  /** Zod schema that validates the module-specific config object */
+  configSchema: ZodSchema;
 }
 
-/**
- * ModuleRegistry — central registry for pipeline module type validators.
- */
-class ModuleRegistryClass {
-  private entries = new Map<ModuleType, ModuleRegistryEntry>();
+export interface ModuleValidationResult {
+  valid: boolean;
+  errors?: string[];
+}
+
+export class ModuleRegistry {
+  private modules = new Map<ModuleType, ModuleRegistryEntry>();
 
   /**
-   * Register a module type with its validation schema.
+   * Register a module type with its metadata and config validator.
    */
-  register(entry: ModuleRegistryEntry): void {
-    this.entries.set(entry.type, entry);
+  register(
+    moduleType: ModuleType,
+    entry: ModuleRegistryEntry
+  ): void {
+    if (this.modules.has(moduleType)) {
+      throw new Error(`Module type "${moduleType}" is already registered`);
+    }
+    this.modules.set(moduleType, entry);
   }
 
   /**
-   * Validate a moduleConfig against the registered schema for its type.
-   * @returns null if valid, or a string error message.
+   * Validate a config object against the schema for the given module type.
+   * Returns `{ valid: true }` on success or `{ valid: false, errors }`.
    */
-  validate(type: ModuleType, config: unknown): string | null {
-    const entry = this.entries.get(type);
+  validate(
+    moduleType: ModuleType,
+    config: unknown
+  ): ModuleValidationResult {
+    const entry = this.modules.get(moduleType);
     if (!entry) {
-      return `Unknown module type: ${type}`;
+      return {
+        valid: false,
+        errors: [`Unknown module type: ${moduleType}`],
+      };
     }
-    const result = entry.schema.safeParse(config);
-    if (!result.success) {
-      const issues = result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
-      return `Invalid ${type} config: ${issues}`;
+
+    const result = entry.configSchema.safeParse(config);
+    if (result.success) {
+      return { valid: true };
     }
-    return null;
+
+    return {
+      valid: false,
+      errors: result.error.issues.map(
+        (issue) => `${issue.path.join('.')}: ${issue.message}`
+      ),
+    };
   }
 
   /**
-   * Get the Zod schema for a module type.
+   * Return the Zod schema for a given module type, or undefined if not found.
    */
-  getSchema(type: ModuleType): z.ZodSchema | undefined {
-    return this.entries.get(type)?.schema;
+  getSchema(moduleType: ModuleType): ZodSchema | undefined {
+    return this.modules.get(moduleType)?.configSchema;
   }
 
   /**
-   * List all registered module types.
+   * Return the full registry entry, or undefined if not found.
+   */
+  getEntry(moduleType: ModuleType): ModuleRegistryEntry | undefined {
+    return this.modules.get(moduleType);
+  }
+
+  /**
+   * Check whether a module type is registered.
+   */
+  has(moduleType: ModuleType): boolean {
+    return this.modules.has(moduleType);
+  }
+
+  /**
+   * Return all registered module types.
    */
   listTypes(): ModuleType[] {
-    return Array.from(this.entries.keys());
-  }
-
-  /**
-   * Check if a module type is registered.
-   */
-  has(type: ModuleType): boolean {
-    return this.entries.has(type);
+    return Array.from(this.modules.keys());
   }
 }
 
-/** Singleton module registry instance */
-export const moduleRegistry = new ModuleRegistryClass();
+// ---------------------------------------------------------------------------
+// Singleton instance with built-in module types registered
+// ---------------------------------------------------------------------------
 
-// Register built-in module types
-moduleRegistry.register({
-  type: 'form',
-  schema: FormModuleConfigSchema,
+export const moduleRegistry = new ModuleRegistry();
+
+// Task 3.6 — register built-in module types
+moduleRegistry.register('form', {
   label: 'Form',
+  candidateVisible: true,
+  configSchema: FormModuleConfigSchema,
 });
 
-moduleRegistry.register({
-  type: 'external_service',
-  schema: ExternalServiceModuleConfigSchema,
+moduleRegistry.register('external_service', {
   label: 'External Service',
+  candidateVisible: false,
+  configSchema: ExternalServiceModuleConfigSchema,
 });
 
-moduleRegistry.register({
-  type: 'internal_processing',
-  schema: InternalProcessingModuleConfigSchema,
+moduleRegistry.register('internal_processing', {
   label: 'Internal Processing',
+  candidateVisible: false,
+  configSchema: InternalProcessingModuleConfigSchema,
 });
 
-moduleRegistry.register({
-  type: 'human_review',
-  schema: HumanReviewModuleConfigSchema,
+moduleRegistry.register('human_review', {
   label: 'Human Review',
+  candidateVisible: false,
+  configSchema: HumanReviewModuleConfigSchema,
 });
 
-moduleRegistry.register({
-  type: 'notification',
-  schema: NotificationModuleConfigSchema,
+moduleRegistry.register('notification', {
   label: 'Notification',
+  candidateVisible: false,
+  configSchema: NotificationModuleConfigSchema,
 });

@@ -2,13 +2,27 @@
  * Pipeline-related types for screening pipeline management.
  */
 
-/** Module type for pipeline stages */
-export type ModuleType =
-  | 'form'
-  | 'external_service'
-  | 'internal_processing'
-  | 'human_review'
-  | 'notification';
+// Re-export shared module types used by the pipeline builder
+export type {
+  ModuleType,
+  ModuleConfig,
+  ModuleConfigFor,
+  FormModuleConfig,
+  ExternalServiceModuleConfig,
+  InternalProcessingModuleConfig,
+  HumanReviewModuleConfig,
+  NotificationModuleConfig,
+  PipelineGraph,
+  PipelineNode,
+  PipelineEdge,
+  PipelineViewport,
+  FieldMappingEntry,
+  EscalationPolicy,
+  NotificationChannel,
+  NotificationRecipientType,
+  NotificationTriggerOn,
+} from '../../../shared/@types/pipeline-modules';
+export { MODULE_TYPES } from '../../../shared/@types/pipeline-modules';
 
 /** Pipeline stage - one step in a screening pipeline */
 export interface PipelineStage {
@@ -20,7 +34,7 @@ export interface PipelineStage {
   order: number;
   isRequired: boolean;
   estimatedDurationMinutes?: number;
-  moduleType?: ModuleType;
+  moduleType?: import('../../../shared/@types/pipeline-modules').ModuleType;
   moduleConfig?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
@@ -29,24 +43,6 @@ export interface PipelineStage {
 /** Pipeline status for lifecycle management */
 export type PipelineStatus = 'draft' | 'active' | 'archived';
 
-/** Serialized pipeline graph (React Flow state) */
-export interface PipelineGraphData {
-  nodes: Array<{
-    id: string;
-    type: string;
-    position: { x: number; y: number };
-    data: Record<string, unknown>;
-  }>;
-  edges: Array<{
-    id: string;
-    source: string;
-    target: string;
-    sourceHandle?: string | undefined;
-    targetHandle?: string | undefined;
-  }>;
-  viewport?: { x: number; y: number; zoom: number };
-}
-
 /** Screening pipeline - the overall workflow template */
 export interface ScreeningPipeline {
   id: string;
@@ -54,9 +50,9 @@ export interface ScreeningPipeline {
   name: string;
   description?: string;
   stages: PipelineStage[];
+  graph?: import('../../../shared/@types/pipeline-modules').PipelineGraph | null;
   status: PipelineStatus;
   version: number;
-  graph?: PipelineGraphData;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -92,9 +88,7 @@ export interface CreatePipelineStageDto {
   description?: string;
   order: number;
   isRequired?: boolean;
-  estimatedDurationMinutes?: number | undefined;
-  moduleType?: ModuleType;
-  moduleConfig?: Record<string, unknown>;
+  estimatedDurationMinutes?: number;
 }
 
 /** Create pipeline DTO */
@@ -102,7 +96,6 @@ export interface CreatePipelineDto {
   name: string;
   description?: string;
   stages: CreatePipelineStageDto[];
-  graph?: PipelineGraphData;
 }
 
 /** Update pipeline DTO */
