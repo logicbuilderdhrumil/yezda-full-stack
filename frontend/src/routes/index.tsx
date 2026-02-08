@@ -215,6 +215,11 @@ const PipelineEditView = lazy(() =>
     default: m.PipelineEditView,
   }))
 );
+const PipelineBuilderView = lazy(() =>
+  import('@/views/pipelines/builder/PipelineBuilderView').then((m) => ({
+    default: m.PipelineBuilderView,
+  }))
+);
 
 // Client portal views
 const ClientDashboardView = lazy(() =>
@@ -526,6 +531,14 @@ export const protectedRoutes: RouteObject[] = [
           {
             path: 'pipelines/:id/edit',
             element: withAdminGuard(PipelineEditView),
+          },
+          {
+            path: 'pipelines/builder',
+            element: withAdminGuard(PipelineBuilderView),
+          },
+          {
+            path: 'pipelines/:id/builder',
+            element: withAdminGuard(PipelineBuilderView),
           },
           // Reports route (admin and manager)
           {

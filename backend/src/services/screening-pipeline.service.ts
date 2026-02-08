@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { screeningPipelineRepository } from '../repositories/screening-pipeline.repository.js';
 import { auditService } from './audit.service.js';
 import { metricsService } from './metrics.service.js';
+import { moduleRegistry } from './module-registry.service.js';
 import type {
   ScreeningPipeline,
   PipelineStage,
@@ -18,6 +19,7 @@ import type {
   PipelineContext,
   AssignmentProgress,
   StageStatus,
+  ModuleType,
 } from '../models/screening-pipeline.model.js';
 
 /**
@@ -186,6 +188,22 @@ export class ScreeningPipelineService {
       const now = new Date();
       const pipelineId = uuidv4();
 
+      // Validate module configs via registry
+      for (const stageInput of dto.stages) {
+        const moduleType = (stageInput as { moduleType?: ModuleType }).moduleType || 'form';
+        const moduleConfig = (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig;
+        if (moduleConfig && moduleRegistry.has(moduleType)) {
+          const validationError = moduleRegistry.validate(moduleType, moduleConfig);
+          if (validationError) {
+            return {
+              success: false,
+              error: validationError,
+              errorCode: 'INVALID_MODULE_CONFIG',
+            };
+          }
+        }
+      }
+
       // Create stages with proper IDs
       const stages: PipelineStage[] = dto.stages.map((stageInput) => ({
         id: uuidv4(),
@@ -196,6 +214,8 @@ export class ScreeningPipelineService {
         order: stageInput.order,
         isRequired: stageInput.isRequired ?? true,
         estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
+        moduleType: ((stageInput as { moduleType?: ModuleType }).moduleType || 'form') as ModuleType,
+        moduleConfig: (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig,
         createdAt: now,
         updatedAt: now,
       }));
@@ -211,6 +231,7 @@ export class ScreeningPipelineService {
         stages,
         status: 'draft',
         version: 1,
+        graph: (dto as { graph?: ScreeningPipeline['graph'] }).graph,
         createdBy: ctx.actorId,
         createdAt: now,
         updatedAt: now,
@@ -314,6 +335,22 @@ export class ScreeningPipelineService {
 
       // If stages are being updated, recreate them
       if (dto.stages) {
+        // Validate module configs via registry
+        for (const stageInput of dto.stages) {
+          const moduleType = (stageInput as { moduleType?: ModuleType }).moduleType || 'form';
+          const moduleConfig = (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig;
+          if (moduleConfig && moduleRegistry.has(moduleType)) {
+            const validationError = moduleRegistry.validate(moduleType, moduleConfig);
+            if (validationError) {
+              return {
+                success: false,
+                error: validationError,
+                errorCode: 'INVALID_MODULE_CONFIG',
+              };
+            }
+          }
+        }
+
         const stages: PipelineStage[] = dto.stages.map((stageInput) => ({
           id: uuidv4(),
           pipelineId: id,
@@ -323,11 +360,19 @@ export class ScreeningPipelineService {
           order: stageInput.order,
           isRequired: stageInput.isRequired ?? true,
           estimatedDurationMinutes: stageInput.estimatedDurationMinutes,
+          moduleType: ((stageInput as { moduleType?: ModuleType }).moduleType || 'form') as ModuleType,
+          moduleConfig: (stageInput as { moduleConfig?: Record<string, unknown> }).moduleConfig,
           createdAt: now,
           updatedAt: now,
         }));
         stages.sort((a, b) => a.order - b.order);
         updateData.stages = stages;
+      }
+
+      // Store graph data if provided
+      const graph = (dto as { graph?: ScreeningPipeline['graph'] }).graph;
+      if (graph !== undefined) {
+        updateData.graph = graph;
       }
 
       const updated = await screeningPipelineRepository.update(id, updateData);

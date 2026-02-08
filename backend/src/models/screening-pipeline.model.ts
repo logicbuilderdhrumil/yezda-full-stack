@@ -6,6 +6,58 @@
 import { z } from 'zod';
 
 /**
+ * Module type enum for pipeline stages
+ */
+export const ModuleTypeEnum = z.enum([
+  'form',
+  'external_service',
+  'internal_processing',
+  'human_review',
+  'notification',
+]);
+
+export type ModuleType = z.infer<typeof ModuleTypeEnum>;
+
+/**
+ * Module config schemas by type
+ */
+export const FormModuleConfigSchema = z.object({
+  formDefinitionId: z.string().uuid(),
+  formVersion: z.number().int().optional(),
+});
+
+export const ExternalServiceModuleConfigSchema = z.object({
+  provider: z.string().min(1),
+  apiKeyRef: z.string().optional(),
+  endpoint: z.string().url().optional(),
+  fieldMapping: z.record(z.string()).optional(),
+  webhookUrl: z.string().url().optional(),
+  timeout: z.number().int().min(1000).optional(),
+});
+
+export const InternalProcessingModuleConfigSchema = z.object({
+  processor: z.string().min(1),
+  inputMapping: z.record(z.string()).optional(),
+  outputMapping: z.record(z.string()).optional(),
+  timeout: z.number().int().min(1000).optional(),
+});
+
+export const HumanReviewModuleConfigSchema = z.object({
+  assigneeRole: z.string().min(1),
+  reviewFormId: z.string().uuid().optional(),
+  decisionOptions: z.array(z.string()).min(1),
+  timeoutHours: z.number().int().min(1).optional(),
+  escalationPolicy: z.enum(['reassign', 'notify_manager', 'auto_approve']).optional(),
+});
+
+export const NotificationModuleConfigSchema = z.object({
+  channel: z.enum(['email', 'sms', 'in_app']),
+  templateId: z.string().optional(),
+  recipientType: z.enum(['candidate', 'assignee', 'manager', 'custom']),
+  triggerOn: z.enum(['enter', 'complete', 'error']).optional(),
+});
+
+/**
  * Pipeline stage - one step in a screening pipeline
  */
 export const PipelineStageSchema = z.object({
@@ -17,6 +69,8 @@ export const PipelineStageSchema = z.object({
   order: z.number().int().min(0),
   isRequired: z.boolean().default(true),
   estimatedDurationMinutes: z.number().int().min(0).optional(),
+  moduleType: ModuleTypeEnum.default('form'),
+  moduleConfig: z.record(z.unknown()).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -31,6 +85,32 @@ export type PipelineStatus = 'draft' | 'active' | 'archived';
 /**
  * Screening pipeline - the overall workflow template
  */
+/**
+ * Pipeline graph for React Flow layout serialization
+ */
+export const PipelineGraphSchema = z.object({
+  nodes: z.array(z.object({
+    id: z.string(),
+    type: z.string(),
+    position: z.object({ x: z.number(), y: z.number() }),
+    data: z.record(z.unknown()),
+  })),
+  edges: z.array(z.object({
+    id: z.string(),
+    source: z.string(),
+    target: z.string(),
+    sourceHandle: z.string().optional(),
+    targetHandle: z.string().optional(),
+  })),
+  viewport: z.object({
+    x: z.number(),
+    y: z.number(),
+    zoom: z.number(),
+  }).optional(),
+});
+
+export type PipelineGraph = z.infer<typeof PipelineGraphSchema>;
+
 export const ScreeningPipelineSchema = z.object({
   id: z.string().uuid(),
   tenantId: z.string().uuid(),
@@ -39,6 +119,7 @@ export const ScreeningPipelineSchema = z.object({
   stages: z.array(PipelineStageSchema),
   status: z.enum(['draft', 'active', 'archived']),
   version: z.number().int().min(1).default(1),
+  graph: PipelineGraphSchema.optional(),
   createdBy: z.string().uuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -87,6 +168,8 @@ export const StageInputSchema = z.object({
   order: z.number().int().min(0),
   isRequired: z.boolean().default(true),
   estimatedDurationMinutes: z.number().int().min(0).optional(),
+  moduleType: ModuleTypeEnum.default('form'),
+  moduleConfig: z.record(z.unknown()).optional(),
 });
 
 export type StageInput = z.infer<typeof StageInputSchema>;
@@ -98,6 +181,7 @@ export const CreatePipelineDtoSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   stages: z.array(StageInputSchema).min(1, 'At least one stage is required'),
+  graph: PipelineGraphSchema.optional(),
 });
 
 export type CreatePipelineDto = z.infer<typeof CreatePipelineDtoSchema>;
