@@ -17,4 +17,10 @@ export function registerNotificationHandlers(mock: MockAdapter): void {
 
   // GET /api/v1/notifications
   mock.onGet('/api/v1/notifications').reply(200, notificationsListResponse);
+
+  // POST /api/v1/notifications/mark-read (mark all as read)
+  mock.onPost('/api/v1/notifications/mark-read').reply(200, { success: true });
+
+  // POST /api/v1/notifications/:id/read (mark individual as read)
+  mock.onPost(/\/api\/v1\/notifications\/.*\/read/).reply(200, { success: true });
 }
