@@ -53,3 +53,4 @@ export * from './module-registry.service.js';
 export * from './external-service-adapter.service.js';
 export * from './review-task.service.js';
 export * from './notification-dispatcher.service.js';
+export * from './pipeline-runner.service.js';
