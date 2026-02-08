@@ -12,7 +12,7 @@ export default function PasswordChangeRoute() {
   const router = useRouter();
 
   const handleBackPress = useCallback(() => {
-    router.back();
+    router.navigate('/(tabs)/settings');
   }, [router]);
 
   const handleContinue = useCallback(() => {

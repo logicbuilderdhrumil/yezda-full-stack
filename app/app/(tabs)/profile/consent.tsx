@@ -11,7 +11,7 @@ export default function ConsentReviewRoute() {
   const router = useRouter();
 
   const handleBack = useCallback(() => {
-    router.back();
+    router.navigate('/(tabs)/settings');
   }, [router]);
 
   return <ConsentReviewScreen onBack={handleBack} />;

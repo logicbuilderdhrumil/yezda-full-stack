@@ -3,7 +3,24 @@
  */
 
 import React from 'react';
-import { Stack } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
+import { Stack, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+function SettingsBackButton() {
+  const router = useRouter();
+  return (
+    <TouchableOpacity
+      onPress={() => router.navigate('/(tabs)/settings')}
+      accessibilityRole="button"
+      accessibilityLabel="Back to Settings"
+      className="mr-2"
+    >
+      {/* @ts-expect-error Known React 18 type incompatibility with @expo/vector-icons */}
+      <Ionicons name="chevron-back" size={24} color="#2563EB" />
+    </TouchableOpacity>
+  );
+}
 
 export default function ProfileLayout() {
   return (
@@ -34,6 +51,7 @@ export default function ProfileLayout() {
         options={{
           title: 'Change Password',
           presentation: 'card',
+          headerLeft: () => <SettingsBackButton />,
         }}
       />
       <Stack.Screen
@@ -41,6 +59,7 @@ export default function ProfileLayout() {
         options={{
           title: 'Data Consents',
           presentation: 'card',
+          headerLeft: () => <SettingsBackButton />,
         }}
       />
     </Stack>
