@@ -15,16 +15,19 @@ import { createHomeDashboardModule } from '../modules/home-dashboard/index.js';
 import { createTemplateLayoutsModule } from '../modules/template-layouts/index.js';
 import { createThemeModule } from '../modules/theme/index.js';
 import { createLocalizationModule } from '../modules/localization/index.js';
+import { createOAuthModule } from '../modules/oauth/index.js';
+import { createStateStoreModule } from '../modules/state-store/index.js';
+import { createCustomComponentsModule } from '../modules/custom-components/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
 import appProfileRoutes from './app-profile.routes.js';
-import stateStoreRoutes from './state-store.routes.js';
+// state-store routes replaced by Clean Architecture module
 import shellRoutes from './shell.routes.js';
 import firebaseRoutes from './firebase.routes.js';
 // notification routes replaced by Clean Architecture module
 // localization routes replaced by Clean Architecture module
-import oauthRoutes from './oauth.routes.js';
+// oauth routes replaced by Clean Architecture module
 import mockRoutes from './mock.routes.js';
 // theme routes replaced by Clean Architecture module
 import uiKitRoutes from './ui-kit.routes.js';
@@ -47,7 +50,7 @@ import consentRoutes from './consent.routes.js';
 import applicationRoutes from './application.routes.js';
 import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
 // client-portal routes replaced by Clean Architecture module
-import customComponentsRoutes from './custom-components.routes.js';
+// custom-components routes replaced by Clean Architecture module
 import webhookRoutes from './webhook.routes.js';
 import reviewTaskRoutes from './review-task.routes.js';
 
@@ -67,6 +70,9 @@ const homeDashboardModule = createHomeDashboardModule();
 const templateLayoutsModule = createTemplateLayoutsModule();
 const themeModule = createThemeModule();
 const localizationModule = createLocalizationModule();
+const oauthModule = createOAuthModule();
+const stateStoreModule = createStateStoreModule();
+const customComponentsModule = createCustomComponentsModule();
 
 const router = Router();
 
@@ -75,12 +81,12 @@ router.use('/app/auth', appAuthRoutes);
 router.use('/app/applications', appApplicationIntakeRoutes);
 router.use('/app/consent', appConsentRoutes);
 router.use('/app/profile', appProfileRoutes);
-router.use('/state', stateStoreRoutes);
+router.use('/state', stateStoreModule.router);
 router.use('/shell', shellRoutes);
 router.use('/firebase', firebaseRoutes);
 router.use('/notifications', notificationModule.routes);
 router.use('/localization', localizationModule.router);
-router.use('/oauth', oauthRoutes);
+router.use('/oauth', oauthModule.router);
 router.use('/mock', mockRoutes);
 router.use('/theme', themeModule.router);
 router.use('/ui-kit', uiKitRoutes);
@@ -105,7 +111,7 @@ router.use('/applications', applicationRoutes);
 router.use('/screening-pipelines', screeningPipelineRouter);
 router.use('/global-candidates', globalCandidateIdentityRoutes);
 router.use('/client', clientPortalModule.router);
-router.use('/components', customComponentsRoutes);
+router.use('/components', customComponentsModule.router);
 router.use('/webhooks', webhookRoutes);
 router.use('/reviews', reviewTaskRoutes);
 
