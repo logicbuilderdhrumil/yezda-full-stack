@@ -3,6 +3,7 @@ import { createAuthModule } from '../modules/auth/index.js';
 import { createCandidateManagementModule } from '../modules/candidate-management/index.js';
 import { screeningPipelineRouter } from '../modules/screening-pipeline/index.js';
 import { createFormBuilderModule } from '../modules/form-builder/index.js';
+import { createUserManagementModule } from '../modules/user-management/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -16,7 +17,7 @@ import oauthRoutes from './oauth.routes.js';
 import mockRoutes from './mock.routes.js';
 import themeRoutes from './theme.routes.js';
 import uiKitRoutes from './ui-kit.routes.js';
-import userManagementRoutes from './user-management.routes.js';
+// user-management routes replaced by Clean Architecture module
 import orgManagementRoutes from './org-management.routes.js';
 import accountSettingsRoutes from './account-settings.routes.js';
 import jobRoutes from './job.routes.js';
@@ -43,6 +44,7 @@ import reviewTaskRoutes from './review-task.routes.js';
 const authModule = createAuthModule();
 const candidateManagementModule = createCandidateManagementModule();
 const formBuilderModule = createFormBuilderModule();
+const userManagementModule = createUserManagementModule();
 
 const router = Router();
 
@@ -60,7 +62,7 @@ router.use('/oauth', oauthRoutes);
 router.use('/mock', mockRoutes);
 router.use('/theme', themeRoutes);
 router.use('/ui-kit', uiKitRoutes);
-router.use('/users', userManagementRoutes);
+router.use('/users', userManagementModule.routes);
 router.use('/organizations', orgManagementRoutes);
 router.use('/account', accountSettingsRoutes);
 router.use('/jobs', jobRoutes);
