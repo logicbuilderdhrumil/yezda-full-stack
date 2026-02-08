@@ -11,13 +11,23 @@ import { z } from 'zod';
 
 const router = Router();
 
+// Validation schema for address
+const addressSchema = z.object({
+  street: z.string().max(255).optional(),
+  city: z.string().max(255).optional(),
+  state: z.string().max(255).optional(),
+  zipCode: z.string().max(20).optional(),
+  country: z.string().max(255).optional(),
+}).optional();
+
 // Validation schema for profile updates
 const updateProfileSchema = z.object({
   firstName: z.string().min(1).max(255).optional(),
   lastName: z.string().min(1).max(255).optional(),
   phone: z.string().max(50).optional(),
+  address: addressSchema,
 }).refine(
-  (data) => data.firstName !== undefined || data.lastName !== undefined || data.phone !== undefined,
+  (data) => data.firstName !== undefined || data.lastName !== undefined || data.phone !== undefined || data.address !== undefined,
   { message: 'At least one field must be provided' }
 );
 
