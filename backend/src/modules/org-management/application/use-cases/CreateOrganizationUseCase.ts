@@ -74,7 +74,7 @@ export class CreateOrganizationUseCase {
 
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'create', success: 'true' });
       return { success: true, data: created };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'create', success: 'false' });
       return { success: false, error: 'Failed to create organization', errorCode: 'ORG_CREATE_ERROR' };
     }

@@ -56,7 +56,7 @@ export class HandleCallbackUseCase {
       this.audit.log({ eventType: 'OAUTH_CALLBACK_SUCCESS', actorId: state.userId, actorType: state.userType, channel: 'api', ipAddress, userAgent, metadata: { provider, tenantId: state.tenantId, providerAccountId, durationMs: duration } });
       this.metrics.recordOAuthOperation('callback', provider, true, duration);
       return { success: true, provider, redirectUrl: state.redirectUrl };
-    } catch {
+    } catch (err) {
       this.metrics.recordOAuthOperation('callback', provider, false, Date.now() - startTime);
       return { success: false, error: 'Failed to complete OAuth flow', errorCode: 'TOKEN_EXCHANGE_FAILED' };
     }
@@ -79,6 +79,6 @@ export class HandleCallbackUseCase {
       const data = (await response.json()) as Record<string, unknown>;
       if (provider === 'slack') { const user = data.user as Record<string, unknown>; return (user?.email as string) ?? (user?.id as string); }
       return (data.email as string) ?? (data.id as string)?.toString();
-    } catch { return undefined; }
+    } catch (err) { return undefined; }
   }
 }

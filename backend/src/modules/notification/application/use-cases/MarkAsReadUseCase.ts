@@ -18,7 +18,7 @@ export class MarkAsReadUseCase {
       this.audit.log({ eventType: 'NOTIFICATION_READ', actorId: ctx.actorId, actorType: ctx.actorType, targetId: notificationId, targetType: 'notification', channel: ctx.channel, ipAddress: ctx.ipAddress, success: true });
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'mark_read', success: 'true' });
       return { success: true, data: updated ?? n };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'mark_read', success: 'false' });
       return { success: false, error: 'Failed to mark as read', errorCode: 'NOTIFICATION_UPDATE_ERROR' };
     }

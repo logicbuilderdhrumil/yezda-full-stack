@@ -63,7 +63,7 @@ export class ArchiveConversationUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'archive', success: 'true' });
       return { success: true, data: archived };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'archive', success: 'false' });
       return { success: false, error: 'Failed to archive conversation', errorCode: 'ARCHIVE_ERROR' };
     }

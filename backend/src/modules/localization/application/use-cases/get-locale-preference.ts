@@ -1,6 +1,6 @@
-import type { LocalePreference, RequestContext, OperationResult } from '../domain/index.js';
-import type { ILocalizationRepository } from '../domain/ports/ILocalizationRepository.js';
-import type { IAuditService } from '../domain/ports/IAuditService.js';
+import type { LocalePreference, RequestContext, OperationResult } from '../../domain/index.js';
+import type { ILocalizationRepository } from '../../domain/ports/ILocalizationRepository.js';
+import type { IAuditService } from '../../domain/ports/IAuditService.js';
 
 export class GetLocalePreferenceUseCase {
   constructor(private readonly repo: ILocalizationRepository, private readonly audit: IAuditService) {}

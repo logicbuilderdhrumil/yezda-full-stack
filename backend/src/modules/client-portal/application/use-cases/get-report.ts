@@ -1,8 +1,8 @@
 /**
  * Use Case: Get Report
  */
-import type { ScreeningReport, RequestContext, OperationResult } from '../domain/index.js';
-import type { IClientPortalRepository } from '../domain/ports/IClientPortalRepository.js';
+import type { ScreeningReport, RequestContext, OperationResult } from '../../domain/index.js';
+import type { IClientPortalRepository } from '../../domain/ports/IClientPortalRepository.js';
 
 export class GetReportUseCase {
   constructor(private readonly repo: IClientPortalRepository) {}
@@ -11,7 +11,7 @@ export class GetReportUseCase {
     try {
       const data = this.repo.getReport(ctx.tenantId);
       return { success: true, data };
-    } catch {
+    } catch (err) {
       return { success: false, error: 'Failed to get report', code: 'REPORT_FAILED' };
     }
   }

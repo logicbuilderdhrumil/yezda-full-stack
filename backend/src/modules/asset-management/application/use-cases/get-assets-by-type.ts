@@ -7,10 +7,10 @@ import type {
   AssetMetadata,
   RequestContext,
   OperationResult,
-} from '../domain/index.js';
-import type { IAssetRepository } from '../domain/ports/IAssetRepository.js';
-import type { IAuditService } from '../domain/ports/IAuditService.js';
-import type { IMetricsService } from '../domain/ports/IMetricsService.js';
+} from '../../domain/index.js';
+import type { IAssetRepository } from '../../domain/ports/IAssetRepository.js';
+import type { IAuditService } from '../../domain/ports/IAuditService.js';
+import type { IMetricsService } from '../../domain/ports/IMetricsService.js';
 
 export class GetAssetsByTypeUseCase {
   constructor(

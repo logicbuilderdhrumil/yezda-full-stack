@@ -59,8 +59,12 @@ export class RequestPasswordResetUseCase {
       userAgent,
     });
 
-    // In production, send email with reset link
-    // For now, return token directly (remove in production)
-    return { success: true, token: resetToken };
+    // In production, send email with reset link and do not expose the raw token
+    // Only return the raw token in non-production environments for debugging purposes
+    if (process.env.NODE_ENV !== 'production') {
+      return { success: true, token: resetToken };
+    }
+
+    return { success: true };
   }
 }

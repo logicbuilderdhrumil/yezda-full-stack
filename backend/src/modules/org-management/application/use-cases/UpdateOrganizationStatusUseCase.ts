@@ -47,7 +47,7 @@ export class UpdateOrganizationStatusUseCase {
 
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'status_update', success: 'true' });
       return { success: true, data: updated };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'status_update', success: 'false' });
       return { success: false, error: 'Failed to update organization status', errorCode: 'ORG_UPDATE_ERROR' };
     }

@@ -2,8 +2,8 @@
  * App Application Intake Use Cases
  */
 
-import type { IAppApplicationIntakeRepository } from '../domain/ports/IAppApplicationIntakeRepository.js';
-import type { ApplicationResponse, Channel } from '../domain/entities/app-application-intake.entity.js';
+import type { IAppApplicationIntakeRepository } from '../../domain/ports/IAppApplicationIntakeRepository.js';
+import type { ApplicationResponse, Channel } from '../../domain/entities/app-application-intake.entity.js';
 
 export class AppApplicationIntakeUseCases {
   constructor(private readonly repo: IAppApplicationIntakeRepository) {}

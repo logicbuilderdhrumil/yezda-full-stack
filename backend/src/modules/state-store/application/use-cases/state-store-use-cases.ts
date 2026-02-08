@@ -14,10 +14,10 @@ export class GetPreferencesUseCase {
     try {
       const entry = await this.repo.findByKey(tenantId, userId, userType, STATE_KEYS.PREFERENCES);
       let prefs: UserPreferences = {};
-      if (entry) { try { prefs = JSON.parse(this.crypto.decrypt(entry.value)) as UserPreferences; } catch { /* empty */ } }
+      if (entry) { try { prefs = JSON.parse(this.crypto.decrypt(entry.value)) as UserPreferences; } catch (err) { /* empty */ } }
       this.audit.log({ eventType: 'STATE_READ', actorId: userId, actorType: userType, channel: ctx.channel, ipAddress: ctx.ipAddress, metadata: { tenantId, stateKey: STATE_KEYS.PREFERENCES }, success: true });
       return { success: true, data: prefs };
-    } catch { return { success: false, error: 'Failed to read preferences', errorCode: 'STATE_READ_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to read preferences', errorCode: 'STATE_READ_ERROR' }; }
   }
 }
 
@@ -27,14 +27,14 @@ export class UpdatePreferencesUseCase {
     try {
       const existing = await this.repo.findByKey(tenantId, userId, userType, STATE_KEYS.PREFERENCES);
       let existingPrefs: UserPreferences = {};
-      if (existing) { try { existingPrefs = JSON.parse(this.crypto.decrypt(existing.value)) as UserPreferences; } catch { /* empty */ } }
+      if (existing) { try { existingPrefs = JSON.parse(this.crypto.decrypt(existing.value)) as UserPreferences; } catch (err) { /* empty */ } }
       const merged = { ...existingPrefs, ...preferences };
       if (merged.theme && !['light', 'dark', 'system'].includes(merged.theme)) return { success: false, error: 'Invalid theme value', errorCode: 'INVALID_PREFERENCE' };
       if (merged.presence && !['online', 'away', 'busy', 'offline'].includes(merged.presence)) return { success: false, error: 'Invalid presence value', errorCode: 'INVALID_PREFERENCE' };
       await this.repo.upsert({ tenantId, userId, userType, key: STATE_KEYS.PREFERENCES, value: this.crypto.encrypt(JSON.stringify(merged)) });
       this.audit.log({ eventType: 'STATE_WRITE', actorId: userId, actorType: userType, channel: ctx.channel, ipAddress: ctx.ipAddress, metadata: { tenantId, stateKey: STATE_KEYS.PREFERENCES, updatedKeys: Object.keys(preferences) }, success: true });
       return { success: true, data: merged };
-    } catch { return { success: false, error: 'Failed to update preferences', errorCode: 'STATE_WRITE_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to update preferences', errorCode: 'STATE_WRITE_ERROR' }; }
   }
 }
 
@@ -51,10 +51,10 @@ export class GetSessionStateUseCase {
     try {
       const entry = await this.repo.findByKey(tenantId, userId, userType, STATE_KEYS.SESSION_STATE);
       let state: SessionState = {};
-      if (entry) { try { state = JSON.parse(this.crypto.decrypt(entry.value)) as SessionState; } catch { /* empty */ } }
+      if (entry) { try { state = JSON.parse(this.crypto.decrypt(entry.value)) as SessionState; } catch (err) { /* empty */ } }
       this.audit.log({ eventType: 'STATE_READ', actorId: userId, actorType: userType, channel: ctx.channel, ipAddress: ctx.ipAddress, metadata: { tenantId, stateKey: STATE_KEYS.SESSION_STATE }, success: true });
       return { success: true, data: state };
-    } catch { return { success: false, error: 'Failed to read session state', errorCode: 'STATE_READ_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to read session state', errorCode: 'STATE_READ_ERROR' }; }
   }
 }
 
@@ -64,13 +64,13 @@ export class UpdateSessionStateUseCase {
     try {
       const existing = await this.repo.findByKey(tenantId, userId, userType, STATE_KEYS.SESSION_STATE);
       let existingState: SessionState = {};
-      if (existing) { try { existingState = JSON.parse(this.crypto.decrypt(existing.value)) as SessionState; } catch { /* empty */ } }
+      if (existing) { try { existingState = JSON.parse(this.crypto.decrypt(existing.value)) as SessionState; } catch (err) { /* empty */ } }
       const merged = { ...existingState, ...sessionState, lastActivity: new Date() };
       const expiresAt = new Date(Date.now() + SESSION_STATE_TTL_MS);
       await this.repo.upsert({ tenantId, userId, userType, key: STATE_KEYS.SESSION_STATE, value: this.crypto.encrypt(JSON.stringify(merged)), expiresAt });
       this.audit.log({ eventType: 'STATE_WRITE', actorId: userId, actorType: userType, channel: ctx.channel, ipAddress: ctx.ipAddress, metadata: { tenantId, stateKey: STATE_KEYS.SESSION_STATE, updatedKeys: Object.keys(sessionState) }, success: true });
       return { success: true, data: merged };
-    } catch { return { success: false, error: 'Failed to update session state', errorCode: 'STATE_WRITE_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to update session state', errorCode: 'STATE_WRITE_ERROR' }; }
   }
 }
 
@@ -90,6 +90,6 @@ export class ClearUserStateUseCase {
       const deleted = await this.repo.deleteAllByUser(tenantId, userId, userType);
       this.audit.log({ eventType: 'STATE_DELETE', actorId: userId, actorType: userType, channel: ctx.channel, ipAddress: ctx.ipAddress, metadata: { tenantId, stateKey: 'all', deletedCount: deleted }, success: true });
       return { success: true, data: { deletedCount: deleted } };
-    } catch { return { success: false, error: 'Failed to clear user state', errorCode: 'STATE_DELETE_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to clear user state', errorCode: 'STATE_DELETE_ERROR' }; }
   }
 }

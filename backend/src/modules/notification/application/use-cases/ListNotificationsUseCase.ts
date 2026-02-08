@@ -16,7 +16,7 @@ export class ListNotificationsUseCase {
       this.audit.log({ eventType: 'NOTIFICATION_LIST_ACCESSED', actorId: ctx.actorId, actorType: ctx.actorType, channel: ctx.channel, ipAddress: ctx.ipAddress, success: true, metadata: { count: notifications.length, total: result.total } });
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'list', success: 'true' });
       return { success: true, data: { notifications, total: result.total, hasMore, nextCursor: undefined } };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'list', success: 'false' });
       return { success: false, error: 'Failed to list notifications', errorCode: 'NOTIFICATION_LIST_ERROR' };
     }

@@ -1,6 +1,7 @@
 /**
  * CreateEntryUseCase
  */
+import { randomUUID } from 'crypto';
 import type { IBillingLedgerRepository } from '../../domain/ports/IBillingLedgerRepository.js';
 import type { IAuditService } from '../../domain/ports/IAuditService.js';
 import type { IBillingLedgerMetricsService } from '../../domain/ports/IBillingLedgerMetricsService.js';
@@ -14,7 +15,7 @@ import type {
 import { toEntryResponse, hasLedgerAccess } from '../../domain/entities/ledger.entity.js';
 
 function generateId(): string {
-  return crypto.randomUUID();
+  return randomUUID();
 }
 
 export class CreateEntryUseCase {

@@ -51,7 +51,7 @@ export class GetOrganizationByIdUseCase {
 
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'get', success: 'true' });
       return { success: true, data: org };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'get', success: 'false' });
       return { success: false, error: 'Failed to retrieve organization', errorCode: 'ORG_READ_ERROR' };
     }

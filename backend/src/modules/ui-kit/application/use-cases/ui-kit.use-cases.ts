@@ -1,7 +1,7 @@
 /**
  * UI Kit use cases.
  */
-import type { IUIKitRepository, UITheme, UICategory, UIComponentConfig, ThemedVariant, UIKitHealth, UIConfigQuery, ThemedVariantQuery } from '../domain/index.js';
+import type { IUIKitRepository, UITheme, UICategory, UIComponentConfig, ThemedVariant, UIKitHealth, UIConfigQuery, ThemedVariantQuery } from '../../domain/index.js';
 
 export class GetAvailableThemes {
   constructor(private repo: IUIKitRepository) {}

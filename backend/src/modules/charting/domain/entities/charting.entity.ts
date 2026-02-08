@@ -25,15 +25,15 @@ export interface ChartDataPoint {
 }
 
 export interface ChartQueryResult {
-  metric: string;
+  metric: MetricName;
   dataPoints: ChartDataPoint[];
-  aggregation?: string;
+  aggregation?: AggregationType;
   timeRange?: { start: Date; end: Date };
 }
 
 export interface AggregateResult {
-  metric: string;
-  aggregation: string;
+  metric: MetricName;
+  aggregation: AggregationType;
   value: number;
   timeRange?: { start: Date; end: Date };
 }

@@ -56,7 +56,7 @@ export class OrgManagementController {
 
   listOrganizations = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -84,7 +84,7 @@ export class OrgManagementController {
 
   getOrganizationById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -101,7 +101,7 @@ export class OrgManagementController {
 
   createOrganization = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -118,7 +118,7 @@ export class OrgManagementController {
 
   updateOrganization = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -136,7 +136,7 @@ export class OrgManagementController {
 
   updateOrganizationStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -154,7 +154,7 @@ export class OrgManagementController {
 
   deleteOrganization = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: OrgContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }

@@ -37,7 +37,7 @@ export class ListOrganizationsUseCase {
 
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'list', success: 'true' });
       return { success: true, data: result };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'list', success: 'false' });
       return { success: false, error: 'Failed to list organizations', errorCode: 'ORG_LIST_ERROR' };
     }

@@ -64,7 +64,7 @@ export class SendMessageUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'send_message', success: 'true' });
       return { success: true, data: message };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'send_message', success: 'false' });
       return { success: false, error: 'Failed to send message', errorCode: 'MESSAGE_SEND_ERROR' };
     }

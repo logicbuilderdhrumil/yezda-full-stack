@@ -34,7 +34,7 @@ export class ListFormsUseCase {
         this.metrics.recordLatency('form_builder_request', Date.now() - startTime, { operation: 'list', success: 'true' });
         return { success: true, data: cached };
       }
-    } catch {
+    } catch (err) {
       // Fall through
     }
 
@@ -62,7 +62,7 @@ export class ListFormsUseCase {
     // Cache the response
     try {
       await this.cache.set(cacheKey, response, LIST_CACHE_TTL_MS);
-    } catch {
+    } catch (err) {
       // Non-critical
     }
 

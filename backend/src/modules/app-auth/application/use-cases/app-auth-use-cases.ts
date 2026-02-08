@@ -3,8 +3,8 @@
  * Application-layer orchestration for mobile app authentication
  */
 
-import type { IAppAuthRepository } from '../domain/ports/IAppAuthRepository.js';
-import type { AppSignInCredentials, AppRefreshRequest } from '../domain/entities/app-auth.entity.js';
+import type { IAppAuthRepository } from '../../domain/ports/IAppAuthRepository.js';
+import type { AppSignInCredentials, AppRefreshRequest } from '../../domain/entities/app-auth.entity.js';
 
 export class AppAuthUseCases {
   constructor(private readonly repo: IAppAuthRepository) {}
