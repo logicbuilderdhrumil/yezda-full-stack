@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { createAuthModule } from '../modules/auth/index.js';
 import { createCandidateManagementModule } from '../modules/candidate-management/index.js';
 import { screeningPipelineRouter } from '../modules/screening-pipeline/index.js';
+import { createFormBuilderModule } from '../modules/form-builder/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -21,7 +22,7 @@ import accountSettingsRoutes from './account-settings.routes.js';
 import jobRoutes from './job.routes.js';
 import exportRoutes from './export.routes.js';
 import viewComponentsRoutes from './view-components.routes.js';
-import formBuilderRoutes from './form-builder.routes.js';
+// form-builder routes replaced by Clean Architecture module
 import fileManagementRoutes from './file-management.routes.js';
 import assetManagementRoutes from './asset-management.routes.js';
 import chatRoutes from './chat.routes.js';
@@ -41,6 +42,7 @@ import reviewTaskRoutes from './review-task.routes.js';
 // Initialize Clean Architecture modules
 const authModule = createAuthModule();
 const candidateManagementModule = createCandidateManagementModule();
+const formBuilderModule = createFormBuilderModule();
 
 const router = Router();
 
@@ -65,7 +67,7 @@ router.use('/jobs', jobRoutes);
 router.use('/exports', exportRoutes);
 router.use('/view-components', viewComponentsRoutes);
 router.use('/candidates', candidateManagementModule.routes);
-router.use('/forms', formBuilderRoutes);
+router.use('/forms', formBuilderModule.routes);
 router.use('/files', fileManagementRoutes);
 router.use('/assets', assetManagementRoutes);
 router.use('/chat', chatRoutes);
