@@ -8,7 +8,9 @@ export interface MockReview {
   id: string;
   tenantId: string;
   candidateId: string;
+  candidateName?: string;
   pipelineId: string;
+  pipelineName?: string;
   assignmentId: string;
   stageId: string;
   assigneeId: string | null;
@@ -34,7 +36,9 @@ export const mockReviews: MockReview[] = [
     id: 'rev-001',
     tenantId: 'tenant-001',
     candidateId: 'c001',
+    candidateName: 'John Doe',
     pipelineId: 'pipe-001',
+    pipelineName: 'Standard Background Check',
     assignmentId: 'assign-001',
     stageId: 'stage-final-review',
     assigneeId: '003',
@@ -57,7 +61,9 @@ export const mockReviews: MockReview[] = [
     id: 'rev-002',
     tenantId: 'tenant-001',
     candidateId: 'c003',
+    candidateName: 'Robert Johnson',
     pipelineId: 'pipe-001',
+    pipelineName: 'Standard Background Check',
     assignmentId: 'assign-002',
     stageId: 'stage-ref-check',
     assigneeId: '004',
@@ -80,7 +86,9 @@ export const mockReviews: MockReview[] = [
     id: 'rev-003',
     tenantId: 'tenant-001',
     candidateId: 'c004',
+    candidateName: 'Emily Brown',
     pipelineId: 'pipe-002',
+    pipelineName: 'Quick Pre-Screen',
     assignmentId: 'assign-003',
     stageId: 'stage-id-check',
     assigneeId: '003',

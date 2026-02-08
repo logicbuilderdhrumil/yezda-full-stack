@@ -170,7 +170,7 @@ export function ReviewDashboard(): ReactNode {
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
                       {t('reviews.dashboard.table.candidate', 'Candidate')}:{' '}
-                      {task.candidateId.slice(0, 8)}...
+                      {((task as unknown as Record<string, unknown>).candidateName as string) || task.candidateId}
                     </span>
                     <Badge variant={STATUS_BADGE_VARIANT[task.status] ?? 'outline'}>
                       {task.status.replace(/_/g, ' ')}
@@ -179,7 +179,7 @@ export function ReviewDashboard(): ReactNode {
                   <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
                     <span>
                       {t('reviews.dashboard.table.pipeline', 'Pipeline')}:{' '}
-                      {task.pipelineId.slice(0, 8)}...
+                      {((task as unknown as Record<string, unknown>).pipelineName as string) || task.pipelineId}
                     </span>
                     <span>
                       {t('reviews.dashboard.table.assignedDate', 'Assigned')}:{' '}
@@ -228,7 +228,7 @@ export function ReviewDashboard(): ReactNode {
                         : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400'
                     }`}
                   >
-                    {opt.replace(/_/g, ' ')}
+                    {opt.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                   </button>
                 ))}
               </div>

@@ -280,6 +280,8 @@ export function useChat(config: UseChatConfig = {}): UseChatReturn {
   // ============================================================================
 
   useEffect(() => {
+    if (import.meta.env.VITE_MOCK_API === 'true') return;
+
     const token = getAccessToken();
     if (!autoConnect || !token) return;
 

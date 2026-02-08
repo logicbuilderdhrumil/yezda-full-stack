@@ -64,42 +64,42 @@ export const mockRecentActivity: MockActivity[] = [
     type: 'task_created',
     title: 'New candidate John Doe added to Engineering Pipeline',
     actorName: 'Alice Agent',
-    timestamp: '2026-02-08T09:15:00.000Z',
+    timestamp: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hours ago
   },
   {
     id: 'act-002',
     type: 'task_completed',
     title: 'Background check completed for Jane Smith',
     actorName: 'System',
-    timestamp: '2026-02-08T08:42:00.000Z',
+    timestamp: new Date(Date.now() - 3600000 * 3).toISOString(), // 3 hours ago
   },
   {
     id: 'act-003',
     type: 'task_created',
     title: 'Review task assigned to Bob Agent for Robert Johnson',
-    actorName: 'Manager User',
-    timestamp: '2026-02-07T17:30:00.000Z',
+    actorName: 'David Chen',
+    timestamp: new Date(Date.now() - 3600000 * 18).toISOString(), // 18 hours ago
   },
   {
     id: 'act-004',
     type: 'ticket_resolved',
     title: 'Standard Background Check pipeline stages updated',
     actorName: 'Admin User',
-    timestamp: '2026-02-07T14:20:00.000Z',
+    timestamp: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
   },
   {
     id: 'act-005',
     type: 'user_signup',
     title: 'New agent Sarah Wilson invited to the team',
     actorName: 'Admin User',
-    timestamp: '2026-02-07T11:05:00.000Z',
+    timestamp: new Date(Date.now() - 3600000 * 36).toISOString(), // 1.5 days ago
   },
 ];
 
 /** Mock dashboard summary response (BackendDashboardSummary shape). */
 export const dashboardSummaryResponse = {
   tenantId: 'tenant-001',
-  timestamp: '2026-02-08T10:00:00.000Z',
+  timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
   timeRange: 'last_30_days',
   kpis: mockKpis,
   recentActivity: mockRecentActivity.slice(0, 3),

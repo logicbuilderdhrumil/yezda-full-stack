@@ -1,7 +1,9 @@
 /**
  * Chat endpoint mock handlers.
+ * Returns data matching ConversationDTO / MessageDTO contracts.
  */
 import type MockAdapter from 'axios-mock-adapter';
+import type { ConversationDTO } from '@/@types/contracts';
 import {
   conversationsListResponse,
   getConversationById,
@@ -33,13 +35,16 @@ export function registerChatHandlers(mock: MockAdapter): void {
     if (id) {
       const conversation = getConversationById(id);
       if (conversation) {
-        // Return without messages for the single conversation endpoint
-        const { messages: _messages, ...rest } = conversation;
-        return [200, rest];
+        // Strip embedded messages – return ConversationDTO shape only
+        const { messages: _messages, ...dto }: { messages?: unknown } & ConversationDTO = conversation;
+        return [200, dto];
       }
     }
     return [404, { error: 'Conversation not found' }];
   });
+
+  // POST /api/v1/chat/conversations/:id/read
+  mock.onPost(/\/api\/v1\/chat\/conversations\/([^/]+)\/read$/).reply(200, { success: true });
 
   // GET /api/v1/chat/conversations
   mock.onGet('/api/v1/chat/conversations').reply(200, conversationsListResponse);
