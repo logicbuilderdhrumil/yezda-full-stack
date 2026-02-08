@@ -5,7 +5,7 @@
 
 import { createServer } from 'http';
 import app from './app.js';
-import { socketService } from './services/socket.service.js';
+import { createSocketModule } from './modules/socket/index.js';
 import { shutdownAccessErrorLimiter } from './middleware/error.middleware.js';
 
 const PORT = process.env.PORT || 3000;
@@ -13,8 +13,9 @@ const PORT = process.env.PORT || 3000;
 // Create HTTP server to share with Socket.IO
 const httpServer = createServer(app);
 
-// Initialize Socket.IO
-socketService.initialize(httpServer);
+// Initialize Socket.IO via Clean Architecture module
+const socketModule = createSocketModule();
+socketModule.initialize(httpServer);
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
@@ -27,7 +28,7 @@ httpServer.listen(PORT, () => {
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down...');
   shutdownAccessErrorLimiter();
-  await socketService.shutdown();
+  await socketModule.shutdown();
   httpServer.close(() => {
     console.log('HTTP server closed');
     process.exit(0);
@@ -37,7 +38,7 @@ process.on('SIGTERM', async () => {
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down...');
   shutdownAccessErrorLimiter();
-  await socketService.shutdown();
+  await socketModule.shutdown();
   httpServer.close(() => {
     console.log('HTTP server closed');
     process.exit(0);
