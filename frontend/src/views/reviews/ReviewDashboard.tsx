@@ -60,7 +60,7 @@ export function ReviewDashboard(): ReactNode {
         statusFilter === 'all'
           ? await ReviewService.getMyQueue()
           : await ReviewService.list(statusFilter);
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load review tasks:', err);
       setError(err instanceof Error ? err : new Error('Failed to load'));
@@ -77,7 +77,7 @@ export function ReviewDashboard(): ReactNode {
     return () => clearInterval(interval);
   }, [fetchTasks]);
 
-  const filteredTasks = tasks;
+  const filteredTasks = Array.isArray(tasks) ? tasks : [];
 
   const filterButtons: { key: ReviewStatusFilter; label: string }[] = [
     { key: 'all', label: t('reviews.dashboard.filters.all', 'All') },
@@ -218,7 +218,7 @@ export function ReviewDashboard(): ReactNode {
                 {t('reviews.dashboard.detail.decision', 'Decision')}
               </label>
               <div className="flex flex-wrap gap-2">
-                {selectedTask.decisionOptions.map((opt) => (
+                {(selectedTask.decisionOptions ?? []).map((opt) => (
                   <button
                     key={opt}
                     onClick={() => setDecision(opt)}

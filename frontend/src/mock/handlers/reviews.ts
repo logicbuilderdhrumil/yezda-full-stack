@@ -31,4 +31,43 @@ export function registerReviewHandlers(mock: MockAdapter): void {
     }
     return [404, { error: 'Review not found' }];
   });
+
+  // POST /api/v1/reviews/:id/decide
+  mock.onPost(/\/api\/v1\/reviews\/([^/]+)\/decide$/).reply((config) => {
+    const match = config.url?.match(/\/api\/v1\/reviews\/([^/]+)\/decide$/);
+    const id = match?.[1];
+    if (id) {
+      const review = getReviewById(id);
+      if (review) {
+        const body = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+        return [200, {
+          ...review,
+          status: 'decided' as const,
+          decision: body?.decision ?? 'approve',
+          decisionNotes: body?.decisionNotes ?? null,
+          decidedAt: new Date().toISOString(),
+          decidedBy: '003',
+        }];
+      }
+    }
+    return [404, { error: 'Review not found' }];
+  });
+
+  // PATCH /api/v1/reviews/:id/assign
+  mock.onPatch(/\/api\/v1\/reviews\/([^/]+)\/assign$/).reply((config) => {
+    const match = config.url?.match(/\/api\/v1\/reviews\/([^/]+)\/assign$/);
+    const id = match?.[1];
+    if (id) {
+      const review = getReviewById(id);
+      if (review) {
+        const body = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+        return [200, {
+          ...review,
+          status: 'assigned' as const,
+          assigneeId: body?.assigneeId ?? '003',
+        }];
+      }
+    }
+    return [404, { error: 'Review not found' }];
+  });
 }
