@@ -39,6 +39,7 @@ import { nodeTypes } from './PipelineNodes';
 import type { PipelineNode, PipelineEdge, PipelineNodeData, ModuleType, PipelineValidationError } from './types';
 import type { NodeTypes } from '@xyflow/react';
 import { MODULE_TYPES } from './types';
+import { PipelineTemplateGallery, type PipelineTemplate } from './PipelineTemplateGallery';
 
 /** Cast nodeTypes to satisfy React Flow's NodeTypes constraint */
 const typedNodeTypes = nodeTypes as unknown as NodeTypes;
@@ -100,6 +101,9 @@ function PipelineBuilderInner(): ReactNode {
 
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<PipelineValidationError[]>([]);
+
+  // Template gallery
+  const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
 
   const selectedNode = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId),
@@ -458,6 +462,81 @@ function PipelineBuilderInner(): ReactNode {
     [handleUndo, handleRedo, handleSave, handleDeleteNode, selectedNodeId]
   );
 
+  // Handle template selection — populate nodes from template stages
+  const handleSelectTemplate = useCallback(
+    (template: PipelineTemplate) => {
+      pushHistory();
+
+      const startY = 50;
+      const spacingY = 120;
+      const x = 250;
+
+      const newNodes: PipelineNode[] = [
+        {
+          id: 'start',
+          type: 'start',
+          position: { x, y: startY },
+          data: { label: 'Start' },
+          deletable: false,
+        },
+      ];
+
+      const newEdges: PipelineEdge[] = [];
+      let prevNodeId = 'start';
+
+      template.stages.forEach((stage, idx) => {
+        const nodeId = getNextNodeId();
+        const y = startY + (idx + 1) * spacingY;
+
+        newNodes.push({
+          id: nodeId,
+          type: stage.moduleType,
+          position: { x, y },
+          data: {
+            label: stage.name,
+            moduleType: stage.moduleType,
+            moduleConfig: stage.moduleConfig,
+            isRequired: stage.isRequired,
+            estimatedDurationMinutes: stage.estimatedDurationMinutes,
+          },
+        });
+
+        newEdges.push({
+          id: `edge-${prevNodeId}-${nodeId}`,
+          source: prevNodeId,
+          target: nodeId,
+          animated: true,
+        });
+
+        prevNodeId = nodeId;
+      });
+
+      // End node
+      const endY = startY + (template.stages.length + 1) * spacingY;
+      newNodes.push({
+        id: 'end',
+        type: 'end',
+        position: { x, y: endY },
+        data: { label: 'End' },
+        deletable: false,
+      });
+
+      newEdges.push({
+        id: `edge-${prevNodeId}-end`,
+        source: prevNodeId,
+        target: 'end',
+        animated: true,
+      });
+
+      setPipelineName(template.name);
+      setPipelineDescription(template.description);
+      setNodes(newNodes);
+      setEdges(newEdges);
+      setIsDirty(true);
+    },
+    [pushHistory, setNodes, setEdges]
+  );
+
   return (
     <div
       className="flex flex-col h-[calc(100vh-4rem)]"
@@ -475,6 +554,31 @@ function PipelineBuilderInner(): ReactNode {
         isSaving={isSaving}
         isDirty={isDirty}
       />
+
+      {/* Secondary toolbar — Templates button */}
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <button
+          onClick={() => setIsTemplateGalleryOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <span>📋</span>
+          {t('pipelines.templates.title', 'Templates')}
+        </button>
+        <button
+          onClick={handleUndo}
+          className="p-1.5 text-xs text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+          title={t('common.undo', 'Undo (Ctrl+Z)')}
+        >
+          ↩️
+        </button>
+        <button
+          onClick={handleRedo}
+          className="p-1.5 text-xs text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+          title={t('common.redo', 'Redo (Ctrl+Y)')}
+        >
+          ↪️
+        </button>
+      </div>
 
       {/* Validation errors bar */}
       {validationErrors.length > 0 && (
@@ -539,6 +643,13 @@ function PipelineBuilderInner(): ReactNode {
           />
         )}
       </div>
+
+      {/* Template Gallery Dialog */}
+      <PipelineTemplateGallery
+        open={isTemplateGalleryOpen}
+        onOpenChange={setIsTemplateGalleryOpen}
+        onSelectTemplate={handleSelectTemplate}
+      />
     </div>
   );
 }

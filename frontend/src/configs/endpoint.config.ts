@@ -157,6 +157,13 @@ export const endpoints = {
   'screening-pipelines.candidateAssignments': { path: '/screening-pipelines/candidates/:candidateId/assignments', version: 'v1' },
   'screening-pipelines.completeStage': { path: '/screening-pipelines/assignments/:assignmentId/stages/:stageId/complete', version: 'v1' },
 
+  // Review task endpoints
+  'reviews.list': { path: '/reviews', version: 'v1' },
+  'reviews.myQueue': { path: '/reviews/my-queue', version: 'v1' },
+  'reviews.detail': { path: '/reviews/:id', version: 'v1' },
+  'reviews.decide': { path: '/reviews/:id/decide', version: 'v1' },
+  'reviews.assign': { path: '/reviews/:id/assign', version: 'v1' },
+
   // Client portal endpoints
   'client.dashboard': { path: '/client/dashboard', version: 'v1' },
   'client.candidates.list': { path: '/client/candidates', version: 'v1' },

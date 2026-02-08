@@ -39,6 +39,7 @@ export { AssetService, type AssetUploadOptions, type AssetListOptions } from './
 export { LedgerService } from './LedgerService';
 export { ChatService, type MessageListOptions } from './ChatService';
 export { PipelineService } from './PipelineService';
+export { ReviewService, type ReviewTask, type ReviewDecisionDto } from './ReviewService';
 export {
   ClientPortalService,
   type ClientDashboardData,

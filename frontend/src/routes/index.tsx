@@ -221,6 +221,13 @@ const PipelineBuilderView = lazy(() =>
   }))
 );
 
+// Review views (admin and manager)
+const ReviewDashboardView = lazy(() =>
+  import('@/views/reviews/ReviewDashboard').then((m) => ({
+    default: m.ReviewDashboard,
+  }))
+);
+
 // Client portal views
 const ClientDashboardView = lazy(() =>
   import('@/views/client/ClientDashboardView').then((m) => ({
@@ -540,6 +547,11 @@ export const protectedRoutes: RouteObject[] = [
           {
             path: 'pipelines/:id/builder',
             element: withAdminGuard(PipelineBuilderView),
+          },
+          // Review tasks route (admin and manager)
+          {
+            path: 'reviews',
+            element: withCandidateGuard(ReviewDashboardView),
           },
           // Reports route (admin and manager)
           {
