@@ -52,6 +52,13 @@ export const adminNavConfig: NavConfig = {
           authorities: ['admin'],
           children: [
             {
+              id: 'pipeline-builder',
+              label: 'Builder',
+              path: '/admin/pipelines/builder',
+              icon: 'workflow',
+              authorities: ['admin'],
+            },
+            {
               id: 'forms',
               label: 'Forms',
               path: '/admin/forms',

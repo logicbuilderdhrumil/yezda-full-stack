@@ -257,9 +257,14 @@ export function PipelinesListView(): ReactNode {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleCreate}>
-          {t('pipelines.list.createButton', 'Create Pipeline')}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => navigate('/admin/pipelines/builder')}>
+            {t('pipelines.list.builderButton', 'Visual Builder')}
+          </Button>
+          <Button onClick={handleCreate}>
+            {t('pipelines.list.createButton', 'Create Pipeline')}
+          </Button>
+        </div>
       </div>
 
       {/* Table */}

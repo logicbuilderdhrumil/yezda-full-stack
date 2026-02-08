@@ -414,10 +414,11 @@ export function requireRoleOrOwnerGuard(
 }
 
 /**
- * Convenience guard: require `client` or `client_admin` role.
+ * Convenience guard: require `client`, `client_admin`, or platform `admin` role.
+ * Admin users have super-access to client data.
  * Chain after requireAuthGuard.
  */
-export const requireClientGuard = requireRoleGuard('client', 'client_admin');
+export const requireClientGuard = requireRoleGuard('client', 'client_admin', 'admin');
 
 /**
  * Convenience guard: require `client_admin` role only.

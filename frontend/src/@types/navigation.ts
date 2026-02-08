@@ -18,7 +18,8 @@ export type NavIconName =
   | 'bell'
   | 'folder'
   | 'calendar'
-  | 'arrow-left';
+  | 'arrow-left'
+  | 'workflow';
 
 /** A single navigation item. */
 export interface NavItem {

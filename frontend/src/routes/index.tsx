@@ -516,6 +516,7 @@ export const protectedRoutes: RouteObject[] = [
             element: withCandidateGuard(AdminScreeningListView),
           },
           // Pipeline management routes (admin only)
+          // Static routes MUST come before dynamic :id routes
           {
             path: 'pipelines',
             element: withAdminGuard(PipelinesListView),
@@ -525,16 +526,16 @@ export const protectedRoutes: RouteObject[] = [
             element: withAdminGuard(PipelineCreateView),
           },
           {
+            path: 'pipelines/builder',
+            element: withAdminGuard(PipelineBuilderView),
+          },
+          {
             path: 'pipelines/:id',
             element: withAdminGuard(PipelineDetailsView),
           },
           {
             path: 'pipelines/:id/edit',
             element: withAdminGuard(PipelineEditView),
-          },
-          {
-            path: 'pipelines/builder',
-            element: withAdminGuard(PipelineBuilderView),
           },
           {
             path: 'pipelines/:id/builder',
