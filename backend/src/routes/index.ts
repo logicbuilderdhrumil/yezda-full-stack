@@ -32,6 +32,7 @@ import screeningPipelineRoutes from './screening-pipeline.routes.js';
 import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
 import clientPortalRoutes from './client-portal.routes.js';
 import customComponentsRoutes from './custom-components.routes.js';
+import webhookRoutes from './webhook.routes.js';
 
 const router = Router();
 
@@ -68,5 +69,6 @@ router.use('/screening-pipelines', screeningPipelineRoutes);
 router.use('/global-candidates', globalCandidateIdentityRoutes);
 router.use('/client', clientPortalRoutes);
 router.use('/components', customComponentsRoutes);
+router.use('/webhooks', webhookRoutes);
 
 export default router;

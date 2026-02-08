@@ -50,3 +50,4 @@ export * from './template-layouts-metrics.service.js';
 export * from './consent.service.js';
 export * from './application.service.js';
 export * from './module-registry.service.js';
+export * from './external-service-adapter.service.js';
