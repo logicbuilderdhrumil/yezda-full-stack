@@ -9,6 +9,8 @@ import { createChatModule } from '../modules/chat/index.js';
 import { createNotificationModule } from '../modules/notification/index.js';
 import { createFileManagementModule } from '../modules/file-management/index.js';
 import { createBillingLedgerModule } from '../modules/billing-ledger/index.js';
+import { createAssetManagementModule } from '../modules/asset-management/index.js';
+import { createClientPortalModule } from '../modules/client-portal/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -30,7 +32,7 @@ import exportRoutes from './export.routes.js';
 import viewComponentsRoutes from './view-components.routes.js';
 // form-builder routes replaced by Clean Architecture module
 // file-management routes replaced by Clean Architecture module
-import assetManagementRoutes from './asset-management.routes.js';
+// asset-management routes replaced by Clean Architecture module
 // chat routes replaced by Clean Architecture module
 import chartingRoutes from './charting.routes.js';
 // billing-ledger routes replaced by Clean Architecture module
@@ -40,7 +42,7 @@ import templateLayoutsRoutes from './template-layouts.routes.js';
 import consentRoutes from './consent.routes.js';
 import applicationRoutes from './application.routes.js';
 import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
-import clientPortalRoutes from './client-portal.routes.js';
+// client-portal routes replaced by Clean Architecture module
 import customComponentsRoutes from './custom-components.routes.js';
 import webhookRoutes from './webhook.routes.js';
 import reviewTaskRoutes from './review-task.routes.js';
@@ -55,6 +57,8 @@ const chatModule = createChatModule();
 const notificationModule = createNotificationModule();
 const fileManagementModule = createFileManagementModule();
 const billingLedgerModule = createBillingLedgerModule();
+const assetManagementModule = createAssetManagementModule();
+const clientPortalModule = createClientPortalModule();
 
 const router = Router();
 
@@ -81,7 +85,7 @@ router.use('/view-components', viewComponentsRoutes);
 router.use('/candidates', candidateManagementModule.routes);
 router.use('/forms', formBuilderModule.routes);
 router.use('/files', fileManagementModule.routes);
-router.use('/assets', assetManagementRoutes);
+router.use('/assets', assetManagementModule.router);
 router.use('/chat', chatModule.routes);
 router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerModule.routes);
@@ -92,7 +96,7 @@ router.use('/consent', consentRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/screening-pipelines', screeningPipelineRouter);
 router.use('/global-candidates', globalCandidateIdentityRoutes);
-router.use('/client', clientPortalRoutes);
+router.use('/client', clientPortalModule.router);
 router.use('/components', customComponentsRoutes);
 router.use('/webhooks', webhookRoutes);
 router.use('/reviews', reviewTaskRoutes);
