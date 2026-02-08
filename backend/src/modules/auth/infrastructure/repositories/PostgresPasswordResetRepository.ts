@@ -2,7 +2,7 @@
  * PostgresPasswordResetRepository
  * Postgres persistence for password reset tokens — implements IPasswordResetRepository
  */
-import { query } from '../../../db/postgres.js';
+import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { PasswordResetToken } from '../../domain/entities/PasswordResetToken.js';
 import type { IPasswordResetRepository } from '../../domain/ports/IPasswordResetRepository.js';
 

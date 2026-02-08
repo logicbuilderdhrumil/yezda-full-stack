@@ -2,7 +2,7 @@
  * TransactionManager Adapter
  * Wraps Postgres client pool transaction methods behind a clean interface
  */
-import { getClient } from '../../../db/postgres.js';
+import { getClient } from '../../../../shared/infrastructure/database/postgres.js';
 import type { ITransactionManager } from '../../application/use-cases/CompletePasswordResetUseCase.js';
 
 export class PostgresTransactionManager implements ITransactionManager {

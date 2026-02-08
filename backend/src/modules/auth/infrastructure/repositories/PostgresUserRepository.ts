@@ -2,7 +2,7 @@
  * PostgresUserRepository
  * Postgres persistence for users and candidates — implements IUserRepository
  */
-import { query } from '../../../db/postgres.js';
+import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { User, Candidate } from '../../domain/entities/index.js';
 import type { IUserRepository } from '../../domain/ports/IUserRepository.js';
 

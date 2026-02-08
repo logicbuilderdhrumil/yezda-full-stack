@@ -2,7 +2,7 @@
  * PostgresMfaEnrollmentRepository
  * Postgres persistence for TOTP enrollment — implements IMfaEnrollmentRepository
  */
-import { query } from '../../../db/postgres.js';
+import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { MfaEnrollment } from '../../domain/entities/MfaEnrollment.js';
 import type { IMfaEnrollmentRepository } from '../../domain/ports/IMfaEnrollmentRepository.js';
 

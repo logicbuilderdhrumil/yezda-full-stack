@@ -2,7 +2,7 @@
  * PostgresSessionRepository
  * Postgres persistence for user sessions — implements ISessionRepository
  */
-import { query } from '../../../db/postgres.js';
+import { query } from '../../../../shared/infrastructure/database/postgres.js';
 import type { Session } from '../../domain/entities/Session.js';
 import type { ISessionRepository } from '../../domain/ports/ISessionRepository.js';
 

@@ -2,7 +2,7 @@
  * MFA Session Adapter
  * Wraps Redis MFA session storage behind a clean interface
  */
-import { storeMfaSession, consumeMfaSession, type MfaSession } from '../../../db/redis.js';
+import { storeMfaSession, consumeMfaSession, type MfaSession } from '../../../../shared/infrastructure/database/redis.js';
 
 export interface IMfaSessionStore {
   store(token: string, session: MfaSession): Promise<void>;

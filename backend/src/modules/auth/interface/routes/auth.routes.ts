@@ -4,11 +4,11 @@
  */
 import { Router } from 'express';
 import type { AuthController } from '../controllers/auth.controller.js';
-import { requireAuth } from '../../../../middleware/auth.middleware.js';
+import { requireAuth } from '../../../../shared/infrastructure/middleware/auth.middleware.js';
 import {
   authRateLimiter,
   passwordResetRateLimiter,
-} from '../../../../middleware/rate-limit.middleware.js';
+} from '../../../../shared/infrastructure/middleware/rate-limit.middleware.js';
 import {
   validateBody,
   signUpSchema,
@@ -18,7 +18,7 @@ import {
   passwordResetRequestSchema,
   passwordResetCompleteSchema,
   mfaEnrollmentVerifySchema,
-} from '../../../../middleware/validation.middleware.js';
+} from '../../../../shared/infrastructure/middleware/validation.middleware.js';
 
 export function createAuthRoutes(controller: AuthController): Router {
   const router = Router();
