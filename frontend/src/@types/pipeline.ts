@@ -2,6 +2,28 @@
  * Pipeline-related types for screening pipeline management.
  */
 
+// Re-export shared module types used by the pipeline builder
+export type {
+  ModuleType,
+  ModuleConfig,
+  ModuleConfigFor,
+  FormModuleConfig,
+  ExternalServiceModuleConfig,
+  InternalProcessingModuleConfig,
+  HumanReviewModuleConfig,
+  NotificationModuleConfig,
+  PipelineGraph,
+  PipelineNode,
+  PipelineEdge,
+  PipelineViewport,
+  FieldMappingEntry,
+  EscalationPolicy,
+  NotificationChannel,
+  NotificationRecipientType,
+  NotificationTriggerOn,
+} from '../../../shared/@types/pipeline-modules';
+export { MODULE_TYPES } from '../../../shared/@types/pipeline-modules';
+
 /** Pipeline stage - one step in a screening pipeline */
 export interface PipelineStage {
   id: string;
@@ -12,6 +34,8 @@ export interface PipelineStage {
   order: number;
   isRequired: boolean;
   estimatedDurationMinutes?: number;
+  moduleType?: import('../../../shared/@types/pipeline-modules').ModuleType;
+  moduleConfig?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,6 +50,7 @@ export interface ScreeningPipeline {
   name: string;
   description?: string;
   stages: PipelineStage[];
+  graph?: import('../../../shared/@types/pipeline-modules').PipelineGraph | null;
   status: PipelineStatus;
   version: number;
   createdBy: string;

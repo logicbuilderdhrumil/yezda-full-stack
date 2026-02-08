@@ -64,10 +64,10 @@ export async function createPipeline(req: AuthenticatedRoleRequest, res: Respons
     return;
   }
 
-  const { name, description, stages } = req.body;
+  const { name, description, stages, graph } = req.body;
 
   const result = await screeningPipelineService.createPipeline(
-    { name, description, stages },
+    { name, description, stages, graph },
     ctx
   );
 
@@ -121,11 +121,11 @@ export async function updatePipeline(req: AuthenticatedRoleRequest, res: Respons
     return;
   }
 
-  const { name, description, stages } = req.body;
+  const { name, description, stages, graph } = req.body;
 
   const result = await screeningPipelineService.updatePipeline(
     id,
-    { name, description, stages },
+    { name, description, stages, graph },
     ctx
   );
 
