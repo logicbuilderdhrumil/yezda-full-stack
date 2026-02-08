@@ -265,9 +265,14 @@ export function PipelineTemplateGallery({
     return `${Math.round(minutes / 1440)}d`;
   }
 
+  if (!open) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        onClick={(e) => { if (e.target === e.currentTarget) onOpenChange(false); }}
+      >
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-3xl max-h-[80vh] flex flex-col">
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
