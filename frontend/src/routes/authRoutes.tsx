@@ -7,7 +7,7 @@ import {
   CandidateResetPasswordView,
   TotpVerifyView,
   OAuthCallbackView,
-} from '@/views/auth';
+} from '@/features/auth';
 import { PublicRoute } from '@/components/route';
 
 /**

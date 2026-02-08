@@ -6,251 +6,262 @@ import { AuthorityGuard, RouteErrorBoundary } from '@/components/route';
 import { AdminGuard, ClientGuard, AdminRedirectWrapper } from '@/components/guards';
 import { RouteLoadingFallback } from '@/components/ui';
 
-// Lazy load views for code splitting
+// ─── Feature module lazy imports ────────────────────────────────────────────
+// Each view is lazy-loaded from its feature module for code splitting.
+
+// Dashboard feature
 const HomeView = lazy(() =>
-  import('@/views/HomeView').then((m) => ({ default: m.HomeView }))
+  import('@/features/dashboard/pages/HomeView').then((m) => ({ default: m.HomeView }))
 );
+
+// Shared/cross-cutting pages
 const AccessDeniedView = lazy(() =>
-  import('@/views/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
+  import('@/features/shared/pages/AccessDeniedView').then((m) => ({ default: m.AccessDeniedView }))
 );
 const NotFoundView = lazy(() =>
-  import('@/views/NotFoundView').then((m) => ({ default: m.NotFoundView }))
+  import('@/features/shared/pages/NotFoundView').then((m) => ({ default: m.NotFoundView }))
 );
 const TermsView = lazy(() =>
-  import('@/views/TermsView').then((m) => ({ default: m.TermsView }))
+  import('@/features/shared/pages/TermsView').then((m) => ({ default: m.TermsView }))
 );
 const PrivacyView = lazy(() =>
-  import('@/views/PrivacyView').then((m) => ({ default: m.PrivacyView }))
+  import('@/features/shared/pages/PrivacyView').then((m) => ({ default: m.PrivacyView }))
 );
+
+// Account feature
 const AccountIntegrationsView = lazy(() =>
-  import('@/views/account/AccountIntegrationsView').then((m) => ({
+  import('@/features/account/pages/AccountIntegrationsView').then((m) => ({
     default: m.AccountIntegrationsView,
   }))
 );
 const AccountSettingsView = lazy(() =>
-  import('@/views/account/AccountSettingsView').then((m) => ({
+  import('@/features/account/pages/AccountSettingsView').then((m) => ({
     default: m.AccountSettingsView,
   }))
 );
 
-// Organization views (admin only)
+// Organizations feature
 const OrganizationsListView = lazy(() =>
-  import('@/views/organizations/OrganizationsListView').then((m) => ({
+  import('@/features/organizations/pages/OrganizationsListView').then((m) => ({
     default: m.OrganizationsListView,
   }))
 );
 const OrganizationCreateView = lazy(() =>
-  import('@/views/organizations/OrganizationCreateView').then((m) => ({
+  import('@/features/organizations/pages/OrganizationCreateView').then((m) => ({
     default: m.OrganizationCreateView,
   }))
 );
 const OrganizationEditView = lazy(() =>
-  import('@/views/organizations/OrganizationEditView').then((m) => ({
+  import('@/features/organizations/pages/OrganizationEditView').then((m) => ({
     default: m.OrganizationEditView,
   }))
 );
 const OrganizationDetailsView = lazy(() =>
-  import('@/views/organizations/OrganizationDetailsView').then((m) => ({
+  import('@/features/organizations/pages/OrganizationDetailsView').then((m) => ({
     default: m.OrganizationDetailsView,
   }))
 );
 
-// User views (admin only)
+// Users feature
 const UsersListView = lazy(() =>
-  import('@/views/users/UsersListView').then((m) => ({
+  import('@/features/users/pages/UsersListView').then((m) => ({
     default: m.UsersListView,
   }))
 );
 const UserCreateView = lazy(() =>
-  import('@/views/users/UserCreateView').then((m) => ({
+  import('@/features/users/pages/UserCreateView').then((m) => ({
     default: m.UserCreateView,
   }))
 );
 const UserEditView = lazy(() =>
-  import('@/views/users/UserEditView').then((m) => ({
+  import('@/features/users/pages/UserEditView').then((m) => ({
     default: m.UserEditView,
   }))
 );
 const UserDetailsView = lazy(() =>
-  import('@/views/users/UserDetailsView').then((m) => ({
+  import('@/features/users/pages/UserDetailsView').then((m) => ({
     default: m.UserDetailsView,
   }))
 );
 
-// Candidate views (admin and manager access)
+// Candidates feature
 const CandidatesListView = lazy(() =>
-  import('@/views/candidates/CandidatesListView').then((m) => ({
+  import('@/features/candidates/pages/CandidatesListView').then((m) => ({
     default: m.CandidatesListView,
   }))
 );
 const CandidateCreateView = lazy(() =>
-  import('@/views/candidates/CandidateCreateView').then((m) => ({
+  import('@/features/candidates/pages/CandidateCreateView').then((m) => ({
     default: m.CandidateCreateView,
   }))
 );
 const CandidateEditView = lazy(() =>
-  import('@/views/candidates/CandidateEditView').then((m) => ({
+  import('@/features/candidates/pages/CandidateEditView').then((m) => ({
     default: m.CandidateEditView,
   }))
 );
 const CandidateDetailsView = lazy(() =>
-  import('@/views/candidates/CandidateDetailsView').then((m) => ({
+  import('@/features/candidates/pages/CandidateDetailsView').then((m) => ({
     default: m.CandidateDetailsView,
   }))
 );
 const CandidateBulkCreateView = lazy(() =>
-  import('@/views/candidates/CandidateBulkCreateView').then((m) => ({
+  import('@/features/candidates/pages/CandidateBulkCreateView').then((m) => ({
     default: m.CandidateBulkCreateView,
   }))
 );
 const CandidateSubmissionView = lazy(() =>
-  import('@/views/candidates/CandidateSubmissionView').then((m) => ({
+  import('@/features/candidates/pages/CandidateSubmissionView').then((m) => ({
     default: m.CandidateSubmissionView,
   }))
 );
 const CertifiedCandidatesListView = lazy(() =>
-  import('@/views/candidates/CertifiedCandidatesListView').then((m) => ({
+  import('@/features/candidates/pages/CertifiedCandidatesListView').then((m) => ({
     default: m.CertifiedCandidatesListView,
   }))
 );
 const ArchivedCandidatesListView = lazy(() =>
-  import('@/views/candidates/ArchivedCandidatesListView').then((m) => ({
+  import('@/features/candidates/pages/ArchivedCandidatesListView').then((m) => ({
     default: m.ArchivedCandidatesListView,
   }))
 );
 
-// Forms views (admin only)
+// Forms feature
 const FormsListView = lazy(() =>
-  import('@/views/forms/FormsListView').then((m) => ({
+  import('@/features/forms/pages/FormsListView').then((m) => ({
     default: m.FormsListView,
   }))
 );
 const FormCreateView = lazy(() =>
-  import('@/views/forms/FormCreateView').then((m) => ({
+  import('@/features/forms/pages/FormCreateView').then((m) => ({
     default: m.FormCreateView,
   }))
 );
 const FormEditView = lazy(() =>
-  import('@/views/forms/FormEditView').then((m) => ({
+  import('@/features/forms/pages/FormEditView').then((m) => ({
     default: m.FormEditView,
   }))
 );
 const FormDetailsView = lazy(() =>
-  import('@/views/forms/FormDetailsView').then((m) => ({
+  import('@/features/forms/pages/FormDetailsView').then((m) => ({
     default: m.FormDetailsView,
   }))
 );
 
-// Chat view
+// Chat feature
 const ChatView = lazy(() =>
-  import('@/views/chat/ChatView').then((m) => ({
+  import('@/features/chat/pages/ChatView').then((m) => ({
     default: m.ChatView,
   }))
 );
 
-// Files view
+// Files feature
 const FilesListView = lazy(() =>
-  import('@/views/files/FilesListView').then((m) => ({
+  import('@/features/files/pages/FilesListView').then((m) => ({
     default: m.FilesListView,
   }))
 );
 
-// Ledger views (admin only)
+// Billing feature
 const BilledLedgerListView = lazy(() =>
-  import('@/views/ledger/BilledLedgerListView').then((m) => ({
+  import('@/features/billing/pages/BilledLedgerListView').then((m) => ({
     default: m.BilledLedgerListView,
   }))
 );
 const UnbilledLedgerListView = lazy(() =>
-  import('@/views/ledger/UnbilledLedgerListView').then((m) => ({
+  import('@/features/billing/pages/UnbilledLedgerListView').then((m) => ({
     default: m.UnbilledLedgerListView,
   }))
 );
 const LedgerView = lazy(() =>
-  import('@/views/ledger/LedgerView').then((m) => ({
+  import('@/features/billing/pages/LedgerView').then((m) => ({
     default: m.LedgerView,
   }))
 );
 
-// Placeholder views
+// Screening feature
 const ScreeningListView = lazy(() =>
-  import('@/views/screening/ScreeningListView').then((m) => ({
+  import('@/features/screening/pages/ScreeningListView').then((m) => ({
     default: m.ScreeningListView,
   }))
 );
 const AdminScreeningListView = lazy(() =>
-  import('@/views/screening/AdminScreeningListView').then((m) => ({
+  import('@/features/screening/pages/AdminScreeningListView').then((m) => ({
     default: m.AdminScreeningListView,
   }))
 );
+
+// Reports feature
 const ReportsView = lazy(() =>
-  import('@/views/reports/ReportsView').then((m) => ({
+  import('@/features/reports/pages/ReportsView').then((m) => ({
     default: m.ReportsView,
   }))
 );
+
+// Settings feature
 const SettingsView = lazy(() =>
-  import('@/views/settings/SettingsView').then((m) => ({
+  import('@/features/settings/pages/SettingsView').then((m) => ({
     default: m.SettingsView,
   }))
 );
 
-// Pipeline views (admin only)
+// Pipelines feature
 const PipelinesListView = lazy(() =>
-  import('@/views/pipelines/PipelinesListView').then((m) => ({
+  import('@/features/pipelines/pages/PipelinesListView').then((m) => ({
     default: m.PipelinesListView,
   }))
 );
 const PipelineCreateView = lazy(() =>
-  import('@/views/pipelines/PipelineCreateView').then((m) => ({
+  import('@/features/pipelines/pages/PipelineCreateView').then((m) => ({
     default: m.PipelineCreateView,
   }))
 );
 const PipelineDetailsView = lazy(() =>
-  import('@/views/pipelines/PipelineDetailsView').then((m) => ({
+  import('@/features/pipelines/pages/PipelineDetailsView').then((m) => ({
     default: m.PipelineDetailsView,
   }))
 );
 const PipelineEditView = lazy(() =>
-  import('@/views/pipelines/PipelineEditView').then((m) => ({
+  import('@/features/pipelines/pages/PipelineEditView').then((m) => ({
     default: m.PipelineEditView,
   }))
 );
 const PipelineBuilderView = lazy(() =>
-  import('@/views/pipelines/builder/PipelineBuilderView').then((m) => ({
+  import('@/features/pipelines/pages/builder/PipelineBuilderView').then((m) => ({
     default: m.PipelineBuilderView,
   }))
 );
 
-// Review views (admin and manager)
+// Reviews feature
 const ReviewDashboardView = lazy(() =>
-  import('@/views/reviews/ReviewDashboard').then((m) => ({
+  import('@/features/reviews/pages/ReviewDashboard').then((m) => ({
     default: m.ReviewDashboard,
   }))
 );
 
-// Client portal views
+// Client portal feature
 const ClientDashboardView = lazy(() =>
-  import('@/views/client/ClientDashboardView').then((m) => ({
+  import('@/features/client-portal/pages/ClientDashboardView').then((m) => ({
     default: m.ClientDashboardView,
   }))
 );
 const ClientCandidatesListView = lazy(() =>
-  import('@/views/client/ClientCandidatesListView').then((m) => ({
+  import('@/features/client-portal/pages/ClientCandidatesListView').then((m) => ({
     default: m.ClientCandidatesListView,
   }))
 );
 const ClientCandidateDetailView = lazy(() =>
-  import('@/views/client/ClientCandidateDetailView').then((m) => ({
+  import('@/features/client-portal/pages/ClientCandidateDetailView').then((m) => ({
     default: m.ClientCandidateDetailView,
   }))
 );
 const ClientOrgSettingsView = lazy(() =>
-  import('@/views/client/ClientOrgSettingsView').then((m) => ({
+  import('@/features/client-portal/pages/ClientOrgSettingsView').then((m) => ({
     default: m.ClientOrgSettingsView,
   }))
 );
 const ClientProfileView = lazy(() =>
-  import('@/views/client/ClientProfileView').then((m) => ({
+  import('@/features/client-portal/pages/ClientProfileView').then((m) => ({
     default: m.ClientProfileView,
   }))
 );
