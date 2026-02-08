@@ -75,4 +75,24 @@ export function registerCandidateHandlers(mock: MockAdapter): void {
     }
     return [404, { error: 'Candidate not found' }];
   });
+
+  // ---------------------------------------------------------------------------
+  // Client-portal prefixed routes (/api/v1/client/candidates)
+  // ---------------------------------------------------------------------------
+
+  // GET /api/v1/client/candidates (with optional query params)
+  mock.onGet(/\/api\/v1\/client\/candidates(\?.*)?$/).reply(200, candidatesListResponse);
+
+  // GET /api/v1/client/candidates/:id
+  mock.onGet(/\/api\/v1\/client\/candidates\/([^/?]+)/).reply((config) => {
+    const match = config.url?.match(/\/api\/v1\/client\/candidates\/([^/?]+)/);
+    const id = match?.[1];
+    if (id) {
+      const candidate = getCandidateById(id);
+      if (candidate) {
+        return [200, { data: candidate }];
+      }
+    }
+    return [404, { error: 'Candidate not found' }];
+  });
 }

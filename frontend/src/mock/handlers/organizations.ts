@@ -60,4 +60,39 @@ export function registerOrganizationHandlers(mock: MockAdapter): void {
     }
     return [404, { error: 'Organization not found' }];
   });
+
+  // ---------------------------------------------------------------------------
+  // Client-portal org settings route (/api/v1/client/org/settings)
+  // ---------------------------------------------------------------------------
+
+  // GET /api/v1/client/org/settings
+  mock.onGet(/\/api\/v1\/client\/org\/settings(\?.*)?$/).reply(200, {
+    name: 'Acme Corp',
+    logo: undefined,
+    contactEmail: 'hr@acmecorp.com',
+    contactPhone: '+1-555-123-4567',
+    address: '123 Main Street, Suite 400, New York, NY 10001',
+    notificationPreferences: {
+      emailOnScreeningComplete: true,
+      emailOnCandidateSubmission: true,
+      weeklyDigest: false,
+    },
+  });
+
+  // PUT /api/v1/client/org/settings
+  mock.onPut(/\/api\/v1\/client\/org\/settings(\?.*)?$/).reply((config) => {
+    const data = config.data ? JSON.parse(config.data) : {};
+    return [200, {
+      name: 'Acme Corp',
+      contactEmail: 'hr@acmecorp.com',
+      contactPhone: '+1-555-123-4567',
+      address: '123 Main Street, Suite 400, New York, NY 10001',
+      notificationPreferences: {
+        emailOnScreeningComplete: true,
+        emailOnCandidateSubmission: true,
+        weeklyDigest: false,
+      },
+      ...data,
+    }];
+  });
 }
