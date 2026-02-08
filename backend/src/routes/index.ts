@@ -1,4 +1,5 @@
 import { Router } from 'express';
+// ── Clean Architecture module imports ────────────────────────────────────────
 import { createAuthModule } from '../modules/auth/index.js';
 import { createCandidateManagementModule } from '../modules/candidate-management/index.js';
 import { screeningPipelineRouter } from '../modules/screening-pipeline/index.js';
@@ -18,43 +19,28 @@ import { createLocalizationModule } from '../modules/localization/index.js';
 import { createOAuthModule } from '../modules/oauth/index.js';
 import { createStateStoreModule } from '../modules/state-store/index.js';
 import { createCustomComponentsModule } from '../modules/custom-components/index.js';
+import { createShellModule } from '../modules/shell/index.js';
+import { createFirebaseModule } from '../modules/firebase/index.js';
+import { createMockModule } from '../modules/mock/index.js';
+import { createWebhookModule } from '../modules/webhook/index.js';
+import { createReviewTaskModule } from '../modules/review-task/index.js';
+import { createUIKitModule } from '../modules/ui-kit/index.js';
+import { createAccountSettingsModule } from '../modules/account-settings/index.js';
+import { createJobModule } from '../modules/job/index.js';
+import { createExportModule } from '../modules/export/index.js';
+import { createViewComponentsModule } from '../modules/view-components/index.js';
+import { createChartingModule } from '../modules/charting/index.js';
+import { createSharedWidgetsModule } from '../modules/shared-widgets/index.js';
+import { createConsentModule } from '../modules/consent/index.js';
+import { createApplicationModule } from '../modules/application/index.js';
+import { createGlobalCandidateIdentityModule } from '../modules/global-candidate-identity/index.js';
+// ── App-specific route imports (not yet migrated) ────────────────────────────
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
 import appProfileRoutes from './app-profile.routes.js';
-// state-store routes replaced by Clean Architecture module
-import shellRoutes from './shell.routes.js';
-import firebaseRoutes from './firebase.routes.js';
-// notification routes replaced by Clean Architecture module
-// localization routes replaced by Clean Architecture module
-// oauth routes replaced by Clean Architecture module
-import mockRoutes from './mock.routes.js';
-// theme routes replaced by Clean Architecture module
-import uiKitRoutes from './ui-kit.routes.js';
-// user-management routes replaced by Clean Architecture module
-// org-management routes replaced by Clean Architecture module
-import accountSettingsRoutes from './account-settings.routes.js';
-import jobRoutes from './job.routes.js';
-import exportRoutes from './export.routes.js';
-import viewComponentsRoutes from './view-components.routes.js';
-// form-builder routes replaced by Clean Architecture module
-// file-management routes replaced by Clean Architecture module
-// asset-management routes replaced by Clean Architecture module
-// chat routes replaced by Clean Architecture module
-import chartingRoutes from './charting.routes.js';
-// billing-ledger routes replaced by Clean Architecture module
-// home-dashboard routes replaced by Clean Architecture module
-import sharedWidgetsRoutes from './shared-widgets.routes.js';
-// template-layouts routes replaced by Clean Architecture module
-import consentRoutes from './consent.routes.js';
-import applicationRoutes from './application.routes.js';
-import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
-// client-portal routes replaced by Clean Architecture module
-// custom-components routes replaced by Clean Architecture module
-import webhookRoutes from './webhook.routes.js';
-import reviewTaskRoutes from './review-task.routes.js';
 
-// Initialize Clean Architecture modules
+// ── Initialize Clean Architecture modules ────────────────────────────────────
 const authModule = createAuthModule();
 const candidateManagementModule = createCandidateManagementModule();
 const formBuilderModule = createFormBuilderModule();
@@ -73,46 +59,62 @@ const localizationModule = createLocalizationModule();
 const oauthModule = createOAuthModule();
 const stateStoreModule = createStateStoreModule();
 const customComponentsModule = createCustomComponentsModule();
+const shellModule = createShellModule();
+const firebaseModule = createFirebaseModule();
+const mockModule = createMockModule();
+const webhookModule = createWebhookModule();
+const reviewTaskModule = createReviewTaskModule();
+const uiKitModule = createUIKitModule();
+const accountSettingsModule = createAccountSettingsModule();
+const jobModule = createJobModule();
+const exportModule = createExportModule();
+const viewComponentsModule = createViewComponentsModule();
+const chartingModule = createChartingModule();
+const sharedWidgetsModule = createSharedWidgetsModule();
+const consentModule = createConsentModule();
+const applicationModule = createApplicationModule();
+const globalCandidateIdentityModule = createGlobalCandidateIdentityModule();
 
 const router = Router();
 
+// ── Clean Architecture module routes ─────────────────────────────────────────
 router.use('/auth', authModule.routes);
 router.use('/app/auth', appAuthRoutes);
 router.use('/app/applications', appApplicationIntakeRoutes);
 router.use('/app/consent', appConsentRoutes);
 router.use('/app/profile', appProfileRoutes);
 router.use('/state', stateStoreModule.router);
-router.use('/shell', shellRoutes);
-router.use('/firebase', firebaseRoutes);
+router.use('/shell', shellModule.router);
+router.use('/firebase', firebaseModule.router);
 router.use('/notifications', notificationModule.routes);
 router.use('/localization', localizationModule.router);
 router.use('/oauth', oauthModule.router);
-router.use('/mock', mockRoutes);
+router.use('/mock', mockModule.router);
 router.use('/theme', themeModule.router);
-router.use('/ui-kit', uiKitRoutes);
+router.use('/ui-kit', uiKitModule.router);
 router.use('/users', userManagementModule.routes);
 router.use('/organizations', orgManagementModule.routes);
-router.use('/account', accountSettingsRoutes);
-router.use('/jobs', jobRoutes);
-router.use('/exports', exportRoutes);
-router.use('/view-components', viewComponentsRoutes);
+router.use('/account', accountSettingsModule.router);
+router.use('/jobs', jobModule.router);
+router.use('/exports', exportModule.router);
+router.use('/view-components', viewComponentsModule.router);
 router.use('/candidates', candidateManagementModule.routes);
 router.use('/forms', formBuilderModule.routes);
 router.use('/files', fileManagementModule.routes);
 router.use('/assets', assetManagementModule.router);
 router.use('/chat', chatModule.routes);
-router.use('/charts', chartingRoutes);
+router.use('/charts', chartingModule.router);
 router.use('/', billingLedgerModule.routes);
 router.use('/dashboard', homeDashboardModule.router);
-router.use('/widgets', sharedWidgetsRoutes);
+router.use('/widgets', sharedWidgetsModule.router);
 router.use('/template-layouts', templateLayoutsModule.router);
-router.use('/consent', consentRoutes);
-router.use('/applications', applicationRoutes);
+router.use('/consent', consentModule.router);
+router.use('/applications', applicationModule.router);
 router.use('/screening-pipelines', screeningPipelineRouter);
-router.use('/global-candidates', globalCandidateIdentityRoutes);
+router.use('/global-candidates', globalCandidateIdentityModule.router);
 router.use('/client', clientPortalModule.router);
 router.use('/components', customComponentsModule.router);
-router.use('/webhooks', webhookRoutes);
-router.use('/reviews', reviewTaskRoutes);
+router.use('/webhooks', webhookModule.router);
+router.use('/reviews', reviewTaskModule.router);
 
 export default router;
