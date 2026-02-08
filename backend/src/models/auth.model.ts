@@ -25,6 +25,7 @@ export interface Candidate {
   mfaSecret?: string;
   lockedUntil?: Date;
   failedAttempts: number;
+  tenantId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

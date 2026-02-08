@@ -108,11 +108,11 @@ export async function getConsentStatus(
   }
 
   if (!result.consent) {
-    res.status(200).json({ status: 'none', message: 'No consent record found' });
+    res.status(200).json({ consents: [] });
     return;
   }
 
-  res.status(200).json(result.consent);
+  res.status(200).json({ consents: [result.consent] });
 }
 
 /**
@@ -148,11 +148,11 @@ export async function getCandidateConsentStatus(
   }
 
   if (!result.consent) {
-    res.status(200).json({ status: 'none', message: 'No consent record found' });
+    res.status(200).json({ consents: [] });
     return;
   }
 
-  res.status(200).json(result.consent);
+  res.status(200).json({ consents: [result.consent] });
 }
 
 /**

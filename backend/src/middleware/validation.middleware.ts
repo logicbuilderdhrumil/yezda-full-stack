@@ -151,7 +151,7 @@ export const appSignInSchema = z.object({
   password: z.string().min(1, 'Password is required'),
   deviceId: z.string().min(1, 'Device ID is required').max(255),
   deviceName: z.string().max(255).optional(),
-  platform: z.enum(['ios', 'android']),
+  platform: z.enum(['ios', 'android', 'web']),
   appVersion: z.string().min(1, 'App version is required').max(50),
   osVersion: z.string().max(50).optional(),
   model: z.string().max(100).optional(),

@@ -35,7 +35,7 @@ const profileRequestConfig: ApiRequestConfig = {
  */
 export async function getProfile(accessToken: string): Promise<UserProfile> {
   try {
-    const response = await apiRequest<ProfileResponse>('/v1/profile', {
+    const response = await apiRequest<ProfileResponse>('/v1/app/profile', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -71,7 +71,7 @@ export async function updateProfile(
   data: ProfileUpdateRequest
 ): Promise<UserProfile> {
   try {
-    const response = await apiRequest<ProfileUpdateResponse>('/v1/profile', {
+    const response = await apiRequest<ProfileUpdateResponse>('/v1/app/profile', {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${accessToken}`,

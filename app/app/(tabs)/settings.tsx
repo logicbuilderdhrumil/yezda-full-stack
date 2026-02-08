@@ -3,7 +3,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/authStore';
@@ -42,7 +42,19 @@ export default function SettingsRoute() {
   const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
 
+  const doSignOut = useCallback(async () => {
+    await signOut();
+    router.replace('/login');
+  }, [signOut, router]);
+
   const handleSignOut = useCallback(() => {
+    if (Platform.OS === 'web') {
+      // Alert.alert doesn't show confirmation dialogs on web; use window.confirm
+      if (typeof window !== 'undefined' && window.confirm('Are you sure you want to sign out?')) {
+        doSignOut();
+      }
+      return;
+    }
     Alert.alert(
       'Sign Out',
       'Are you sure you want to sign out?',
@@ -51,13 +63,11 @@ export default function SettingsRoute() {
         {
           text: 'Sign Out',
           style: 'destructive',
-          onPress: async () => {
-            await signOut();
-          },
+          onPress: doSignOut,
         },
       ],
     );
-  }, [signOut]);
+  }, [doSignOut]);
 
   return (
     <ScrollView className="flex-1 bg-gray-50" contentContainerClassName="pb-8">

@@ -22,18 +22,23 @@ import type {
  */
 
 describe('Auth contract alignment', () => {
-  it('SignInRequestDto matches backend signInSchema', () => {
-    // Backend expects: email, password, userType, optional mfaCode
+  it('SignInRequestDto matches backend appSignInSchema', () => {
+    // Backend expects: email, password, deviceId, platform, appVersion, optional fields
     const request: SignInRequestDto = {
       email: 'user@example.com',
       password: 'password123',
-      userType: 'candidate',
+      deviceId: 'web-1234567890',
+      platform: 'web',
+      appVersion: '1.0.0',
+      deviceName: 'Web Browser',
       mfaCode: '123456',
     };
 
     expect(request.email).toBeDefined();
     expect(request.password).toBeDefined();
-    expect(request.userType).toMatch(/^(user|candidate)$/);
+    expect(request.deviceId).toBeDefined();
+    expect(request.platform).toMatch(/^(ios|android|web)$/);
+    expect(request.appVersion).toBeDefined();
     expect(typeof request.mfaCode).toBe('string');
   });
 

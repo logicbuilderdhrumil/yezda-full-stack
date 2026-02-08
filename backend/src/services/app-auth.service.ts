@@ -18,6 +18,7 @@ import type {
 } from '../models/app-auth.model.js';
 import type {
   AccessTokenPayload,
+  Candidate,
   RefreshTokenPayload,
   TokenPair,
 } from '../models/auth.model.js';
@@ -154,7 +155,8 @@ export class AppAuthService {
     const { tokenPair, session } = await this.generateAppTokenPair(
       candidate.id,
       { deviceId, deviceName, platform, appVersion, osVersion, model },
-      ipAddress
+      ipAddress,
+      (candidate as Candidate).tenantId
     );
 
     auditService.logAppSignInSuccess({
@@ -223,7 +225,8 @@ export class AppAuthService {
         platform: session.platform,
         appVersion: session.appVersion,
       },
-      ipAddress
+      ipAddress,
+      (candidate as Candidate).tenantId
     );
 
     auditService.logAppSignInSuccess({
@@ -282,6 +285,9 @@ export class AppAuthService {
     oldSession.revokedAt = new Date();
     await appSessionRepository.update(oldSession);
 
+    // Look up candidate's current tenantId for refreshed token
+    const candidateRecord = await userRepository.findCandidateById(payload.sub);
+
     // Generate new token pair
     const { tokenPair, session: newSession } = await this.generateAppTokenPair(
       payload.sub,
@@ -293,7 +299,8 @@ export class AppAuthService {
         osVersion: oldSession.osVersion,
         model: oldSession.model,
       },
-      ipAddress ?? oldSession.ipAddress
+      ipAddress ?? oldSession.ipAddress,
+      candidateRecord?.tenantId
     );
 
     // Link to old session for audit trail
@@ -413,12 +420,13 @@ export class AppAuthService {
     metadata: {
       deviceId: string;
       deviceName?: string;
-      platform: 'ios' | 'android';
+      platform: 'ios' | 'android' | 'web';
       appVersion: string;
       osVersion?: string;
       model?: string;
     },
-    ipAddress?: string
+    ipAddress?: string,
+    tenantId?: string
   ): Promise<{ tokenPair: TokenPair; session: AppSession }> {
     const sessionId = uuidv4();
     const accessTokenJti = uuidv4();
@@ -428,6 +436,7 @@ export class AppAuthService {
     const accessPayload: AccessTokenPayload = {
       sub: userId,
       type: 'candidate',
+      tenantId,
       iat: now,
       exp: now + config.jwt.accessTokenTtlSeconds,
       jti: accessTokenJti,
@@ -488,7 +497,7 @@ export class AppAuthService {
   private async handleFailedAttempt(
     candidate: { id: string; email: string; failedAttempts: number; lockedUntil?: Date; updatedAt: Date },
     deviceId: string,
-    platform: 'ios' | 'android',
+    platform: 'ios' | 'android' | 'web',
     appVersion: string,
     ipAddress?: string
   ): Promise<void> {

@@ -1,10 +1,37 @@
 /**
  * Secure token storage with expiry tracking.
  * Task 1.4: Add secure token storage with expiry tracking.
+ *
+ * Uses expo-secure-store on native (iOS/Android) and localStorage on web.
  */
 
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { SessionTokens } from '../types/auth.types';
+
+/** Platform-aware storage adapter: SecureStore on native, localStorage on web. */
+const storage = {
+  async getItem(key: string): Promise<string | null> {
+    if (Platform.OS === 'web') {
+      return localStorage.getItem(key);
+    }
+    return SecureStore.getItemAsync(key);
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      localStorage.setItem(key, value);
+      return;
+    }
+    await SecureStore.setItemAsync(key, value);
+  },
+  async deleteItem(key: string): Promise<void> {
+    if (Platform.OS === 'web') {
+      localStorage.removeItem(key);
+      return;
+    }
+    await SecureStore.deleteItemAsync(key);
+  },
+};
 
 const STORAGE_KEYS = {
   ACCESS_TOKEN: 'auth_access_token',
@@ -17,9 +44,9 @@ const STORAGE_KEYS = {
  */
 export async function storeTokens(tokens: SessionTokens): Promise<void> {
   await Promise.all([
-    SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken),
-    SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken),
-    SecureStore.setItemAsync(STORAGE_KEYS.EXPIRES_AT, tokens.expiresAt.toString()),
+    storage.setItem(STORAGE_KEYS.ACCESS_TOKEN, tokens.accessToken),
+    storage.setItem(STORAGE_KEYS.REFRESH_TOKEN, tokens.refreshToken),
+    storage.setItem(STORAGE_KEYS.EXPIRES_AT, tokens.expiresAt.toString()),
   ]);
 }
 
@@ -30,9 +57,9 @@ export async function storeTokens(tokens: SessionTokens): Promise<void> {
 export async function getStoredTokens(): Promise<SessionTokens | null> {
   try {
     const [accessToken, refreshToken, expiresAtStr] = await Promise.all([
-      SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
-      SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
-      SecureStore.getItemAsync(STORAGE_KEYS.EXPIRES_AT),
+      storage.getItem(STORAGE_KEYS.ACCESS_TOKEN),
+      storage.getItem(STORAGE_KEYS.REFRESH_TOKEN),
+      storage.getItem(STORAGE_KEYS.EXPIRES_AT),
     ]);
 
     if (!accessToken || !refreshToken || !expiresAtStr) {
@@ -56,9 +83,9 @@ export async function getStoredTokens(): Promise<SessionTokens | null> {
  */
 export async function clearStoredTokens(): Promise<void> {
   await Promise.all([
-    SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
-    SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
-    SecureStore.deleteItemAsync(STORAGE_KEYS.EXPIRES_AT),
+    storage.deleteItem(STORAGE_KEYS.ACCESS_TOKEN),
+    storage.deleteItem(STORAGE_KEYS.REFRESH_TOKEN),
+    storage.deleteItem(STORAGE_KEYS.EXPIRES_AT),
   ]);
 }
 

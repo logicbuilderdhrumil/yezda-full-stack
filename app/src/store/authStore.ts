@@ -5,6 +5,8 @@
  */
 
 import { create } from 'zustand';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import {
   AuthSession,
   AuthUser,
@@ -14,6 +16,7 @@ import {
   MfaVerifyRequest,
   toSessionTokens,
 } from '../types/auth.types';
+import type { LoginFormValues } from '../types/auth.types';
 import {
   storeTokens,
   getStoredTokens,
@@ -36,7 +39,7 @@ interface AuthState extends AuthSession {
 
   // Actions
   bootstrap: () => Promise<void>;
-  signIn: (request: SignInRequest) => Promise<boolean>;
+  signIn: (values: LoginFormValues) => Promise<boolean>;
   verifyMfa: (request: MfaVerifyRequest) => Promise<boolean>;
   refreshSession: () => Promise<boolean>;
   signOut: () => Promise<void>;
@@ -138,7 +141,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
    * Returns true on success, false if MFA is required or on error.
    * Includes client-side rate limiting with exponential backoff.
    */
-  signIn: async (request: SignInRequest) => {
+  signIn: async (values: LoginFormValues) => {
     const { failedAttempts, lastFailedAttempt } = get();
     
     // Check rate limiting
@@ -150,6 +153,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     set({ isLoading: true, error: null, pendingMfaChallenge: null });
+
+    // Build full sign-in request with device info
+    const platform = Platform.OS as 'ios' | 'android' | 'web';
+    const request: SignInRequest = {
+      email: values.email,
+      password: values.password,
+      deviceId: `${platform}-${Date.now()}`,
+      platform,
+      appVersion: Constants.expoConfig?.version ?? '1.0.0',
+      deviceName: platform === 'web' ? 'Web Browser' : undefined,
+    };
 
     try {
       const response = await apiSignIn(request);

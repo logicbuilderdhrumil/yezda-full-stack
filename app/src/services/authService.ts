@@ -37,7 +37,7 @@ const authRequestConfig: ApiRequestConfig = {
  */
 export async function signIn(request: SignInRequest): Promise<SignInResponse> {
   try {
-    return await apiRequest<SignInResponse>('/v1/auth/sign-in', {
+    return await apiRequest<SignInResponse>('/v1/app/auth/sign-in', {
       method: 'POST',
       body: JSON.stringify(request),
     }, authRequestConfig);
@@ -75,7 +75,7 @@ export async function signIn(request: SignInRequest): Promise<SignInResponse> {
  */
 export async function verifyMfa(request: MfaVerifyRequestDto): Promise<SignInResponse> {
   try {
-    return await apiRequest<SignInResponse>('/v1/auth/mfa/verify', {
+    return await apiRequest<SignInResponse>('/v1/app/auth/mfa/verify', {
       method: 'POST',
       body: JSON.stringify(request),
     }, authRequestConfig);
@@ -96,7 +96,7 @@ export async function verifyMfa(request: MfaVerifyRequestDto): Promise<SignInRes
  */
 export async function refreshTokens(refreshToken: string): Promise<RefreshResponse> {
   try {
-    return await apiRequest<RefreshResponse>('/v1/auth/refresh', {
+    return await apiRequest<RefreshResponse>('/v1/app/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     }, authRequestConfig);
@@ -117,7 +117,7 @@ export async function refreshTokens(refreshToken: string): Promise<RefreshRespon
  */
 export async function signOut(accessToken: string): Promise<void> {
   try {
-    await apiRequest<void>('/v1/auth/sign-out', {
+    await apiRequest<void>('/v1/app/auth/sign-out', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
