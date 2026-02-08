@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode (Tailwind CSS 4 uses prefers-color-scheme by default) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Theme token CSS variables - light theme defaults */
 :root {
   /* Colors */

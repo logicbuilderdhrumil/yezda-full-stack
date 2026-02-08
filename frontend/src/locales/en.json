@@ -65,7 +65,10 @@
     "placeholder": "Search..."
   },
   "notifications": {
-    "title": "Notifications"
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "markAllRead": "Mark all as read",
+    "viewAll": "View all notifications"
   },
   "theme": {
     "toggle": "Toggle theme",
