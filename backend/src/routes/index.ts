@@ -11,6 +11,10 @@ import { createFileManagementModule } from '../modules/file-management/index.js'
 import { createBillingLedgerModule } from '../modules/billing-ledger/index.js';
 import { createAssetManagementModule } from '../modules/asset-management/index.js';
 import { createClientPortalModule } from '../modules/client-portal/index.js';
+import { createHomeDashboardModule } from '../modules/home-dashboard/index.js';
+import { createTemplateLayoutsModule } from '../modules/template-layouts/index.js';
+import { createThemeModule } from '../modules/theme/index.js';
+import { createLocalizationModule } from '../modules/localization/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -19,10 +23,10 @@ import stateStoreRoutes from './state-store.routes.js';
 import shellRoutes from './shell.routes.js';
 import firebaseRoutes from './firebase.routes.js';
 // notification routes replaced by Clean Architecture module
-import localizationRoutes from './localization.routes.js';
+// localization routes replaced by Clean Architecture module
 import oauthRoutes from './oauth.routes.js';
 import mockRoutes from './mock.routes.js';
-import themeRoutes from './theme.routes.js';
+// theme routes replaced by Clean Architecture module
 import uiKitRoutes from './ui-kit.routes.js';
 // user-management routes replaced by Clean Architecture module
 // org-management routes replaced by Clean Architecture module
@@ -36,9 +40,9 @@ import viewComponentsRoutes from './view-components.routes.js';
 // chat routes replaced by Clean Architecture module
 import chartingRoutes from './charting.routes.js';
 // billing-ledger routes replaced by Clean Architecture module
-import homeDashboardRoutes from './home-dashboard.routes.js';
+// home-dashboard routes replaced by Clean Architecture module
 import sharedWidgetsRoutes from './shared-widgets.routes.js';
-import templateLayoutsRoutes from './template-layouts.routes.js';
+// template-layouts routes replaced by Clean Architecture module
 import consentRoutes from './consent.routes.js';
 import applicationRoutes from './application.routes.js';
 import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js';
@@ -59,6 +63,10 @@ const fileManagementModule = createFileManagementModule();
 const billingLedgerModule = createBillingLedgerModule();
 const assetManagementModule = createAssetManagementModule();
 const clientPortalModule = createClientPortalModule();
+const homeDashboardModule = createHomeDashboardModule();
+const templateLayoutsModule = createTemplateLayoutsModule();
+const themeModule = createThemeModule();
+const localizationModule = createLocalizationModule();
 
 const router = Router();
 
@@ -71,10 +79,10 @@ router.use('/state', stateStoreRoutes);
 router.use('/shell', shellRoutes);
 router.use('/firebase', firebaseRoutes);
 router.use('/notifications', notificationModule.routes);
-router.use('/localization', localizationRoutes);
+router.use('/localization', localizationModule.router);
 router.use('/oauth', oauthRoutes);
 router.use('/mock', mockRoutes);
-router.use('/theme', themeRoutes);
+router.use('/theme', themeModule.router);
 router.use('/ui-kit', uiKitRoutes);
 router.use('/users', userManagementModule.routes);
 router.use('/organizations', orgManagementModule.routes);
@@ -89,9 +97,9 @@ router.use('/assets', assetManagementModule.router);
 router.use('/chat', chatModule.routes);
 router.use('/charts', chartingRoutes);
 router.use('/', billingLedgerModule.routes);
-router.use('/dashboard', homeDashboardRoutes);
+router.use('/dashboard', homeDashboardModule.router);
 router.use('/widgets', sharedWidgetsRoutes);
-router.use('/template-layouts', templateLayoutsRoutes);
+router.use('/template-layouts', templateLayoutsModule.router);
 router.use('/consent', consentRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/screening-pipelines', screeningPipelineRouter);
