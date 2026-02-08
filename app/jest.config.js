@@ -1,5 +1,7 @@
+const path = require('path');
+
 module.exports = {
-  preset: 'jest-expo',
+  preset: path.resolve(__dirname, 'node_modules/jest-expo'),
   testEnvironment: 'node',
   setupFiles: ['<rootDir>/jest.setup.js'],
   setupFilesAfterEnv: ['@testing-library/react-native/extend-expect'],

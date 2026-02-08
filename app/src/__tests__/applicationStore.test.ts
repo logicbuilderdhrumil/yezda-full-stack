@@ -1,14 +1,16 @@
 /**
  * Tests for application store.
  * Task 1.7: Add tests for form rendering, draft, and submission flows.
+ * Uses direct state access (getState/setState) instead of renderHook
+ * to avoid React hooks issues in node test environment.
  */
 
-import { act, renderHook } from '@testing-library/react-native';
 import { useApplicationStore } from '../store/applicationStore';
 import { useAuthStore } from '../store/authStore';
 import * as applicationService from '../services/applicationService';
 
 // Mock dependencies
+jest.mock('../services/apiClient');
 jest.mock('../services/applicationService');
 jest.mock('../store/authStore', () => ({
   useAuthStore: {
@@ -60,42 +62,37 @@ describe('useApplicationStore', () => {
 
       mockApplicationService.getApplications.mockResolvedValue({ applications });
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplications();
 
-      await act(async () => {
-        await result.current.loadApplications();
-      });
-
-      expect(result.current.applications).toEqual(applications);
-      expect(result.current.listScreenState).toBe('idle');
+      const state = useApplicationStore.getState();
+      expect(state.applications).toEqual(applications);
+      expect(state.listScreenState).toBe('idle');
     });
 
     it('sets error state on failure', async () => {
       mockApplicationService.getApplications.mockRejectedValue(
-        new applicationService.ApplicationApiError('ERROR', 'Failed to load', 500)
+        Object.assign(new Error('Failed to load'), {
+          name: 'ApplicationApiError',
+          code: 'ERROR',
+          status: 500,
+        })
       );
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplications();
 
-      await act(async () => {
-        await result.current.loadApplications();
-      });
-
-      expect(result.current.listScreenState).toBe('error');
-      expect(result.current.listError).toBe('Failed to load');
+      const state = useApplicationStore.getState();
+      expect(state.listScreenState).toBe('error');
+      expect(state.listError).toBe('Failed to load');
     });
 
     it('sets error when not authenticated', async () => {
       mockGetState.mockReturnValue({ tokens: null });
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplications();
 
-      await act(async () => {
-        await result.current.loadApplications();
-      });
-
-      expect(result.current.listScreenState).toBe('error');
-      expect(result.current.listError).toBe('Not authenticated');
+      const state = useApplicationStore.getState();
+      expect(state.listScreenState).toBe('error');
+      expect(state.listError).toBe('Not authenticated');
     });
   });
 
@@ -130,30 +127,24 @@ describe('useApplicationStore', () => {
         draft: { applicationId: 'app-1', values: draftValues, savedAt },
       });
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplication('app-1');
 
-      await act(async () => {
-        await result.current.loadApplication('app-1');
-      });
-
-      expect(result.current.currentApplication).toEqual(mockApplication);
-      expect(result.current.formValues).toEqual(draftValues);
-      expect(result.current.lastSavedAt).toBe(savedAt);
-      expect(result.current.detailScreenState).toBe('idle');
+      const state = useApplicationStore.getState();
+      expect(state.currentApplication).toEqual(mockApplication);
+      expect(state.formValues).toEqual(draftValues);
+      expect(state.lastSavedAt).toBe(savedAt);
+      expect(state.detailScreenState).toBe('idle');
     });
 
     it('loads application without draft', async () => {
       mockApplicationService.getApplication.mockResolvedValue({ application: mockApplication });
       mockApplicationService.getApplicationDraft.mockResolvedValue({ draft: null });
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplication('app-1');
 
-      await act(async () => {
-        await result.current.loadApplication('app-1');
-      });
-
-      expect(result.current.formValues).toEqual({});
-      expect(result.current.lastSavedAt).toBeNull();
+      const state = useApplicationStore.getState();
+      expect(state.formValues).toEqual({});
+      expect(state.lastSavedAt).toBeNull();
     });
 
     it('sets submitted state for submitted application', async () => {
@@ -161,44 +152,31 @@ describe('useApplicationStore', () => {
       mockApplicationService.getApplication.mockResolvedValue({ application: submittedApp });
       mockApplicationService.getApplicationDraft.mockResolvedValue({ draft: null });
 
-      const { result } = renderHook(() => useApplicationStore());
+      await useApplicationStore.getState().loadApplication('app-1');
 
-      await act(async () => {
-        await result.current.loadApplication('app-1');
-      });
-
-      expect(result.current.detailScreenState).toBe('submitted');
+      expect(useApplicationStore.getState().detailScreenState).toBe('submitted');
     });
   });
 
   describe('setFieldValue', () => {
     it('updates form values and sets dirty flag', () => {
-      const { result } = renderHook(() => useApplicationStore());
+      useApplicationStore.getState().setFieldValue('name', 'John');
 
-      act(() => {
-        result.current.setFieldValue('name', 'John');
-      });
-
-      expect(result.current.formValues.name).toBe('John');
-      expect(result.current.isDirty).toBe(true);
+      const state = useApplicationStore.getState();
+      expect(state.formValues.name).toBe('John');
+      expect(state.isDirty).toBe(true);
     });
   });
 
   describe('setFieldErrors and clearFieldError', () => {
     it('sets and clears field errors', () => {
-      const { result } = renderHook(() => useApplicationStore());
+      useApplicationStore.getState().setFieldErrors({ name: 'Required', email: 'Invalid' });
 
-      act(() => {
-        result.current.setFieldErrors({ name: 'Required', email: 'Invalid' });
-      });
+      expect(useApplicationStore.getState().formErrors).toEqual({ name: 'Required', email: 'Invalid' });
 
-      expect(result.current.formErrors).toEqual({ name: 'Required', email: 'Invalid' });
+      useApplicationStore.getState().clearFieldError('name');
 
-      act(() => {
-        result.current.clearFieldError('name');
-      });
-
-      expect(result.current.formErrors).toEqual({ email: 'Invalid' });
+      expect(useApplicationStore.getState().formErrors).toEqual({ email: 'Invalid' });
     });
   });
 
@@ -216,16 +194,13 @@ describe('useApplicationStore', () => {
         lifecycleState: 'draft' as const,
       });
 
-      const { result } = renderHook(() => useApplicationStore());
+      const success = await useApplicationStore.getState().saveDraft();
 
-      await act(async () => {
-        const success = await result.current.saveDraft();
-        expect(success).toBe(true);
-      });
-
-      expect(result.current.lastSavedAt).toBe(savedAt);
-      expect(result.current.isDirty).toBe(false);
-      expect(result.current.successMessage).toBe('Draft saved');
+      expect(success).toBe(true);
+      const state = useApplicationStore.getState();
+      expect(state.lastSavedAt).toBe(savedAt);
+      expect(state.isDirty).toBe(false);
+      expect(state.successMessage).toBe('Draft saved');
     });
 
     it('sets error state on save failure', async () => {
@@ -235,18 +210,19 @@ describe('useApplicationStore', () => {
       });
 
       mockApplicationService.saveApplicationDraft.mockRejectedValue(
-        new applicationService.ApplicationApiError('ERROR', 'Save failed', 500)
+        Object.assign(new Error('Save failed'), {
+          name: 'ApplicationApiError',
+          code: 'ERROR',
+          status: 500,
+        })
       );
 
-      const { result } = renderHook(() => useApplicationStore());
+      const success = await useApplicationStore.getState().saveDraft();
 
-      await act(async () => {
-        const success = await result.current.saveDraft();
-        expect(success).toBe(false);
-      });
-
-      expect(result.current.detailScreenState).toBe('error');
-      expect(result.current.detailError).toBe('Save failed');
+      expect(success).toBe(false);
+      const state = useApplicationStore.getState();
+      expect(state.detailScreenState).toBe('error');
+      expect(state.detailError).toBe('Save failed');
     });
   });
 
@@ -265,17 +241,14 @@ describe('useApplicationStore', () => {
         lifecycleState: 'submitted' as const,
       });
 
-      const { result } = renderHook(() => useApplicationStore());
+      const success = await useApplicationStore.getState().submitApplication();
 
-      await act(async () => {
-        const success = await result.current.submitApplication();
-        expect(success).toBe(true);
-      });
-
-      expect(result.current.detailScreenState).toBe('submitted');
-      expect(result.current.submittedAt).toBe(submittedAt);
-      expect(result.current.successMessage).toBe('Application submitted successfully!');
-      expect(result.current.isDirty).toBe(false);
+      expect(success).toBe(true);
+      const state = useApplicationStore.getState();
+      expect(state.detailScreenState).toBe('submitted');
+      expect(state.submittedAt).toBe(submittedAt);
+      expect(state.successMessage).toBe('Application submitted successfully!');
+      expect(state.isDirty).toBe(false);
     });
 
     it('sets error state on submit failure', async () => {
@@ -291,15 +264,12 @@ describe('useApplicationStore', () => {
       (mockError as any).status = 400;
       mockApplicationService.submitApplication.mockRejectedValue(mockError);
 
-      const { result } = renderHook(() => useApplicationStore());
+      const success = await useApplicationStore.getState().submitApplication();
 
-      await act(async () => {
-        const success = await result.current.submitApplication();
-        expect(success).toBe(false);
-      });
-
-      expect(result.current.detailScreenState).toBe('error');
-      expect(result.current.detailError).toBe('Validation failed');
+      expect(success).toBe(false);
+      const state = useApplicationStore.getState();
+      expect(state.detailScreenState).toBe('error');
+      expect(state.detailError).toBe('Validation failed');
     });
   });
 
@@ -312,16 +282,13 @@ describe('useApplicationStore', () => {
         detailScreenState: 'error',
       });
 
-      const { result } = renderHook(() => useApplicationStore());
+      useApplicationStore.getState().clearError();
 
-      act(() => {
-        result.current.clearError();
-      });
-
-      expect(result.current.listError).toBeNull();
-      expect(result.current.detailError).toBeNull();
-      expect(result.current.listScreenState).toBe('idle');
-      expect(result.current.detailScreenState).toBe('idle');
+      const state = useApplicationStore.getState();
+      expect(state.listError).toBeNull();
+      expect(state.detailError).toBeNull();
+      expect(state.listScreenState).toBe('idle');
+      expect(state.detailScreenState).toBe('idle');
     });
   });
 
@@ -336,18 +303,15 @@ describe('useApplicationStore', () => {
         successMessage: 'Saved',
       });
 
-      const { result } = renderHook(() => useApplicationStore());
+      useApplicationStore.getState().reset();
 
-      act(() => {
-        result.current.reset();
-      });
-
-      expect(result.current.applications).toEqual([]);
-      expect(result.current.currentApplication).toBeNull();
-      expect(result.current.formValues).toEqual({});
-      expect(result.current.isDirty).toBe(false);
-      expect(result.current.lastSavedAt).toBeNull();
-      expect(result.current.successMessage).toBeNull();
+      const state = useApplicationStore.getState();
+      expect(state.applications).toEqual([]);
+      expect(state.currentApplication).toBeNull();
+      expect(state.formValues).toEqual({});
+      expect(state.isDirty).toBe(false);
+      expect(state.lastSavedAt).toBeNull();
+      expect(state.successMessage).toBeNull();
     });
   });
 });

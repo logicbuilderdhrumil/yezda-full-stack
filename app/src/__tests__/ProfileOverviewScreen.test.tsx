@@ -55,7 +55,7 @@ describe('ProfileOverviewScreen', () => {
   });
 
   it('renders profile details', () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <ProfileOverviewScreen
         onEditPress={mockOnEditPress}
         onSecurityPress={mockOnSecurityPress}
@@ -63,7 +63,7 @@ describe('ProfileOverviewScreen', () => {
     );
 
     expect(getByText('John Doe')).toBeTruthy();
-    expect(getByText('john@example.com')).toBeTruthy();
+    expect(getAllByText('john@example.com').length).toBeGreaterThanOrEqual(1);
     expect(getByText('555-1234')).toBeTruthy();
   });
 

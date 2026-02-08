@@ -4,6 +4,18 @@
  * Integration: Tests aligned with backend auth.routes.ts contracts.
  */
 
+// Mock secure storage before any service imports (needed by apiClient)
+jest.mock('../utils/secureStorage', () => ({
+  getStoredTokens: jest.fn().mockResolvedValue({
+    accessToken: 'test-access-token',
+    refreshToken: 'test-refresh-token',
+    expiresAt: Date.now() + 3600000,
+  }),
+  storeTokens: jest.fn().mockResolvedValue(undefined),
+  clearStoredTokens: jest.fn().mockResolvedValue(undefined),
+  isTokenExpired: jest.fn().mockReturnValue(false),
+}));
+
 import { AuthApiError } from '../services/authService';
 
 // Mock fetch globally

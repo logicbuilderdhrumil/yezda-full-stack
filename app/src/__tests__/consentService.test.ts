@@ -23,6 +23,7 @@ import {
   getConsentPrompt,
   submitConsent,
   getConsentStatus,
+  getConsentById,
   updateConsent,
   withdrawConsent,
 } from '../services/consentService';
@@ -248,7 +249,6 @@ describe('getConsentById', () => {
       json: () => Promise.resolve(mockConsent),
     });
 
-    const { getConsentById } = await import('../services/consentService');
     const result = await getConsentById('consent-123');
 
     expect(result.id).toBe('consent-123');
@@ -267,8 +267,6 @@ describe('getConsentById', () => {
       status: 404,
       json: () => Promise.resolve({ code: 'NOT_FOUND', message: 'Consent not found' }),
     });
-
-    const { getConsentById } = await import('../services/consentService');
 
     await expect(getConsentById('invalid-id')).rejects.toThrow(ConsentApiError);
   });
