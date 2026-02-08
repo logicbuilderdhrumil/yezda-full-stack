@@ -15,72 +15,24 @@ import {
   SubmitApplicationResponse,
   applicationErrorMessages,
 } from '../types/application.types';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:6312/api';
-
-const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
+import { apiRequest, ApiError, type ApiRequestConfig } from './apiClient';
 
 /**
  * Custom error class for application API errors.
  */
-export class ApplicationApiError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public status: number
-  ) {
-    super(message);
+export class ApplicationApiError extends ApiError {
+  constructor(code: string, message: string, status: number) {
+    super(code, message, status);
     this.name = 'ApplicationApiError';
   }
 }
 
-/**
- * Generic fetch wrapper with error handling and timeout.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  timeoutMs: number = REQUEST_TIMEOUT_MS
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  // Create abort controller for timeout
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        code: 'UNKNOWN_ERROR',
-        message: applicationErrorMessages.unknownError,
-      }));
-      throw new ApplicationApiError(errorData.code, errorData.message, response.status);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new ApplicationApiError(
-        'REQUEST_TIMEOUT',
-        applicationErrorMessages.networkError,
-        0
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
+/** Shared request config for application API calls. */
+const appRequestConfig: ApiRequestConfig = {
+  ErrorClass: ApplicationApiError,
+  fallbackErrorMessage: applicationErrorMessages.unknownError,
+  networkErrorMessage: applicationErrorMessages.networkError,
+};
 
 /**
  * Fetch the list of assigned applications for the current user.
@@ -92,7 +44,7 @@ export async function getApplications(accessToken: string): Promise<ApplicationL
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
+    }, appRequestConfig);
   } catch (error) {
     if (error instanceof ApplicationApiError) {
       if (error.status === 401) {
@@ -127,7 +79,7 @@ export async function getApplication(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
+    }, appRequestConfig);
   } catch (error) {
     if (error instanceof ApplicationApiError) {
       if (error.status === 401) {
@@ -169,7 +121,7 @@ export async function getApplicationDraft(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
+    }, appRequestConfig);
   } catch (error) {
     if (error instanceof ApplicationApiError) {
       if (error.status === 401) {
@@ -210,7 +162,7 @@ export async function saveApplicationDraft(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(data),
-    });
+    }, appRequestConfig);
   } catch (error) {
     if (error instanceof ApplicationApiError) {
       if (error.status === 401) {
@@ -247,7 +199,7 @@ export async function submitApplication(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(data),
-    });
+    }, appRequestConfig);
   } catch (error) {
     if (error instanceof ApplicationApiError) {
       if (error.status === 401) {

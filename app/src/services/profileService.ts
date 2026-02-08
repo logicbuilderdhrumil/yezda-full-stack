@@ -11,76 +11,24 @@ import {
   ProfileUpdateResponse,
   profileErrorMessages,
 } from '../types/profile.types';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-
-if (!API_BASE_URL) {
-  throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
-}
-
-const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
+import { apiRequest, ApiError, type ApiRequestConfig } from './apiClient';
 
 /**
  * Custom error class for profile API errors.
  */
-export class ProfileApiError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public status: number
-  ) {
-    super(message);
+export class ProfileApiError extends ApiError {
+  constructor(code: string, message: string, status: number) {
+    super(code, message, status);
     this.name = 'ProfileApiError';
   }
 }
 
-/**
- * Generic fetch wrapper with error handling and timeout.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  timeoutMs: number = REQUEST_TIMEOUT_MS
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  // Create abort controller for timeout
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        code: 'UNKNOWN_ERROR',
-        message: profileErrorMessages.unknownError,
-      }));
-      throw new ProfileApiError(errorData.code, errorData.message, response.status);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new ProfileApiError(
-        'REQUEST_TIMEOUT',
-        profileErrorMessages.networkError,
-        0
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
+/** Shared request config for profile API calls. */
+const profileRequestConfig: ApiRequestConfig = {
+  ErrorClass: ProfileApiError,
+  fallbackErrorMessage: profileErrorMessages.unknownError,
+  networkErrorMessage: profileErrorMessages.networkError,
+};
 
 /**
  * Fetch the current user's profile.
@@ -92,7 +40,7 @@ export async function getProfile(accessToken: string): Promise<UserProfile> {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
+    }, profileRequestConfig);
     return response.profile;
   } catch (error) {
     if (error instanceof ProfileApiError) {
@@ -129,7 +77,7 @@ export async function updateProfile(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(data),
-    });
+    }, profileRequestConfig);
     return response.profile;
   } catch (error) {
     if (error instanceof ProfileApiError) {
