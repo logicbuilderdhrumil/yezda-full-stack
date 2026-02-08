@@ -96,6 +96,7 @@ export interface CreatePipelineDto {
   name: string;
   description?: string;
   stages: CreatePipelineStageDto[];
+  graph?: import('../../../shared/@types/pipeline-modules').PipelineGraph;
 }
 
 /** Update pipeline DTO */

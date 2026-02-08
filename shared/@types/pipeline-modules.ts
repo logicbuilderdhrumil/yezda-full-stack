@@ -121,13 +121,9 @@ export type ModuleConfigFor<T extends ModuleType> = Extract<
 /** A node in the pipeline graph */
 export interface PipelineNode {
   id: string;
-  type: ModuleType;
+  type: ModuleType | 'start' | 'end';
   position: { x: number; y: number };
-  data: {
-    stageId: string;
-    label: string;
-    moduleConfig: ModuleConfig;
-  };
+  data: Record<string, unknown>;
 }
 
 /** An edge in the pipeline graph */

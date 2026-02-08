@@ -12,6 +12,7 @@
     "screening": "Screening",
     "pipelines": "Pipelines",
     "pipeline-builder": "Builder",
+    "reviews": "Reviews",
     "billing-and-analytics": "Billing & Analytics",
     "files": "Files",
     "chat": "Chat",
@@ -797,6 +798,38 @@
     "exporting": "Exporting...",
     "exportSuccess": "Ledger exported successfully",
     "exportError": "Failed to export ledger"
+  },
+  "reviews": {
+    "dashboard": {
+      "title": "Review Queue",
+      "subtitle": "Manage pending review tasks",
+      "noTasks": "No review tasks in your queue",
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "assigned": "Assigned",
+        "inReview": "In Review"
+      },
+      "table": {
+        "candidate": "Candidate",
+        "pipeline": "Pipeline",
+        "stage": "Stage",
+        "status": "Status",
+        "dueDate": "Due Date",
+        "assignedDate": "Assigned",
+        "actions": "Actions"
+      },
+      "detail": {
+        "title": "Review Task",
+        "decision": "Decision",
+        "notes": "Notes",
+        "notesPlaceholder": "Add review notes...",
+        "submit": "Submit Decision",
+        "submitting": "Submitting...",
+        "submitted": "Decision submitted",
+        "submitError": "Failed to submit decision"
+      }
+    }
   },
   "errors": {
     "accessDenied": "Access Denied",

@@ -5,7 +5,7 @@
 import { useState, useCallback, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import { Badge, Button, Card, Input } from '@/components/ui';
+import { Badge, Button, Card } from '@/components/ui';
 import { ReviewService, type ReviewTask, type ReviewDecisionDto } from '@/services';
 import { toastSuccess, toastError } from '@/components/ui';
 

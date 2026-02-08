@@ -3,10 +3,10 @@
  * Supports split-view live preview, drag-and-drop field reordering,
  * responsive modal layout, and version display.
  */
-import { useState, useRef, useCallback, type ReactNode, type DragEvent } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Badge, Card, CardContent, CardHeader, CardTitle, LoadingSpinner } from '@/components/ui';
-import { cn, formatDate } from '@/utils';
+import { Button, Card, CardContent, CardHeader, CardTitle, LoadingSpinner } from '@/components/ui';
+import { cn } from '@/utils';
 import type { FormSchema, FormField } from '@/@types/form';
 import { FieldPalette } from './FieldPalette';
 import { FieldConfigPanel } from './FieldConfigPanel';

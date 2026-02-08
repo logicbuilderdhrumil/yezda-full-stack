@@ -4,7 +4,7 @@
  */
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dialog, Button, Badge } from '@/components/ui';
+import { Dialog, Button } from '@/components/ui';
 import type { ModuleType } from './types';
 
 // ---------------------------------------------------------------------------

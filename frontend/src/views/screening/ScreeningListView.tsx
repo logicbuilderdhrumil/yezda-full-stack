@@ -151,8 +151,8 @@ export function ScreeningListView(): ReactNode {
       const result = await ClientPortalService.getScreenings({
         page,
         limit: PAGE_SIZE,
-        status: status !== 'all' ? status : undefined,
-        type: type !== 'all' ? type : undefined,
+        ...(status !== 'all' ? { status } : {}),
+        ...(type !== 'all' ? { type } : {}),
       });
       setData(result);
     } catch {

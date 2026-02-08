@@ -19,7 +19,8 @@ export type NavIconName =
   | 'folder'
   | 'calendar'
   | 'arrow-left'
-  | 'workflow';
+  | 'workflow'
+  | 'clipboard-check';
 
 /** A single navigation item. */
 export interface NavItem {

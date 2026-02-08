@@ -48,7 +48,7 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
     ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
     : user.displayName
       ? user.displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-      : user.email[0].toUpperCase();
+      : user.email![0]!.toUpperCase();
 
   const displayLabel = user.firstName || user.displayName || user.email.split('@')[0];
   const fullName = user.firstName && user.lastName

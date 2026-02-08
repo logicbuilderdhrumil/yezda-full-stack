@@ -77,8 +77,8 @@ export function parseFileSize(sizeStr: string): number {
   const match = sizeStr.trim().match(/^([\d.]+)\s*([A-Z]+)$/i);
   if (!match) return NaN;
 
-  const value = parseFloat(match[1]);
-  const unit = match[2].toUpperCase();
+  const value = parseFloat(match[1]!);
+  const unit = match[2]!.toUpperCase();
   const unitIndex = FILE_SIZE_UNITS.indexOf(unit as typeof FILE_SIZE_UNITS[number]);
 
   if (unitIndex === -1 || isNaN(value)) return NaN;

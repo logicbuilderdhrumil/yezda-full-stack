@@ -324,7 +324,9 @@ function PipelineBuilderInner(): ReactNode {
       name: node.data.label,
       order: index,
       isRequired: node.data.isRequired ?? true,
-      estimatedDurationMinutes: node.data.estimatedDurationMinutes,
+      ...(node.data.estimatedDurationMinutes !== undefined
+        ? { estimatedDurationMinutes: node.data.estimatedDurationMinutes }
+        : {}),
       moduleType: node.data.moduleType || (node.type as ModuleType),
       moduleConfig: node.data.moduleConfig || {},
     }));
@@ -334,14 +336,14 @@ function PipelineBuilderInner(): ReactNode {
         id: n.id,
         type: n.type || 'form',
         position: n.position,
-        data: n.data,
+        data: n.data as Record<string, unknown>,
       })),
       edges: edges.map((e) => ({
         id: e.id,
         source: e.source,
         target: e.target,
-        sourceHandle: e.sourceHandle ?? undefined,
-        targetHandle: e.targetHandle ?? undefined,
+        ...(e.sourceHandle != null ? { sourceHandle: e.sourceHandle } : {}),
+        ...(e.targetHandle != null ? { targetHandle: e.targetHandle } : {}),
       })),
     };
 
@@ -497,7 +499,9 @@ function PipelineBuilderInner(): ReactNode {
             moduleType: stage.moduleType,
             moduleConfig: stage.moduleConfig,
             isRequired: stage.isRequired,
-            estimatedDurationMinutes: stage.estimatedDurationMinutes,
+            ...(stage.estimatedDurationMinutes !== undefined
+              ? { estimatedDurationMinutes: stage.estimatedDurationMinutes }
+              : {}),
           },
         });
 

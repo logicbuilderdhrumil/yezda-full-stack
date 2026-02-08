@@ -170,7 +170,7 @@ function FormConfigFields({ config, onUpdate }: ConfigFieldsProps): ReactNode {
         open={pickerOpen}
         onOpenChange={setPickerOpen}
         onSelect={handleFormSelect}
-        selectedFormId={formId || undefined}
+        {...(formId ? { selectedFormId: formId } : {})}
       />
     </>
   );

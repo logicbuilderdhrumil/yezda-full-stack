@@ -17,6 +17,7 @@ import {
   Calendar,
   ArrowLeft,
   Workflow,
+  ClipboardCheck,
   type LucideIcon,
 } from 'lucide-react';
 import type { NavIconName, NavConfig } from '@/@types/navigation';
@@ -39,6 +40,7 @@ export const iconMap: Record<NavIconName, LucideIcon> = {
   calendar: Calendar,
   'arrow-left': ArrowLeft,
   workflow: Workflow,
+  'clipboard-check': ClipboardCheck,
 };
 
 /**

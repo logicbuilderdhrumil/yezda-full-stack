@@ -68,6 +68,13 @@ export const adminNavConfig: NavConfig = {
           ],
         },
         {
+          id: 'reviews',
+          label: 'Reviews',
+          path: '/admin/reviews',
+          icon: 'clipboard-check',
+          authorities: ['admin', 'manager'],
+        },
+        {
           id: 'users',
           label: 'Users',
           path: '/admin/users',
