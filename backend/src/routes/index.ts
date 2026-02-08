@@ -33,6 +33,7 @@ import globalCandidateIdentityRoutes from './global-candidate-identity.routes.js
 import clientPortalRoutes from './client-portal.routes.js';
 import customComponentsRoutes from './custom-components.routes.js';
 import webhookRoutes from './webhook.routes.js';
+import reviewTaskRoutes from './review-task.routes.js';
 
 const router = Router();
 
@@ -70,5 +71,6 @@ router.use('/global-candidates', globalCandidateIdentityRoutes);
 router.use('/client', clientPortalRoutes);
 router.use('/components', customComponentsRoutes);
 router.use('/webhooks', webhookRoutes);
+router.use('/reviews', reviewTaskRoutes);
 
 export default router;
