@@ -1,5 +1,5 @@
-import type { SupportedLocale, RequestContext, OperationResult } from '../domain/index.js';
-import type { ILocalizationRepository } from '../domain/ports/ILocalizationRepository.js';
+import type { SupportedLocale, RequestContext, OperationResult } from '../../domain/index.js';
+import type { ILocalizationRepository } from '../../domain/ports/ILocalizationRepository.js';
 
 export class GetSupportedLocalesUseCase {
   constructor(private readonly repo: ILocalizationRepository) {}

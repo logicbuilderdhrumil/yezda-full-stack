@@ -18,11 +18,39 @@ const candidateIdParamSchema = z.object({ candidateId: z.string().uuid() });
 export function createAppConsentRoutes(controller: AppConsentController): Router {
   const router = Router();
 
-  router.post('/', requireAuth, requireUserType('candidate'), validateBody(consentCaptureSchema), controller.captureConsent as any);
-  router.get('/', requireAuth, controller.getConsentStatus as any);
-  router.get('/:candidateId', requireAuth, requireUserType('user'), validateParams(candidateIdParamSchema), controller.getCandidateConsentStatus as any);
-  router.delete('/', requireAuth, requireUserType('candidate'), validateBody(consentWithdrawalSchema), controller.withdrawConsent as any);
-  router.post('/check-reuse', requireAuth, requireUserType('user'), validateBody(dataReuseCheckSchema), controller.checkDataReuse as any);
+  router.post(
+    '/',
+    requireAuth,
+    requireUserType('candidate'),
+    validateBody(consentCaptureSchema),
+    (req, res, next) => controller.captureConsent(req, res, next),
+  );
+  router.get(
+    '/',
+    requireAuth,
+    (req, res, next) => controller.getConsentStatus(req, res, next),
+  );
+  router.get(
+    '/:candidateId',
+    requireAuth,
+    requireUserType('user'),
+    validateParams(candidateIdParamSchema),
+    (req, res, next) => controller.getCandidateConsentStatus(req, res, next),
+  );
+  router.delete(
+    '/',
+    requireAuth,
+    requireUserType('candidate'),
+    validateBody(consentWithdrawalSchema),
+    (req, res, next) => controller.withdrawConsent(req, res, next),
+  );
+  router.post(
+    '/check-reuse',
+    requireAuth,
+    requireUserType('user'),
+    validateBody(dataReuseCheckSchema),
+    (req, res, next) => controller.checkDataReuse(req, res, next),
+  );
 
   return router;
 }

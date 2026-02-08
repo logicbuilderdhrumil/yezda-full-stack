@@ -47,7 +47,7 @@ export class GetFormUseCase {
 
         return { success: true, data: { form: cached, cachedAt: new Date() } };
       }
-    } catch {
+    } catch (err) {
       // Cache miss or error — fall through to DB
     }
 
@@ -62,7 +62,7 @@ export class GetFormUseCase {
     // Cache the response
     try {
       await this.cache.set(cacheKey, form, FORM_CACHE_TTL_MS);
-    } catch {
+    } catch (err) {
       // Non-critical
     }
 

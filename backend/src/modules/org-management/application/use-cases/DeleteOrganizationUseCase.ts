@@ -45,7 +45,7 @@ export class DeleteOrganizationUseCase {
 
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'delete', success: 'true' });
       return { success: true };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('org_management_request', Date.now() - startTime, { operation: 'delete', success: 'false' });
       return { success: false, error: 'Failed to delete organization', errorCode: 'ORG_DELETE_ERROR' };
     }

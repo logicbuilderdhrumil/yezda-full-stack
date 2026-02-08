@@ -1,7 +1,6 @@
 /**
  * Create Conversation Use Case
  */
-import { v4 as uuidv4 } from 'uuid';
 import type {
   IChatRepository,
   IAuditService,
@@ -42,7 +41,22 @@ export class CreateConversationUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'create_conversation', success: 'true' });
       return { success: true, data: conversation };
-    } catch {
+    } catch (err) {
+      this.audit.log({
+        eventType: 'CONVERSATION_CREATE_FAILED',
+        actorId: ctx.actorId,
+        actorType: ctx.actorType,
+        targetId: null,
+        targetType: 'conversation',
+        channel: ctx.channel,
+        ipAddress: ctx.ipAddress,
+        userAgent: ctx.userAgent,
+        success: false,
+        metadata: {
+          errorCode: 'CONVERSATION_CREATE_ERROR',
+          errorMessage: err instanceof Error ? err.message : String(err),
+        },
+      });
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'create_conversation', success: 'false' });
       return { success: false, error: 'Failed to create conversation', errorCode: 'CONVERSATION_CREATE_ERROR' };
     }

@@ -89,7 +89,7 @@ export class LocalStorageAdapter implements IStorageAdapter {
     try {
       await fs.promises.access(fullPath);
       return true;
-    } catch {
+    } catch (err) {
       return false;
     }
   }

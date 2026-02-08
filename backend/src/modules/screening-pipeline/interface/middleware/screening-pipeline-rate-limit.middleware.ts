@@ -104,7 +104,7 @@ export function createScreeningPipelineRateLimiter(
       try {
         result = await checkRateLimit(key, config.max, config.windowMs);
         redisErrorCount = 0;
-      } catch {
+      } catch (err) {
         redisErrorCount += 1;
         metrics.recordRedisError('screening_pipeline_rate_limit');
         if (redisErrorCount >= CIRCUIT_THRESHOLD) {

@@ -39,7 +39,7 @@ export class MarkMessageDeliveredUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'mark_delivered', success: 'true' });
       return { success: true, data: updated };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'mark_delivered', success: 'false' });
       return { success: false, error: 'Failed to mark message as delivered', errorCode: 'MESSAGE_DELIVERY_ERROR' };
     }

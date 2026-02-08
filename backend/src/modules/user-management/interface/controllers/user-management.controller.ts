@@ -50,7 +50,7 @@ export class UserManagementController {
 
   listUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -74,7 +74,7 @@ export class UserManagementController {
 
   createUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -92,7 +92,7 @@ export class UserManagementController {
 
   getUserById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -110,7 +110,7 @@ export class UserManagementController {
 
   updateUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -129,7 +129,7 @@ export class UserManagementController {
 
   updateUserStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -148,7 +148,7 @@ export class UserManagementController {
 
   updateUserRoles = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -167,7 +167,7 @@ export class UserManagementController {
 
   deleteUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: UserManagementContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }

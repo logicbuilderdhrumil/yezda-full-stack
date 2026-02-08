@@ -52,7 +52,7 @@ interface MessageRow {
 }
 
 function parseParticipants(json: string): Participant[] {
-  try { return JSON.parse(json); } catch { return []; }
+  try { return JSON.parse(json); } catch (err) { return []; }
 }
 
 function rowToConversation(row: ConversationRow): Conversation {

@@ -39,7 +39,7 @@ export class MarkMessageReadUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'mark_read', success: 'true' });
       return { success: true, data: updated };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'mark_read', success: 'false' });
       return { success: false, error: 'Failed to mark message as read', errorCode: 'MESSAGE_READ_ERROR' };
     }

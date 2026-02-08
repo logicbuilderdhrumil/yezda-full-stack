@@ -2,7 +2,7 @@
  * Review Task use cases.
  */
 import { v4 as uuid } from 'uuid';
-import type { IReviewTaskRepository, ReviewTaskFilter, ReviewTask } from '../domain/index.js';
+import type { IReviewTaskRepository, ReviewTaskFilter, ReviewTask } from '../../domain/index.js';
 
 export interface CreateReviewTaskDto {
   pipelineId: string;

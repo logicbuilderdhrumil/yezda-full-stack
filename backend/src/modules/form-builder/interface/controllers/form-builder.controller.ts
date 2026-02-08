@@ -48,7 +48,7 @@ export class FormBuilderController {
 
   listForms = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: FormContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -63,7 +63,7 @@ export class FormBuilderController {
 
   createForm = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: FormContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -79,7 +79,7 @@ export class FormBuilderController {
 
   getForm = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: FormContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -96,7 +96,7 @@ export class FormBuilderController {
 
   updateForm = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: FormContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }
@@ -115,7 +115,7 @@ export class FormBuilderController {
 
   deleteForm = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     let ctx: FormContext;
-    try { ctx = buildContext(req); } catch {
+    try { ctx = buildContext(req); } catch (err) {
       res.status(401).json({ error: 'Tenant context required', code: 'UNAUTHORIZED' });
       return;
     }

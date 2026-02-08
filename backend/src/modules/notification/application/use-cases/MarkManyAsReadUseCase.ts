@@ -13,7 +13,7 @@ export class MarkManyAsReadUseCase {
       this.audit.log({ eventType: 'NOTIFICATION_BATCH_MARKED_READ', actorId: ctx.actorId, actorType: ctx.actorType, channel: ctx.channel, ipAddress: ctx.ipAddress, success: true, metadata: { count, specificIds: !!ids } });
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'mark_many_read', success: 'true' });
       return { success: true, data: { count } };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'mark_many_read', success: 'false' });
       return { success: false, error: 'Failed to mark notifications as read', errorCode: 'NOTIFICATION_BATCH_ERROR' };
     }

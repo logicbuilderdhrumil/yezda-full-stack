@@ -1,5 +1,5 @@
-import type { ThemePreset, RequestContext, OperationResult } from '../domain/index.js';
-import type { IThemeRepository } from '../domain/ports/IThemeRepository.js';
+import type { ThemePreset, RequestContext, OperationResult } from '../../domain/index.js';
+import type { IThemeRepository } from '../../domain/ports/IThemeRepository.js';
 
 export class GetPresetsUseCase {
   constructor(private readonly repo: IThemeRepository) {}

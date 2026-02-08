@@ -12,7 +12,7 @@ export class GetUnreadCountUseCase {
       const count = await this.repo.getUnreadCount(ctx.tenantId, ctx.actorId, ctx.actorType);
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'unread_count', success: 'true' });
       return { success: true, data: { count } };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'unread_count', success: 'false' });
       return { success: false, error: 'Failed to get unread count', errorCode: 'NOTIFICATION_COUNT_ERROR' };
     }

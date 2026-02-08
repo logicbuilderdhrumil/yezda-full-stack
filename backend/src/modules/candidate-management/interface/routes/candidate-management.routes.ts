@@ -5,8 +5,9 @@
 
 import { Router } from 'express';
 import type { CandidateManagementController } from '../controllers/candidate-management.controller.js';
-import { requireAuthGuard, requireRoleGuard } from '../../../../shared/infrastructure/middleware/index.js';
 import {
+  requireAuthGuard,
+  requireRoleGuard,
   validateBody,
   validateQuery,
   validateParams,

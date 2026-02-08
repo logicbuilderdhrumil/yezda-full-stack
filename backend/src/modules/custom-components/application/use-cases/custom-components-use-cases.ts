@@ -14,7 +14,7 @@ export class ListOrganizationsUseCase {
       const organizations: OrganizationContextItem[] = memberships.map((m) => ({ id: m.orgId, name: m.orgName, logoUrl: m.logoUrl, role: m.role, isActive: m.orgId === activeOrgId }));
       this.audit.log({ eventType: 'COMPONENT_ORG_LISTED', actorId: actor.userId, actorType: actor.userType, channel: ctx.channel, ipAddress: ctx.ipAddress, success: true, metadata: { count: organizations.length } });
       return { success: true, data: { organizations, activeOrganizationId: activeOrgId } };
-    } catch { return { success: false, error: 'Failed to list organizations', errorCode: 'COMPONENT_ORG_LIST_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to list organizations', errorCode: 'COMPONENT_ORG_LIST_ERROR' }; }
   }
 }
 
@@ -32,7 +32,7 @@ export class SetActiveOrganizationUseCase {
       this.repo.setActiveOrganizationId(actor.userId, organizationId);
       this.audit.log({ eventType: 'COMPONENT_ORG_SWITCHED', actorId: actor.userId, actorType: actor.userType, targetId: organizationId, channel: ctx.channel, success: true, metadata: { previousOrganizationId: previousOrgId, newOrganizationId: organizationId } });
       return { success: true, data: { id: membership.orgId, name: membership.orgName, logoUrl: membership.logoUrl, role: membership.role, isActive: true } };
-    } catch { return { success: false, error: 'Failed to set active organization', errorCode: 'COMPONENT_ORG_SWITCH_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to set active organization', errorCode: 'COMPONENT_ORG_SWITCH_ERROR' }; }
   }
 }
 
@@ -44,7 +44,7 @@ export class GetThemePreferenceUseCase {
       const response: ThemePreferenceResponse = { mode: pref?.mode ?? 'system', updatedAt: pref?.updatedAt?.toISOString() ?? new Date().toISOString() };
       this.audit.log({ eventType: 'COMPONENT_THEME_READ', actorId: actor.userId, actorType: actor.userType, channel: ctx.channel, success: true, metadata: { mode: response.mode } });
       return { success: true, data: response };
-    } catch { return { success: false, error: 'Failed to get theme preference', errorCode: 'COMPONENT_THEME_READ_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to get theme preference', errorCode: 'COMPONENT_THEME_READ_ERROR' }; }
   }
 }
 
@@ -56,6 +56,6 @@ export class UpdateThemePreferenceUseCase {
       const updatedAt = this.repo.setThemePreference(actor.userId, mode);
       this.audit.log({ eventType: 'COMPONENT_THEME_UPDATED', actorId: actor.userId, actorType: actor.userType, channel: ctx.channel, success: true, metadata: { previousMode: previous?.mode ?? 'system', newMode: mode } });
       return { success: true, data: { mode, updatedAt: updatedAt.toISOString() } };
-    } catch { return { success: false, error: 'Failed to update theme preference', errorCode: 'COMPONENT_THEME_UPDATE_ERROR' }; }
+    } catch (err) { return { success: false, error: 'Failed to update theme preference', errorCode: 'COMPONENT_THEME_UPDATE_ERROR' }; }
   }
 }

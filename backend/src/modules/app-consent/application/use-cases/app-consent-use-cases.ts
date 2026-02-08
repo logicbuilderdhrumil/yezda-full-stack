@@ -2,7 +2,7 @@
  * App Consent Use Cases
  */
 
-import type { IAppConsentRepository } from '../domain/ports/IAppConsentRepository.js';
+import type { IAppConsentRepository } from '../../domain/ports/IAppConsentRepository.js';
 
 export class AppConsentUseCases {
   constructor(private readonly repo: IAppConsentRepository) {}

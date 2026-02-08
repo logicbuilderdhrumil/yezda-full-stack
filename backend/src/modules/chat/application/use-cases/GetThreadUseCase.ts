@@ -69,7 +69,7 @@ export class GetThreadUseCase {
 
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'get_thread', success: 'true' });
       return { success: true, data: { messages, total: result.total, hasMore, nextCursor: undefined } };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('chat_request', Date.now() - startTime, { operation: 'get_thread', success: 'false' });
       return { success: false, error: 'Failed to retrieve messages', errorCode: 'THREAD_READ_ERROR' };
     }

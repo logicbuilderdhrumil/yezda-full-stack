@@ -18,7 +18,7 @@ export class GetNotificationUseCase {
       this.audit.log({ eventType: 'NOTIFICATION_DETAIL_ACCESSED', actorId: ctx.actorId, actorType: ctx.actorType, targetId: notificationId, targetType: 'notification', channel: ctx.channel, ipAddress: ctx.ipAddress, success: true });
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'get', success: 'true' });
       return { success: true, data: n };
-    } catch {
+    } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'get', success: 'false' });
       return { success: false, error: 'Failed to get notification', errorCode: 'NOTIFICATION_READ_ERROR' };
     }

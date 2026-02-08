@@ -1,9 +1,9 @@
 /**
  * Use Case: Get Candidate Detail
  */
-import type { CandidateDetail, RequestContext, OperationResult } from '../domain/index.js';
-import type { IClientPortalRepository } from '../domain/ports/IClientPortalRepository.js';
-import type { IAuditService } from '../domain/ports/IAuditService.js';
+import type { CandidateDetail, RequestContext, OperationResult } from '../../domain/index.js';
+import type { IClientPortalRepository } from '../../domain/ports/IClientPortalRepository.js';
+import type { IAuditService } from '../../domain/ports/IAuditService.js';
 
 export class GetCandidateDetailUseCase {
   constructor(
@@ -19,7 +19,7 @@ export class GetCandidateDetailUseCase {
       }
       this.audit.log('CLIENT_PORTAL_CANDIDATE_VIEWED', ctx, { candidateId });
       return { success: true, data: detail };
-    } catch {
+    } catch (err) {
       return { success: false, error: 'Failed to get candidate detail', code: 'DETAIL_FAILED' };
     }
   }

@@ -24,7 +24,10 @@ export class AccountSettingsController {
   ) {}
 
   getProfile = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const profile = await this.getProfileUC.execute(tenantId, userId);
     if (!profile) {
@@ -35,21 +38,30 @@ export class AccountSettingsController {
   };
 
   updateProfile = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const profile = await this.updateProfileUC.execute(tenantId, userId, req.body);
     res.json({ success: true, data: profile });
   };
 
   getIntegrations = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const integrations = await this.getIntegrationsUC.execute(tenantId, userId);
     res.json({ success: true, data: integrations });
   };
 
   getIntegration = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const integration = await this.getIntegrationUC.execute(tenantId, userId, req.params.provider as any);
     if (!integration) {
@@ -60,14 +72,20 @@ export class AccountSettingsController {
   };
 
   verifyIntegration = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const integration = await this.verifyIntegrationUC.execute(tenantId, userId, req.params.provider as any, req.body);
     res.json({ success: true, data: integration });
   };
 
   disconnectIntegration = async (req: Request, res: Response) => {
-    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id') ?? 'default';
+    const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+    }
     const userId = (req as any).user?.id ?? '';
     const result = await this.disconnectIntegrationUC.execute(tenantId, userId, req.params.provider as any);
     if (!result) {

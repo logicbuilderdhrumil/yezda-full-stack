@@ -5,9 +5,9 @@
 import type {
   RequestContext,
   OperationResult,
-} from '../domain/index.js';
-import type { IAssetRepository } from '../domain/ports/IAssetRepository.js';
-import type { IMetricsService } from '../domain/ports/IMetricsService.js';
+} from '../../domain/index.js';
+import type { IAssetRepository } from '../../domain/ports/IAssetRepository.js';
+import type { IMetricsService } from '../../domain/ports/IMetricsService.js';
 
 export interface AssetHealthSummary {
   totalAssets: number;
