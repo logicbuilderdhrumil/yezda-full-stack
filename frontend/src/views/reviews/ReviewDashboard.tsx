@@ -2,9 +2,8 @@
  * ReviewDashboard — admin view for managing human review tasks.
  * Shows a queue of pending reviews with filtering and decision submission.
  */
-import { useState, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 import { Badge, Button, Card } from '@/components/ui';
 import { ReviewService, type ReviewTask, type ReviewDecisionDto } from '@/services';
 import { toastSuccess, toastError } from '@/components/ui';
@@ -46,18 +45,37 @@ export function ReviewDashboard(): ReactNode {
   const [decision, setDecision] = useState('');
   const [decisionNotes, setDecisionNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tasks, setTasks] = useState<ReviewTask[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // Fetch review queue
-  const { data: tasks, error, isLoading, mutate } = useSWR(
-    ['reviews', statusFilter],
-    () =>
-      statusFilter === 'all'
-        ? ReviewService.getMyQueue()
-        : ReviewService.list(statusFilter),
-    { refreshInterval: 30000 }
-  );
+  const fetchTasks = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data =
+        statusFilter === 'all'
+          ? await ReviewService.getMyQueue()
+          : await ReviewService.list(statusFilter);
+      setTasks(data);
+    } catch (err) {
+      console.error('Failed to load review tasks:', err);
+      setError(err instanceof Error ? err : new Error('Failed to load'));
+      setTasks([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [statusFilter]);
 
-  const filteredTasks = tasks ?? [];
+  useEffect(() => {
+    void fetchTasks();
+    // Refresh every 30 seconds
+    const interval = setInterval(() => void fetchTasks(), 30000);
+    return () => clearInterval(interval);
+  }, [fetchTasks]);
+
+  const filteredTasks = tasks;
 
   const filterButtons: { key: ReviewStatusFilter; label: string }[] = [
     { key: 'all', label: t('reviews.dashboard.filters.all', 'All') },
@@ -80,14 +98,14 @@ export function ReviewDashboard(): ReactNode {
       setSelectedTask(null);
       setDecision('');
       setDecisionNotes('');
-      mutate();
+      void fetchTasks();
     } catch (err) {
       console.error('Submit decision error:', err);
       toastError(t('reviews.dashboard.detail.submitError', 'Failed to submit decision'));
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedTask, decision, decisionNotes, t, mutate]);
+  }, [selectedTask, decision, decisionNotes, t, fetchTasks]);
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
