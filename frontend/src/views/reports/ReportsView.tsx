@@ -6,7 +6,6 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { PageContainer } from '@/components/layouts';
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -19,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
+import { ErrorState } from '@/components/shared';
 import { ClientPortalService } from '@/services/ClientPortalService';
 import type { ScreeningReportData } from '@/services/ClientPortalService';
 
@@ -114,14 +114,11 @@ export function ReportsView(): ReactNode {
   if (error && !data) {
     return (
       <PageContainer title="Reports" description="Screening analytics and statistics">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-            <Button variant="outline" onClick={() => void fetchReport()}>
-              Retry
-            </Button>
-          </CardContent>
-        </Card>
+        <ErrorState
+          title="Failed to load report data"
+          error={error}
+          onRetry={() => void fetchReport()}
+        />
       </PageContainer>
     );
   }

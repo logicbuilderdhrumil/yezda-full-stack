@@ -7,7 +7,6 @@ import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { PageContainer } from '@/components/layouts';
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -27,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
+import { ErrorState } from '@/components/shared';
 import { ClientPortalService } from '@/services/ClientPortalService';
 import type { ScreeningListResponse } from '@/services/ClientPortalService';
 
@@ -184,14 +184,11 @@ export function ScreeningListView(): ReactNode {
   if (error && !data) {
     return (
       <PageContainer title="Screenings" description="Track screening requests and results">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-            <Button variant="outline" onClick={() => void fetchScreenings()}>
-              Retry
-            </Button>
-          </CardContent>
-        </Card>
+        <ErrorState
+          title="Failed to load screenings"
+          error={error}
+          onRetry={() => void fetchScreenings()}
+        />
       </PageContainer>
     );
   }

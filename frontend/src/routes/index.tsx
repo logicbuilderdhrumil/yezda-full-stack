@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
 import { AdminShell, ClientShell } from '@/components/layouts';
-import { AuthorityGuard } from '@/components/route';
+import { AuthorityGuard, RouteErrorBoundary } from '@/components/route';
 import { AdminGuard, ClientGuard, AdminRedirectWrapper } from '@/components/guards';
 import { RouteLoadingFallback } from '@/components/ui';
 
@@ -335,6 +335,7 @@ export const protectedRoutes: RouteObject[] = [
     children: [
       {
         element: <ClientShell />,
+        errorElement: <RouteErrorBoundary />,
         children: [
           {
             index: true,
@@ -383,6 +384,7 @@ export const protectedRoutes: RouteObject[] = [
     children: [
       {
         element: <AdminShell />,
+        errorElement: <RouteErrorBoundary />,
         children: [
           {
             index: true,

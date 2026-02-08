@@ -8,3 +8,5 @@ export {
   AllRoutes,
   OutletWithFallback,
 } from './RouteGuards';
+
+export { RouteErrorBoundary } from './RouteErrorBoundary';

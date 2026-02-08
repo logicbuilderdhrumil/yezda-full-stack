@@ -5,6 +5,8 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Button, Card } from '@/components/ui';
+import { PageContainer } from '@/components/layouts';
+import { LoadingState, EmptyState, ErrorState } from '@/components/shared';
 import { ReviewService, type ReviewTask, type ReviewDecisionDto } from '@/services';
 import { toastSuccess, toastError } from '@/components/ui';
 
@@ -108,55 +110,53 @@ export function ReviewDashboard(): ReactNode {
   }, [selectedTask, decision, decisionNotes, t, fetchTasks]);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t('reviews.dashboard.title', 'Review Queue')}
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {t('reviews.dashboard.subtitle', 'Manage pending review tasks')}
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-2">
-        {filterButtons.map((btn) => (
-          <button
-            key={btn.key}
-            onClick={() => setStatusFilter(btn.key)}
-            className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-              statusFilter === btn.key
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium'
-                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
-            }`}
-          >
-            {btn.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
-      {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Loading...</div>
-      ) : error ? (
-        <div className="text-center py-12 text-red-500">
-          Failed to load review tasks
+    <PageContainer
+      title={t('reviews.dashboard.title', 'Review Queue')}
+      description={t('reviews.dashboard.subtitle', 'Manage pending review tasks')}
+    >
+      <div className="space-y-6">
+        {/* Filters */}
+        <div className="flex gap-2">
+          {filterButtons.map((btn) => (
+            <button
+              key={btn.key}
+              onClick={() => setStatusFilter(btn.key)}
+              className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+                statusFilter === btn.key
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 font-medium'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
         </div>
-      ) : filteredTasks.length === 0 ? (
-        <Card className="p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            {t('reviews.dashboard.noTasks', 'No review tasks in your queue')}
-          </p>
-        </Card>
-      ) : (
+
+        {/* Content */}
+        {isLoading ? (
+          <LoadingState message={t('common.loading', 'Loading...')} className="py-12" />
+        ) : error ? (
+          <ErrorState
+            title={t('reviews.dashboard.loadError', 'Failed to load review tasks')}
+            error={error}
+            onRetry={() => void fetchTasks()}
+          />
+        ) : filteredTasks.length === 0 ? (
+          <EmptyState
+            title={t('reviews.dashboard.noTasks', 'No review tasks in your queue')}
+            description={t(
+              'reviews.dashboard.noTasksDescription',
+              'Review tasks will appear here when candidates need manual review.'
+            )}
+          />
+        ) : (
         <div className="grid gap-3">
           {filteredTasks.map((task) => (
             <Card
               key={task.id}
               className={`p-4 cursor-pointer hover:shadow-md transition-shadow ${
                 selectedTask?.id === task.id
-                  ? 'ring-2 ring-blue-500'
+                  ? 'ring-2 ring-primary-500'
                   : ''
               }`}
               onClick={() => {
@@ -206,7 +206,7 @@ export function ReviewDashboard(): ReactNode {
 
       {/* Decision panel */}
       {selectedTask && (
-        <Card className="p-6 mt-4 border-blue-200 dark:border-blue-800">
+        <Card className="p-6 mt-4 border-primary-200 dark:border-primary-800">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {t('reviews.dashboard.detail.title', 'Review Task')}
           </h3>
@@ -224,8 +224,8 @@ export function ReviewDashboard(): ReactNode {
                     onClick={() => setDecision(opt)}
                     className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                       decision === opt
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                        ? 'bg-primary-600 text-white border-primary-600'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400'
                     }`}
                   >
                     {opt.replace(/_/g, ' ')}
@@ -246,7 +246,7 @@ export function ReviewDashboard(): ReactNode {
                   'reviews.dashboard.detail.notesPlaceholder',
                   'Add review notes...'
                 )}
-                className="w-full h-24 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full h-24 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
@@ -272,6 +272,7 @@ export function ReviewDashboard(): ReactNode {
           </div>
         </Card>
       )}
-    </div>
+      </div>
+    </PageContainer>
   );
 }
