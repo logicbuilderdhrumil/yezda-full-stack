@@ -34,11 +34,11 @@ import { createSharedWidgetsModule } from '../modules/shared-widgets/index.js';
 import { createConsentModule } from '../modules/consent/index.js';
 import { createApplicationModule } from '../modules/application/index.js';
 import { createGlobalCandidateIdentityModule } from '../modules/global-candidate-identity/index.js';
-// ── App-specific route imports (not yet migrated) ────────────────────────────
-import appAuthRoutes from './app-auth.routes.js';
-import appApplicationIntakeRoutes from './app-application-intake.routes.js';
-import appConsentRoutes from './app-consent.routes.js';
-import appProfileRoutes from './app-profile.routes.js';
+import { createAppAuthModule } from '../modules/app-auth/index.js';
+import { createAppApplicationIntakeModule } from '../modules/app-application-intake/index.js';
+import { createAppConsentModule } from '../modules/app-consent/index.js';
+import { createAppProfileModule } from '../modules/app-profile/index.js';
+// Legacy app route imports replaced by Clean Architecture modules
 
 // ── Initialize Clean Architecture modules ────────────────────────────────────
 const authModule = createAuthModule();
@@ -74,15 +74,19 @@ const sharedWidgetsModule = createSharedWidgetsModule();
 const consentModule = createConsentModule();
 const applicationModule = createApplicationModule();
 const globalCandidateIdentityModule = createGlobalCandidateIdentityModule();
+const appAuthModule = createAppAuthModule();
+const appApplicationIntakeModule = createAppApplicationIntakeModule();
+const appConsentModule = createAppConsentModule();
+const appProfileModule = createAppProfileModule();
 
 const router = Router();
 
 // ── Clean Architecture module routes ─────────────────────────────────────────
 router.use('/auth', authModule.routes);
-router.use('/app/auth', appAuthRoutes);
-router.use('/app/applications', appApplicationIntakeRoutes);
-router.use('/app/consent', appConsentRoutes);
-router.use('/app/profile', appProfileRoutes);
+router.use('/app/auth', appAuthModule.router);
+router.use('/app/applications', appApplicationIntakeModule.router);
+router.use('/app/consent', appConsentModule.router);
+router.use('/app/profile', appProfileModule.router);
 router.use('/state', stateStoreModule.router);
 router.use('/shell', shellModule.router);
 router.use('/firebase', firebaseModule.router);
