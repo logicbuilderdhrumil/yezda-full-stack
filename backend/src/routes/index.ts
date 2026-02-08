@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import authRoutes from './auth.routes.js';
+import { createAuthModule } from '../modules/auth/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -38,9 +38,12 @@ import customComponentsRoutes from './custom-components.routes.js';
 import webhookRoutes from './webhook.routes.js';
 import reviewTaskRoutes from './review-task.routes.js';
 
+// Initialize Clean Architecture modules
+const authModule = createAuthModule();
+
 const router = Router();
 
-router.use('/auth', authRoutes);
+router.use('/auth', authModule.routes);
 router.use('/app/auth', appAuthRoutes);
 router.use('/app/applications', appApplicationIntakeRoutes);
 router.use('/app/consent', appConsentRoutes);
