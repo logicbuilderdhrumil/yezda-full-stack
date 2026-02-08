@@ -37,6 +37,7 @@ const STORAGE_KEYS = {
   ACCESS_TOKEN: 'auth_access_token',
   REFRESH_TOKEN: 'auth_refresh_token',
   EXPIRES_AT: 'auth_expires_at',
+  DEVICE_ID: 'yezda_device_id',
 } as const;
 
 /**
@@ -106,4 +107,18 @@ export async function hasValidStoredSession(): Promise<boolean> {
     return false;
   }
   return !isTokenExpired(tokens.expiresAt);
+}
+
+/**
+ * Returns a persistent device identifier, creating and storing one on first call.
+ * Uses SecureStore on native and localStorage on web.
+ */
+export async function getOrCreateDeviceId(): Promise<string> {
+  const existing = await storage.getItem(STORAGE_KEYS.DEVICE_ID);
+  if (existing) {
+    return existing;
+  }
+  const id = `${Platform.OS}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  await storage.setItem(STORAGE_KEYS.DEVICE_ID, id);
+  return id;
 }

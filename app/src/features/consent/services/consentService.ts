@@ -24,24 +24,31 @@ export class ConsentApiError extends ApiError {
   }
 }
 
-/** Shared request config for consent API calls (auto-injects auth token). */
+/** Shared request config for consent API calls. */
 const consentRequestConfig: ApiRequestConfig = {
   ErrorClass: ConsentApiError,
   fallbackErrorMessage: consentErrorMessages.unknownError,
   networkErrorMessage: consentErrorMessages.networkError,
-  authenticated: true,
 };
+
+/**
+ * Build auth headers for a request.
+ */
+function authHeaders(accessToken: string): Record<string, string> {
+  return { Authorization: `Bearer ${accessToken}` };
+}
 
 /**
  * Check for available data reuse consent options for an application.
  */
 export async function getConsentPrompt(
+  accessToken: string,
   applicationId: string
 ): Promise<ConsentPromptRequest | null> {
   try {
     return await apiRequest<ConsentPromptRequest>(
       `/v1/app/consent/prompt/${applicationId}`,
-      { method: 'GET' },
+      { method: 'GET', headers: authHeaders(accessToken) },
       consentRequestConfig
     );
   } catch (error) {
@@ -56,11 +63,13 @@ export async function getConsentPrompt(
  * Submit consent decision (accept or decline data reuse).
  */
 export async function submitConsent(
+  accessToken: string,
   request: ConsentSubmitRequest
 ): Promise<ConsentSubmitResponse> {
   try {
     return await apiRequest<ConsentSubmitResponse>('/v1/app/consent', {
       method: 'POST',
+      headers: authHeaders(accessToken),
       body: JSON.stringify(request),
     }, consentRequestConfig);
   } catch (error) {
@@ -79,18 +88,20 @@ export async function submitConsent(
 /**
  * Get all consent decisions for the current user.
  */
-export async function getConsentStatus(): Promise<ConsentStatusResponse> {
+export async function getConsentStatus(accessToken: string): Promise<ConsentStatusResponse> {
   return await apiRequest<ConsentStatusResponse>('/v1/app/consent', {
     method: 'GET',
+    headers: authHeaders(accessToken),
   }, consentRequestConfig);
 }
 
 /**
  * Get a single consent decision by ID.
  */
-export async function getConsentById(consentId: string): Promise<ConsentDecision> {
+export async function getConsentById(accessToken: string, consentId: string): Promise<ConsentDecision> {
   return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
     method: 'GET',
+    headers: authHeaders(accessToken),
   }, consentRequestConfig);
 }
 
@@ -98,12 +109,14 @@ export async function getConsentById(consentId: string): Promise<ConsentDecision
  * Update consent (modify scopes or withdraw).
  */
 export async function updateConsent(
+  accessToken: string,
   consentId: string,
   request: ConsentUpdateRequest
 ): Promise<ConsentDecision> {
   try {
     return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
       method: 'PATCH',
+      headers: authHeaders(accessToken),
       body: JSON.stringify({
         scopes: request.scopes,
         withdraw: request.withdraw,
@@ -123,6 +136,6 @@ export async function updateConsent(
 /**
  * Withdraw consent entirely.
  */
-export async function withdrawConsent(consentId: string): Promise<ConsentDecision> {
-  return updateConsent(consentId, { withdraw: true });
+export async function withdrawConsent(accessToken: string, consentId: string): Promise<ConsentDecision> {
+  return updateConsent(accessToken, consentId, { withdraw: true });
 }

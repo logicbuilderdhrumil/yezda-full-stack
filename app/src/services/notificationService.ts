@@ -89,7 +89,7 @@ export async function registerDeviceToken(
 
   try {
     return await apiRequest<DeviceTokenRegistrationResponseDto>(
-      '/v1/firebase/tokens',
+      '/v1/app/firebase/tokens',
       {
         method: 'POST',
         headers,
@@ -153,7 +153,7 @@ export async function unregisterDeviceToken(
   }
 
   try {
-    await apiRequest<{ message: string }>('/v1/firebase/tokens', {
+    await apiRequest<{ message: string }>('/v1/app/firebase/tokens', {
       method: 'DELETE',
       headers,
       body: JSON.stringify(payload),
@@ -205,7 +205,7 @@ export async function unregisterAllDeviceTokens(
 
   try {
     const response = await apiRequest<{ message: string; count: number }>(
-      '/v1/firebase/tokens/all',
+      '/v1/app/firebase/tokens/all',
       {
         method: 'DELETE',
         headers,
@@ -251,7 +251,7 @@ export async function getActiveDeviceTokens(
 
   try {
     const response = await apiRequest<ActiveTokensResponseDto>(
-      '/v1/firebase/tokens',
+      '/v1/app/firebase/tokens',
       {
         method: 'GET',
         headers,

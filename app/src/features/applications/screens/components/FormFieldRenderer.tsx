@@ -33,7 +33,7 @@ function TextFieldComponent({
   onBlur,
   disabled,
 }: FormFieldProps) {
-  const keyboardType = field.type === 'email' ? 'email-address' : field.type === 'phone' ? 'phone-pad' : 'default';
+  const keyboardType = field.type === 'email' ? 'email-address' : field.type === 'phone' ? 'phone-pad' : field.type === 'number' ? 'numeric' : 'default';
 
   return (
     <View className="mb-4">
@@ -369,6 +369,7 @@ export function FormFieldRenderer(props: FormFieldProps) {
     case 'text':
     case 'email':
     case 'phone':
+    case 'number':
       return <TextFieldComponent {...props} />;
     case 'textarea':
       return <TextareaFieldComponent {...props} />;
@@ -381,7 +382,13 @@ export function FormFieldRenderer(props: FormFieldProps) {
     case 'checkbox':
       return <CheckboxFieldComponent {...props} />;
     default:
-      return null;
+      return (
+        <View className="mb-4 p-3 border border-yellow-400 bg-yellow-50 rounded-lg">
+          <Text className="text-sm text-yellow-800">
+            Unsupported field type: {field.type}
+          </Text>
+        </View>
+      );
   }
 }
 

@@ -20,6 +20,12 @@ import {
   withdrawConsent as apiWithdrawConsent,
   ConsentApiError,
 } from '../services/consentService';
+import { useAuthStore } from '@/features/auth';
+
+/** Helper: get current access token or null. */
+function getAccessToken(): string | null {
+  return useAuthStore.getState().tokens?.accessToken ?? null;
+}
 
 interface ConsentState {
   // Current prompt for new consent
@@ -63,10 +69,16 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
    * Returns true if a prompt is available.
    */
   loadConsentPrompt: async (applicationId: string) => {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      set({ error: 'Not authenticated', screenState: 'error' });
+      return false;
+    }
+
     set({ screenState: 'loading', error: null });
 
     try {
-      const prompt = await apiGetConsentPrompt(applicationId);
+      const prompt = await apiGetConsentPrompt(accessToken, applicationId);
 
       if (!prompt) {
         set({ prompt: null, selectedScopes: [], screenState: 'idle' });
@@ -138,10 +150,16 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
       return false;
     }
 
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      set({ error: 'Not authenticated', screenState: 'error' });
+      return false;
+    }
+
     set({ screenState: 'loading', error: null });
 
     try {
-      const response = await apiSubmitConsent({
+      const response = await apiSubmitConsent(accessToken, {
         applicationId: prompt.applicationId,
         sourceApplicationId: prompt.sourceApplicationId,
         acceptedScopes: accepted ? selectedScopes : [],
@@ -170,10 +188,16 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
    * Load all consent decisions for history/review.
    */
   loadConsentHistory: async () => {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      set({ error: 'Not authenticated', screenState: 'error' });
+      return;
+    }
+
     set({ screenState: 'loading', error: null });
 
     try {
-      const response = await apiGetConsentStatus();
+      const response = await apiGetConsentStatus(accessToken);
       set({ consents: response.consents ?? [], screenState: 'idle' });
     } catch (error) {
       const message =
@@ -188,10 +212,16 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
    * Update scopes for an existing consent.
    */
   updateConsentScopes: async (consentId: string, scopes: ConsentScope[]) => {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      set({ error: 'Not authenticated', screenState: 'error' });
+      return false;
+    }
+
     set({ screenState: 'loading', error: null });
 
     try {
-      const updated = await apiUpdateConsent(consentId, { scopes });
+      const updated = await apiUpdateConsent(accessToken, consentId, { scopes });
 
       set((state) => ({
         consents: state.consents.map((c) =>
@@ -215,10 +245,16 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
    * Withdraw consent entirely.
    */
   withdrawConsent: async (consentId: string) => {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      set({ error: 'Not authenticated', screenState: 'error' });
+      return false;
+    }
+
     set({ screenState: 'loading', error: null });
 
     try {
-      const updated = await apiWithdrawConsent(consentId);
+      const updated = await apiWithdrawConsent(accessToken, consentId);
 
       set((state) => ({
         consents: state.consents.map((c) =>

@@ -22,6 +22,7 @@ import {
   getStoredTokens,
   clearStoredTokens,
   isTokenExpired,
+  getOrCreateDeviceId,
 } from '../utils/secureStorage';
 import {
   signIn as apiSignIn,
@@ -156,10 +157,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // Build full sign-in request with device info
     const platform = Platform.OS as 'ios' | 'android' | 'web';
+    const deviceId = await getOrCreateDeviceId();
     const request: SignInRequest = {
       email: values.email,
       password: values.password,
-      deviceId: `${platform}-${Date.now()}`,
+      deviceId,
       platform,
       appVersion: Constants.expoConfig?.version ?? '1.0.0',
       deviceName: platform === 'web' ? 'Web Browser' : undefined,
