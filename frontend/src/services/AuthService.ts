@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios from 'axios';
 import type {
   AuthSession,
   SignInCredentials,
@@ -11,19 +11,9 @@ import type {
 } from '@/@types/auth';
 import { extractApiError } from '@/@types/api-error';
 import type { ApiErrorEnvelope } from '@/@types/api-error';
+import { apiClient } from '@/services/axios';
 
 const API_BASE = '/api/v1/auth';
-
-/** Creates an axios instance for auth API calls. */
-function createClient(): AxiosInstance {
-  return axios.create({
-    baseURL: API_BASE,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true,
-  });
-}
 
 /** Backend sign-in response (flat structure per shared contract). */
 interface BackendSignInResponse {
@@ -50,10 +40,9 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On authentication failure
    */
   async signIn(credentials: SignInCredentials): Promise<SignInResponse> {
-    const client = createClient();
     try {
       console.log('[AuthService] Starting sign-in request');
-      const response = await client.post<BackendSignInResponse>('/sign-in', credentials);
+      const response = await apiClient.post<BackendSignInResponse>(`${API_BASE}/sign-in`, credentials);
       const data = response.data;
       console.log('[AuthService] Sign-in response:', { hasAccessToken: !!data.accessToken, hasRefreshToken: !!data.refreshToken, expiresIn: data.expiresIn, requiresMfa: data.requiresMfa });
 
@@ -69,7 +58,7 @@ export const AuthService = {
       // Successful authentication - fetch user and construct session
       if (data.accessToken && data.refreshToken && data.expiresIn !== undefined) {
         console.log('[AuthService] Fetching user via /me');
-        const userResponse = await client.get<{ id: string; email: string; firstName?: string; lastName?: string; role: string; userType: string; mfaEnabled: boolean; tenantId?: string; createdAt: string; updatedAt: string }>('/me', {
+        const userResponse = await apiClient.get<{ id: string; email: string; firstName?: string; lastName?: string; role: string; userType: string; mfaEnabled: boolean; tenantId?: string; createdAt: string; updatedAt: string }>(`${API_BASE}/me`, {
           headers: { Authorization: `Bearer ${data.accessToken}` },
         });
         const userData = userResponse.data;
@@ -120,9 +109,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On validation or registration failure
    */
   async signUp(credentials: SignUpCredentials): Promise<AuthSession> {
-    const client = createClient();
     try {
-      const response = await client.post<AuthSession>('/sign-up', credentials);
+      const response = await apiClient.post<AuthSession>(`${API_BASE}/sign-up`, credentials);
       return response.data;
     } catch (err) {
       throw extractApiError(err);
@@ -134,9 +122,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On request failure
    */
   async requestPasswordReset(payload: PasswordResetRequest): Promise<void> {
-    const client = createClient();
     try {
-      await client.post('/password/reset-request', payload);
+      await apiClient.post(`${API_BASE}/password/reset-request`, payload);
     } catch (err) {
       throw extractApiError(err);
     }
@@ -147,9 +134,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On reset failure
    */
   async resetPassword(payload: PasswordResetPayload): Promise<void> {
-    const client = createClient();
     try {
-      await client.post('/password/reset-complete', payload);
+      await apiClient.post(`${API_BASE}/password/reset-complete`, payload);
     } catch (err) {
       throw extractApiError(err);
     }
@@ -160,9 +146,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On reset failure
    */
   async resetCandidatePassword(payload: CandidatePasswordResetPayload): Promise<void> {
-    const client = createClient();
     try {
-      await client.post('/candidate-reset-password', payload);
+      await apiClient.post(`${API_BASE}/candidate-reset-password`, payload);
     } catch (err) {
       throw extractApiError(err);
     }
@@ -174,9 +159,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On MFA verification failure
    */
   async verifyTotp(payload: TotpVerifyPayload): Promise<AuthSession> {
-    const client = createClient();
     try {
-      const response = await client.post<AuthSession>('/mfa/verify', payload);
+      const response = await apiClient.post<AuthSession>(`${API_BASE}/mfa/verify`, payload);
       return response.data;
     } catch (err) {
       throw extractApiError(err);
@@ -188,9 +172,8 @@ export const AuthService = {
    * Ignores errors as local state should be cleared regardless.
    */
   async signOut(): Promise<void> {
-    const client = createClient();
     try {
-      await client.post('/sign-out');
+      await apiClient.post(`${API_BASE}/sign-out`);
     } catch {
       // Ignore errors on sign-out; clear local state anyway
     }
@@ -203,17 +186,18 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On refresh failure (e.g., token expired)
    */
   async refreshToken(refreshToken: string): Promise<AuthSession> {
-    const client = createClient();
     try {
-      const response = await client.post<BackendSignInResponse>('/refresh', { refreshToken });
+      const response = await apiClient.post<BackendSignInResponse>(`${API_BASE}/refresh`, { refreshToken });
       const data = response.data;
 
       if (!data.accessToken || !data.refreshToken || data.expiresIn === undefined) {
         throw new Error('Invalid refresh response');
       }
 
-      // Fetch user profile with the new access token
-      const userResponse = await client.get<{
+      // Fetch user profile with the new access token.
+      // Use plain axios to bypass the request interceptor, which would
+      // overwrite the Authorization header with the stale store token.
+      const userResponse = await axios.get<{
         id: string;
         email: string;
         firstName?: string;
@@ -224,7 +208,7 @@ export const AuthService = {
         tenantId?: string;
         createdAt: string;
         updatedAt: string;
-      }>('/me', {
+      }>(`${API_BASE}/me`, {
         headers: { Authorization: `Bearer ${data.accessToken}` },
       });
       const userData = userResponse.data;
@@ -265,9 +249,8 @@ export const AuthService = {
    * @throws {ApiErrorEnvelope} On authentication failure
    */
   async getCurrentUser(accessToken: string): Promise<AuthSession> {
-    const client = createClient();
     try {
-      const response = await client.get<AuthSession>('/me', {
+      const response = await apiClient.get<AuthSession>(`${API_BASE}/me`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
