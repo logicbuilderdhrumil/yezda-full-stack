@@ -15,7 +15,7 @@ type AppSessionRow = {
   refresh_token_hash: string;
   device_id: string;
   device_name: string | null;
-  platform: 'ios' | 'android';
+  platform: 'ios' | 'android' | 'web';
   app_version: string;
   os_version: string | null;
   model: string | null;

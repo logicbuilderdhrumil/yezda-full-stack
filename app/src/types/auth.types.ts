@@ -104,11 +104,16 @@ export interface MfaVerifyRequest {
   code: string;
 }
 
-/** Sign-in request payload aligned with backend */
+/** Sign-in request payload aligned with backend appSignInSchema */
 export interface SignInRequest {
   email: string;
   password: string;
-  userType: UserType;
+  deviceId: string;
+  platform: 'ios' | 'android' | 'web';
+  appVersion: string;
+  deviceName?: string;
+  osVersion?: string;
+  model?: string;
   mfaCode?: string;
 }
 

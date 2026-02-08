@@ -59,7 +59,7 @@ services:
       ADMIN_SEED_DISPLAY_NAME: Yezda Admin
     ports:
       - "6312:3000"
-    command: sh -c "npm install && cd /workspace/shared && npm install && npm run build && cd /workspace/backend && npm run migrate && npm run seed:admin && npm run dev"
+    command: sh -c "npm install && cd /workspace/shared && npm install && npm run build && cd /workspace/backend && npm run migrate && npm run seed:admin && npm run seed:candidate && npm run dev"
 
   frontend:
     image: node:20-alpine
@@ -86,17 +86,15 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./:/workspace
-      # Isolate node_modules to prevent host/container native binary conflicts
-      - /workspace/node_modules
-      - /workspace/app/node_modules
-      - /workspace/shared/node_modules
+      - ./app:/workspace/app
+      - app_node_modules:/workspace/app/node_modules
     environment:
-      EXPO_PUBLIC_API_URL: http://backend:3000/api
+      EXPO_PUBLIC_API_URL: http://localhost:6312/api
     ports:
-      - "6314:19006"
-    command: sh -c "npm install && npx expo start --web --host lan --port 19006"
+      - "6314:8081"
+    command: sh -c "npm install && rm -rf dist && npx expo export --platform web && npx -y serve dist -l 8081 -s"
 
 volumes:
   postgres_data:
   redis_data:
+  app_node_modules:

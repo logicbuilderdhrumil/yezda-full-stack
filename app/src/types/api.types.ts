@@ -56,11 +56,16 @@ export type UserType = 'user' | 'candidate';
  * Auth Contracts
  * ============================================================================= */
 
-/** Sign-in request aligned with backend signInSchema */
+/** Sign-in request aligned with backend appSignInSchema */
 export interface SignInRequestDto {
   email: string;
   password: string;
-  userType: UserType;
+  deviceId: string;
+  platform: DevicePlatform;
+  appVersion: string;
+  deviceName?: string;
+  osVersion?: string;
+  model?: string;
   mfaCode?: string;
 }
 
