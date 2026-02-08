@@ -41,12 +41,19 @@ const DEFAULT_PAGE_SIZE = 10;
 function getStatusVariant(status: CandidateStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
     case 'active':
+    case 'certified':
+    case 'completed':
       return 'default';
     case 'pending':
+    case 'submitted':
       return 'secondary';
-    case 'certified':
-      return 'default';
+    case 'in_review':
+    case 'screening':
+    case 'in_progress':
+      return 'outline';
     case 'archived':
+    case 'failed':
+    case 'rejected':
       return 'destructive';
     default:
       return 'outline';
