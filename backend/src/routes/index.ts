@@ -8,6 +8,7 @@ import { createOrgManagementModule } from '../modules/org-management/index.js';
 import { createChatModule } from '../modules/chat/index.js';
 import { createNotificationModule } from '../modules/notification/index.js';
 import { createFileManagementModule } from '../modules/file-management/index.js';
+import { createBillingLedgerModule } from '../modules/billing-ledger/index.js';
 import appAuthRoutes from './app-auth.routes.js';
 import appApplicationIntakeRoutes from './app-application-intake.routes.js';
 import appConsentRoutes from './app-consent.routes.js';
@@ -32,7 +33,7 @@ import viewComponentsRoutes from './view-components.routes.js';
 import assetManagementRoutes from './asset-management.routes.js';
 // chat routes replaced by Clean Architecture module
 import chartingRoutes from './charting.routes.js';
-import billingLedgerRoutes from './billing-ledger.routes.js';
+// billing-ledger routes replaced by Clean Architecture module
 import homeDashboardRoutes from './home-dashboard.routes.js';
 import sharedWidgetsRoutes from './shared-widgets.routes.js';
 import templateLayoutsRoutes from './template-layouts.routes.js';
@@ -53,6 +54,7 @@ const orgManagementModule = createOrgManagementModule();
 const chatModule = createChatModule();
 const notificationModule = createNotificationModule();
 const fileManagementModule = createFileManagementModule();
+const billingLedgerModule = createBillingLedgerModule();
 
 const router = Router();
 
@@ -82,7 +84,7 @@ router.use('/files', fileManagementModule.routes);
 router.use('/assets', assetManagementRoutes);
 router.use('/chat', chatModule.routes);
 router.use('/charts', chartingRoutes);
-router.use('/', billingLedgerRoutes);
+router.use('/', billingLedgerModule.routes);
 router.use('/dashboard', homeDashboardRoutes);
 router.use('/widgets', sharedWidgetsRoutes);
 router.use('/template-layouts', templateLayoutsRoutes);
