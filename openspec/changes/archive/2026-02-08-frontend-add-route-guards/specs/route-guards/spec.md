@@ -1,8 +1,4 @@
-# route-guards Specification
-
-## Purpose
-TBD - created by archiving change backend-add-route-guards. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
 ### Requirement: Authenticated route guard
 The system SHALL prevent unauthenticated users from accessing protected endpoints and routes.
 
@@ -24,18 +20,3 @@ The system SHALL restrict endpoints and routes based on role authority.
 #### Scenario: Role mismatch on route
 - **WHEN** a user lacks the required authority for a route
 - **THEN** the system shows an access denied page
-
-### Requirement: Guard audit logging
-The system SHALL record audit events for authentication and authorization decisions.
-
-#### Scenario: Guard decision audit trail
-- **WHEN** a protected endpoint denies access
-- **THEN** the system records the actor, route, and timestamp
-
-### Requirement: Operational safeguards for route guards
-The system SHALL apply rate limits for repeated access denied responses and publish availability and error SLO targets.
-
-#### Scenario: Guard throttling
-- **WHEN** a client triggers repeated access denied responses
-- **THEN** the system throttles requests and preserves service availability
-
