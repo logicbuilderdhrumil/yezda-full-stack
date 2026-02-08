@@ -20,7 +20,7 @@ export class GetNotificationUseCase {
       return { success: true, data: n };
     } catch (err) {
       this.metrics.recordLatency('notification_request', Date.now() - t, { operation: 'get', success: 'false' });
-      return { success: false, error: 'Failed to get notification', errorCode: 'NOTIFICATION_READ_ERROR' };
+      return { success: false, error: `Failed to get notification: ${err instanceof Error ? err.message : String(err)}`, errorCode: 'NOTIFICATION_READ_ERROR' };
     }
   }
 }

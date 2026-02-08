@@ -6,6 +6,6 @@ export class UpdateLocalePreferenceUseCase {
   constructor(private readonly repo: ILocalizationRepository, private readonly audit: IAuditService) {}
   async execute(ctx: RequestContext, input: UpdateLocalePreferenceInput): Promise<OperationResult<LocalePreference>> {
     try { const data = await this.repo.upsertPreference(ctx.tenantId, ctx.userId, ctx.userType, input); this.audit.log('LOCALE_PREFERENCE_UPDATED', ctx, { locale: input.locale }); return { success: true, data }; }
-    catch { return { success: false, error: 'Failed to update locale preference', code: 'UPDATE_PREFERENCE_ERROR' }; }
+    catch (err) { return { success: false, error: 'Failed to update locale preference', code: 'UPDATE_PREFERENCE_ERROR' }; }
   }
 }

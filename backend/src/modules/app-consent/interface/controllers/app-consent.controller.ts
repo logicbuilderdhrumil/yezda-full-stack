@@ -23,7 +23,11 @@ function getClientInfo(req: AuthenticatedRoleRequest) {
 }
 
 function getTenantId(req: AuthenticatedRoleRequest): string {
-  return req.user?.tenantId || 'default';
+  const tenantId = req.user?.tenantId;
+  if (!tenantId) {
+    throw Object.assign(new Error('Tenant ID is required'), { status: 400 });
+  }
+  return tenantId;
 }
 
 export class AppConsentController {

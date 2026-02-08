@@ -32,14 +32,13 @@ interface FileUploadRequest extends AuthenticatedRequest {
 }
 
 /**
- * Extract tenant ID from request (header, user context, or JWT payload)
+ * Extract tenant ID from request (header or user context)
  */
 function getTenantId(req: AuthenticatedRequest): string {
   return (
     (req.headers['x-tenant-id'] as string) ||
-    (req as Record<string, unknown>).tenantId as string ||
     req.user?.tenantId ||
-    'default'
+    ''
   );
 }
 

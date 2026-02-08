@@ -38,7 +38,7 @@ export interface ScreeningPipelineUseCases {
 function getPipelineContext(req: AuthenticatedRoleRequest): PipelineContext {
   const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'];
-  const tenantId = req.user?.tenantId || (req.headers['x-tenant-id'] as string) || 'default';
+  const tenantId = req.user?.tenantId || (req.headers['x-tenant-id'] as string) || '';
 
   return {
     actorId: req.user?.sub || '',

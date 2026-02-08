@@ -5,6 +5,6 @@ export class GetSupportedLocalesUseCase {
   constructor(private readonly repo: ILocalizationRepository) {}
   async execute(_ctx: RequestContext): Promise<OperationResult<SupportedLocale[]>> {
     try { const data = await this.repo.getSupportedLocales(); return { success: true, data }; }
-    catch { return { success: false, error: 'Failed to get supported locales', code: 'LOCALES_ERROR' }; }
+    catch (err) { return { success: false, error: 'Failed to get supported locales', code: 'LOCALES_ERROR' }; }
   }
 }

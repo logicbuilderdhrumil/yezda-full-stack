@@ -11,28 +11,33 @@ import type { GetHealthUseCase, GetMetricsUseCase } from '../../application/use-
 import type { LedgerFilterOptions, LedgerEntryType, RequestContext } from '../../domain/entities/ledger.entity.js';
 
 interface AuthenticatedRequest extends Request {
-  user?: { sub: string; type: 'user' | 'candidate'; tenantId?: string };
+  user?: { sub: string; type: 'user' | 'candidate'; tenantId?: string; roles?: string[] };
 }
 
 function getCtx(req: AuthenticatedRequest): RequestContext {
+  const tenantId = req.user?.tenantId || req.get('x-tenant-id');
+  if (!tenantId) {
+    throw Object.assign(new Error('Tenant ID is required'), { status: 400 });
+  }
   return {
     userId: req.user!.sub,
     userType: req.user!.type,
-    tenantId: req.user?.tenantId || req.get('x-tenant-id') || 'default',
+    tenantId,
     ipAddress: req.ip || req.socket.remoteAddress,
     channel: (req.get('x-channel') || 'api') as 'web' | 'mobile' | 'api',
   };
 }
 
 function getOrgId(req: AuthenticatedRequest): string {
-  return req.params.organizationId || req.get('x-organization-id') || 'default';
+  const orgId = req.params.organizationId || req.get('x-organization-id');
+  if (!orgId) {
+    throw Object.assign(new Error('Organization ID is required'), { status: 400 });
+  }
+  return orgId;
 }
 
 function getUserRoles(req: AuthenticatedRequest): string[] {
-  const rolesHeader = req.get('x-user-roles');
-  if (rolesHeader) return rolesHeader.split(',').map((r) => r.trim());
-  if (req.user?.type === 'user') return ['system_admin'];
-  return [];
+  return req.user?.roles ?? [];
 }
 
 function parseFilters(queryParams: Record<string, unknown>): LedgerFilterOptions {

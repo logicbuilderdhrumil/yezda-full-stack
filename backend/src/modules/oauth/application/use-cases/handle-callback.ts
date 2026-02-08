@@ -58,7 +58,7 @@ export class HandleCallbackUseCase {
       return { success: true, provider, redirectUrl: state.redirectUrl };
     } catch (err) {
       this.metrics.recordOAuthOperation('callback', provider, false, Date.now() - startTime);
-      return { success: false, error: 'Failed to complete OAuth flow', errorCode: 'TOKEN_EXCHANGE_FAILED' };
+      return { success: false, error: `Failed to complete OAuth flow: ${err instanceof Error ? err.message : String(err)}`, errorCode: 'TOKEN_EXCHANGE_FAILED' };
     }
   }
 

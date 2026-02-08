@@ -13,8 +13,8 @@ import { BillingLedgerController } from './interface/controllers/billing-ledger.
 import { createBillingLedgerRoutes } from './interface/routes/billing-ledger.routes.js';
 import { auditService } from '../../services/audit.service.js';
 import { billingLedgerMetricsService } from '../../services/billing-ledger-metrics.service.js';
-import type { IAuditService } from './domain/ports/IAuditService.js';
-import type { IBillingLedgerMetricsService } from './domain/ports/IBillingLedgerMetricsService.js';
+import { AuditServiceAdapter } from './infrastructure/adapters/AuditServiceAdapter.js';
+import { MetricsServiceAdapter } from './infrastructure/adapters/MetricsServiceAdapter.js';
 
 export interface BillingLedgerModule {
   routes: Router;
@@ -22,8 +22,8 @@ export interface BillingLedgerModule {
 
 export function createBillingLedgerModule(): BillingLedgerModule {
   const repo = new PostgresBillingLedgerRepository();
-  const audit = auditService as unknown as IAuditService;
-  const metrics = billingLedgerMetricsService as unknown as IBillingLedgerMetricsService;
+  const audit = new AuditServiceAdapter(auditService);
+  const metrics = new MetricsServiceAdapter(billingLedgerMetricsService);
 
   const getBilledEntries = new GetBilledEntriesUseCase(repo, audit, metrics);
   const getUnbilledEntries = new GetUnbilledEntriesUseCase(repo, audit, metrics);

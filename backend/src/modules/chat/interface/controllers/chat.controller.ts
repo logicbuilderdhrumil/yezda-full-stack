@@ -18,10 +18,14 @@ interface AuthenticatedRequest extends Request {
 }
 
 function buildContext(req: AuthenticatedRequest): ChatContext {
+  const tenantId = req.user?.tenantId || req.get('x-tenant-id');
+  if (!tenantId) {
+    throw Object.assign(new Error('Tenant ID is required'), { status: 400 });
+  }
   return {
     actorId: req.user!.sub,
     actorType: req.user!.type,
-    tenantId: req.user!.tenantId ?? req.user!.sub,
+    tenantId,
     ipAddress: req.ip || req.socket.remoteAddress,
     userAgent: req.get('user-agent'),
     channel: (req.get('x-channel') || 'api') as 'web' | 'mobile' | 'api',
