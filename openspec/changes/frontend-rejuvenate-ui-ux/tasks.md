@@ -31,7 +31,7 @@
 - [x] 2.13 Update Footer.tsx — token borders/bg/text, CTA link hover
 - [x] 2.14 Responsive testing — deferred to Phase 6 final testing
 
-## Phase 3: Page-Level Polish (3A: Dashboard & Auth ✅)
+## Phase 3: Page-Level Polish (3A: Dashboard & Auth ✅, 3B: Org/User/Candidate CRUD ✅)
 - [x] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
 - [x] 3.2 KPICard.tsx — navy/CTA accent styling, badge hover effects
 - [x] 3.3 ChartWidget.tsx — integrate Recharts funnel chart for pipeline, trend lines for screening volume
@@ -40,13 +40,13 @@
 - [x] 3.6 SignUpView.tsx — matching auth page styling
 - [x] 3.7 ForgotPasswordView.tsx & ResetPasswordView.tsx — consistent auth styling
 - [x] 3.8 AuthLayout.tsx — centered card layout with navy accents
-- [ ] 3.9 OrganizationsListView.tsx — professional list with Create/Edit polished
-- [ ] 3.10 OrganizationDetailsView.tsx — tabbed layout polish (Users, Candidates tabs)
-- [ ] 3.11 UsersListView.tsx & UserDetailsView.tsx — consistent list/detail styling
-- [ ] 3.12 CandidatesListView.tsx & CandidateDetailsView.tsx — professional candidate views
-- [ ] 3.13 CandidateCreateView.tsx & CandidateEditView.tsx — form polish with onBlur validation
-- [ ] 3.14 CandidateBulkCreateView.tsx — improved bulk upload UI
-- [ ] 3.15 CandidateSubmissionView.tsx — public submission page polish
+- [x] 3.9 OrganizationsListView.tsx — professional list with Create/Edit polished
+- [x] 3.10 OrganizationDetailsView.tsx — tabbed layout polish (Users, Candidates tabs)
+- [x] 3.11 UsersListView.tsx & UserDetailsView.tsx — consistent list/detail styling
+- [x] 3.12 CandidatesListView.tsx & CandidateDetailsView.tsx — professional candidate views
+- [x] 3.13 CandidateCreateView.tsx & CandidateEditView.tsx — form polish with onBlur validation
+- [x] 3.14 CandidateBulkCreateView.tsx — improved bulk upload UI
+- [x] 3.15 CandidateSubmissionView.tsx — public submission page polish
 - [ ] 3.16 FormsListView.tsx, FormCreateView.tsx, FormEditView.tsx — form builder pages
 - [ ] 3.17 FormBuilderCanvas.tsx, FieldPalette.tsx, FieldConfigPanel.tsx — builder workspace polish
 - [ ] 3.18 PipelinesListView.tsx — pipeline list polish
