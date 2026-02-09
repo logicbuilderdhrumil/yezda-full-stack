@@ -45,8 +45,8 @@ function DetailRow({ label, value }: DetailRowProps): ReactNode {
   if (!value) return null;
   return (
     <div className="grid grid-cols-3 gap-4 py-3">
-      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="col-span-2 text-sm text-gray-900 dark:text-gray-100">{value}</dd>
+      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
+      <dd className="col-span-2 text-sm text-foreground">{value}</dd>
     </div>
   );
 }
@@ -144,7 +144,7 @@ export function OrganizationDetailsView(): ReactNode {
             </div>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+            <dl className="divide-y divide-border">
               <DetailRow label={t('organizations.details.id')} value={organization.id} />
               <DetailRow
                 label={t('organizations.details.createdAt')}
@@ -164,13 +164,13 @@ export function OrganizationDetailsView(): ReactNode {
             <CardTitle>{t('organizations.details.contactTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+            <dl className="divide-y divide-border">
               <DetailRow label={t('organizations.form.email')} value={organization.email} />
               <DetailRow label={t('organizations.form.phone')} value={organization.phone} />
               <DetailRow label={t('organizations.form.website')} value={organization.website} />
             </dl>
             {!organization.email && !organization.phone && !organization.website && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {t('organizations.details.noContact')}
               </p>
             )}
@@ -188,7 +188,7 @@ export function OrganizationDetailsView(): ReactNode {
             organization.state ||
             organization.country ||
             organization.postalCode ? (
-              <address className="text-sm text-gray-900 not-italic dark:text-gray-100">
+              <address className="text-sm text-foreground not-italic">
                 {organization.address && <p>{organization.address}</p>}
                 {(organization.city || organization.state || organization.postalCode) && (
                   <p>
@@ -200,7 +200,7 @@ export function OrganizationDetailsView(): ReactNode {
                 {organization.country && <p>{organization.country}</p>}
               </address>
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {t('organizations.details.noAddress')}
               </p>
             )}

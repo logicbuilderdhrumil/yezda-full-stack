@@ -83,8 +83,8 @@ function DetailRow({ label, value }: DetailRowProps): ReactNode {
   if (!value) return null;
   return (
     <div className="grid grid-cols-3 gap-4 py-3">
-      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="col-span-2 text-sm text-gray-900 dark:text-gray-100">{value}</dd>
+      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
+      <dd className="col-span-2 text-sm text-foreground">{value}</dd>
     </div>
   );
 }
@@ -262,7 +262,7 @@ export function CandidateDetailsView(): ReactNode {
                 </div>
               </CardHeader>
               <CardContent>
-                <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+                <dl className="divide-y divide-border">
                   <DetailRow label={t('candidates.details.id')} value={candidate.id} />
                   <DetailRow label={t('candidates.details.firstName')} value={candidate.firstName} />
                   <DetailRow label={t('candidates.details.lastName')} value={candidate.lastName} />
@@ -287,7 +287,7 @@ export function CandidateDetailsView(): ReactNode {
                   <CardTitle>{t('candidates.details.organizationTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <dl className="divide-y divide-border">
                     <DetailRow
                       label={t('candidates.details.organization')}
                       value={candidate.organizationName}
@@ -304,7 +304,7 @@ export function CandidateDetailsView(): ReactNode {
                   <CardTitle>{t('candidates.details.statusInfoTitle')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <dl className="divide-y divide-border">
                     {candidate.submittedAt && (
                       <DetailRow
                         label={t('candidates.details.submittedAt')}
@@ -346,11 +346,11 @@ export function CandidateDetailsView(): ReactNode {
               </CardHeader>
               <CardContent>
                 {isLoadingAssignments ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                  <p className="text-sm text-muted-foreground text-center py-4">
                     {t('common.loading', 'Loading...')}
                   </p>
                 ) : assignments.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                  <p className="text-sm text-muted-foreground text-center py-4">
                     {t('candidates.pipelines.noAssignments', 'No pipelines assigned yet')}
                   </p>
                 ) : (
@@ -358,7 +358,7 @@ export function CandidateDetailsView(): ReactNode {
                     {assignments.map((assignment) => (
                       <div
                         key={assignment.id}
-                        className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
+                        className="border rounded-lg p-4 bg-muted"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -369,7 +369,7 @@ export function CandidateDetailsView(): ReactNode {
                               {t(`candidates.pipelines.status.${assignment.status}`, assignment.status)}
                             </Badge>
                           </div>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-muted-foreground">
                             {t('candidates.pipelines.assignedAt', 'Assigned')}: {formatDate(assignment.assignedAt)}
                           </span>
                         </div>
@@ -380,7 +380,7 @@ export function CandidateDetailsView(): ReactNode {
                           </div>
                           <Progress value={assignment.progressPercentage} />
                         </div>
-                        <div className="mt-2 text-sm text-gray-500">
+                        <div className="mt-2 text-sm text-muted-foreground">
                           {t('candidates.pipelines.currentStage', 'Current Stage')}: {assignment.currentStageOrder + 1}
                         </div>
                       </div>
@@ -398,7 +398,7 @@ export function CandidateDetailsView(): ReactNode {
                 <CardDescription>{t('candidates.details.historyDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   {t('candidates.details.noHistory')}
                 </p>
               </CardContent>
@@ -412,7 +412,7 @@ export function CandidateDetailsView(): ReactNode {
                 <CardDescription>{t('candidates.details.documentsDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   {t('candidates.details.noDocuments')}
                 </p>
               </CardContent>

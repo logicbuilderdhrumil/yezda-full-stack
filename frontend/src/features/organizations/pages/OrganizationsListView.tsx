@@ -213,7 +213,7 @@ export function OrganizationsListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={6} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -240,7 +240,7 @@ export function OrganizationsListView(): ReactNode {
             <TableBody>
               {organizations.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     {t('organizations.list.noResults')}
                   </TableCell>
                 </TableRow>
@@ -252,14 +252,14 @@ export function OrganizationsListView(): ReactNode {
                     onClick={() => handleRowClick(org.id)}
                   >
                     <TableCell className="font-medium">{org.name}</TableCell>
-                    <TableCell className="text-gray-500">{org.slug}</TableCell>
+                    <TableCell className="text-muted-foreground">{org.slug}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusVariant(org.status)}>
                         {t(`organizations.status.${org.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">{org.email || '—'}</TableCell>
-                    <TableCell className="text-gray-500">{formatDate(org.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{org.email || '—'}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(org.createdAt)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

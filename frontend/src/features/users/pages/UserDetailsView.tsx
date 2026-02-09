@@ -59,8 +59,8 @@ function DetailRow({ label, value }: DetailRowProps): ReactNode {
   if (!value) return null;
   return (
     <div className="grid grid-cols-3 gap-4 py-3">
-      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="col-span-2 text-sm text-gray-900 dark:text-gray-100">{value}</dd>
+      <dt className="text-sm font-medium text-muted-foreground">{label}</dt>
+      <dd className="col-span-2 text-sm text-foreground">{value}</dd>
     </div>
   );
 }
@@ -165,7 +165,7 @@ export function UserDetailsView(): ReactNode {
             </div>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+            <dl className="divide-y divide-border">
               <DetailRow label={t('users.details.id')} value={user.id} />
               <DetailRow label={t('users.details.firstName')} value={user.firstName} />
               <DetailRow label={t('users.details.lastName')} value={user.lastName} />
@@ -194,7 +194,7 @@ export function UserDetailsView(): ReactNode {
               <CardTitle>{t('users.details.organizationTitle')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+              <dl className="divide-y divide-border">
                 <DetailRow
                   label={t('users.details.organization')}
                   value={user.organizationName}

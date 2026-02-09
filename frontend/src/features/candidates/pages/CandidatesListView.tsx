@@ -222,7 +222,7 @@ export function CandidatesListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={6} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -258,7 +258,7 @@ export function CandidatesListView(): ReactNode {
             <TableBody>
               {candidates.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     {t('candidates.list.noResults')}
                   </TableCell>
                 </TableRow>
@@ -278,16 +278,16 @@ export function CandidatesListView(): ReactNode {
                     }}
                   >
                     <TableCell className="font-medium">{getCandidateFullName(candidate)}</TableCell>
-                    <TableCell className="text-gray-500">{candidate.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{candidate.email}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusVariant(candidate.status)}>
                         {t(`candidates.status.${candidate.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {candidate.organizationName || '-'}
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(candidate.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(candidate.createdAt)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

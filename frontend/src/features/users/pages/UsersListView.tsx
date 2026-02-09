@@ -250,7 +250,7 @@ export function UsersListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={6} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -283,7 +283,7 @@ export function UsersListView(): ReactNode {
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     {t('users.list.noResults')}
                   </TableCell>
                 </TableRow>
@@ -303,7 +303,7 @@ export function UsersListView(): ReactNode {
                     }}
                   >
                     <TableCell className="font-medium">{getUserFullName(user)}</TableCell>
-                    <TableCell className="text-gray-500">{user.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
                       <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
                         {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
@@ -314,7 +314,7 @@ export function UsersListView(): ReactNode {
                         {t(`users.status.${user.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(user.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(user.createdAt)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

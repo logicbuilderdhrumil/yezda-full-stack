@@ -151,7 +151,7 @@ export function CandidateSubmissionView(): ReactNode {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-cta/5 p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle>{t('candidates.submission.thankYouTitle')}</CardTitle>
@@ -161,9 +161,9 @@ export function CandidateSubmissionView(): ReactNode {
           </CardHeader>
           <CardContent className="text-center">
             <div role="status" aria-label={t('candidates.submission.thankYouTitle')} className="flex justify-center mb-4">
-              <CheckCircle className="h-16 w-16 text-green-500" aria-hidden="true" />
+              <CheckCircle className="h-16 w-16 text-cta" aria-hidden="true" />
             </div>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground">
               {t('candidates.submission.confirmationText')}
             </p>
           </CardContent>
@@ -173,7 +173,7 @@ export function CandidateSubmissionView(): ReactNode {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-cta/5 p-4">
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>{t('candidates.submission.title')}</CardTitle>
