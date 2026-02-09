@@ -51,7 +51,7 @@ export async function listAssignedApplications(
     return;
   }
 
-  const tenantId = req.get('x-tenant-id');
+  const tenantId = req.user?.tenantId || req.get('x-tenant-id');
   if (!tenantId) {
     res.status(400).json({ error: 'Tenant ID required', code: 'TENANT_REQUIRED' });
     return;

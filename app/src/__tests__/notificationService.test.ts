@@ -3,6 +3,18 @@
  * Integration: Tests aligned with backend firebase.routes.ts contracts.
  */
 
+// Mock secure storage before any service imports (needed by apiClient)
+jest.mock('../utils/secureStorage', () => ({
+  getStoredTokens: jest.fn().mockResolvedValue({
+    accessToken: 'test-access-token',
+    refreshToken: 'test-refresh-token',
+    expiresAt: Date.now() + 3600000,
+  }),
+  storeTokens: jest.fn().mockResolvedValue(undefined),
+  clearStoredTokens: jest.fn().mockResolvedValue(undefined),
+  isTokenExpired: jest.fn().mockReturnValue(false),
+}));
+
 import { NotificationApiError } from '../services/notificationService';
 
 // Mock fetch globally

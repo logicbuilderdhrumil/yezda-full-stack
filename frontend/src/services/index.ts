@@ -1,9 +1,41 @@
-export { AccountService } from './AccountService';
-export { AuthService } from './AuthService';
-export { CandidatesService } from './CandidatesService';
-export { DashboardService } from './DashboardService';
-export { FormsService } from './FormsService';
-export { OAuthService } from './OAuthService';
+/**
+ * Services Index
+ *
+ * @deprecated Import feature-specific services from '@/features/<name>' instead.
+ * Infrastructure services (ApiService, SocketService, axios) remain here.
+ */
+
+// ─── Feature services (re-exported for backward compatibility) ──────────────
+export { AccountService } from '@/features/account';
+export { AuthService } from '@/features/auth';
+export { CandidatesService } from '@/features/candidates';
+export { DashboardService } from '@/features/dashboard';
+export { FormsService } from '@/features/forms';
+export { OrganizationsService } from '@/features/organizations';
+export { UsersService } from '@/features/users';
+export { NotificationsService } from '@/features/notifications';
+export { FileService } from '@/features/files';
+export { FormService, type CreateFormRequest, type UpdateFormRequest } from '@/features/forms';
+export { BillingService, type LedgerFilterOptions } from '@/features/billing';
+export { ChartService } from '@/features/reports';
+export { LedgerService } from '@/features/billing';
+export { ChatService, type MessageListOptions } from '@/features/chat';
+export { PipelineService } from '@/features/pipelines';
+export { ReviewService, type ReviewTask, type ReviewDecisionDto } from '@/features/reviews';
+export {
+  ClientPortalService,
+  type ClientDashboardData,
+  type ClientActivityItem,
+  type ClientCandidateListParams,
+  type ClientCandidateListResponse,
+  type ClientCandidate,
+  type ClientCandidateDetail,
+  type ScreeningStep,
+  type ClientOrgSettings,
+  type UpdateOrgSettingsPayload,
+} from '@/features/client-portal';
+
+// ─── Infrastructure services (remain in services/) ─────────────────────────
 export {
   ApiService,
   initializeApiService,
@@ -23,18 +55,10 @@ export {
   setupResponseInterceptors,
   type InterceptorConfig,
 } from './axios';
-export { OrganizationsService } from './OrganizationsService';
-export { UsersService } from './UsersService';
 export { SocketService } from './SocketService';
-export { NotificationsService } from './NotificationsService';
 
-// Product feature services
-export { FileService } from './FileService';
+// ─── Cross-cutting services (shared across features) ───────────────────────
+export { OAuthService } from './OAuthService';
 export { JobService, type PollOptions } from './JobService';
 export { ExportService, type ExportOptions } from './ExportService';
-export { FormService, type CreateFormRequest, type UpdateFormRequest } from './FormService';
-export { BillingService, type LedgerFilterOptions } from './BillingService';
-export { ChartService } from './ChartService';
 export { AssetService, type AssetUploadOptions, type AssetListOptions } from './AssetService';
-export { LedgerService } from './LedgerService';
-export { ChatService, type MessageListOptions } from './ChatService';

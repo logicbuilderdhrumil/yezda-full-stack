@@ -2,7 +2,7 @@
 name: frontend-implementer
 description: Implement approved frontend work with minimal, focused edits. Examples: "Build the UI component", "Wire up routes", "Update state and services".
 tools: ['execute', 'read', 'edit', 'search', 'web', 'context7/*', 'figma/*', 'github/*', 'sequential-thinking/*', 'shadcn-ui/*', 'tavily/*', 'todo']
-model: Claude Opus 4.5 (copilot)
+model: Claude Opus 4.6 (fast mode) (Preview) (copilot)
 user-invokable: true
 disable-model-invocation: false
 handoffs:

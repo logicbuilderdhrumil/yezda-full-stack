@@ -44,7 +44,16 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
     }
   };
 
-  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+  const initials = user.firstName && user.lastName
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : user.displayName
+      ? user.displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+      : user.email![0]!.toUpperCase();
+
+  const displayLabel = user.firstName || user.displayName || user.email.split('@')[0];
+  const fullName = user.firstName && user.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user.displayName || user.email.split('@')[0];
 
   return (
     <DropdownMenu>
@@ -63,7 +72,7 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
             {initials}
           </div>
           <span className="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
-            {user.firstName}
+            {displayLabel}
           </span>
         </button>
       </DropdownMenuTrigger>
@@ -71,7 +80,7 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.firstName} {user.lastName}
+              {fullName}
             </p>
             <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
               {user.email}

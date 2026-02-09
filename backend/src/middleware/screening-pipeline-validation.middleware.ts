@@ -6,7 +6,19 @@
 import { z } from 'zod';
 
 /**
- * Stage input schema for creating/updating stages
+ * Valid module types for pipeline stages
+ */
+const moduleTypeEnum = z.enum([
+  'form',
+  'external_service',
+  'internal_processing',
+  'human_review',
+  'notification',
+]);
+
+/**
+ * Stage input schema for creating/updating stages.
+ * Includes moduleType and moduleConfig alongside legacy formDefinitionId.
  */
 export const stageInputSchema = z.object({
   formDefinitionId: z.string().uuid('Invalid form definition ID'),
@@ -15,6 +27,44 @@ export const stageInputSchema = z.object({
   order: z.number().int('Order must be an integer').min(0, 'Order must be non-negative'),
   isRequired: z.boolean().default(true),
   estimatedDurationMinutes: z.number().int().min(0).optional(),
+  moduleType: moduleTypeEnum.default('form'),
+  moduleConfig: z.record(z.unknown()).optional(),
+});
+
+/**
+ * Pipeline graph node schema (for request validation — lightweight)
+ */
+const pipelineNodeSchema = z.object({
+  id: z.string().min(1),
+  type: moduleTypeEnum,
+  position: z.object({ x: z.number(), y: z.number() }),
+  data: z.object({
+    stageId: z.string(),
+    label: z.string(),
+    moduleConfig: z.record(z.unknown()).optional(),
+  }),
+});
+
+/**
+ * Pipeline graph edge schema
+ */
+const pipelineEdgeSchema = z.object({
+  id: z.string().min(1),
+  source: z.string().min(1),
+  target: z.string().min(1),
+  sourceHandle: z.string().optional(),
+  targetHandle: z.string().optional(),
+});
+
+/**
+ * Pipeline graph schema — React Flow layout data
+ */
+const pipelineGraphSchema = z.object({
+  nodes: z.array(pipelineNodeSchema),
+  edges: z.array(pipelineEdgeSchema),
+  viewport: z
+    .object({ x: z.number(), y: z.number(), zoom: z.number() })
+    .optional(),
 });
 
 /**
@@ -24,6 +74,7 @@ export const createPipelineSchema = z.object({
   name: z.string().min(1, 'Pipeline name is required').max(200, 'Pipeline name must be at most 200 characters'),
   description: z.string().max(1000, 'Description must be at most 1000 characters').optional(),
   stages: z.array(stageInputSchema).min(1, 'At least one stage is required').max(50, 'Maximum 50 stages allowed'),
+  graph: pipelineGraphSchema.optional().nullable(),
 });
 
 /**
@@ -33,8 +84,13 @@ export const updatePipelineSchema = z.object({
   name: z.string().min(1).max(200, 'Pipeline name must be at most 200 characters').optional(),
   description: z.string().max(1000, 'Description must be at most 1000 characters').optional().nullable(),
   stages: z.array(stageInputSchema).min(1).max(50).optional(),
+  graph: pipelineGraphSchema.optional().nullable(),
 }).refine(
-  (data) => data.name !== undefined || data.description !== undefined || data.stages !== undefined,
+  (data) =>
+    data.name !== undefined ||
+    data.description !== undefined ||
+    data.stages !== undefined ||
+    data.graph !== undefined,
   { message: 'At least one field must be provided for update' }
 );
 

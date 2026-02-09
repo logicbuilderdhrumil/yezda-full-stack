@@ -41,12 +41,19 @@ const DEFAULT_PAGE_SIZE = 10;
 function getStatusVariant(status: CandidateStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
     case 'active':
+    case 'certified':
+    case 'completed':
       return 'default';
     case 'pending':
+    case 'submitted':
       return 'secondary';
-    case 'certified':
-      return 'default';
+    case 'in_review':
+    case 'screening':
+    case 'in_progress':
+      return 'outline';
     case 'archived':
+    case 'failed':
+    case 'rejected':
       return 'destructive';
     default:
       return 'outline';
@@ -162,15 +169,15 @@ export function CandidatesListView(): ReactNode {
   };
 
   const handleRowClick = (id: string) => {
-    navigate(`/candidates/${id}`);
+    navigate(`/admin/candidates/${id}`);
   };
 
   const handleCreate = () => {
-    navigate('/candidates/new');
+    navigate('/admin/candidates/new');
   };
 
   const handleBulkCreate = () => {
-    navigate('/candidates/bulk-create');
+    navigate('/admin/candidates/bulk-create');
   };
 
   const renderSortIcon = (column: CandidateListParams['sortBy']) => {
@@ -294,7 +301,7 @@ export function CandidatesListView(): ReactNode {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/candidates/${candidate.id}/edit`);
+                          navigate(`/admin/candidates/${candidate.id}/edit`);
                         }}
                       >
                         {t('common.edit')}

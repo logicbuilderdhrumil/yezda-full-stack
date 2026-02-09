@@ -1,6 +1,10 @@
 /**
  * Admin navigation configuration.
  * All paths are prefixed with /admin for the SAAS staff area.
+ *
+ * Candidates and Files are accessed within org context only.
+ * Forms is a child of Pipelines.
+ * Ledger is a single combined view (Billed/Unbilled tabs).
  */
 
 import type { NavConfig } from '@/@types/navigation';
@@ -27,13 +31,6 @@ export const adminNavConfig: NavConfig = {
       title: 'Management',
       items: [
         {
-          id: 'candidates',
-          label: 'Candidates',
-          path: '/admin/candidates',
-          icon: 'users',
-          authorities: ['admin', 'manager'],
-        },
-        {
           id: 'organizations',
           label: 'Organizations',
           path: '/admin/organizations',
@@ -48,37 +45,41 @@ export const adminNavConfig: NavConfig = {
           authorities: ['admin', 'manager'],
         },
         {
-          id: 'files',
-          label: 'Files',
-          path: '/admin/files',
-          icon: 'folder',
+          id: 'pipelines',
+          label: 'Pipelines',
+          path: '/admin/pipelines',
+          icon: 'shield',
           authorities: ['admin'],
+          children: [
+            {
+              id: 'pipeline-builder',
+              label: 'Builder',
+              path: '/admin/pipelines/builder',
+              icon: 'workflow',
+              authorities: ['admin'],
+            },
+            {
+              id: 'forms',
+              label: 'Forms',
+              path: '/admin/forms',
+              icon: 'file-text',
+              authorities: ['admin'],
+            },
+          ],
+        },
+        {
+          id: 'reviews',
+          label: 'Reviews',
+          path: '/admin/reviews',
+          icon: 'clipboard-check',
+          authorities: ['admin', 'manager'],
         },
         {
           id: 'users',
           label: 'Users',
           path: '/admin/users',
-          icon: 'shield',
+          icon: 'users',
           authorities: ['admin'],
-        },
-        {
-          id: 'forms',
-          label: 'Forms',
-          path: '/admin/forms',
-          icon: 'file-text',
-          authorities: ['admin'],
-        },
-      ],
-    },
-    {
-      title: 'Analytics',
-      items: [
-        {
-          id: 'reports',
-          label: 'Reports',
-          path: '/admin/reports',
-          icon: 'bar-chart',
-          authorities: ['admin', 'manager'],
         },
       ],
     },
@@ -95,19 +96,19 @@ export const adminNavConfig: NavConfig = {
       ],
     },
     {
-      title: 'Billing',
+      title: 'Billing and Analytics',
       items: [
         {
-          id: 'ledger-billed',
-          label: 'Billed Ledger',
-          path: '/admin/ledger/billed',
-          icon: 'credit-card',
-          authorities: ['admin'],
+          id: 'reports',
+          label: 'Reports',
+          path: '/admin/reports',
+          icon: 'bar-chart',
+          authorities: ['admin', 'manager'],
         },
         {
-          id: 'ledger-unbilled',
-          label: 'Unbilled Ledger',
-          path: '/admin/ledger/unbilled',
+          id: 'ledger',
+          label: 'Ledger',
+          path: '/admin/ledger',
           icon: 'credit-card',
           authorities: ['admin'],
         },

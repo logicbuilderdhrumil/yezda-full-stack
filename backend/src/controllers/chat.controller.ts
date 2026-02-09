@@ -111,7 +111,10 @@ export async function listConversations(
     return;
   }
 
-  res.status(200).json(result.data);
+  res.status(200).json({
+    conversations: result.data.conversations,
+    meta: { total: result.data.total },
+  });
 }
 
 /**
@@ -163,7 +166,10 @@ export async function getThread(
     return;
   }
 
-  res.status(200).json(result.data);
+  res.status(200).json({
+    messages: result.data.messages,
+    meta: { total: result.data.total },
+  });
 }
 
 /**

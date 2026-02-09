@@ -69,6 +69,7 @@ describe('useConsentStore', () => {
         sourceOrganization: 'Acme Corp',
         targetOrganization: 'New Corp',
         sourceDate: '2025-01-15',
+        workflowState: 'awaiting_response',
       };
 
       mockGetConsentPrompt.mockResolvedValueOnce(mockPrompt);
@@ -124,6 +125,7 @@ describe('useConsentStore', () => {
           sourceOrganization: 'Acme Corp',
           targetOrganization: 'New Corp',
           sourceDate: '2025-01-15',
+          workflowState: 'awaiting_response',
         },
         selectedScopes: ['personal_info', 'employment_history', 'addresses'],
       });
@@ -186,6 +188,7 @@ describe('useConsentStore', () => {
           sourceOrganization: 'Acme Corp',
           targetOrganization: 'New Corp',
           sourceDate: '2025-01-15',
+          workflowState: 'awaiting_response',
         },
         selectedScopes: ['personal_info'],
       });
@@ -200,8 +203,12 @@ describe('useConsentStore', () => {
           sourceApplicationId: 'app-456',
           scopes: ['personal_info'] as ConsentScope[],
           status: 'granted',
+          workflowState: 'accepted',
           grantedAt: Date.now(),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         },
+        workflowState: 'accepted',
       };
 
       mockSubmitConsent.mockResolvedValueOnce(mockResponse);
@@ -232,7 +239,11 @@ describe('useConsentStore', () => {
           sourceApplicationId: 'app-456',
           scopes: [] as ConsentScope[],
           status: 'denied',
+          workflowState: 'declined',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         },
+        workflowState: 'declined',
       };
 
       mockSubmitConsent.mockResolvedValueOnce(mockResponse);
@@ -275,6 +286,9 @@ describe('useConsentStore', () => {
           sourceApplicationId: 'app-456',
           scopes: ['personal_info'] as ConsentScope[],
           status: 'granted',
+          workflowState: 'accepted',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         },
         {
           id: 'consent-2',
@@ -283,6 +297,9 @@ describe('useConsentStore', () => {
           sourceApplicationId: 'app-456',
           scopes: [] as ConsentScope[],
           status: 'denied',
+          workflowState: 'declined',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         },
       ];
 
@@ -308,6 +325,9 @@ describe('useConsentStore', () => {
             sourceApplicationId: 'app-456',
             scopes: ['personal_info'],
             status: 'granted',
+            workflowState: 'accepted',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
           },
         ],
       });
@@ -321,7 +341,10 @@ describe('useConsentStore', () => {
         sourceApplicationId: 'app-456',
         scopes: ['personal_info'] as ConsentScope[],
         status: 'withdrawn',
+        workflowState: 'revoked',
         withdrawnAt: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
 
       mockWithdrawConsent.mockResolvedValueOnce(updatedConsent);
@@ -363,6 +386,9 @@ describe('useConsentStore', () => {
             sourceApplicationId: 'app-456',
             scopes: ['personal_info', 'employment_history'] as ConsentScope[],
             status: 'granted',
+            workflowState: 'accepted',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
           },
         ],
       });
@@ -376,6 +402,9 @@ describe('useConsentStore', () => {
         sourceApplicationId: 'app-456',
         scopes: ['personal_info'] as ConsentScope[],
         status: 'granted',
+        workflowState: 'accepted',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
 
       mockUpdateConsent.mockResolvedValueOnce(updatedConsent);
@@ -386,8 +415,7 @@ describe('useConsentStore', () => {
       });
 
       expect(result).toBe(true);
-      expect(mockUpdateConsent).toHaveBeenCalledWith({
-        consentId: 'consent-123',
+      expect(mockUpdateConsent).toHaveBeenCalledWith('consent-123', {
         scopes: ['personal_info'],
       });
       expect(useConsentStore.getState().consents[0].scopes).toEqual(['personal_info']);
@@ -440,6 +468,7 @@ describe('useConsentStore', () => {
           sourceOrganization: 'Acme Corp',
           targetOrganization: 'New Corp',
           sourceDate: '2025-01-15',
+          workflowState: 'awaiting_response',
         },
         selectedScopes: ['personal_info'],
         screenState: 'loading',

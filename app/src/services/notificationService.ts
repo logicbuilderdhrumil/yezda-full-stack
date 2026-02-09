@@ -10,17 +10,9 @@ import type {
   DeviceTokenInfoDto,
   ActiveTokensResponseDto,
   DevicePlatform,
-  NotificationErrorCode,
 } from '../types/api.types';
 import { Platform } from 'react-native';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:6312/api' : undefined);
-
-if (!API_BASE_URL) {
-  throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
-}
-
-const REQUEST_TIMEOUT_MS = 30000;
+import { apiRequest, ApiError, type ApiRequestConfig } from './apiClient';
 
 /** Notification error messages for user display */
 export const notificationErrorMessages = {
@@ -36,16 +28,19 @@ export const notificationErrorMessages = {
 /**
  * Custom error class for notification API errors.
  */
-export class NotificationApiError extends Error {
-  constructor(
-    public code: NotificationErrorCode,
-    message: string,
-    public status: number
-  ) {
-    super(message);
+export class NotificationApiError extends ApiError {
+  constructor(code: string, message: string, status: number) {
+    super(code, message, status);
     this.name = 'NotificationApiError';
   }
 }
+
+/** Shared request config for notification API calls. */
+const notifRequestConfig: ApiRequestConfig = {
+  ErrorClass: NotificationApiError,
+  fallbackErrorMessage: notificationErrorMessages.unknownError,
+  networkErrorMessage: notificationErrorMessages.networkError,
+};
 
 /**
  * Get platform identifier for device token registration.
@@ -58,58 +53,6 @@ function getPlatform(): DevicePlatform {
       return 'android';
     default:
       return 'web';
-  }
-}
-
-/**
- * Generic fetch wrapper with error handling and timeout.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  timeoutMs: number = REQUEST_TIMEOUT_MS
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'x-channel': 'mobile',
-    ...options.headers,
-  };
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        code: 'UNKNOWN_ERROR',
-        error: notificationErrorMessages.unknownError,
-      }));
-      throw new NotificationApiError(
-        errorData.code as NotificationErrorCode,
-        errorData.error,
-        response.status
-      );
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new NotificationApiError(
-        'REQUEST_TIMEOUT',
-        notificationErrorMessages.networkError,
-        0
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 
@@ -137,6 +80,7 @@ export async function registerDeviceToken(
 
   const headers: HeadersInit = {
     Authorization: `Bearer ${accessToken}`,
+    'x-channel': 'mobile',
   };
 
   if (options?.tenantId) {
@@ -145,12 +89,13 @@ export async function registerDeviceToken(
 
   try {
     return await apiRequest<DeviceTokenRegistrationResponseDto>(
-      '/v1/firebase/tokens',
+      '/v1/app/firebase/tokens',
       {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
-      }
+      },
+      notifRequestConfig
     );
   } catch (error) {
     if (error instanceof NotificationApiError) {
@@ -200,6 +145,7 @@ export async function unregisterDeviceToken(
 
   const headers: HeadersInit = {
     Authorization: `Bearer ${accessToken}`,
+    'x-channel': 'mobile',
   };
 
   if (tenantId) {
@@ -207,11 +153,11 @@ export async function unregisterDeviceToken(
   }
 
   try {
-    await apiRequest<{ message: string }>('/v1/firebase/tokens', {
+    await apiRequest<{ message: string }>('/v1/app/firebase/tokens', {
       method: 'DELETE',
       headers,
       body: JSON.stringify(payload),
-    });
+    }, notifRequestConfig);
   } catch (error) {
     if (error instanceof NotificationApiError) {
       if (error.status === 401) {
@@ -250,6 +196,7 @@ export async function unregisterAllDeviceTokens(
 ): Promise<{ count: number }> {
   const headers: HeadersInit = {
     Authorization: `Bearer ${accessToken}`,
+    'x-channel': 'mobile',
   };
 
   if (tenantId) {
@@ -258,11 +205,12 @@ export async function unregisterAllDeviceTokens(
 
   try {
     const response = await apiRequest<{ message: string; count: number }>(
-      '/v1/firebase/tokens/all',
+      '/v1/app/firebase/tokens/all',
       {
         method: 'DELETE',
         headers,
-      }
+      },
+      notifRequestConfig
     );
     return { count: response.count };
   } catch (error) {
@@ -294,6 +242,7 @@ export async function getActiveDeviceTokens(
 ): Promise<DeviceTokenInfoDto[]> {
   const headers: HeadersInit = {
     Authorization: `Bearer ${accessToken}`,
+    'x-channel': 'mobile',
   };
 
   if (tenantId) {
@@ -302,11 +251,12 @@ export async function getActiveDeviceTokens(
 
   try {
     const response = await apiRequest<ActiveTokensResponseDto>(
-      '/v1/firebase/tokens',
+      '/v1/app/firebase/tokens',
       {
         method: 'GET',
         headers,
-      }
+      },
+      notifRequestConfig
     );
     return response.tokens;
   } catch (error) {

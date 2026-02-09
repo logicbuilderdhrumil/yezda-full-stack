@@ -12,92 +12,25 @@ import {
   ConsentDecision,
   consentErrorMessages,
 } from '../types/consent.types';
-import { getStoredTokens } from '../utils/secureStorage';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:6312/api';
-const REQUEST_TIMEOUT_MS = 30000;
+import { apiRequest, ApiError, type ApiRequestConfig } from './apiClient';
 
 /**
  * Custom error class for consent API errors.
  */
-export class ConsentApiError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public status: number
-  ) {
-    super(message);
+export class ConsentApiError extends ApiError {
+  constructor(code: string, message: string, status: number) {
+    super(code, message, status);
     this.name = 'ConsentApiError';
   }
 }
 
-/**
- * Get authorization headers from stored tokens.
- */
-async function getAuthHeaders(): Promise<HeadersInit> {
-  const tokens = await getStoredTokens();
-  if (!tokens?.accessToken) {
-    throw new ConsentApiError('UNAUTHORIZED', 'Not authenticated', 401);
-  }
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${tokens.accessToken}`,
-  };
-}
-
-/**
- * Generic fetch wrapper with error handling and timeout.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  timeoutMs: number = REQUEST_TIMEOUT_MS
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers = await getAuthHeaders();
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...headers,
-        ...options.headers,
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        code: 'UNKNOWN_ERROR',
-        message: consentErrorMessages.unknownError,
-      }));
-      throw new ConsentApiError(errorData.code, errorData.message, response.status);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new ConsentApiError(
-        'REQUEST_TIMEOUT',
-        consentErrorMessages.networkError,
-        0
-      );
-    }
-    if (error instanceof TypeError) {
-      throw new ConsentApiError(
-        'NETWORK_ERROR',
-        consentErrorMessages.networkError,
-        0
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
+/** Shared request config for consent API calls (auto-injects auth token). */
+const consentRequestConfig: ApiRequestConfig = {
+  ErrorClass: ConsentApiError,
+  fallbackErrorMessage: consentErrorMessages.unknownError,
+  networkErrorMessage: consentErrorMessages.networkError,
+  authenticated: true,
+};
 
 /**
  * Check for available data reuse consent options for an application.
@@ -107,8 +40,9 @@ export async function getConsentPrompt(
 ): Promise<ConsentPromptRequest | null> {
   try {
     return await apiRequest<ConsentPromptRequest>(
-      `/v1/consent/prompt/${applicationId}`,
-      { method: 'GET' }
+      `/v1/app/consent/prompt/${applicationId}`,
+      { method: 'GET' },
+      consentRequestConfig
     );
   } catch (error) {
     if (error instanceof ConsentApiError && error.status === 404) {
@@ -125,10 +59,10 @@ export async function submitConsent(
   request: ConsentSubmitRequest
 ): Promise<ConsentSubmitResponse> {
   try {
-    return await apiRequest<ConsentSubmitResponse>('/v1/consent', {
+    return await apiRequest<ConsentSubmitResponse>('/v1/app/consent', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }, consentRequestConfig);
   } catch (error) {
     if (error instanceof ConsentApiError) {
       // Preserve original error message for debugging context
@@ -146,34 +80,35 @@ export async function submitConsent(
  * Get all consent decisions for the current user.
  */
 export async function getConsentStatus(): Promise<ConsentStatusResponse> {
-  return await apiRequest<ConsentStatusResponse>('/v1/consent', {
+  return await apiRequest<ConsentStatusResponse>('/v1/app/consent', {
     method: 'GET',
-  });
+  }, consentRequestConfig);
 }
 
 /**
  * Get a single consent decision by ID.
  */
 export async function getConsentById(consentId: string): Promise<ConsentDecision> {
-  return await apiRequest<ConsentDecision>(`/v1/consent/${consentId}`, {
+  return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
     method: 'GET',
-  });
+  }, consentRequestConfig);
 }
 
 /**
  * Update consent (modify scopes or withdraw).
  */
 export async function updateConsent(
+  consentId: string,
   request: ConsentUpdateRequest
 ): Promise<ConsentDecision> {
   try {
-    return await apiRequest<ConsentDecision>(`/v1/consent/${request.consentId}`, {
+    return await apiRequest<ConsentDecision>(`/v1/app/consent/${consentId}`, {
       method: 'PATCH',
       body: JSON.stringify({
         scopes: request.scopes,
         withdraw: request.withdraw,
       }),
-    });
+    }, consentRequestConfig);
   } catch (error) {
     if (error instanceof ConsentApiError) {
       const message = request.withdraw
@@ -189,5 +124,5 @@ export async function updateConsent(
  * Withdraw consent entirely.
  */
 export async function withdrawConsent(consentId: string): Promise<ConsentDecision> {
-  return updateConsent({ consentId, withdraw: true });
+  return updateConsent(consentId, { withdraw: true });
 }

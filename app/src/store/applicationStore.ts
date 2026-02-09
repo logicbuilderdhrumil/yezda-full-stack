@@ -95,9 +95,10 @@ export const useApplicationStore = create<ApplicationState>((set, get) => ({
         listScreenState: 'idle',
       });
     } catch (error) {
-      const message = error instanceof ApplicationApiError
-        ? error.message
-        : applicationErrorMessages.loadFailed;
+      // Duck-type check for API errors to handle mock compatibility
+      const isApiError = error instanceof Error &&
+        (error instanceof ApplicationApiError || (error.name === 'ApplicationApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : applicationErrorMessages.loadFailed;
 
       set({
         listScreenState: 'error',
@@ -153,9 +154,10 @@ export const useApplicationStore = create<ApplicationState>((set, get) => ({
         detailScreenState: application.status === 'submitted' ? 'submitted' : 'idle',
       });
     } catch (error) {
-      const message = error instanceof ApplicationApiError
-        ? error.message
-        : applicationErrorMessages.loadDetailFailed;
+      // Duck-type check for API errors to handle mock compatibility
+      const isApiError = error instanceof Error &&
+        (error instanceof ApplicationApiError || (error.name === 'ApplicationApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : applicationErrorMessages.loadDetailFailed;
 
       set({
         detailScreenState: 'error',
@@ -228,9 +230,10 @@ export const useApplicationStore = create<ApplicationState>((set, get) => ({
 
       return true;
     } catch (error) {
-      const message = error instanceof ApplicationApiError
-        ? error.message
-        : applicationErrorMessages.saveFailed;
+      // Duck-type check for API errors to handle mock compatibility
+      const isApiError = error instanceof Error &&
+        (error instanceof ApplicationApiError || (error.name === 'ApplicationApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : applicationErrorMessages.saveFailed;
 
       set({
         detailScreenState: 'error',
@@ -268,9 +271,10 @@ export const useApplicationStore = create<ApplicationState>((set, get) => ({
 
       return true;
     } catch (error) {
-      const message = error instanceof ApplicationApiError
-        ? error.message
-        : applicationErrorMessages.submitFailed;
+      // Duck-type check for API errors to handle mock compatibility
+      const isApiError = error instanceof Error &&
+        (error instanceof ApplicationApiError || (error.name === 'ApplicationApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : applicationErrorMessages.submitFailed;
 
       set({
         detailScreenState: 'error',

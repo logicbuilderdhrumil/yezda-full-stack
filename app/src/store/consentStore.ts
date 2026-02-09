@@ -174,7 +174,7 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
 
     try {
       const response = await apiGetConsentStatus();
-      set({ consents: response.consents, screenState: 'idle' });
+      set({ consents: response.consents ?? [], screenState: 'idle' });
     } catch (error) {
       const message =
         error instanceof ConsentApiError
@@ -191,7 +191,7 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
     set({ screenState: 'loading', error: null });
 
     try {
-      const updated = await apiUpdateConsent({ consentId, scopes });
+      const updated = await apiUpdateConsent(consentId, { scopes });
 
       set((state) => ({
         consents: state.consents.map((c) =>

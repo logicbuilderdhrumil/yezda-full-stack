@@ -1,7 +1,12 @@
 /**
  * Hooks Index
- * Exports all custom hooks
+ *
+ * @deprecated Import feature-specific hooks from '@/features/<name>' instead.
+ * Global hooks (usePresence) remain here.
  */
 
-export { useDashboard, type UseDashboardState, type UseDashboardReturn } from './useDashboard';
+// Feature hooks (re-exported for backward compatibility)
+export { useDashboard } from '@/features/dashboard';
+
+// Global hooks (not feature-specific, remain in hooks/)
 export { usePresence, useUserPresence } from './usePresence';

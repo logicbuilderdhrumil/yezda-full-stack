@@ -65,6 +65,13 @@ export const clientNavConfig: NavConfig = {
           icon: 'settings',
           authorities: [],
         },
+        {
+          id: 'profile',
+          label: 'My Profile',
+          path: '/profile',
+          icon: 'users',
+          authorities: [],
+        },
       ],
     },
   ],

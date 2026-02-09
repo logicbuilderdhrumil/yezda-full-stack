@@ -60,9 +60,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (error) {
-      const message = error instanceof ProfileApiError
-        ? error.message
-        : 'Unable to load profile. Please try again.';
+      // Duck-type check for API errors to handle mock compatibility
+      const isApiError = error instanceof Error &&
+        (error instanceof ProfileApiError || (error.name === 'ProfileApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : 'Unable to load profile. Please try again.';
 
       set({
         screenState: 'error',
@@ -109,10 +110,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       });
       return true;
     } catch (error) {
-      // Rollback on failure
-      const message = error instanceof ProfileApiError
-        ? error.message
-        : 'Unable to save changes. Please try again.';
+      // Rollback on failure - duck-type check for API errors
+      const isApiError = error instanceof Error &&
+        (error instanceof ProfileApiError || (error.name === 'ProfileApiError' || ('code' in error && 'status' in error)));
+      const message = isApiError ? error.message : 'Unable to save changes. Please try again.';
 
       set({
         profile: previousProfile,

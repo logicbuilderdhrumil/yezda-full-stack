@@ -23,6 +23,7 @@ import {
   getConsentPrompt,
   submitConsent,
   getConsentStatus,
+  getConsentById,
   updateConsent,
   withdrawConsent,
 } from '../services/consentService';
@@ -248,7 +249,6 @@ describe('getConsentById', () => {
       json: () => Promise.resolve(mockConsent),
     });
 
-    const { getConsentById } = await import('../services/consentService');
     const result = await getConsentById('consent-123');
 
     expect(result.id).toBe('consent-123');
@@ -268,8 +268,6 @@ describe('getConsentById', () => {
       json: () => Promise.resolve({ code: 'NOT_FOUND', message: 'Consent not found' }),
     });
 
-    const { getConsentById } = await import('../services/consentService');
-
     await expect(getConsentById('invalid-id')).rejects.toThrow(ConsentApiError);
   });
 });
@@ -287,6 +285,9 @@ describe('updateConsent', () => {
       sourceApplicationId: 'app-456',
       scopes: ['personal_info'],
       status: 'granted',
+      workflowState: 'accepted',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -294,8 +295,7 @@ describe('updateConsent', () => {
       json: () => Promise.resolve(mockResponse),
     });
 
-    const result = await updateConsent({
-      consentId: 'consent-123',
+    const result = await updateConsent('consent-123', {
       scopes: ['personal_info'],
     });
 

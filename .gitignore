@@ -280,3 +280,5 @@ vite.config.ts.timestamp-*
 # Extra files
 
 .github/agents/orchestrator/
+*.png
+.playwright-mcp/

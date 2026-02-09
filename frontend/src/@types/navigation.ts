@@ -17,7 +17,10 @@ export type NavIconName =
   | 'message-circle'
   | 'bell'
   | 'folder'
-  | 'calendar';
+  | 'calendar'
+  | 'arrow-left'
+  | 'workflow'
+  | 'clipboard-check';
 
 /** A single navigation item. */
 export interface NavItem {

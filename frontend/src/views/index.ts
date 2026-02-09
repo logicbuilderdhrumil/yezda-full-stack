@@ -1,14 +1,19 @@
-export * from './auth';
-export * from './account';
-export * from './candidates';
-export * from './chat';
-export * from './files';
-export * from './forms';
-export * from './notifications';
-export * from './organizations';
-export * from './users';
-export * from './ledger';
-export { AccessDeniedView } from './AccessDeniedView';
-export { GenericErrorView, type GenericErrorViewProps } from './GenericErrorView';
-export { HomeView } from './HomeView';
-export { NotFoundView } from './NotFoundView';
+/**
+ * @deprecated Import from '@/features/<name>' instead.
+ * This barrel export is maintained for backward compatibility during migration.
+ */
+export * from '@/features/auth';
+export * from '@/features/account';
+export * from '@/features/candidates';
+export * from '@/features/chat';
+export * from '@/features/files';
+export * from '@/features/forms';
+export * from '@/features/notifications';
+export * from '@/features/organizations';
+export * from '@/features/users';
+export * from '@/features/billing';
+export { AccessDeniedView } from '@/features/shared';
+export { GenericErrorView, type GenericErrorViewProps } from '@/features/shared';
+export { HomeView } from '@/features/dashboard';
+export { NotFoundView } from '@/features/shared';
+export * from '@/features/client-portal';

@@ -30,7 +30,8 @@
   },
   "include": [
     "src/**/*",
-    "app/**/*"
+    "app/**/*",
+    "nativewind-env.d.ts"
   ],
   "exclude": [
     "node_modules"

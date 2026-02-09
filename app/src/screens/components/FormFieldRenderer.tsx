@@ -11,15 +11,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import {
-  FormField,
-  TextField,
-  TextareaField,
-  DateField,
-  SelectField,
-  RadioField,
-  CheckboxField,
-} from '../../types/application.types';
+import { FormField } from '../../types/application.types';
 
 interface FormFieldProps {
   field: FormField;
@@ -40,7 +32,7 @@ function TextFieldComponent({
   onChange,
   onBlur,
   disabled,
-}: FormFieldProps & { field: TextField }) {
+}: FormFieldProps) {
   const keyboardType = field.type === 'email' ? 'email-address' : field.type === 'phone' ? 'phone-pad' : 'default';
 
   return (
@@ -85,7 +77,7 @@ function TextareaFieldComponent({
   onChange,
   onBlur,
   disabled,
-}: FormFieldProps & { field: TextareaField }) {
+}: FormFieldProps) {
   const rows = field.rows || 4;
 
   return (
@@ -135,7 +127,7 @@ function DateFieldComponent({
   onChange,
   onBlur,
   disabled,
-}: FormFieldProps & { field: DateField }) {
+}: FormFieldProps) {
   // Simple date input - in production would use DateTimePicker
   return (
     <View className="mb-4">
@@ -173,7 +165,7 @@ function SelectFieldComponent({
   error,
   onChange,
   disabled,
-}: FormFieldProps & { field: SelectField }) {
+}: FormFieldProps) {
   const selectedValue = typeof value === 'string' ? value : Array.isArray(value) ? value[0] : '';
 
   const handleSelect = useCallback(
@@ -191,7 +183,7 @@ function SelectFieldComponent({
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
       <View className="border rounded-lg overflow-hidden border-gray-300">
-        {field.options.map((option, index) => (
+        {(field.options ?? []).map((option, index) => (
           <TouchableOpacity
             key={option.value}
             className={`px-4 py-3 flex-row justify-between items-center ${
@@ -230,7 +222,7 @@ function RadioFieldComponent({
   error,
   onChange,
   disabled,
-}: FormFieldProps & { field: RadioField }) {
+}: FormFieldProps) {
   const selectedValue = typeof value === 'string' ? value : '';
 
   return (
@@ -240,7 +232,7 @@ function RadioFieldComponent({
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
       <View>
-        {field.options.map((option) => (
+        {(field.options ?? []).map((option) => (
           <TouchableOpacity
             key={option.value}
             className={`flex-row items-center py-2 ${disabled ? 'opacity-50' : ''}`}
@@ -281,7 +273,7 @@ function CheckboxFieldComponent({
   error,
   onChange,
   disabled,
-}: FormFieldProps & { field: CheckboxField }) {
+}: FormFieldProps) {
   // Single checkbox (boolean) or multiple (string[])
   const isMultiple = Boolean(field.options?.length);
 
@@ -377,17 +369,17 @@ export function FormFieldRenderer(props: FormFieldProps) {
     case 'text':
     case 'email':
     case 'phone':
-      return <TextFieldComponent {...props} field={field as TextField} />;
+      return <TextFieldComponent {...props} />;
     case 'textarea':
-      return <TextareaFieldComponent {...props} field={field as TextareaField} />;
+      return <TextareaFieldComponent {...props} />;
     case 'date':
-      return <DateFieldComponent {...props} field={field as DateField} />;
+      return <DateFieldComponent {...props} />;
     case 'select':
-      return <SelectFieldComponent {...props} field={field as SelectField} />;
+      return <SelectFieldComponent {...props} />;
     case 'radio':
-      return <RadioFieldComponent {...props} field={field as RadioField} />;
+      return <RadioFieldComponent {...props} />;
     case 'checkbox':
-      return <CheckboxFieldComponent {...props} field={field as CheckboxField} />;
+      return <CheckboxFieldComponent {...props} />;
     default:
       return null;
   }

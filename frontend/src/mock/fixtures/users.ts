@@ -46,11 +46,11 @@ export interface MockUser {
 
 /** Predefined mock users list. */
 export const mockUsers: MockUser[] = [
-  createMockUser('001', { email: 'admin@example.com', displayName: 'Admin User', roles: ['admin'] }),
-  createMockUser('002', { email: 'manager@example.com', displayName: 'Manager User', roles: ['manager'] }),
-  createMockUser('003', { email: 'agent1@example.com', displayName: 'Alice Agent', roles: ['agent'] }),
-  createMockUser('004', { email: 'agent2@example.com', displayName: 'Bob Agent', roles: ['agent'] }),
-  createMockUser('005', { email: 'viewer@example.com', displayName: 'Charlie Viewer', status: 'inactive' }),
+  createMockUser('001', { email: 'admin@example.com', displayName: 'Sarah Mitchell', firstName: 'Sarah', lastName: 'Mitchell', roles: ['admin'] }),
+  createMockUser('002', { email: 'manager@example.com', displayName: 'David Chen', firstName: 'David', lastName: 'Chen', roles: ['manager'] }),
+  createMockUser('003', { email: 'agent1@example.com', displayName: 'Alice Nguyen', firstName: 'Alice', lastName: 'Nguyen', roles: ['agent'] }),
+  createMockUser('004', { email: 'agent2@example.com', displayName: 'Bob Patel', firstName: 'Bob', lastName: 'Patel', roles: ['agent'] }),
+  createMockUser('005', { email: 'viewer@example.com', displayName: 'Charlie Wilson', firstName: 'Charlie', lastName: 'Wilson', status: 'inactive' }),
 ];
 
 /** Mock paginated users list response - aligned with backend UserListResult. */

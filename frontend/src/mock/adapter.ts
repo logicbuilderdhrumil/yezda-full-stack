@@ -8,6 +8,17 @@ import { getMockConfig, isMockEnabled } from './config';
 import { registerAuthHandlers } from './handlers/auth';
 import { registerUserHandlers } from './handlers/users';
 import { registerCandidateHandlers } from './handlers/candidates';
+import { registerDashboardHandlers } from './handlers/dashboard';
+import { registerNotificationHandlers } from './handlers/notifications';
+import { registerOrganizationHandlers } from './handlers/organizations';
+import { registerPipelineHandlers } from './handlers/pipelines';
+import { registerReviewHandlers } from './handlers/reviews';
+import { registerChatHandlers } from './handlers/chat';
+import { registerLedgerHandlers } from './handlers/ledger';
+import { registerFormHandlers } from './handlers/forms';
+import { registerAccountHandlers } from './handlers/account';
+import { registerChartHandlers } from './handlers/charts';
+import { registerScreeningHandlers } from './handlers/screenings';
 
 /** Active mock adapter instance. */
 let mockInstance: MockAdapter | null = null;
@@ -36,6 +47,17 @@ export function setupMockAdapter(axiosInstance: AxiosInstance): MockAdapter | nu
   registerAuthHandlers(mockInstance);
   registerUserHandlers(mockInstance);
   registerCandidateHandlers(mockInstance);
+  registerDashboardHandlers(mockInstance);
+  registerNotificationHandlers(mockInstance);
+  registerOrganizationHandlers(mockInstance);
+  registerPipelineHandlers(mockInstance);
+  registerReviewHandlers(mockInstance);
+  registerChatHandlers(mockInstance);
+  registerLedgerHandlers(mockInstance);
+  registerFormHandlers(mockInstance);
+  registerAccountHandlers(mockInstance);
+  registerChartHandlers(mockInstance);
+  registerScreeningHandlers(mockInstance);
 
   if (config.logRequests) {
     console.log('[MockAPI] Mock adapter initialized with latency:', config.latencyMs, 'ms');
@@ -77,5 +99,16 @@ export function resetMockHandlers(): void {
     registerAuthHandlers(mockInstance);
     registerUserHandlers(mockInstance);
     registerCandidateHandlers(mockInstance);
+    registerDashboardHandlers(mockInstance);
+    registerNotificationHandlers(mockInstance);
+    registerOrganizationHandlers(mockInstance);
+    registerPipelineHandlers(mockInstance);
+    registerReviewHandlers(mockInstance);
+    registerChatHandlers(mockInstance);
+    registerLedgerHandlers(mockInstance);
+    registerFormHandlers(mockInstance);
+    registerAccountHandlers(mockInstance);
+    registerChartHandlers(mockInstance);
+    registerScreeningHandlers(mockInstance);
   }
 }

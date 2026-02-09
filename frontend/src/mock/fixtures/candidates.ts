@@ -10,7 +10,9 @@ export interface MockCandidate {
   lastName: string;
   email: string;
   phone: string;
-  status: 'pending' | 'screening' | 'approved' | 'rejected';
+  status: 'pending' | 'active' | 'certified' | 'archived';
+  organizationId: string;
+  organizationName: string;
   applicationDate: string;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +27,8 @@ export function createMockCandidate(id: string, overrides?: Partial<MockCandidat
     email: `candidate${id}@example.com`,
     phone: `+1-555-000-${id.padStart(4, '0')}`,
     status: 'pending',
+    organizationId: 'org-001',
+    organizationName: 'Acme Corp',
     applicationDate: '2025-01-15T00:00:00.000Z',
     createdAt: '2025-01-15T00:00:00.000Z',
     updatedAt: '2025-01-15T00:00:00.000Z',
@@ -34,20 +38,23 @@ export function createMockCandidate(id: string, overrides?: Partial<MockCandidat
 
 /** Predefined mock candidates list. */
 export const mockCandidates: MockCandidate[] = [
-  createMockCandidate('c001', { firstName: 'John', lastName: 'Doe', status: 'screening' }),
-  createMockCandidate('c002', { firstName: 'Jane', lastName: 'Smith', status: 'approved' }),
+  createMockCandidate('c001', { firstName: 'John', lastName: 'Doe', status: 'active' }),
+  createMockCandidate('c002', { firstName: 'Jane', lastName: 'Smith', status: 'certified', organizationName: 'Beta Inc' }),
   createMockCandidate('c003', { firstName: 'Robert', lastName: 'Johnson', status: 'pending' }),
-  createMockCandidate('c004', { firstName: 'Emily', lastName: 'Brown', status: 'rejected' }),
-  createMockCandidate('c005', { firstName: 'Michael', lastName: 'Davis', status: 'screening' }),
-  createMockCandidate('c006', { firstName: 'Sarah', lastName: 'Wilson', status: 'pending' }),
+  createMockCandidate('c004', { firstName: 'Emily', lastName: 'Brown', status: 'archived', organizationName: 'Gamma Ltd' }),
+  createMockCandidate('c005', { firstName: 'Michael', lastName: 'Davis', status: 'active' }),
+  createMockCandidate('c006', { firstName: 'Sarah', lastName: 'Wilson', status: 'pending', organizationName: 'Delta Co' }),
 ];
 
 /** Mock paginated candidates list response. */
 export const candidatesListResponse = {
   data: mockCandidates,
-  total: mockCandidates.length,
-  page: 1,
-  pageSize: 10,
+  meta: {
+    page: 1,
+    pageSize: 10,
+    totalItems: mockCandidates.length,
+    totalPages: 1,
+  },
 };
 
 /** Get a single candidate by ID. */

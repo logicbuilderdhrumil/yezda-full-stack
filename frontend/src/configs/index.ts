@@ -19,6 +19,7 @@ export {
 } from './theme.config';
 export { iconMap, navConfig } from './navigation.config';
 export { adminNavConfig } from './admin-navigation.config';
+export { buildOrgNavConfig } from './org-navigation.config';
 export { clientNavConfig } from './client-navigation.config';
 export {
   getFirebaseConfig,

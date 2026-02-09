@@ -12,81 +12,24 @@ import {
   authErrorMessages,
 } from '../types/auth.types';
 import type { MfaVerifyRequestDto } from '../types/api.types';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:6312/api' : undefined);
-
-if (!API_BASE_URL) {
-  throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
-}
-
-const REQUEST_TIMEOUT_MS = 30000; // 30 seconds
-
-interface ApiError {
-  code: string;
-  message: string;
-}
+import { apiRequest, ApiError, type ApiRequestConfig } from './apiClient';
 
 /**
  * Custom error class for auth API errors.
  */
-export class AuthApiError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public status: number
-  ) {
-    super(message);
+export class AuthApiError extends ApiError {
+  constructor(code: string, message: string, status: number) {
+    super(code, message, status);
     this.name = 'AuthApiError';
   }
 }
 
-/**
- * Generic fetch wrapper with error handling and timeout.
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {},
-  timeoutMs: number = REQUEST_TIMEOUT_MS
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  // Create abort controller for timeout
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      const errorData: ApiError = await response.json().catch(() => ({
-        code: 'UNKNOWN_ERROR',
-        message: authErrorMessages.unknownError,
-      }));
-      throw new AuthApiError(errorData.code, errorData.message, response.status);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new AuthApiError(
-        'REQUEST_TIMEOUT',
-        authErrorMessages.networkError,
-        0
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
+/** Shared request config for auth API calls. */
+const authRequestConfig: ApiRequestConfig = {
+  ErrorClass: AuthApiError,
+  fallbackErrorMessage: authErrorMessages.unknownError,
+  networkErrorMessage: authErrorMessages.networkError,
+};
 
 /**
  * Sign in with email and password.
@@ -94,10 +37,10 @@ async function apiRequest<T>(
  */
 export async function signIn(request: SignInRequest): Promise<SignInResponse> {
   try {
-    return await apiRequest<SignInResponse>('/v1/auth/sign-in', {
+    return await apiRequest<SignInResponse>('/v1/app/auth/sign-in', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }, authRequestConfig);
   } catch (error) {
     if (error instanceof AuthApiError) {
       if (error.status === 401) {
@@ -132,10 +75,10 @@ export async function signIn(request: SignInRequest): Promise<SignInResponse> {
  */
 export async function verifyMfa(request: MfaVerifyRequestDto): Promise<SignInResponse> {
   try {
-    return await apiRequest<SignInResponse>('/v1/auth/mfa/verify', {
+    return await apiRequest<SignInResponse>('/v1/app/auth/mfa/verify', {
       method: 'POST',
       body: JSON.stringify(request),
-    });
+    }, authRequestConfig);
   } catch (error) {
     if (error instanceof AuthApiError && error.status === 401) {
       throw new AuthApiError(
@@ -153,10 +96,10 @@ export async function verifyMfa(request: MfaVerifyRequestDto): Promise<SignInRes
  */
 export async function refreshTokens(refreshToken: string): Promise<RefreshResponse> {
   try {
-    return await apiRequest<RefreshResponse>('/v1/auth/refresh', {
+    return await apiRequest<RefreshResponse>('/v1/app/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
-    });
+    }, authRequestConfig);
   } catch (error) {
     if (error instanceof AuthApiError && error.status === 401) {
       throw new AuthApiError(
@@ -174,12 +117,12 @@ export async function refreshTokens(refreshToken: string): Promise<RefreshRespon
  */
 export async function signOut(accessToken: string): Promise<void> {
   try {
-    await apiRequest<void>('/v1/auth/sign-out', {
+    await apiRequest<void>('/v1/app/auth/sign-out', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    });
+    }, authRequestConfig);
   } catch (error) {
     // Ignore errors on sign-out; we'll clear local tokens anyway
     console.warn('Sign-out API call failed:', error);

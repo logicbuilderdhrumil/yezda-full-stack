@@ -8,16 +8,23 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ProfileEditScreen } from '../screens/ProfileEditScreen';
 import { useProfileStore } from '../store/profileStore';
 
+// Mock zustand/react/shallow — useShallow must return the selector itself
+// so that useProfileStore(useShallow(fn)) becomes useProfileStore(fn).
+jest.mock('zustand/react/shallow', () => ({
+  useShallow: (selector: any) => selector,
+}));
+
 // Mock the profile store
 jest.mock('../store/profileStore', () => ({
   useProfileStore: jest.fn(),
-  selectProfile: jest.fn((state) => state?.profile ?? null),
-  selectProfileScreenState: jest.fn((state) => state?.screenState ?? 'idle'),
-  selectProfileError: jest.fn((state) => state?.error ?? null),
-  selectProfileSuccess: jest.fn((state) => state?.successMessage ?? null),
+  selectProfile: jest.fn((state: Record<string, unknown>) => state?.profile ?? null),
+  selectProfileScreenState: jest.fn((state: Record<string, unknown>) => state?.screenState ?? 'idle'),
+  selectProfileError: jest.fn((state: Record<string, unknown>) => state?.error ?? null),
+  selectProfileSuccess: jest.fn((state: Record<string, unknown>) => state?.successMessage ?? null),
 }));
 
-const mockUseProfileStore = useProfileStore as jest.MockedFunction<typeof useProfileStore>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockUseProfileStore = useProfileStore as unknown as jest.MockedFunction<(...args: any[]) => any>;
 
 describe('ProfileEditScreen', () => {
   const mockUpdateProfile = jest.fn();
@@ -26,12 +33,14 @@ describe('ProfileEditScreen', () => {
   const mockOnSaveSuccess = jest.fn();
   const mockOnCancel = jest.fn();
 
+  // Stable reference — must remain the SAME object across renders to avoid
+  // infinite useEffect([profile]) re-trigger.
   const mockProfile = {
     id: '1',
     email: 'john@example.com',
     firstName: 'John',
     lastName: 'Doe',
-    phone: '555-1234',
+    phone: '555-123-4567',
     address: {
       street: '123 Main St',
       city: 'New York',
@@ -41,20 +50,26 @@ describe('ProfileEditScreen', () => {
     },
   };
 
+  // Build the default state ONCE so every selector call returns the same
+  // object references and React doesn't detect a change.
+  let defaultState: Record<string, unknown>;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: mockProfile,
-        screenState: 'idle',
-        error: null,
-        successMessage: null,
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+
+    defaultState = {
+      profile: mockProfile,
+      screenState: 'idle',
+      error: null,
+      successMessage: null,
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(defaultState) : defaultState
+    );
   });
 
   it('renders form with profile data', () => {
@@ -64,7 +79,7 @@ describe('ProfileEditScreen', () => {
 
     expect(getByLabelText('First Name').props.value).toBe('John');
     expect(getByLabelText('Last Name').props.value).toBe('Doe');
-    expect(getByLabelText('Phone').props.value).toBe('555-1234');
+    expect(getByLabelText('Phone').props.value).toBe('555-123-4567');
     expect(getByLabelText('Street Address').props.value).toBe('123 Main St');
     expect(getByLabelText('City').props.value).toBe('New York');
     expect(getByLabelText('State').props.value).toBe('NY');
@@ -120,7 +135,7 @@ describe('ProfileEditScreen', () => {
       expect(mockUpdateProfile).toHaveBeenCalledWith({
         firstName: 'John',
         lastName: 'Doe',
-        phone: '555-1234',
+        phone: '555-123-4567',
         address: {
           street: '123 Main St',
           city: 'New York',
@@ -133,18 +148,19 @@ describe('ProfileEditScreen', () => {
   });
 
   it('does not call updateProfile when form is invalid', async () => {
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: { ...mockProfile, firstName: '' },
-        screenState: 'idle',
-        error: null,
-        successMessage: null,
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+    const emptyFirstNameProfile = { ...mockProfile, firstName: '' };
+    const state = {
+      profile: emptyFirstNameProfile,
+      screenState: 'idle',
+      error: null,
+      successMessage: null,
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(state) : state
+    );
 
     const { getByLabelText, getByText } = render(
       <ProfileEditScreen onSaveSuccess={mockOnSaveSuccess} onCancel={mockOnCancel} />
@@ -159,18 +175,18 @@ describe('ProfileEditScreen', () => {
   });
 
   it('displays error banner when error exists', () => {
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: mockProfile,
-        screenState: 'error',
-        error: 'Failed to save changes',
-        successMessage: null,
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+    const state = {
+      profile: mockProfile,
+      screenState: 'error',
+      error: 'Failed to save changes',
+      successMessage: null,
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(state) : state
+    );
 
     const { getByText, UNSAFE_getByProps } = render(
       <ProfileEditScreen onSaveSuccess={mockOnSaveSuccess} onCancel={mockOnCancel} />
@@ -181,18 +197,18 @@ describe('ProfileEditScreen', () => {
   });
 
   it('displays success banner when successMessage exists', () => {
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: mockProfile,
-        screenState: 'success',
-        error: null,
-        successMessage: 'Profile updated successfully!',
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+    const state = {
+      profile: mockProfile,
+      screenState: 'success',
+      error: null,
+      successMessage: 'Profile updated successfully!',
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(state) : state
+    );
 
     const { getByText } = render(
       <ProfileEditScreen onSaveSuccess={mockOnSaveSuccess} onCancel={mockOnCancel} />
@@ -202,18 +218,18 @@ describe('ProfileEditScreen', () => {
   });
 
   it('shows saving state with disabled button', () => {
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: mockProfile,
-        screenState: 'saving',
-        error: null,
-        successMessage: null,
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+    const state = {
+      profile: mockProfile,
+      screenState: 'saving',
+      error: null,
+      successMessage: null,
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(state) : state
+    );
 
     const { getByLabelText, queryByText } = render(
       <ProfileEditScreen onSaveSuccess={mockOnSaveSuccess} onCancel={mockOnCancel} />
@@ -236,18 +252,18 @@ describe('ProfileEditScreen', () => {
   });
 
   it('clears error when user types', () => {
-    mockUseProfileStore.mockImplementation((selector) => {
-      const state = {
-        profile: mockProfile,
-        screenState: 'error',
-        error: 'Some error',
-        successMessage: null,
-        updateProfile: mockUpdateProfile,
-        clearError: mockClearError,
-        clearSuccess: mockClearSuccess,
-      };
-      return typeof selector === 'function' ? selector(state) : state;
-    });
+    const state = {
+      profile: mockProfile,
+      screenState: 'error',
+      error: 'Some error',
+      successMessage: null,
+      updateProfile: mockUpdateProfile,
+      clearError: mockClearError,
+      clearSuccess: mockClearSuccess,
+    };
+    mockUseProfileStore.mockImplementation((selector) =>
+      typeof selector === 'function' ? selector(state) : state
+    );
 
     const { getByLabelText } = render(
       <ProfileEditScreen onSaveSuccess={mockOnSaveSuccess} onCancel={mockOnCancel} />

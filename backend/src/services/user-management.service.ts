@@ -6,6 +6,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { userManagementRepository } from '../repositories/user-management.repository.js';
+import { userRepository } from '../repositories/user.repository.js';
 import { auditService } from './audit.service.js';
 import { metricsService } from './metrics.service.js';
 import { passwordService } from './password.service.js';
@@ -223,6 +224,22 @@ export class UserManagementService {
       }
 
       const userId = uuidv4();
+
+      // Also create an auth record in the users table so the user can sign in
+      const now = new Date();
+      const authEmailExists = await userRepository.emailExistsForUser(input.email);
+      if (!authEmailExists && passwordHash) {
+        await userRepository.createUser({
+          id: userId,
+          email: input.email.toLowerCase().trim(),
+          passwordHash,
+          mfaEnabled: false,
+          failedAttempts: 0,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+
       const user = await userManagementRepository.create({
         ...input,
         id: userId,

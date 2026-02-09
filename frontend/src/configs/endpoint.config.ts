@@ -146,6 +146,32 @@ export const endpoints = {
   // Dashboard endpoints
   'dashboard.metrics': { path: '/dashboard/summary', version: 'v1' },
   'dashboard.trends': { path: '/dashboard/trends', version: 'v1' },
+
+  // Screening pipelines endpoints
+  'screening-pipelines.list': { path: '/screening-pipelines', version: 'v1' },
+  'screening-pipelines.detail': { path: '/screening-pipelines/:id', version: 'v1' },
+  'screening-pipelines.activate': { path: '/screening-pipelines/:id/activate', version: 'v1' },
+  'screening-pipelines.archive': { path: '/screening-pipelines/:id/archive', version: 'v1' },
+  'screening-pipelines.assign': { path: '/screening-pipelines/:id/assign', version: 'v1' },
+  'screening-pipelines.assignmentProgress': { path: '/screening-pipelines/assignments/:id/progress', version: 'v1' },
+  'screening-pipelines.candidateAssignments': { path: '/screening-pipelines/candidates/:candidateId/assignments', version: 'v1' },
+  'screening-pipelines.completeStage': { path: '/screening-pipelines/assignments/:assignmentId/stages/:stageId/complete', version: 'v1' },
+
+  // Review task endpoints
+  'reviews.list': { path: '/reviews', version: 'v1' },
+  'reviews.myQueue': { path: '/reviews/my-queue', version: 'v1' },
+  'reviews.detail': { path: '/reviews/:id', version: 'v1' },
+  'reviews.decide': { path: '/reviews/:id/decide', version: 'v1' },
+  'reviews.assign': { path: '/reviews/:id/assign', version: 'v1' },
+
+  // Client portal endpoints
+  'client.dashboard': { path: '/client/dashboard', version: 'v1' },
+  'client.candidates.list': { path: '/client/candidates', version: 'v1' },
+  'client.candidates.get': { path: '/client/candidates/:id', version: 'v1' },
+  'client.org.settings': { path: '/client/org/settings', version: 'v1' },
+  'client.org.updateSettings': { path: '/client/org/settings', version: 'v1' },
+  'client.screenings.list': { path: '/client/screenings', version: 'v1' },
+  'client.reports': { path: '/client/reports', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

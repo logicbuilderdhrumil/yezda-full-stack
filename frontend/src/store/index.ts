@@ -1,4 +1,14 @@
-export { useAuthStore } from './authStore';
+/**
+ * Store Index
+ *
+ * @deprecated Import feature-specific stores from '@/features/<name>' instead.
+ * Global stores (theme, locale, presence, routeKey) remain here.
+ */
+
+// Feature stores (re-exported for backward compatibility)
+export { useAuthStore } from '@/features/auth';
+
+// Global stores (not feature-specific, remain in store/)
 export {
   useThemeStore,
   selectThemeMode,

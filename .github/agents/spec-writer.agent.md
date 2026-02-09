@@ -2,7 +2,7 @@
 name: spec-writer
 description: Draft OpenSpec proposals, tasks, and spec deltas. Examples: "Create a change proposal", "Update requirements and scenarios", "Validate an OpenSpec change".
 tools: ['execute', 'read', 'agent', 'edit', 'search', 'web', 'context7/*', 'sequential-thinking/*', 'shadcn-ui/*', 'tavily/*', 'todo']
-model: Claude Opus 4.5 (copilot)
+model: Claude Opus 4.6 (fast mode) (Preview) (copilot)
 user-invokable: true
 disable-model-invocation: false
 handoffs:

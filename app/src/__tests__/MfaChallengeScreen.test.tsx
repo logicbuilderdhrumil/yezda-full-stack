@@ -15,12 +15,13 @@ jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
 // Mock the auth store
 jest.mock('../store/authStore', () => ({
   useAuthStore: jest.fn(),
-  selectIsLoading: jest.fn((state) => state?.isLoading ?? false),
-  selectError: jest.fn((state) => state?.error ?? null),
-  selectPendingMfa: jest.fn((state) => state?.pendingMfaChallenge ?? null),
+  selectIsLoading: jest.fn((state: Record<string, unknown>) => state?.isLoading ?? false),
+  selectError: jest.fn((state: Record<string, unknown>) => state?.error ?? null),
+  selectPendingMfa: jest.fn((state: Record<string, unknown>) => state?.pendingMfaChallenge ?? null),
 }));
 
-const mockUseAuthStore = useAuthStore as jest.MockedFunction<typeof useAuthStore>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockUseAuthStore = useAuthStore as unknown as jest.MockedFunction<(...args: any[]) => any>;
 
 describe('MfaChallengeScreen', () => {
   const mockVerifyMfa = jest.fn();

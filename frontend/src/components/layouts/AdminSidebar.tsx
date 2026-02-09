@@ -1,18 +1,26 @@
 /**
  * Admin sidebar navigation component with role-based filtering.
  * Used for the /admin/* routes for SAAS staff operations.
+ * Supports child NavItems (e.g. Forms nested under Pipelines).
+ * Detects org-context routes and switches to org-specific sidebar.
  */
 
-import { useMemo, type ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useMemo, useState, type ReactNode } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSidebar } from '@/context/SidebarContext';
-import { adminNavConfig, iconMap } from '@/configs';
+import { adminNavConfig, buildOrgNavConfig, iconMap } from '@/configs';
 import type { NavItem, NavSection } from '@/@types/navigation';
 import type { UserRole } from '@/@types/auth';
 import { cn } from '@/utils';
+
+/**
+ * Matches an org-context route and extracts the org ID.
+ * Pattern: /admin/organizations/:id (with optional trailing segments).
+ */
+const ORG_CONTEXT_PATTERN = /^\/admin\/organizations\/([^/]+)(?:\/|$)/;
 
 /**
  * Filter navigation items based on user authorities.
@@ -21,14 +29,22 @@ function filterByAuthority(
   items: NavItem[],
   userRoles: UserRole[] | undefined
 ): NavItem[] {
-  return items.filter((item) => {
-    // Empty authorities means all authenticated users can access
-    if (item.authorities.length === 0) return true;
-    // Check if user role is in allowed authorities
-    return (userRoles?.length ?? 0) > 0
-      ? item.authorities.some((role) => userRoles!.includes(role))
-      : false;
-  });
+  return items
+    .filter((item) => {
+      if (item.authorities.length === 0) return true;
+      return (userRoles?.length ?? 0) > 0
+        ? item.authorities.some((role) => userRoles!.includes(role))
+        : false;
+    })
+    .map((item) => {
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: filterByAuthority(item.children, userRoles),
+        };
+      }
+      return item;
+    });
 }
 
 /**
@@ -54,12 +70,12 @@ interface NavItemButtonProps {
 function NavItemButton({ item, isCollapsed }: NavItemButtonProps): ReactNode {
   const { t } = useTranslation();
   const Icon = iconMap[item.icon];
-  // Map nav item ids to translation keys
   const navLabel = t(`nav.${item.id}`, { defaultValue: item.label });
 
   return (
     <NavLink
       to={item.path}
+      end={item.path === '/admin' || item.path === '/admin/organizations'}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -78,6 +94,76 @@ function NavItemButton({ item, isCollapsed }: NavItemButtonProps): ReactNode {
   );
 }
 
+/**
+ * Renders a nav item that has children with expand/collapse toggle.
+ */
+interface NavItemWithChildrenProps {
+  item: NavItem;
+  isCollapsed: boolean;
+}
+
+function NavItemWithChildren({ item, isCollapsed }: NavItemWithChildrenProps): ReactNode {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const [isExpanded, setIsExpanded] = useState(() => {
+    // Auto-expand if any child is currently active
+    return (
+      location.pathname === item.path ||
+      item.children?.some((child) => location.pathname.startsWith(child.path)) ||
+      false
+    );
+  });
+
+  const Icon = iconMap[item.icon];
+  const navLabel = t(`nav.${item.id}`, { defaultValue: item.label });
+  const isParentActive = location.pathname === item.path;
+
+  return (
+    <div>
+      <div className="flex items-center">
+        <NavLink
+          to={item.path}
+          className={cn(
+            'flex flex-1 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            'hover:bg-gray-100 dark:hover:bg-gray-800',
+            isParentActive
+              ? 'bg-primary/10 text-primary dark:bg-primary/20'
+              : 'text-gray-700 dark:text-gray-300',
+            isCollapsed && 'justify-center px-2'
+          )}
+          title={isCollapsed ? navLabel : undefined}
+        >
+          <Icon className="h-5 w-5 shrink-0" />
+          {!isCollapsed && <span>{navLabel}</span>}
+        </NavLink>
+        {!isCollapsed && (
+          <button
+            type="button"
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="mr-1 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </button>
+        )}
+      </div>
+      {!isCollapsed && isExpanded && item.children && (
+        <ul className="ml-6 mt-1 space-y-1 border-l border-gray-200 pl-2 dark:border-gray-700">
+          {item.children.map((child) => (
+            <li key={child.id}>
+              <NavItemButton item={child} isCollapsed={false} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 interface AdminSidebarProps {
   /** Additional CSS classes. */
   className?: string;
@@ -85,23 +171,37 @@ interface AdminSidebarProps {
 
 /**
  * AdminSidebar component with navigation items filtered by user role.
+ * Switches to org-context navigation when viewing a specific organization.
  */
 export function AdminSidebar({ className }: AdminSidebarProps): ReactNode {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { isCollapsed, isMobileOpen, closeMobile, toggleCollapsed } =
     useSidebar();
+  const location = useLocation();
+
+  // Detect org-context route
+  const orgMatch = ORG_CONTEXT_PATTERN.exec(location.pathname);
+  const orgId = orgMatch?.[1];
+
+  // Build the appropriate nav config
+  const navConfig = useMemo(() => {
+    if (orgId) {
+      return buildOrgNavConfig(orgId);
+    }
+    return adminNavConfig;
+  }, [orgId]);
 
   // Filter navigation based on user role
   const filteredSections = useMemo(
-    () => filterNavConfig(adminNavConfig.sections, user?.roles),
-    [user?.roles]
+    () => filterNavConfig(navConfig.sections, user?.roles),
+    [navConfig, user?.roles]
   );
 
   // Map section titles to translation keys
   const getSectionTitle = (title: string | undefined): string | undefined => {
     if (!title) return undefined;
-    const key = title.toLowerCase();
+    const key = title.toLowerCase().replace(/\s+/g, '-');
     return t(`nav.${key}`, { defaultValue: title });
   };
 
@@ -125,7 +225,11 @@ export function AdminSidebar({ className }: AdminSidebarProps): ReactNode {
             <ul className="space-y-1">
               {section.items.map((item) => (
                 <li key={item.id}>
-                  <NavItemButton item={item} isCollapsed={isCollapsed} />
+                  {item.children && item.children.length > 0 ? (
+                    <NavItemWithChildren item={item} isCollapsed={isCollapsed} />
+                  ) : (
+                    <NavItemButton item={item} isCollapsed={isCollapsed} />
+                  )}
                 </li>
               ))}
             </ul>

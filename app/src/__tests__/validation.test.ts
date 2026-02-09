@@ -63,7 +63,7 @@ describe('validateLoginField', () => {
 
 describe('validateLoginForm', () => {
   it('returns errors for empty form', () => {
-    const values: LoginFormValues = { email: '', password: '' };
+    const values: LoginFormValues = { email: '', password: '', userType: 'candidate' };
     const errors = validateLoginForm(values);
 
     expect(errors).toEqual({
@@ -76,6 +76,7 @@ describe('validateLoginForm', () => {
     const values: LoginFormValues = {
       email: 'user@example.com',
       password: 'securepassword',
+      userType: 'candidate',
     };
     const errors = validateLoginForm(values);
 
@@ -86,6 +87,7 @@ describe('validateLoginForm', () => {
     const values: LoginFormValues = {
       email: 'invalid',
       password: 'securepassword',
+      userType: 'candidate',
     };
     const errors = validateLoginForm(values);
 
@@ -98,6 +100,7 @@ describe('validateLoginForm', () => {
     const values: LoginFormValues = {
       email: 'user@example.com',
       password: 'short',
+      userType: 'candidate',
     };
     const errors = validateLoginForm(values);
 

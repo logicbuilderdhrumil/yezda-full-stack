@@ -11,7 +11,7 @@ export type UserType = 'user' | 'candidate';
 /**
  * User roles supported by the system.
  */
-export type UserRole = 'admin' | 'manager' | 'user' | 'candidate';
+export type UserRole = 'admin' | 'manager' | 'user' | 'candidate' | 'client' | 'client_admin';
 
 /**
  * Token pair returned on successful authentication.

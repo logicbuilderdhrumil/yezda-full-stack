@@ -4,18 +4,33 @@
   },
   "nav": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "candidates": "Candidates",
     "organizations": "Organizations",
     "users": "Users",
     "forms": "Forms",
     "screening": "Screening",
+    "pipelines": "Pipelines",
+    "pipeline-builder": "Builder",
+    "reviews": "Reviews",
+    "billing-and-analytics": "Billing & Analytics",
+    "files": "Files",
+    "chat": "Chat",
     "reports": "Reports",
     "settings": "Settings",
+    "profile": "My Profile",
+    "admin": "Admin Area",
     "management": "Management",
     "analytics": "Analytics",
+    "communication": "Communication",
     "billing": "Billing",
+    "overview": "Overview",
+    "insights": "Insights",
+    "account": "Account",
     "ledgerBilled": "Billed Ledger",
     "ledgerUnbilled": "Unbilled Ledger",
+    "ledger-billed": "Billed Ledger",
+    "ledger-unbilled": "Unbilled Ledger",
     "system": "System",
     "collapse": "Collapse",
     "expandSidebar": "Expand sidebar",
@@ -43,7 +58,24 @@
     "view": "View",
     "reset": "Reset",
     "success": "Success",
-    "failed": "Failed"
+    "failed": "Failed",
+    "userMenu": "User menu"
+  },
+  "search": {
+    "placeholder": "Search..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "markAllRead": "Mark all as read",
+    "viewAll": "View all notifications"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "auth": {
     "signIn": "Sign in",
@@ -287,6 +319,10 @@
       "all": "All Roles",
       "admin": "Admin",
       "manager": "Manager",
+      "agent": "Agent",
+      "viewer": "Viewer",
+      "client": "Client",
+      "client_admin": "Client Admin",
       "user": "User",
       "candidate": "Candidate"
     },
@@ -389,7 +425,15 @@
       "pending": "Pending",
       "active": "Active",
       "certified": "Certified",
-      "archived": "Archived"
+      "archived": "Archived",
+      "screening": "Screening",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "in_review": "In Review",
+      "submitted": "Submitted",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "failed": "Failed"
     },
     "form": {
       "firstName": "First Name",
@@ -640,6 +684,93 @@
       "untitled": "Untitled Form",
       "noFields": "This form has no fields",
       "selectPlaceholder": "Select an option..."
+    },
+    "picker": {
+      "title": "Select Form",
+      "description": "Pick an existing form or create a new one for this pipeline stage.",
+      "searchPlaceholder": "Search forms...",
+      "noResults": "No forms found matching your search.",
+      "fetchError": "Failed to load forms",
+      "fieldCount": "{{count}} field(s)",
+      "lastEdited": "Edited {{date}}",
+      "selectButton": "Select",
+      "selectForm": "Select a form…",
+      "createNew": "Create New",
+      "change": "Change",
+      "unnamed": "Unnamed Form"
+    }
+  },
+  "pipelines": {
+    "list": {
+      "title": "Screening Pipelines",
+      "description": "Manage screening workflow pipelines",
+      "createButton": "Create Pipeline",
+      "builderButton": "Visual Builder",
+      "noResults": "No pipelines found",
+      "fetchError": "Failed to load pipelines",
+      "searchPlaceholder": "Search pipelines...",
+      "filterStatus": "Filter by status"
+    },
+    "builder": {
+      "modules": "Modules",
+      "configTitle": "Module Settings",
+      "label": "Label",
+      "deleteNode": "Remove Module",
+      "validationFailed": "Please fix validation errors before saving",
+      "updated": "Pipeline updated",
+      "created": "Pipeline created",
+      "saveError": "Failed to save pipeline",
+      "activated": "Pipeline activated",
+      "activateError": "Failed to activate pipeline",
+      "backToPipelines": "Back to Pipelines",
+      "back": "Back",
+      "formId": "Form Definition",
+      "formVersion": "Form Version",
+      "provider": "Provider",
+      "endpoint": "Endpoint URL",
+      "apiKeyRef": "API Key Ref",
+      "timeout": "Timeout (ms)",
+      "processor": "Processor",
+      "assigneeRole": "Assignee Role",
+      "decisionOptions": "Decision Options (comma-separated)",
+      "timeoutHours": "Timeout (hours)",
+      "escalation": "Escalation Policy",
+      "channel": "Channel",
+      "templateId": "Template ID",
+      "recipientType": "Recipient",
+      "triggerOn": "Trigger On",
+      "pipelineName": "Pipeline Name",
+      "pipelineDescription": "Description",
+      "save": "Save",
+      "activate": "Activate",
+      "emptyState": "Drag modules from the sidebar to build your pipeline",
+      "undoHint": "Ctrl+Z to undo, Ctrl+Shift+Z to redo, Ctrl+S to save"
+    },
+    "module": {
+      "form": "Form",
+      "external_service": "External Service",
+      "internal_processing": "Internal Processing",
+      "human_review": "Human Review",
+      "notification": "Notification"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "details": {
+      "title": "Pipeline Details",
+      "overview": "Overview",
+      "stages": "Stages"
+    },
+    "templates": {
+      "title": "Pipeline Templates",
+      "description": "Start from a pre-built template",
+      "useTemplate": "Use Template",
+      "standard_dbs": "Standard DBS Check",
+      "right_to_work": "Right to Work",
+      "full_background": "Full Background Check",
+      "simple_form": "Simple Form Collection"
     }
   },
   "ledger": {
@@ -682,6 +813,44 @@
     "exporting": "Exporting...",
     "exportSuccess": "Ledger exported successfully",
     "exportError": "Failed to export ledger"
+  },
+  "reviews": {
+    "dashboard": {
+      "title": "Review Queue",
+      "subtitle": "Manage pending review tasks",
+      "noTasks": "No review tasks in your queue",
+      "filters": {
+        "all": "All",
+        "pending": "Pending",
+        "assigned": "Assigned",
+        "inReview": "In Review"
+      },
+      "table": {
+        "candidate": "Candidate",
+        "pipeline": "Pipeline",
+        "stage": "Stage",
+        "status": "Status",
+        "dueDate": "Due Date",
+        "assignedDate": "Assigned",
+        "actions": "Actions"
+      },
+      "detail": {
+        "title": "Review Task",
+        "decision": "Decision",
+        "notes": "Notes",
+        "notesPlaceholder": "Add review notes...",
+        "submit": "Submit Decision",
+        "submitting": "Submitting...",
+        "submitted": "Decision submitted",
+        "submitError": "Failed to submit decision"
+      }
+    }
+  },
+  "time": {
+    "justNow": "Just now",
+    "hoursAgo": "{{count}} hours ago",
+    "daysAgo": "{{count}} days ago",
+    "minutesAgo": "{{count}} minutes ago"
   },
   "errors": {
     "accessDenied": "Access Denied",

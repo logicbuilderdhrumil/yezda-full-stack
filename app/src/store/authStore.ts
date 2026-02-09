@@ -5,6 +5,8 @@
  */
 
 import { create } from 'zustand';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import {
   AuthSession,
   AuthUser,
@@ -12,7 +14,9 @@ import {
   MfaChallenge,
   SignInRequest,
   MfaVerifyRequest,
+  toSessionTokens,
 } from '../types/auth.types';
+import type { LoginFormValues } from '../types/auth.types';
 import {
   storeTokens,
   getStoredTokens,
@@ -35,7 +39,7 @@ interface AuthState extends AuthSession {
 
   // Actions
   bootstrap: () => Promise<void>;
-  signIn: (request: SignInRequest) => Promise<boolean>;
+  signIn: (values: LoginFormValues) => Promise<boolean>;
   verifyMfa: (request: MfaVerifyRequest) => Promise<boolean>;
   refreshSession: () => Promise<boolean>;
   signOut: () => Promise<void>;
@@ -103,9 +107,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Attempt to refresh using the stored refresh token
         try {
           const response = await apiRefreshTokens(storedTokens.refreshToken);
-          await storeTokens(response.tokens);
+          const refreshedTokens = toSessionTokens(response);
+          await storeTokens(refreshedTokens);
           set({
-            tokens: response.tokens,
+            tokens: refreshedTokens,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -136,7 +141,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
    * Returns true on success, false if MFA is required or on error.
    * Includes client-side rate limiting with exponential backoff.
    */
-  signIn: async (request: SignInRequest) => {
+  signIn: async (values: LoginFormValues) => {
     const { failedAttempts, lastFailedAttempt } = get();
     
     // Check rate limiting
@@ -149,14 +154,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     set({ isLoading: true, error: null, pendingMfaChallenge: null });
 
+    // Build full sign-in request with device info
+    const platform = Platform.OS as 'ios' | 'android' | 'web';
+    const request: SignInRequest = {
+      email: values.email,
+      password: values.password,
+      deviceId: `${platform}-${Date.now()}`,
+      platform,
+      appVersion: Constants.expoConfig?.version ?? '1.0.0',
+      deviceName: platform === 'web' ? 'Web Browser' : undefined,
+    };
+
     try {
       const response = await apiSignIn(request);
 
       // MFA required
-      if (response.mfaChallenge) {
+      if (response.requiresMfa) {
         set({
           isLoading: false,
-          pendingMfaChallenge: response.mfaChallenge,
+          pendingMfaChallenge: {
+            challengeId: response.mfaSessionToken ?? '',
+            type: 'totp',
+          },
           failedAttempts: 0, // Reset on valid credentials
           lastFailedAttempt: null,
         });
@@ -164,11 +183,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       // Success - store tokens and update state
-      if (response.tokens && response.user) {
-        await storeTokens(response.tokens);
+      if (response.accessToken && response.refreshToken) {
+        const tokens = toSessionTokens(response);
+        await storeTokens(tokens);
         set({
-          tokens: response.tokens,
-          user: response.user,
+          tokens,
           isAuthenticated: true,
           isLoading: false,
           failedAttempts: 0,
@@ -203,13 +222,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await apiVerifyMfa(request);
+      const response = await apiVerifyMfa({
+        mfaSessionToken: request.challengeId,
+        mfaCode: request.code,
+      });
 
-      if (response.tokens && response.user) {
-        await storeTokens(response.tokens);
+      if (response.accessToken && response.refreshToken) {
+        const tokens = toSessionTokens(response);
+        await storeTokens(tokens);
         set({
-          tokens: response.tokens,
-          user: response.user,
+          tokens,
           isAuthenticated: true,
           isLoading: false,
           pendingMfaChallenge: null,
@@ -240,8 +262,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     try {
       const response = await apiRefreshTokens(tokens.refreshToken);
-      await storeTokens(response.tokens);
-      set({ tokens: response.tokens });
+      const newTokens = toSessionTokens(response);
+      await storeTokens(newTokens);
+      set({ tokens: newTokens });
       return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
