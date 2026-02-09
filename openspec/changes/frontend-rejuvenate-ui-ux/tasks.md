@@ -83,20 +83,20 @@
 - [x] 4.13 Add success/error toast notifications for invite actions
 - [x] 4.14 Handle invite error states (duplicate email, expired token, invalid token)
 
-## Phase 5: Mobile App Polish
-- [ ] 5.1 Install `@expo-google-fonts/plus-jakarta-sans` in app workspace
-- [ ] 5.2 Configure font loading in `app/app/_layout.tsx` with splash screen hold
-- [ ] 5.3 Update `app/global.css` with matching token CSS variables
-- [ ] 5.4 Update `app/tailwind.config.js` theme extension with new palette
-- [ ] 5.5 Polish LoginScreen.tsx — Trust & Authority styling, professional form
-- [ ] 5.6 Polish MfaChallengeScreen.tsx — consistent auth styling
-- [ ] 5.7 Polish ApplicationListScreen.tsx — professional card list
-- [ ] 5.8 Polish ApplicationDetailScreen.tsx — refined detail layout
-- [ ] 5.9 Polish ProfileOverviewScreen.tsx & ProfileEditScreen.tsx — form and display polish
-- [ ] 5.10 Polish PasswordChangeScreen.tsx — consistent auth styling
-- [ ] 5.11 Polish ConsentPromptScreen.tsx & ConsentReviewScreen.tsx — improved badge/disclosure
-- [ ] 5.12 Polish ConsentStatusBadge.tsx & PrefillDisclosureBadge.tsx — updated tokens
-- [ ] 5.13 Update FormFieldRenderer.tsx — consistent input styling with web
+## Phase 5: Mobile App Polish ✅
+- [x] 5.1 Install `@expo-google-fonts/plus-jakarta-sans` in app workspace
+- [x] 5.2 Configure font loading in `app/app/_layout.tsx` with splash screen hold
+- [x] 5.3 Update `app/global.css` with matching token CSS variables
+- [x] 5.4 Update `app/tailwind.config.js` theme extension with new palette
+- [x] 5.5 Polish LoginScreen.tsx — Trust & Authority styling, professional form
+- [x] 5.6 Polish MfaChallengeScreen.tsx — consistent auth styling
+- [x] 5.7 Polish ApplicationListScreen.tsx — professional card list
+- [x] 5.8 Polish ApplicationDetailScreen.tsx — refined detail layout
+- [x] 5.9 Polish ProfileOverviewScreen.tsx & ProfileEditScreen.tsx — form and display polish
+- [x] 5.10 Polish PasswordChangeScreen.tsx — consistent auth styling
+- [x] 5.11 Polish ConsentPromptScreen.tsx & ConsentReviewScreen.tsx — improved badge/disclosure
+- [x] 5.12 Polish ConsentStatusBadge.tsx & PrefillDisclosureBadge.tsx — updated tokens
+- [x] 5.13 Update FormFieldRenderer.tsx — consistent input styling with web
 
 ## Phase 6: Accessibility & Final Polish
 - [ ] 6.1 Audit all pages for WCAG AAA contrast ratio (4.5:1 minimum for text)
