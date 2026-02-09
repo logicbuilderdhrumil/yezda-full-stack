@@ -31,15 +31,15 @@
 - [x] 2.13 Update Footer.tsx — token borders/bg/text, CTA link hover
 - [x] 2.14 Responsive testing — deferred to Phase 6 final testing
 
-## Phase 3: Page-Level Polish
-- [ ] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
-- [ ] 3.2 KPICard.tsx — navy/CTA accent styling, badge hover effects
-- [ ] 3.3 ChartWidget.tsx — integrate Recharts funnel chart for pipeline, trend lines for screening volume
-- [ ] 3.4 ActivityFeed.tsx — refined feed items with proper spacing and hover
-- [ ] 3.5 SignInView.tsx — Trust & Authority styling, security badge, professional form
-- [ ] 3.6 SignUpView.tsx — matching auth page styling
-- [ ] 3.7 ForgotPasswordView.tsx & ResetPasswordView.tsx — consistent auth styling
-- [ ] 3.8 AuthLayout.tsx — centered card layout with navy accents
+## Phase 3: Page-Level Polish (3A: Dashboard & Auth ✅)
+- [x] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
+- [x] 3.2 KPICard.tsx — navy/CTA accent styling, badge hover effects
+- [x] 3.3 ChartWidget.tsx — integrate Recharts funnel chart for pipeline, trend lines for screening volume
+- [x] 3.4 ActivityFeed.tsx — refined feed items with proper spacing and hover
+- [x] 3.5 SignInView.tsx — Trust & Authority styling, security badge, professional form
+- [x] 3.6 SignUpView.tsx — matching auth page styling
+- [x] 3.7 ForgotPasswordView.tsx & ResetPasswordView.tsx — consistent auth styling
+- [x] 3.8 AuthLayout.tsx — centered card layout with navy accents
 - [ ] 3.9 OrganizationsListView.tsx — professional list with Create/Edit polished
 - [ ] 3.10 OrganizationDetailsView.tsx — tabbed layout polish (Users, Candidates tabs)
 - [ ] 3.11 UsersListView.tsx & UserDetailsView.tsx — consistent list/detail styling
