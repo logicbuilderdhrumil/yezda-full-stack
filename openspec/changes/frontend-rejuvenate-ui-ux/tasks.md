@@ -31,7 +31,7 @@
 - [x] 2.13 Update Footer.tsx — token borders/bg/text, CTA link hover
 - [x] 2.14 Responsive testing — deferred to Phase 6 final testing
 
-## Phase 3: Page-Level Polish (3A: Dashboard & Auth ✅, 3B: Org/User/Candidate CRUD ✅)
+## Phase 3: Page-Level Polish ✅
 - [x] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
 - [x] 3.2 KPICard.tsx — navy/CTA accent styling, badge hover effects
 - [x] 3.3 ChartWidget.tsx — integrate Recharts funnel chart for pipeline, trend lines for screening volume
@@ -47,25 +47,25 @@
 - [x] 3.13 CandidateCreateView.tsx & CandidateEditView.tsx — form polish with onBlur validation
 - [x] 3.14 CandidateBulkCreateView.tsx — improved bulk upload UI
 - [x] 3.15 CandidateSubmissionView.tsx — public submission page polish
-- [ ] 3.16 FormsListView.tsx, FormCreateView.tsx, FormEditView.tsx — form builder pages
-- [ ] 3.17 FormBuilderCanvas.tsx, FieldPalette.tsx, FieldConfigPanel.tsx — builder workspace polish
-- [ ] 3.18 PipelinesListView.tsx — pipeline list polish
-- [ ] 3.19 PipelineBuilderView.tsx, PipelineNodes.tsx — node styling improvements
-- [ ] 3.20 ModuleSidebar.tsx, ModuleConfigPanel.tsx — builder panel polish
-- [ ] 3.21 LedgerView.tsx, BilledLedgerListView.tsx, UnbilledLedgerListView.tsx — clean tabular layout
-- [ ] 3.22 ChatView.tsx — refined message bubbles, navy accent for sent messages
-- [ ] 3.23 FilesListView.tsx — professional file browser
-- [ ] 3.24 ScreeningListView.tsx & AdminScreeningListView.tsx — screening status styling
-- [ ] 3.25 ReportsView.tsx — chart and reporting polish
-- [ ] 3.26 ReviewDashboard.tsx — review queue styling
-- [ ] 3.27 SettingsView.tsx — settings page refinement
-- [ ] 3.28 NotificationsView.tsx — notification list polish
-- [ ] 3.29 AccountSettingsView.tsx, AccountIntegrationsView.tsx — account pages
-- [ ] 3.30 ClientDashboardView.tsx — client portal dashboard
-- [ ] 3.31 ClientCandidatesListView.tsx & ClientCandidateDetailView.tsx — client candidate views
-- [ ] 3.32 ClientOrgSettingsView.tsx & ClientProfileView.tsx — client portal pages
-- [ ] 3.33 AccessDeniedView.tsx, GenericErrorView.tsx, NotFoundView.tsx — error pages
-- [ ] 3.34 TermsView.tsx, PrivacyView.tsx — legal pages
+- [x] 3.16 FormsListView.tsx, FormCreateView.tsx, FormEditView.tsx — form builder pages
+- [x] 3.17 FormBuilderCanvas.tsx, FieldPalette.tsx, FieldConfigPanel.tsx — builder workspace polish
+- [x] 3.18 PipelinesListView.tsx — pipeline list polish
+- [x] 3.19 PipelineBuilderView.tsx, PipelineNodes.tsx — node styling improvements
+- [x] 3.20 ModuleSidebar.tsx, ModuleConfigPanel.tsx — builder panel polish
+- [x] 3.21 LedgerView.tsx, BilledLedgerListView.tsx, UnbilledLedgerListView.tsx — clean tabular layout
+- [x] 3.22 ChatView.tsx — refined message bubbles, navy accent for sent messages
+- [x] 3.23 FilesListView.tsx — professional file browser
+- [x] 3.24 ScreeningListView.tsx & AdminScreeningListView.tsx — screening status styling
+- [x] 3.25 ReportsView.tsx — chart and reporting polish
+- [x] 3.26 ReviewDashboard.tsx — review queue styling
+- [x] 3.27 SettingsView.tsx — settings page refinement
+- [x] 3.28 NotificationsView.tsx — notification list polish
+- [x] 3.29 AccountSettingsView.tsx, AccountIntegrationsView.tsx — account pages
+- [x] 3.30 ClientDashboardView.tsx — client portal dashboard
+- [x] 3.31 ClientCandidatesListView.tsx & ClientCandidateDetailView.tsx — client candidate views
+- [x] 3.32 ClientOrgSettingsView.tsx & ClientProfileView.tsx — client portal pages
+- [x] 3.33 AccessDeniedView.tsx, GenericErrorView.tsx, NotFoundView.tsx — error pages
+- [x] 3.34 TermsView.tsx, PrivacyView.tsx — legal pages
 
 ## Phase 4: Invite Flow UI
 - [ ] 4.1 Create InviteMemberDialog.tsx in `frontend/src/features/organizations/components/`
