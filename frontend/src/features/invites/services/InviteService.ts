@@ -8,7 +8,6 @@ import type {
   InviteCandidatePayload,
   AdminInviteCandidatePayload,
   InviteResponse,
-  AcceptInvitePayload,
   AcceptInviteResponse,
   InviteValidation,
   GlobalIdentityLookupResult,
@@ -76,9 +75,9 @@ export const InviteService = {
    * @returns Accept result with redirect URL
    */
   async acceptInvite(token: string): Promise<AcceptInviteResponse> {
-    const response = await ApiService.post<AcceptInviteResponse, AcceptInvitePayload>(
+    const response = await ApiService.post<AcceptInviteResponse, { accepted: boolean }>(
       'invites.accept',
-      { token },
+      { accepted: true },
       { pathParams: { token } },
     );
     return response.data;

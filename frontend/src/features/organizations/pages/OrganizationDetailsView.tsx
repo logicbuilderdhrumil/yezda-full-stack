@@ -138,11 +138,12 @@ export function OrganizationDetailsView(): ReactNode {
 
         {/* Tab navigation */}
         <div className="border-b border-border">
-          <nav className="flex gap-6" aria-label="Organization sections">
+          <nav className="flex gap-6" aria-label="Organization sections" role="tablist">
             {(['details', 'users', 'candidates'] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
+                id={`org-tab-${tab}`}
                 className={`pb-3 text-sm font-medium transition-colors ${
                   activeTab === tab
                     ? 'border-b-2 border-primary text-foreground'
@@ -150,6 +151,7 @@ export function OrganizationDetailsView(): ReactNode {
                 }`}
                 onClick={() => setActiveTab(tab)}
                 aria-selected={activeTab === tab}
+                aria-controls={`org-tabpanel-${tab}`}
                 role="tab"
               >
                 {t(`organizations.tabs.${tab}`)}
@@ -160,7 +162,7 @@ export function OrganizationDetailsView(): ReactNode {
 
         {/* Tab: Details */}
         {activeTab === 'details' && (
-          <>
+          <div role="tabpanel" id="org-tabpanel-details" aria-labelledby="org-tab-details">
             {/* Basic info card */}
             <Card>
               <CardHeader>
@@ -237,11 +239,12 @@ export function OrganizationDetailsView(): ReactNode {
                 )}
               </CardContent>
             </Card>
-          </>
+          </div>
         )}
 
         {/* Tab: Users */}
         {activeTab === 'users' && (
+          <div role="tabpanel" id="org-tabpanel-users" aria-labelledby="org-tab-users">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -269,10 +272,12 @@ export function OrganizationDetailsView(): ReactNode {
               </Button>
             </CardContent>
           </Card>
+          </div>
         )}
 
         {/* Tab: Candidates */}
         {activeTab === 'candidates' && (
+          <div role="tabpanel" id="org-tabpanel-candidates" aria-labelledby="org-tab-candidates">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -300,6 +305,7 @@ export function OrganizationDetailsView(): ReactNode {
               </Button>
             </CardContent>
           </Card>
+          </div>
         )}
       </div>
 

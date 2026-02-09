@@ -250,6 +250,14 @@ export function OrganizationsListView(): ReactNode {
                     key={org.id}
                     className="cursor-pointer"
                     onClick={() => handleRowClick(org.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleRowClick(org.id);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
                   >
                     <TableCell className="font-medium">{org.name}</TableCell>
                     <TableCell className="text-muted-foreground">{org.slug}</TableCell>

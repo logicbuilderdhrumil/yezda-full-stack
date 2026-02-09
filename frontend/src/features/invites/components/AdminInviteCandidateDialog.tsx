@@ -217,6 +217,7 @@ export function AdminInviteCandidateDialog({
                   }
                 }}
                 aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'admin-invite-email-error' : undefined}
                 disabled={isSubmitting}
                 className="flex-1"
                 autoFocus
@@ -235,7 +236,7 @@ export function AdminInviteCandidateDialog({
               </Button>
             </div>
             {errors.email && (
-              <p className="text-sm text-destructive" role="alert">{errors.email}</p>
+              <p id="admin-invite-email-error" className="text-sm text-destructive" role="alert">{errors.email}</p>
             )}
           </div>
 
@@ -300,10 +301,11 @@ export function AdminInviteCandidateDialog({
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     aria-invalid={!!errors.firstName}
+                    aria-describedby={errors.firstName ? 'admin-invite-fname-error' : undefined}
                     disabled={isSubmitting}
                   />
                   {errors.firstName && (
-                    <p className="text-sm text-destructive" role="alert">{errors.firstName}</p>
+                    <p id="admin-invite-fname-error" className="text-sm text-destructive" role="alert">{errors.firstName}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -317,10 +319,11 @@ export function AdminInviteCandidateDialog({
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     aria-invalid={!!errors.lastName}
+                    aria-describedby={errors.lastName ? 'admin-invite-lname-error' : undefined}
                     disabled={isSubmitting}
                   />
                   {errors.lastName && (
-                    <p className="text-sm text-destructive" role="alert">{errors.lastName}</p>
+                    <p id="admin-invite-lname-error" className="text-sm text-destructive" role="alert">{errors.lastName}</p>
                   )}
                 </div>
               </div>

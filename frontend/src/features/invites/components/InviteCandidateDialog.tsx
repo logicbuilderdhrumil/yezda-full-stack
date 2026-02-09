@@ -158,13 +158,25 @@ export function InviteCandidateDialog({
               placeholder={t('invites.candidate.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => email && validate()}
+              onBlur={() => {
+                if (email) {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!email.trim()) {
+                    setErrors((prev) => ({ ...prev, email: t('invites.candidate.emailRequired') }));
+                  } else if (!emailRegex.test(email)) {
+                    setErrors((prev) => ({ ...prev, email: t('invites.candidate.emailInvalid') }));
+                  } else {
+                    setErrors((prev) => ({ ...prev, email: '' }));
+                  }
+                }
+              }}
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'invite-cand-email-error' : undefined}
               disabled={isSubmitting}
               autoFocus
             />
             {errors.email && (
-              <p className="text-sm text-destructive" role="alert">{errors.email}</p>
+              <p id="invite-cand-email-error" className="text-sm text-destructive" role="alert">{errors.email}</p>
             )}
           </div>
 
@@ -181,10 +193,11 @@ export function InviteCandidateDialog({
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 aria-invalid={!!errors.firstName}
+                aria-describedby={errors.firstName ? 'invite-cand-fname-error' : undefined}
                 disabled={isSubmitting}
               />
               {errors.firstName && (
-                <p className="text-sm text-destructive" role="alert">{errors.firstName}</p>
+                <p id="invite-cand-fname-error" className="text-sm text-destructive" role="alert">{errors.firstName}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -198,10 +211,11 @@ export function InviteCandidateDialog({
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 aria-invalid={!!errors.lastName}
+                aria-describedby={errors.lastName ? 'invite-cand-lname-error' : undefined}
                 disabled={isSubmitting}
               />
               {errors.lastName && (
-                <p className="text-sm text-destructive" role="alert">{errors.lastName}</p>
+                <p id="invite-cand-lname-error" className="text-sm text-destructive" role="alert">{errors.lastName}</p>
               )}
             </div>
           </div>

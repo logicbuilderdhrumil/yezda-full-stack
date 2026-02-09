@@ -173,6 +173,16 @@ summary {
   cursor: pointer;
 }
 
+/* Disabled elements */
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Accessibility: Enhanced focus-visible styling */
 :focus-visible {
   outline: 2px solid var(--color-cta);
