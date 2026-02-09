@@ -1,0 +1,104 @@
+/**
+ * Screening Pipeline Validation Schemas
+ * Zod schemas for request validation.
+ * Moved from legacy middleware/ into the module interface layer.
+ */
+
+import { z } from 'zod';
+
+const moduleTypeEnum = z.enum([
+  'form',
+  'external_service',
+  'internal_processing',
+  'human_review',
+  'notification',
+]);
+
+export const stageInputSchema = z.object({
+  formDefinitionId: z.string().uuid('Invalid form definition ID'),
+  name: z.string().min(1, 'Stage name is required').max(200, 'Stage name must be at most 200 characters'),
+  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
+  order: z.number().int('Order must be an integer').min(0, 'Order must be non-negative'),
+  isRequired: z.boolean().default(true),
+  estimatedDurationMinutes: z.number().int().min(0).optional(),
+  moduleType: moduleTypeEnum.default('form'),
+  moduleConfig: z.record(z.unknown()).optional(),
+});
+
+const pipelineNodeSchema = z.object({
+  id: z.string().min(1),
+  type: moduleTypeEnum,
+  position: z.object({ x: z.number(), y: z.number() }),
+  data: z.object({
+    stageId: z.string(),
+    label: z.string(),
+    moduleConfig: z.record(z.unknown()).optional(),
+  }),
+});
+
+const pipelineEdgeSchema = z.object({
+  id: z.string().min(1),
+  source: z.string().min(1),
+  target: z.string().min(1),
+  sourceHandle: z.string().optional(),
+  targetHandle: z.string().optional(),
+});
+
+const pipelineGraphSchema = z.object({
+  nodes: z.array(pipelineNodeSchema),
+  edges: z.array(pipelineEdgeSchema),
+  viewport: z.object({ x: z.number(), y: z.number(), zoom: z.number() }).optional(),
+});
+
+export const createPipelineSchema = z.object({
+  name: z.string().min(1, 'Pipeline name is required').max(200),
+  description: z.string().max(1000).optional(),
+  stages: z.array(stageInputSchema).min(1, 'At least one stage is required').max(50),
+  graph: pipelineGraphSchema.optional().nullable(),
+});
+
+export const updatePipelineSchema = z
+  .object({
+    name: z.string().min(1).max(200).optional(),
+    description: z.string().max(1000).optional().nullable(),
+    stages: z.array(stageInputSchema).min(1).max(50).optional(),
+    graph: pipelineGraphSchema.optional().nullable(),
+  })
+  .refine(
+    (data) =>
+      data.name !== undefined ||
+      data.description !== undefined ||
+      data.stages !== undefined ||
+      data.graph !== undefined,
+    { message: 'At least one field must be provided for update' },
+  );
+
+export const assignPipelineSchema = z.object({
+  candidateId: z.string().uuid('Invalid candidate ID'),
+});
+
+export const pipelineIdParamSchema = z.object({
+  id: z.string().uuid('Invalid pipeline ID'),
+});
+
+export const assignmentIdParamSchema = z.object({
+  id: z.string().uuid('Invalid assignment ID'),
+});
+
+export const candidateIdParamSchema = z.object({
+  candidateId: z.string().uuid('Invalid candidate ID'),
+});
+
+export const stageCompletionParamsSchema = z.object({
+  assignmentId: z.string().uuid('Invalid assignment ID'),
+  stageId: z.string().uuid('Invalid stage ID'),
+});
+
+// Type exports
+export type CreatePipelineInput = z.infer<typeof createPipelineSchema>;
+export type UpdatePipelineInput = z.infer<typeof updatePipelineSchema>;
+export type AssignPipelineInput = z.infer<typeof assignPipelineSchema>;
+export type PipelineIdParam = z.infer<typeof pipelineIdParamSchema>;
+export type AssignmentIdParam = z.infer<typeof assignmentIdParamSchema>;
+export type CandidateIdParam = z.infer<typeof candidateIdParamSchema>;
+export type StageCompletionParams = z.infer<typeof stageCompletionParamsSchema>;

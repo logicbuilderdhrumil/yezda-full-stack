@@ -5,7 +5,7 @@
 
 import React, { useCallback } from 'react';
 import { useRouter } from 'expo-router';
-import { ProfileEditScreen } from '@/screens/ProfileEditScreen';
+import { ProfileEditScreen } from '@/features/profile';
 
 export default function ProfileEditRoute() {
   const router = useRouter();

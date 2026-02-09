@@ -49,15 +49,28 @@ Full-stack Employment Screening Service monorepo with a React + Vite admin dashb
 - Consistent naming across frontend and backend for domain entities.
 
 ### Architecture Patterns
-- Frontend: Vite SPA structure with `src/` as the root.
-  - Feature folders under `src/views/` and reusable components under `src/components/`.
-  - Shared types live under `src/@types/`.
-  - Services under `src/services/` encapsulate API calls and business logic.
-  - State stores under `src/store/`; contexts under `src/context/`.
-- Backend: MVC/Layered architecture with controllers, services, models, and middleware.
-  - Routes under `./routes/`, business logic under `./services/`, data models under `./models/`.
+- **Backend: Clean Architecture** with modular bounded contexts.
+  - Each module under `backend/src/modules/<name>/` has four layers:
+    - `domain/` — entities, ports (interfaces), value objects
+    - `application/` — use cases (one class per business operation)
+    - `infrastructure/` — repository implementations, adapters
+    - `interface/` — controllers, routes, validators, middleware
+  - Composition root: `index.ts` exports `create<Module>Module()` → `{ router }`.
+  - Dependency flows inward only: interface → application → domain.
+  - Manual constructor injection for wiring dependencies.
+  - Shared infrastructure in `backend/src/shared/infrastructure/` (database, config, middleware, http).
   - API versioning (e.g., `/api/v1/`).
   - Error handling and validation middleware globally applied.
+- **Frontend: Feature Module Architecture** with Clean Architecture principles.
+  - Feature modules under `frontend/src/features/<name>/` with pages, services, store, hooks, components.
+  - Global shared code: `components/ui/`, `components/layouts/`, `services/ApiService.ts`, global stores.
+  - Barrel exports (`index.ts`) for each feature module.
+  - Legacy directories (`views/`, `services/`, `store/`) re-export from features with `@deprecated` markers.
+- **App: Feature Module Architecture** for Expo + React Native.
+  - Feature modules under `app/src/features/<name>/` with screens, services, store, hooks, types, utils, components.
+  - Barrel exports (`index.ts`) for each feature module.
+  - Expo Router layouts import from `@/features/` paths.
+  - Legacy directories (`screens/`, `services/`, `store/`) re-export from features with `@deprecated` markers.
 
 ### Testing Strategy
 - Frontend: Jest + React Testing Library for unit and integration tests.

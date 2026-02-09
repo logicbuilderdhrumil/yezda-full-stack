@@ -1,9 +1,10 @@
 /**
  * Service exports.
+ * @deprecated Import from @/features/<feature> instead.
  */
 
-export { signIn, verifyMfa, refreshTokens, signOut, AuthApiError, getAuthHeaders } from './authService';
-export { getProfile, updateProfile, ProfileApiError } from './profileService';
+export { signIn, verifyMfa, refreshTokens, signOut, AuthApiError, getAuthHeaders } from '@/features/auth';
+export { getProfile, updateProfile, ProfileApiError } from '@/features/profile';
 export {
   getConsentPrompt,
   submitConsent,
@@ -12,7 +13,7 @@ export {
   updateConsent,
   withdrawConsent,
   ConsentApiError,
-} from './consentService';
+} from '@/features/consent';
 export {
   getApplications,
   getApplication,
@@ -20,7 +21,7 @@ export {
   saveApplicationDraft,
   submitApplication,
   ApplicationApiError,
-} from './applicationService';
+} from '@/features/applications';
 export {
   registerDeviceToken,
   unregisterDeviceToken,
@@ -28,4 +29,4 @@ export {
   getActiveDeviceTokens,
   NotificationApiError,
   notificationErrorMessages,
-} from './notificationService';
+} from '@/features/notifications';

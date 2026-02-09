@@ -5,7 +5,7 @@
 
 import React, { useCallback } from 'react';
 import { useRouter } from 'expo-router';
-import { ApplicationListScreen } from '@/screens/ApplicationListScreen';
+import { ApplicationListScreen } from '@/features/applications';
 
 export default function ApplicationListRoute() {
   const router = useRouter();

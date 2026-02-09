@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { PasswordChangeScreen } from '@/screens/PasswordChangeScreen';
+import { PasswordChangeScreen } from '@/features/profile';
 
 export default function PasswordChangeRoute() {
   const router = useRouter();

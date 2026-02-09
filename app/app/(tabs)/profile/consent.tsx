@@ -5,7 +5,7 @@
 
 import React, { useCallback } from 'react';
 import { useRouter } from 'expo-router';
-import { ConsentReviewScreen } from '@/screens/ConsentReviewScreen';
+import { ConsentReviewScreen } from '@/features/consent';
 
 export default function ConsentReviewRoute() {
   const router = useRouter();
