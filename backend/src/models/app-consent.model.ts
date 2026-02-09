@@ -39,6 +39,10 @@ export interface ConsentDecision {
   withdrawnAt?: Date;
   ipAddress?: string;
   userAgent?: string;
+  /** Source organization ID for cross-org consent */
+  sourceOrgId?: string;
+  /** Target organization ID for cross-org consent */
+  targetOrgId?: string;
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;

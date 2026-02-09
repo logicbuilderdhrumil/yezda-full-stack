@@ -22,6 +22,8 @@ export interface ManagedCandidate {
   phone?: string;
   status: CandidateStatus;
   tenantId: string;
+  /** Reference to the global candidate identity for cross-org linking */
+  globalCandidateId?: string;
   applicationDate: Date;
   certifiedAt?: Date;
   certifiedBy?: string;
