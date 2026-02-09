@@ -24,7 +24,7 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        'rounded-md bg-gray-200 dark:bg-gray-700',
+        'rounded-md bg-muted dark:bg-muted',
         animation === 'pulse' && 'animate-pulse',
         animation === 'shimmer' &&
           'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
@@ -87,7 +87,7 @@ export function SkeletonCard({
   return (
     <div
       className={cn(
-        'rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800',
+        'rounded-lg border border-border bg-background p-4 dark:border-border dark:bg-background',
         className
       )}
     >
@@ -128,7 +128,7 @@ export function SkeletonTable({
   return (
     <div className={cn('w-full', className)}>
       {/* Header */}
-      <div className="flex gap-4 border-b border-gray-200 pb-2 dark:border-gray-700">
+      <div className="flex gap-4 border-b border-border pb-2 dark:border-border">
         {Array.from({ length: columns }).map((_, i) => (
           <Skeleton key={i} className="h-4 flex-1" />
         ))}
@@ -137,7 +137,7 @@ export function SkeletonTable({
       {Array.from({ length: rows }).map((_, rowIdx) => (
         <div
           key={rowIdx}
-          className="flex gap-4 border-b border-gray-200 py-3 dark:border-gray-700"
+          className="flex gap-4 border-b border-border py-3 dark:border-border"
         >
           {Array.from({ length: columns }).map((_, colIdx) => (
             <Skeleton key={colIdx} className="h-4 flex-1" />

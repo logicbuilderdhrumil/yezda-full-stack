@@ -12,12 +12,14 @@ import {
 
 /** Light theme color tokens. */
 export const lightColors: ColorTokens = {
-  primary: '#2563eb',
-  primaryHover: '#1d4ed8',
-  secondary: '#64748b',
+  primary: '#0F172A',
+  primaryHover: '#1E293B',
+  cta: '#0369A1',
+  ctaHover: '#075985',
+  secondary: '#334155',
   secondaryHover: '#475569',
-  background: '#ffffff',
-  foreground: '#0f172a',
+  background: '#F8FAFC',
+  foreground: '#020617',
   muted: '#f1f5f9',
   mutedForeground: '#64748b',
   border: '#e2e8f0',
@@ -31,12 +33,14 @@ export const lightColors: ColorTokens = {
 
 /** Dark theme color tokens. */
 export const darkColors: ColorTokens = {
-  primary: '#3b82f6',
-  primaryHover: '#60a5fa',
-  secondary: '#94a3b8',
-  secondaryHover: '#cbd5e1',
-  background: '#0f172a',
-  foreground: '#f8fafc',
+  primary: '#E2E8F0',
+  primaryHover: '#F1F5F9',
+  cta: '#38BDF8',
+  ctaHover: '#7DD3FC',
+  secondary: '#94A3B8',
+  secondaryHover: '#CBD5E1',
+  background: '#0F172A',
+  foreground: '#F8FAFC',
   muted: '#1e293b',
   mutedForeground: '#94a3b8',
   border: '#334155',

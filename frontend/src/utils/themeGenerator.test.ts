@@ -30,8 +30,9 @@ describe('generateCSSVariables', () => {
   it('should generate CSS variables string from theme tokens', () => {
     const cssVars = generateCSSVariables(lightTheme.tokens);
 
-    expect(cssVars).toContain('--color-primary: #2563eb;');
-    expect(cssVars).toContain('--color-background: #ffffff;');
+    expect(cssVars).toContain('--color-primary: #0F172A;');
+    expect(cssVars).toContain('--color-cta: #0369A1;');
+    expect(cssVars).toContain('--color-background: #F8FAFC;');
     expect(cssVars).toContain('--font-family:');
     expect(cssVars).toContain('--spacing-md: 1rem;');
     expect(cssVars).toContain('--radius-md: 0.5rem;');
@@ -40,9 +41,10 @@ describe('generateCSSVariables', () => {
   it('should generate different values for dark theme', () => {
     const cssVars = generateCSSVariables(darkTheme.tokens);
 
-    expect(cssVars).toContain('--color-primary: #3b82f6;');
-    expect(cssVars).toContain('--color-background: #0f172a;');
-    expect(cssVars).toContain('--color-foreground: #f8fafc;');
+    expect(cssVars).toContain('--color-primary: #E2E8F0;');
+    expect(cssVars).toContain('--color-cta: #38BDF8;');
+    expect(cssVars).toContain('--color-background: #0F172A;');
+    expect(cssVars).toContain('--color-foreground: #F8FAFC;');
   });
 });
 

@@ -16,7 +16,7 @@ export function LoadingSpinner({
 }: LoadingSpinnerProps): ReactNode {
   return (
     <div
-      className={`animate-spin rounded-full border-2 border-primary border-t-transparent ${className}`}
+      className={`animate-spin rounded-full border-2 border-cta border-t-transparent transition-opacity duration-200 ${className}`}
       style={{ width: size, height: size }}
       role="status"
       aria-label="Loading"
@@ -44,9 +44,9 @@ export function LoadingOverlay({
     <div className="relative">
       {children}
       {isLoading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity duration-200">
           <LoadingSpinner size={40} />
-          {message && <p className="mt-3 text-sm text-gray-600">{message}</p>}
+          {message && <p className="mt-3 text-sm text-muted-foreground">{message}</p>}
         </div>
       )}
     </div>
