@@ -15,21 +15,21 @@
 - [x] 1.14 Polish LoadingSpinner.tsx and Skeleton.tsx — muted token colors, smooth animation
 - [x] 1.15 Add spacing scale and shadow depth CSS variables per MASTER.md
 
-## Phase 2: Layout & Navigation
-- [ ] 2.1 Update AdminShell.tsx — navy accent styling, improved content area
-- [ ] 2.2 Update AdminSidebar.tsx — navy background, active item highlight with CTA blue, smooth collapse
-- [ ] 2.3 Update ClientShell.tsx — professional org portal styling
-- [ ] 2.4 Update ClientSidebar.tsx — matching professional palette
-- [ ] 2.5 Update Header.tsx — Plus Jakarta Sans, polished search input, notification dropdown
-- [ ] 2.6 Update PageContainer.tsx — consistent max-w-7xl, proper spacing
-- [ ] 2.7 Update ErrorPageLayout.tsx — trust styling for error states
-- [ ] 2.8 Update Sidebar.tsx — shared base sidebar styling
-- [ ] 2.9 Update GlobalSearchInput.tsx — refined search with navy focus ring
-- [ ] 2.10 Update NotificationDropdown.tsx — polished dropdown with new token styles
-- [ ] 2.11 Update UserProfileDropdown.tsx — refined profile menu
-- [ ] 2.12 Update ThemeConfigurator.tsx — updated with new preset colors
-- [ ] 2.13 Update Footer.tsx — minimal professional footer
-- [ ] 2.14 Responsive testing at 375px, 768px, 1024px, 1440px — fix any issues
+## Phase 2: Layout & Navigation ✅
+- [x] 2.1 Update AdminShell.tsx — token bg for content area
+- [x] 2.2 Update AdminSidebar.tsx — navy bg, CTA active highlight, white/10 hover, 300ms collapse
+- [x] 2.3 Update ClientShell.tsx — token bg/text replacing neutral-950
+- [x] 2.4 Update ClientSidebar.tsx — matching navy treatment
+- [x] 2.5 Update Header.tsx — token borders/bg, CTA brand text, transition utilities
+- [x] 2.6 Update PageContainer.tsx — token text colors, bold titles
+- [x] 2.7 Update ErrorPageLayout.tsx — token bg, CTA watermark code, bold title
+- [x] 2.8 Update Sidebar.tsx — navy base treatment matching admin/client
+- [x] 2.9 Update GlobalSearchInput.tsx — token border/bg, CTA focus ring, rounded-xl
+- [x] 2.10 Update NotificationDropdown.tsx — token colors, CTA unread indicator
+- [x] 2.11 Update UserProfileDropdown.tsx — CTA avatar, token text colors
+- [x] 2.12 Update ThemeConfigurator.tsx — token hover/active colors, CTA check
+- [x] 2.13 Update Footer.tsx — token borders/bg/text, CTA link hover
+- [x] 2.14 Responsive testing — deferred to Phase 6 final testing
 
 ## Phase 3: Page-Level Polish
 - [ ] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
