@@ -139,7 +139,7 @@ export function SignUpView(): ReactNode {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="firstName" className="block text-sm font-medium text-[var(--color-foreground)]">
                 {t('auth.firstNameLabel')}
               </label>
               <input
@@ -152,7 +152,7 @@ export function SignUpView(): ReactNode {
                 className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                   touched.firstName && formErrors.firstName
                     ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                    : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                    : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
                 }`}
                 placeholder={t('auth.firstNamePlaceholder')}
               />
@@ -162,7 +162,7 @@ export function SignUpView(): ReactNode {
             </div>
 
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="lastName" className="block text-sm font-medium text-[var(--color-foreground)]">
                 {t('auth.lastNameLabel')}
               </label>
               <input
@@ -175,7 +175,7 @@ export function SignUpView(): ReactNode {
                 className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                   touched.lastName && formErrors.lastName
                     ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                    : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                    : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
                 }`}
                 placeholder={t('auth.lastNamePlaceholder')}
               />
@@ -186,7 +186,7 @@ export function SignUpView(): ReactNode {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-[var(--color-foreground)]">
               {t('auth.emailLabel')}
             </label>
             <input
@@ -199,7 +199,7 @@ export function SignUpView(): ReactNode {
               className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.email && formErrors.email
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder={t('auth.emailPlaceholder')}
             />
@@ -209,7 +209,7 @@ export function SignUpView(): ReactNode {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--color-foreground)]">
               {t('auth.passwordLabel')}
             </label>
             <input
@@ -222,7 +222,7 @@ export function SignUpView(): ReactNode {
               className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.password && formErrors.password
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
             />
@@ -232,7 +232,7 @@ export function SignUpView(): ReactNode {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--color-foreground)]">
               {t('auth.confirmPasswordLabel')}
             </label>
             <input
@@ -245,7 +245,7 @@ export function SignUpView(): ReactNode {
               className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.confirmPassword && formErrors.confirmPassword
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
             />
@@ -260,15 +260,15 @@ export function SignUpView(): ReactNode {
               type="checkbox"
               checked={formData.termsAccepted}
               onChange={handleChange('termsAccepted')}
-              className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              className="mt-1 h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-cta)] focus:ring-[var(--color-cta)]"
             />
-            <label htmlFor="terms" className="text-sm text-gray-600">
+            <label htmlFor="terms" className="text-sm text-[var(--color-muted-foreground)]">
               {t('auth.termsAgree')}{' '}
-              <Link to="/terms" className="font-medium text-primary hover:text-primary/80">
+              <Link to="/terms" className="font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]">
                 {t('auth.termsOfService')}
               </Link>{' '}
               {t('auth.and')}{' '}
-              <Link to="/privacy" className="font-medium text-primary hover:text-primary/80">
+              <Link to="/privacy" className="font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]">
                 {t('auth.privacyPolicy')}
               </Link>
             </label>
@@ -280,14 +280,14 @@ export function SignUpView(): ReactNode {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-cta)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('auth.createAccount')}
           </button>
 
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-[var(--color-muted-foreground)]">
             {t('auth.hasAccount')}{' '}
-            <Link to="/sign-in" className="font-medium text-primary hover:text-primary/80">
+            <Link to="/sign-in" className="font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]">
               {t('auth.signIn')}
             </Link>
           </p>

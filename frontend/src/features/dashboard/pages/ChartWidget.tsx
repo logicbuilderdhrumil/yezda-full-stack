@@ -44,11 +44,11 @@ function BarChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
           className="flex flex-col items-center flex-1 min-w-0"
         >
           <div
-            className="w-full bg-primary-500 dark:bg-primary-400 rounded-t transition-all duration-300"
+            className="w-full bg-[var(--color-cta)] rounded-t transition-all duration-300"
             style={{ height: `${Math.max(heights[index] ?? 0, 4)}%` }}
             title={`${point.label}: ${point.value}`}
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate w-full text-center">
+          <span className="text-xs text-[var(--color-muted-foreground)] mt-1 truncate w-full text-center">
             {point.label}
           </span>
         </div>
@@ -91,7 +91,7 @@ function LineChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="text-primary-500 dark:text-primary-400"
+          className="text-[var(--color-cta)]"
         />
         {heights.map((h, i) => {
           const x = padding + (i / (data.length - 1 || 1)) * chartWidth;
@@ -103,16 +103,16 @@ function LineChart({ data }: { data: ChartWidgetType['data'] }): ReactNode {
               cx={x}
               cy={y}
               r="3"
-              className="fill-primary-500 dark:fill-primary-400"
+              className="fill-[var(--color-cta)]"
             />
           ) : null;
         })}
       </svg>
       <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2">
-        <span className="text-xs text-gray-500 dark:text-gray-400">
+        <span className="text-xs text-[var(--color-muted-foreground)]">
           {data[0]?.label}
         </span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">
+        <span className="text-xs text-[var(--color-muted-foreground)]">
           {data[data.length - 1]?.label}
         </span>
       </div>
@@ -135,7 +135,7 @@ export function ChartWidget({ chart, className }: ChartWidgetProps): ReactNode {
       </CardHeader>
       <CardContent className="pt-0">
         {chart.data.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-sm text-[var(--color-muted-foreground)] text-center py-8">
             {t('pages.home.noChartData')}
           </p>
         ) : chart.type === 'bar' ? (
