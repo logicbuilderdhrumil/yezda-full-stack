@@ -149,3 +149,48 @@ body {
     transform: translateX(-100%);
   }
 }
+
+/* Smooth hover transitions */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Interactive element cursor */
+button,
+[role="button"],
+[role="tab"],
+[role="switch"],
+[role="link"],
+a[href],
+summary {
+  cursor: pointer;
+}
+
+/* Accessibility: Enhanced focus-visible styling */
+:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Accessibility: Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
