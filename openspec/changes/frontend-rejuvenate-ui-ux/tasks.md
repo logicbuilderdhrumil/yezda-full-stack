@@ -1,19 +1,19 @@
-## Phase 1: Design Tokens & Component Foundation
-- [ ] 1.1 Import Plus Jakarta Sans in `frontend/src/index.css` via Google Fonts @import
-- [ ] 1.2 Update `:root` light theme tokens (primary → #0F172A, CTA → #0369A1, background → #F8FAFC, text → #020617)
-- [ ] 1.3 Update `.dark` theme tokens to complement new palette
-- [ ] 1.4 Add font-display: swap preload hint in `frontend/index.html`
-- [ ] 1.5 Update `frontend/src/constants/theme.constant.ts` light/dark presets with new hex values
-- [ ] 1.6 Update `frontend/src/configs/theme.config.ts` token defaults
-- [ ] 1.7 Update `frontend/src/components/ui/variants.ts` — button, badge, input, status CVA variants
-- [ ] 1.8 Polish Button.tsx — add cursor-pointer, 200ms transitions, new primary/secondary colors
-- [ ] 1.9 Polish Card.tsx — shadow-lift hover, cursor-pointer on interactive cards
-- [ ] 1.10 Polish Input.tsx — navy focus ring, 200ms border transition
-- [ ] 1.11 Polish Badge.tsx — updated color tokens, metric pulse variant for live statuses
-- [ ] 1.12 Polish Table.tsx — professional header, row hover, zebra striping
-- [ ] 1.13 Polish Toast.tsx — consistent token-based styling
-- [ ] 1.14 Polish LoadingSpinner.tsx and Skeleton.tsx — muted token colors, smooth animation
-- [ ] 1.15 Add spacing scale and shadow depth CSS variables per MASTER.md
+## Phase 1: Design Tokens & Component Foundation ✅
+- [x] 1.1 Import Plus Jakarta Sans in `frontend/src/index.css` via Google Fonts @import
+- [x] 1.2 Update `:root` light theme tokens (primary → #0F172A, CTA → #0369A1, background → #F8FAFC, text → #020617)
+- [x] 1.3 Update `.dark` theme tokens to complement new palette
+- [x] 1.4 Add font-display: swap preload hint in `frontend/index.html`
+- [x] 1.5 Update `frontend/src/constants/theme.constant.ts` light/dark presets with new hex values
+- [x] 1.6 Update `frontend/src/configs/theme.config.ts` token defaults
+- [x] 1.7 Update `frontend/src/components/ui/variants.ts` — button, badge, input, status CVA variants
+- [x] 1.8 Polish Button.tsx — add cursor-pointer, 200ms transitions, new primary/secondary colors
+- [x] 1.9 Polish Card.tsx — shadow-lift hover, cursor-pointer on interactive cards
+- [x] 1.10 Polish Input.tsx — navy focus ring, 200ms border transition
+- [x] 1.11 Polish Badge.tsx — updated color tokens, metric pulse variant for live statuses
+- [x] 1.12 Polish Table.tsx — professional header, row hover, zebra striping
+- [x] 1.13 Polish Toast.tsx — consistent token-based styling, replaced emoji icons with SVG
+- [x] 1.14 Polish LoadingSpinner.tsx and Skeleton.tsx — muted token colors, smooth animation
+- [x] 1.15 Add spacing scale and shadow depth CSS variables per MASTER.md
 
 ## Phase 2: Layout & Navigation
 - [ ] 2.1 Update AdminShell.tsx — navy accent styling, improved content area
