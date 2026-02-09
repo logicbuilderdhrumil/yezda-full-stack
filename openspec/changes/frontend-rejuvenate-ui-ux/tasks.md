@@ -1,0 +1,111 @@
+## Phase 1: Design Tokens & Component Foundation
+- [ ] 1.1 Import Plus Jakarta Sans in `frontend/src/index.css` via Google Fonts @import
+- [ ] 1.2 Update `:root` light theme tokens (primary → #0F172A, CTA → #0369A1, background → #F8FAFC, text → #020617)
+- [ ] 1.3 Update `.dark` theme tokens to complement new palette
+- [ ] 1.4 Add font-display: swap preload hint in `frontend/index.html`
+- [ ] 1.5 Update `frontend/src/constants/theme.constant.ts` light/dark presets with new hex values
+- [ ] 1.6 Update `frontend/src/configs/theme.config.ts` token defaults
+- [ ] 1.7 Update `frontend/src/components/ui/variants.ts` — button, badge, input, status CVA variants
+- [ ] 1.8 Polish Button.tsx — add cursor-pointer, 200ms transitions, new primary/secondary colors
+- [ ] 1.9 Polish Card.tsx — shadow-lift hover, cursor-pointer on interactive cards
+- [ ] 1.10 Polish Input.tsx — navy focus ring, 200ms border transition
+- [ ] 1.11 Polish Badge.tsx — updated color tokens, metric pulse variant for live statuses
+- [ ] 1.12 Polish Table.tsx — professional header, row hover, zebra striping
+- [ ] 1.13 Polish Toast.tsx — consistent token-based styling
+- [ ] 1.14 Polish LoadingSpinner.tsx and Skeleton.tsx — muted token colors, smooth animation
+- [ ] 1.15 Add spacing scale and shadow depth CSS variables per MASTER.md
+
+## Phase 2: Layout & Navigation
+- [ ] 2.1 Update AdminShell.tsx — navy accent styling, improved content area
+- [ ] 2.2 Update AdminSidebar.tsx — navy background, active item highlight with CTA blue, smooth collapse
+- [ ] 2.3 Update ClientShell.tsx — professional org portal styling
+- [ ] 2.4 Update ClientSidebar.tsx — matching professional palette
+- [ ] 2.5 Update Header.tsx — Plus Jakarta Sans, polished search input, notification dropdown
+- [ ] 2.6 Update PageContainer.tsx — consistent max-w-7xl, proper spacing
+- [ ] 2.7 Update ErrorPageLayout.tsx — trust styling for error states
+- [ ] 2.8 Update Sidebar.tsx — shared base sidebar styling
+- [ ] 2.9 Update GlobalSearchInput.tsx — refined search with navy focus ring
+- [ ] 2.10 Update NotificationDropdown.tsx — polished dropdown with new token styles
+- [ ] 2.11 Update UserProfileDropdown.tsx — refined profile menu
+- [ ] 2.12 Update ThemeConfigurator.tsx — updated with new preset colors
+- [ ] 2.13 Update Footer.tsx — minimal professional footer
+- [ ] 2.14 Responsive testing at 375px, 768px, 1024px, 1440px — fix any issues
+
+## Phase 3: Page-Level Polish
+- [ ] 3.1 HomeView.tsx — KPI cards with metric pulse animation, proper chart integration
+- [ ] 3.2 KPICard.tsx — navy/CTA accent styling, badge hover effects
+- [ ] 3.3 ChartWidget.tsx — integrate Recharts funnel chart for pipeline, trend lines for screening volume
+- [ ] 3.4 ActivityFeed.tsx — refined feed items with proper spacing and hover
+- [ ] 3.5 SignInView.tsx — Trust & Authority styling, security badge, professional form
+- [ ] 3.6 SignUpView.tsx — matching auth page styling
+- [ ] 3.7 ForgotPasswordView.tsx & ResetPasswordView.tsx — consistent auth styling
+- [ ] 3.8 AuthLayout.tsx — centered card layout with navy accents
+- [ ] 3.9 OrganizationsListView.tsx — professional list with Create/Edit polished
+- [ ] 3.10 OrganizationDetailsView.tsx — tabbed layout polish (Users, Candidates tabs)
+- [ ] 3.11 UsersListView.tsx & UserDetailsView.tsx — consistent list/detail styling
+- [ ] 3.12 CandidatesListView.tsx & CandidateDetailsView.tsx — professional candidate views
+- [ ] 3.13 CandidateCreateView.tsx & CandidateEditView.tsx — form polish with onBlur validation
+- [ ] 3.14 CandidateBulkCreateView.tsx — improved bulk upload UI
+- [ ] 3.15 CandidateSubmissionView.tsx — public submission page polish
+- [ ] 3.16 FormsListView.tsx, FormCreateView.tsx, FormEditView.tsx — form builder pages
+- [ ] 3.17 FormBuilderCanvas.tsx, FieldPalette.tsx, FieldConfigPanel.tsx — builder workspace polish
+- [ ] 3.18 PipelinesListView.tsx — pipeline list polish
+- [ ] 3.19 PipelineBuilderView.tsx, PipelineNodes.tsx — node styling improvements
+- [ ] 3.20 ModuleSidebar.tsx, ModuleConfigPanel.tsx — builder panel polish
+- [ ] 3.21 LedgerView.tsx, BilledLedgerListView.tsx, UnbilledLedgerListView.tsx — clean tabular layout
+- [ ] 3.22 ChatView.tsx — refined message bubbles, navy accent for sent messages
+- [ ] 3.23 FilesListView.tsx — professional file browser
+- [ ] 3.24 ScreeningListView.tsx & AdminScreeningListView.tsx — screening status styling
+- [ ] 3.25 ReportsView.tsx — chart and reporting polish
+- [ ] 3.26 ReviewDashboard.tsx — review queue styling
+- [ ] 3.27 SettingsView.tsx — settings page refinement
+- [ ] 3.28 NotificationsView.tsx — notification list polish
+- [ ] 3.29 AccountSettingsView.tsx, AccountIntegrationsView.tsx — account pages
+- [ ] 3.30 ClientDashboardView.tsx — client portal dashboard
+- [ ] 3.31 ClientCandidatesListView.tsx & ClientCandidateDetailView.tsx — client candidate views
+- [ ] 3.32 ClientOrgSettingsView.tsx & ClientProfileView.tsx — client portal pages
+- [ ] 3.33 AccessDeniedView.tsx, GenericErrorView.tsx, NotFoundView.tsx — error pages
+- [ ] 3.34 TermsView.tsx, PrivacyView.tsx — legal pages
+
+## Phase 4: Invite Flow UI
+- [ ] 4.1 Create InviteMemberDialog.tsx in `frontend/src/features/organizations/components/`
+- [ ] 4.2 Wire InviteMemberDialog into OrganizationDetailsView.tsx Users tab
+- [ ] 4.3 Create invite member service in `frontend/src/features/organizations/services/`
+- [ ] 4.4 Create InviteCandidateDialog.tsx in `frontend/src/features/candidates/components/`
+- [ ] 4.5 Wire InviteCandidateDialog into CandidatesListView.tsx
+- [ ] 4.6 Create AdminInviteCandidateDialog.tsx in `frontend/src/features/organizations/components/`
+- [ ] 4.7 Wire AdminInviteCandidateDialog into OrganizationDetailsView.tsx Candidates tab
+- [ ] 4.8 Add global identity lookup validation (email check → conditional fields)
+- [ ] 4.9 Create invite candidate service in `frontend/src/features/candidates/services/`
+- [ ] 4.10 Create AcceptInviteView.tsx in `frontend/src/features/shared/pages/`
+- [ ] 4.11 Add `/accept-invite` route to `frontend/src/routes/index.tsx`
+- [ ] 4.12 Add invite status badges (Pending, Accepted, Expired) to UsersListView and CandidatesListView
+- [ ] 4.13 Add success/error toast notifications for invite actions
+- [ ] 4.14 Handle invite error states (duplicate email, expired token, invalid token)
+
+## Phase 5: Mobile App Polish
+- [ ] 5.1 Install `@expo-google-fonts/plus-jakarta-sans` in app workspace
+- [ ] 5.2 Configure font loading in `app/app/_layout.tsx` with splash screen hold
+- [ ] 5.3 Update `app/global.css` with matching token CSS variables
+- [ ] 5.4 Update `app/tailwind.config.js` theme extension with new palette
+- [ ] 5.5 Polish LoginScreen.tsx — Trust & Authority styling, professional form
+- [ ] 5.6 Polish MfaChallengeScreen.tsx — consistent auth styling
+- [ ] 5.7 Polish ApplicationListScreen.tsx — professional card list
+- [ ] 5.8 Polish ApplicationDetailScreen.tsx — refined detail layout
+- [ ] 5.9 Polish ProfileOverviewScreen.tsx & ProfileEditScreen.tsx — form and display polish
+- [ ] 5.10 Polish PasswordChangeScreen.tsx — consistent auth styling
+- [ ] 5.11 Polish ConsentPromptScreen.tsx & ConsentReviewScreen.tsx — improved badge/disclosure
+- [ ] 5.12 Polish ConsentStatusBadge.tsx & PrefillDisclosureBadge.tsx — updated tokens
+- [ ] 5.13 Update FormFieldRenderer.tsx — consistent input styling with web
+
+## Phase 6: Accessibility & Final Polish
+- [ ] 6.1 Audit all pages for WCAG AAA contrast ratio (4.5:1 minimum for text)
+- [ ] 6.2 Add `prefers-reduced-motion` guards on all CSS animations and transitions
+- [ ] 6.3 Verify focus-visible states on all interactive elements
+- [ ] 6.4 Verify all icons are SVG (Lucide/Ionicons) — remove any emoji icons
+- [ ] 6.5 Verify cursor-pointer on all clickable elements
+- [ ] 6.6 Verify hover states have smooth transitions (150-300ms)
+- [ ] 6.7 Final responsive testing: 375px, 768px, 1024px, 1440px — no horizontal scroll
+- [ ] 6.8 Cross-browser testing: Chrome, Firefox, Safari, Edge
+- [ ] 6.9 Update visual test snapshots if present
+- [ ] 6.10 Final pre-delivery checklist verification per MASTER.md
