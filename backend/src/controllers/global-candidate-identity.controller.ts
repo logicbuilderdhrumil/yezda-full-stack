@@ -3,10 +3,51 @@
  * HTTP handlers for global candidate identity endpoints.
  */
 
+import { z } from 'zod';
 import type { Response } from 'express';
 import { globalCandidateIdentityService } from '../services/global-candidate-identity.service.js';
+import { globalCandidateRepository } from '../repositories/global-candidate.repository.js';
 import type { AuthenticatedRoleRequest } from '../middleware/route-guards.middleware.js';
-import type { CrossTenantConsentType } from '../models/global-candidate-identity.model.js';
+import { CrossTenantConsentTypeValues, type CrossTenantConsentType } from '../models/global-candidate-identity.model.js';
+
+// ── Request validation schemas ─────────────────────────────────────────────────
+
+const RequestConsentBodySchema = z.object({
+  sourceOrgId: z.string().uuid(),
+  targetOrgId: z.string().uuid(),
+  consentType: z.enum(CrossTenantConsentTypeValues),
+});
+
+/**
+ * Check if user is authorized to perform consent actions.
+ * User must be:
+ * - Admin role, OR
+ * - Associated with either the sourceOrgId or targetOrgId of the consent
+ */
+async function isAuthorizedForConsent(
+  req: AuthenticatedRoleRequest,
+  consentId: string
+): Promise<{ authorized: boolean; consent?: Awaited<ReturnType<typeof globalCandidateRepository.findConsentById>> }> {
+  const consent = await globalCandidateRepository.findConsentById(consentId);
+  if (!consent) {
+    return { authorized: false, consent: undefined };
+  }
+
+  const userTenantId = req.user?.tenantId;
+  const userRole = req.user?.role;
+
+  // Admin users can perform any consent action
+  if (userRole === 'admin') {
+    return { authorized: true, consent };
+  }
+
+  // User must belong to either source or target org
+  if (userTenantId && (userTenantId === consent.sourceOrgId || userTenantId === consent.targetOrgId)) {
+    return { authorized: true, consent };
+  }
+
+  return { authorized: false, consent };
+}
 
 /**
  * Map errorCode → HTTP status.
@@ -77,19 +118,18 @@ export async function getOrganizations(req: AuthenticatedRoleRequest, res: Respo
 
 export async function requestConsent(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { id } = req.params;
-  const { sourceOrgId, targetOrgId, consentType } = req.body as {
-    sourceOrgId: string;
-    targetOrgId: string;
-    consentType: CrossTenantConsentType;
-  };
 
-  if (!sourceOrgId || !targetOrgId || !consentType) {
+  const parseResult = RequestConsentBodySchema.safeParse(req.body);
+  if (!parseResult.success) {
     res.status(400).json({
-      error: 'sourceOrgId, targetOrgId, and consentType are required',
+      error: 'Invalid request body',
       code: 'VALIDATION_ERROR',
+      details: parseResult.error.flatten().fieldErrors,
     });
     return;
   }
+
+  const { sourceOrgId, targetOrgId, consentType } = parseResult.data;
 
   const result = await globalCandidateIdentityService.requestCrossOrgConsent(
     id,
@@ -111,6 +151,17 @@ export async function requestConsent(req: AuthenticatedRoleRequest, res: Respons
 export async function grantConsent(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { id } = req.params;
 
+  // Authorization check
+  const authCheck = await isAuthorizedForConsent(req, id);
+  if (!authCheck.consent) {
+    res.status(404).json({ error: 'Consent not found', code: 'NOT_FOUND' });
+    return;
+  }
+  if (!authCheck.authorized) {
+    res.status(403).json({ error: 'Not authorized to grant this consent', code: 'FORBIDDEN' });
+    return;
+  }
+
   const result = await globalCandidateIdentityService.grantConsent(id);
   if (!result.success) {
     res.status(errorStatus(result.errorCode)).json({ error: result.error, code: result.errorCode });
@@ -125,6 +176,17 @@ export async function grantConsent(req: AuthenticatedRoleRequest, res: Response)
 export async function denyConsent(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { id } = req.params;
 
+  // Authorization check
+  const authCheck = await isAuthorizedForConsent(req, id);
+  if (!authCheck.consent) {
+    res.status(404).json({ error: 'Consent not found', code: 'NOT_FOUND' });
+    return;
+  }
+  if (!authCheck.authorized) {
+    res.status(403).json({ error: 'Not authorized to deny this consent', code: 'FORBIDDEN' });
+    return;
+  }
+
   const result = await globalCandidateIdentityService.denyConsent(id);
   if (!result.success) {
     res.status(errorStatus(result.errorCode)).json({ error: result.error, code: result.errorCode });
@@ -138,6 +200,17 @@ export async function denyConsent(req: AuthenticatedRoleRequest, res: Response):
 
 export async function revokeConsent(req: AuthenticatedRoleRequest, res: Response): Promise<void> {
   const { id } = req.params;
+
+  // Authorization check
+  const authCheck = await isAuthorizedForConsent(req, id);
+  if (!authCheck.consent) {
+    res.status(404).json({ error: 'Consent not found', code: 'NOT_FOUND' });
+    return;
+  }
+  if (!authCheck.authorized) {
+    res.status(403).json({ error: 'Not authorized to revoke this consent', code: 'FORBIDDEN' });
+    return;
+  }
 
   const result = await globalCandidateIdentityService.revokeConsent(id);
   if (!result.success) {
