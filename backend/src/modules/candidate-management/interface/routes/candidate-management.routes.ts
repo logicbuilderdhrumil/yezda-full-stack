@@ -30,6 +30,7 @@ import {
   candidateSearchQuerySchema,
   candidateIdParamSchema,
   tenantIdParamSchema,
+  inviteCandidateSchema,
 } from '../validators/candidate-management.validators.js';
 
 export function createCandidateManagementRoutes(controller: CandidateManagementController): Router {
@@ -66,6 +67,15 @@ export function createCandidateManagementRoutes(controller: CandidateManagementC
     candidateManagementBulkRateLimiter,
     validateBody(bulkCreateCandidatesSchema),
     controller.bulkCreateCandidates,
+  );
+
+  // POST /api/v1/candidates/invite
+  router.post(
+    '/invite',
+    ...authAndRoleGuards,
+    candidateManagementCreateRateLimiter,
+    validateBody(inviteCandidateSchema),
+    controller.inviteCandidate,
   );
 
   // POST /api/v1/candidates/submit/:tenantId

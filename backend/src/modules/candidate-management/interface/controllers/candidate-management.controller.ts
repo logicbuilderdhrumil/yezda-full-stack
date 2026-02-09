@@ -19,6 +19,8 @@ import type { UpdateCandidateStatusUseCase } from '../../application/use-cases/U
 import type { BulkCreateCandidatesUseCase } from '../../application/use-cases/BulkCreateCandidatesUseCase.js';
 import type { SubmitCandidateFormUseCase } from '../../application/use-cases/SubmitCandidateFormUseCase.js';
 import type { DeleteCandidateUseCase } from '../../application/use-cases/DeleteCandidateUseCase.js';
+import type { SendCandidateInviteUseCase } from '../../../email/application/use-cases/SendCandidateInviteUseCase.js';
+import type { InviteContext } from '../../../email/domain/types/email-types.js';
 
 function getManagementContext(req: AuthenticatedRoleRequest): CandidateManagementContext {
   const ip = getClientIp(req);
@@ -46,6 +48,7 @@ export class CandidateManagementController {
     private readonly bulkCreateCandidatesUseCase: BulkCreateCandidatesUseCase,
     private readonly submitCandidateFormUseCase: SubmitCandidateFormUseCase,
     private readonly deleteCandidateUseCase: DeleteCandidateUseCase,
+    private readonly sendCandidateInviteUC?: SendCandidateInviteUseCase,
   ) {}
 
   listCandidates = async (req: AuthenticatedRoleRequest, res: Response): Promise<void> => {
@@ -243,5 +246,42 @@ export class CandidateManagementController {
     }
 
     res.status(204).send();
+  };
+
+  inviteCandidate = async (req: AuthenticatedRoleRequest, res: Response): Promise<void> => {
+    if (!this.sendCandidateInviteUC) {
+      res.status(501).json({ error: 'Email invite module not configured', code: 'NOT_CONFIGURED' });
+      return;
+    }
+
+    const ctx = getManagementContext(req);
+    if (!ctx.tenantId) {
+      res.status(400).json({ error: 'Tenant ID is required', code: 'MISSING_TENANT' });
+      return;
+    }
+
+    const inviteCtx: InviteContext = {
+      actorId: ctx.actorId,
+      actorType: 'user',
+      tenantId: ctx.tenantId,
+      ipAddress: ctx.ipAddress,
+      userAgent: ctx.userAgent,
+    };
+
+    const { email, orgName, inviterName, candidateInfo } = req.body;
+    const result = await this.sendCandidateInviteUC.execute(inviteCtx, {
+      email,
+      orgName,
+      inviterName,
+      candidateInfo,
+    });
+
+    if (!result.success) {
+      const statusCode = result.errorCode === 'INVITE_RATE_LIMITED' ? 429 : 500;
+      res.status(statusCode).json({ error: result.error, code: result.errorCode });
+      return;
+    }
+
+    res.status(201).json({ success: true, expiresAt: result.expiresAt });
   };
 }

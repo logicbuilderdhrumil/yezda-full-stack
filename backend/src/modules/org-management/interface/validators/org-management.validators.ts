@@ -58,3 +58,10 @@ export const orgIdParamSchema = z.object({
 export const updateStatusSchema = z.object({
   status: z.enum(['active', 'suspended', 'pending', 'archived']),
 });
+
+export const inviteMemberSchema = z.object({
+  email: z.string().email('Invalid email address').max(255),
+  role: z.string().min(1, 'Role is required').max(100),
+  orgName: z.string().min(1, 'Organization name is required').max(255),
+  inviterName: z.string().min(1, 'Inviter name is required').max(255),
+});

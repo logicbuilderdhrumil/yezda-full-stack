@@ -12,6 +12,7 @@ import {
   listOrganizationsQuerySchema,
   orgIdParamSchema,
   updateStatusSchema,
+  inviteMemberSchema,
 } from '../validators/org-management.validators.js';
 import {
   orgManagementReadRateLimiter,
@@ -81,6 +82,17 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
     orgManagementWriteRateLimiter,
     validateParams(orgIdParamSchema),
     controller.deleteOrganization,
+  );
+
+  // Invite member to organization
+  router.post(
+    '/:id/invite-member',
+    requireAuthGuard,
+    requireRoleGuard('admin', 'manager'),
+    orgManagementWriteRateLimiter,
+    validateParams(orgIdParamSchema),
+    validateBody(inviteMemberSchema),
+    controller.inviteMember,
   );
 
   return router;

@@ -160,7 +160,12 @@ export type AuditEventType =
   | 'APP_APPLICATION_FORM_LOADED'
   | 'APP_APPLICATION_DRAFT_SAVED'
   | 'APP_APPLICATION_SUBMITTED'
-  | 'APP_APPLICATION_SUBMISSION_FAILED';
+  | 'APP_APPLICATION_SUBMISSION_FAILED'
+  // Invite/email audit events
+  | 'INVITE_SENT'
+  | 'INVITE_SEND_FAILED'
+  | 'INVITE_ACCEPTED'
+  | 'INVITE_ACCEPT_FAILED';
 
 export interface AuditEvent {
   id: string;

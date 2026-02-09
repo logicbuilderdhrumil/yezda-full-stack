@@ -21,7 +21,14 @@ import { metricsService } from '../../services/metrics.service.js';
 import type { IAuditService } from './domain/ports/audit-service.port.js';
 import type { IMetricsService } from './domain/ports/metrics-service.port.js';
 
-export function createOrgManagementModule() {
+// Cross-module type import for email invite integration
+import type { SendOrgMemberInviteUseCase } from '../email/application/use-cases/SendOrgMemberInviteUseCase.js';
+
+export interface OrgManagementModuleDeps {
+  sendOrgMemberInviteUC?: SendOrgMemberInviteUseCase;
+}
+
+export function createOrgManagementModule(deps: OrgManagementModuleDeps = {}) {
   // ── Infrastructure ──────────────────────────────────────────────────────
   const orgRepo = new PostgresOrgManagementRepository();
 
@@ -44,8 +51,7 @@ export function createOrgManagementModule() {
     createOrgUC,
     updateOrgUC,
     updateOrgStatusUC,
-    deleteOrgUC,
-  );
+    deleteOrgUC,    deps.sendOrgMemberInviteUC,  );
 
   const routes = createOrgManagementRoutes(controller);
 

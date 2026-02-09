@@ -78,3 +78,16 @@ export const candidateIdParamSchema = z.object({
 export const tenantIdParamSchema = z.object({
   tenantId: z.string().uuid('Invalid tenant ID'),
 });
+
+export const inviteCandidateSchema = z.object({
+  email: z.string().email('Invalid email address').max(255),
+  orgName: z.string().min(1, 'Organization name is required').max(255),
+  inviterName: z.string().min(1, 'Inviter name is required').max(255),
+  candidateInfo: z
+    .object({
+      firstName: z.string().max(100).optional(),
+      lastName: z.string().max(100).optional(),
+      applicationId: z.string().uuid().optional(),
+    })
+    .optional(),
+});

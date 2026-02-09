@@ -38,14 +38,21 @@ import { createAppAuthModule } from '../modules/app-auth/index.js';
 import { createAppApplicationIntakeModule } from '../modules/app-application-intake/index.js';
 import { createAppConsentModule } from '../modules/app-consent/index.js';
 import { createAppProfileModule } from '../modules/app-profile/index.js';
+import { createEmailModule } from '../modules/email/index.js';
 // Legacy app route imports replaced by Clean Architecture modules
 
 // ── Initialize Clean Architecture modules ────────────────────────────────────
+// Email module must be created first so its use cases can be injected into other modules
+const emailModule = createEmailModule();
 const authModule = createAuthModule();
-const candidateManagementModule = createCandidateManagementModule();
+const candidateManagementModule = createCandidateManagementModule({
+  sendCandidateInviteUC: emailModule.useCases.sendCandidateInvite,
+});
 const formBuilderModule = createFormBuilderModule();
 const userManagementModule = createUserManagementModule();
-const orgManagementModule = createOrgManagementModule();
+const orgManagementModule = createOrgManagementModule({
+  sendOrgMemberInviteUC: emailModule.useCases.sendOrgMemberInvite,
+});
 const chatModule = createChatModule();
 const notificationModule = createNotificationModule();
 const fileManagementModule = createFileManagementModule();
@@ -120,5 +127,6 @@ router.use('/client', clientPortalModule.router);
 router.use('/components', customComponentsModule.router);
 router.use('/webhooks', webhookModule.router);
 router.use('/reviews', reviewTaskModule.router);
+router.use('/invites', emailModule.routes);
 
 export default router;

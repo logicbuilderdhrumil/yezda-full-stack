@@ -23,7 +23,14 @@ import { auditService } from '../../services/audit.service.js';
 import { metricsService } from '../../services/metrics.service.js';
 import { globalCandidateIdentityService } from '../../services/global-candidate-identity.service.js';
 
-export function createCandidateManagementModule() {
+// Cross-module type import for email invite integration
+import type { SendCandidateInviteUseCase } from '../email/application/use-cases/SendCandidateInviteUseCase.js';
+
+export interface CandidateManagementModuleDeps {
+  sendCandidateInviteUC?: SendCandidateInviteUseCase;
+}
+
+export function createCandidateManagementModule(deps: CandidateManagementModuleDeps = {}) {
   // ── Infrastructure ──────────────────────────────────────────────────────
   const candidateRepo = new PostgresCandidateRepository();
 
@@ -46,8 +53,7 @@ export function createCandidateManagementModule() {
     updateCandidateStatusUseCase,
     bulkCreateCandidatesUseCase,
     submitCandidateFormUseCase,
-    deleteCandidateUseCase,
-  );
+    deleteCandidateUseCase,    deps.sendCandidateInviteUC,  );
 
   const routes = createCandidateManagementRoutes(controller);
 

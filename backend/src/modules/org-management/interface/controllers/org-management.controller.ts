@@ -10,6 +10,8 @@ import type { CreateOrganizationUseCase } from '../../application/use-cases/Crea
 import type { UpdateOrganizationUseCase } from '../../application/use-cases/UpdateOrganizationUseCase.js';
 import type { UpdateOrganizationStatusUseCase } from '../../application/use-cases/UpdateOrganizationStatusUseCase.js';
 import type { DeleteOrganizationUseCase } from '../../application/use-cases/DeleteOrganizationUseCase.js';
+import type { SendOrgMemberInviteUseCase } from '../../../email/application/use-cases/SendOrgMemberInviteUseCase.js';
+import type { InviteContext } from '../../../email/domain/types/email-types.js';
 import type {
   OrgContext,
   OrgFilters,
@@ -52,6 +54,7 @@ export class OrgManagementController {
     private readonly updateOrgUC: UpdateOrganizationUseCase,
     private readonly updateOrgStatusUC: UpdateOrganizationStatusUseCase,
     private readonly deleteOrgUC: DeleteOrganizationUseCase,
+    private readonly sendOrgMemberInviteUC?: SendOrgMemberInviteUseCase,
   ) {}
 
   listOrganizations = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -167,5 +170,47 @@ export class OrgManagementController {
       return;
     }
     res.status(204).send();
+  };
+
+  inviteMember = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    if (!this.sendOrgMemberInviteUC) {
+      res.status(501).json({ error: 'Email invite module not configured', code: 'NOT_CONFIGURED' });
+      return;
+    }
+
+    if (!req.user) {
+      res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+      return;
+    }
+
+    const tenantId = req.user.tenantId ?? req.get('x-tenant-id');
+    if (!tenantId) {
+      res.status(400).json({ error: 'Tenant ID is required', code: 'MISSING_TENANT' });
+      return;
+    }
+
+    const inviteCtx: InviteContext = {
+      actorId: req.user.sub,
+      actorType: 'user',
+      tenantId,
+      ipAddress: req.ip || req.socket.remoteAddress,
+      userAgent: req.get('user-agent'),
+    };
+
+    const { email, role, orgName, inviterName } = req.body;
+    const result = await this.sendOrgMemberInviteUC.execute(inviteCtx, {
+      email,
+      role,
+      orgName,
+      inviterName,
+    });
+
+    if (!result.success) {
+      const status = result.errorCode === 'INVITE_RATE_LIMITED' ? 429 : 500;
+      res.status(status).json({ error: result.error, code: result.errorCode });
+      return;
+    }
+
+    res.status(201).json({ success: true, expiresAt: result.expiresAt });
   };
 }

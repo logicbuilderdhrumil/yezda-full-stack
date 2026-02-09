@@ -55,6 +55,11 @@ export interface AuthConfig {
       github?: OAuthProviderEnv;
     };
   };
+  email: {
+    postmarkServerToken: string;
+    fromAddress: string;
+    inviteBaseUrl: string;
+  };
 }
 
 /**
@@ -179,6 +184,11 @@ export const config: AuthConfig = {
       slack: loadOAuthProvider('OAUTH_SLACK'),
       github: loadOAuthProvider('OAUTH_GITHUB'),
     },
+  },
+  email: {
+    postmarkServerToken: getEnvOrDefault('POSTMARK_SERVER_TOKEN', ''),
+    fromAddress: getEnvOrDefault('POSTMARK_FROM_ADDRESS', 'noreply@yezda.com'),
+    inviteBaseUrl: getEnvOrDefault('INVITE_BASE_URL', 'http://localhost:5173/invite'),
   },
 };
 
