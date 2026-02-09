@@ -62,8 +62,8 @@ function SettingsSkeleton(): ReactNode {
 function ReadOnlyField({ label, value }: { label: string; value?: string }): ReactNode {
   return (
     <div className="space-y-1">
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
-      <p className="text-sm text-gray-900 dark:text-gray-100">{value || '—'}</p>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-sm text-foreground">{value || '—'}</p>
     </div>
   );
 }
@@ -325,8 +325,8 @@ function NotificationRow({
 }): ReactNode {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-gray-700 dark:text-gray-300">{label}</span>
-      <span className={enabled ? 'text-green-600' : 'text-gray-400'}>
+      <span className="text-foreground">{label}</span>
+      <span className={enabled ? 'text-green-600' : 'text-muted-foreground'}>
         {enabled ? 'Enabled' : 'Disabled'}
       </span>
     </div>
@@ -353,7 +353,7 @@ function SwitchRow({
         <Label htmlFor={id} className="text-sm font-medium">
           {label}
         </Label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
     </div>

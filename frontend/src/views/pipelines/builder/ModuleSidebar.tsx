@@ -22,15 +22,15 @@ export function ModuleSidebar({ onModuleSelect }: ModuleSidebarProps): ReactNode
   };
 
   return (
-    <div className="w-64 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 overflow-y-auto">
-      <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+    <div className="w-64 border-r border-border bg-muted p-4 overflow-y-auto">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
         {t('pipelines.builder.modules', 'Modules')}
       </h3>
       <div className="space-y-2">
         {MODULE_TYPES.map((mod) => (
           <div
             key={mod.type}
-            className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-grab hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-sm transition-all active:cursor-grabbing"
+            className="flex items-start gap-3 p-3 rounded-lg border border-border bg-white dark:bg-gray-800 cursor-grab hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-sm transition-all active:cursor-grabbing"
             draggable
             onDragStart={(e) => onDragStart(e, mod.type)}
             onClick={() => onModuleSelect?.(mod.type)}
@@ -50,10 +50,10 @@ export function ModuleSidebar({ onModuleSelect }: ModuleSidebarProps): ReactNode
               {mod.icon}
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <p className="text-sm font-medium text-foreground">
                 {t(`pipelines.module.${mod.type}`, mod.label)}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {mod.description}
               </p>
             </div>

@@ -110,7 +110,7 @@ function DashboardEmpty(): ReactNode {
   return (
     <Card>
       <CardContent className="py-12 text-center">
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-[var(--color-muted-foreground)]">
           {t('pages.home.noData')}
         </p>
       </CardContent>
@@ -155,11 +155,11 @@ export function HomeView(): ReactNode {
       {/* Header with welcome and refresh */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-medium text-[var(--color-foreground)]">
             {t('pages.home.welcomeBack', { name: user?.firstName || user?.displayName || user?.email?.split('@')[0] || '' })}
           </h2>
           {lastUpdated && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-[var(--color-muted-foreground)]">
               {t('pages.home.lastUpdated', {
                 time: formatRelativeTime(lastUpdated),
               })}

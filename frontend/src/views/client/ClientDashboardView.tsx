@@ -36,15 +36,15 @@ function MetricCard({ title, value, icon, description }: MetricCardProps): React
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className="text-gray-400 dark:text-gray-500">{icon}</div>
+        <div className="text-muted-foreground">{icon}</div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value.toLocaleString()}</div>
         {description && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
         )}
       </CardContent>
     </Card>
@@ -92,9 +92,9 @@ function ActivityItemRow({ activity, onCandidateClick }: ActivityItemRowProps): 
   const badge = getActivityBadge(activity.type);
 
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
+    <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-900 dark:text-gray-100">{activity.description}</p>
+        <p className="text-sm text-foreground">{activity.description}</p>
         <div className="flex items-center gap-2 mt-1">
           <Badge variant={badge.variant} className="text-[10px]">
             {badge.label}
@@ -108,7 +108,7 @@ function ActivityItemRow({ activity, onCandidateClick }: ActivityItemRowProps): 
               {activity.candidateName}
             </button>
           )}
-          <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+          <span className="text-xs text-muted-foreground shrink-0">
             {formatRelativeTime(activity.timestamp)}
           </span>
         </div>
@@ -224,7 +224,7 @@ export function ClientDashboardView(): ReactNode {
                 ))}
               </div>
             ) : (data?.recentActivity?.length ?? 0) === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
+              <p className="text-sm text-muted-foreground py-4 text-center">
                 No recent activity
               </p>
             ) : (

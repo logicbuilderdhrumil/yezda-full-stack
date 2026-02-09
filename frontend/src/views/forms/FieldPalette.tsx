@@ -23,7 +23,7 @@ function FieldIcon({ name }: { name: string }): ReactNode {
     Upload: '📎',
   };
   return (
-    <span className="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-sm font-bold dark:bg-gray-800">
+    <span className="flex h-8 w-8 items-center justify-center rounded bg-muted text-sm font-bold">
       {iconMap[name] || '?'}
     </span>
   );
@@ -37,7 +37,7 @@ export function FieldPalette({ onAddField }: FieldPaletteProps): ReactNode {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         {t('forms.builder.paletteHint')}
       </p>
       <div className="space-y-2">

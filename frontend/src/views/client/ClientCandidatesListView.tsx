@@ -216,7 +216,7 @@ export function ClientCandidatesListView(): ReactNode {
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search candidates..."
             value={search}
@@ -250,7 +250,7 @@ export function ClientCandidatesListView(): ReactNode {
             </div>
           ) : candidates.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {debouncedSearch || (status && status !== 'all')
                   ? 'No candidates match your filters.'
                   : 'No candidates yet.'}
@@ -276,7 +276,7 @@ export function ClientCandidatesListView(): ReactNode {
                     <TableCell className="font-medium">
                       {candidate.firstName} {candidate.lastName}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {candidate.email}
                     </TableCell>
                     <TableCell>
@@ -284,7 +284,7 @@ export function ClientCandidatesListView(): ReactNode {
                         {formatStatus(candidate.screeningStatus)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
                       {formatDate(candidate.submittedAt)}
                     </TableCell>
                   </TableRow>

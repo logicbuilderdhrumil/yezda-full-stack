@@ -56,12 +56,12 @@ export function GenericErrorView({
     >
       {/* Show error details in development */}
       {import.meta.env.DEV && error && (
-        <div className="text-left bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto max-h-40">
+        <div className="text-left bg-muted p-4 rounded-lg overflow-auto max-h-40">
           <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-1">
             {error.name}: {error.message}
           </p>
           {error.stack && (
-            <pre className="text-xs text-gray-600 dark:text-gray-400 font-mono whitespace-pre-wrap">
+            <pre className="text-xs text-muted-foreground font-mono whitespace-pre-wrap">
               {error.stack}
             </pre>
           )}

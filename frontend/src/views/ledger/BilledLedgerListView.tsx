@@ -160,7 +160,7 @@ export function BilledLedgerListView(): ReactNode {
       {summary && (
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Card className="p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {t('ledger.summary.totalAmount')}
             </div>
             <div className="mt-1 text-2xl font-semibold">
@@ -168,7 +168,7 @@ export function BilledLedgerListView(): ReactNode {
             </div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {t('ledger.summary.entryCount')}
             </div>
             <div className="mt-1 text-2xl font-semibold">{summary.entryCount}</div>
@@ -183,14 +183,14 @@ export function BilledLedgerListView(): ReactNode {
             type="date"
             value={dateFrom || ''}
             onChange={(e) => handleDateFromChange(e.target.value)}
-            className="rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="rounded-md border border-border px-3 py-2 text-sm dark:bg-muted"
             placeholder={t('ledger.filters.dateFrom')}
           />
           <input
             type="date"
             value={dateTo || ''}
             onChange={(e) => handleDateToChange(e.target.value)}
-            className="rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="rounded-md border border-border px-3 py-2 text-sm dark:bg-muted"
             placeholder={t('ledger.filters.dateTo')}
           />
         </div>
@@ -204,7 +204,7 @@ export function BilledLedgerListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={5} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -242,7 +242,7 @@ export function BilledLedgerListView(): ReactNode {
             <TableBody>
               {entries.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-8 text-center text-gray-500">
+                  <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                     {t('ledger.billed.noResults')}
                   </TableCell>
                 </TableRow>
@@ -250,14 +250,14 @@ export function BilledLedgerListView(): ReactNode {
                 entries.map((entry) => (
                   <TableRow key={entry.id}>
                     <TableCell className="font-medium">{entry.organizationName}</TableCell>
-                    <TableCell className="text-gray-500">{entry.description}</TableCell>
+                    <TableCell className="text-muted-foreground">{entry.description}</TableCell>
                     <TableCell className="text-right font-medium">
                       {formatCurrency(entry.amount, entry.currency)}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {entry.billedAt ? formatDate(entry.billedAt) : '—'}
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(entry.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(entry.createdAt)}</TableCell>
                   </TableRow>
                 ))
               )}

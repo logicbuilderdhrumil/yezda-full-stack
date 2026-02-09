@@ -48,10 +48,10 @@ export function ModuleConfigPanel({
   };
 
   return (
-    <div className="w-80 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col h-full overflow-hidden">
+    <div className="w-80 border-l border-border bg-white dark:bg-gray-900 flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <h3 className="text-sm font-semibold text-foreground">
           {t('pipelines.builder.configTitle', 'Module Settings')}
         </h3>
         <Button variant="ghost" size="sm" onClick={onClose}>
@@ -91,7 +91,7 @@ export function ModuleConfigPanel({
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+      <div className="px-4 py-3 border-t border-border">
         <Button
           variant="destructive"
           size="sm"
@@ -128,12 +128,12 @@ function FormConfigFields({ config, onUpdate }: ConfigFieldsProps): ReactNode {
       <div className="space-y-1">
         <Label>{t('pipelines.builder.formId', 'Form Definition')}</Label>
         {formId ? (
-          <div className="flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 p-2">
+          <div className="flex items-center gap-2 rounded-md border border-border p-2">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {formName || t('forms.picker.unnamed')}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate font-mono">
+              <p className="text-xs text-muted-foreground truncate font-mono">
                 {formId}
               </p>
             </div>
@@ -148,7 +148,7 @@ function FormConfigFields({ config, onUpdate }: ConfigFieldsProps): ReactNode {
         ) : (
           <Button
             variant="outline"
-            className="w-full justify-start text-gray-500"
+            className="w-full justify-start text-muted-foreground"
             onClick={() => setPickerOpen(true)}
           >
             {t('forms.picker.selectForm')}

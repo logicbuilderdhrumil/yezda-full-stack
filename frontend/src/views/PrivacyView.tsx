@@ -13,16 +13,16 @@ export function PrivacyView(): ReactNode {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-muted/50 py-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow px-8 py-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-6">
             {t('legal.privacyPolicy', 'Privacy Policy')}
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             {t('legal.privacyPlaceholder', 'Privacy Policy content will be added here.')}
           </p>
-          <p className="text-gray-600 mb-8">
+          <p className="text-muted-foreground mb-8">
             {t('legal.lastUpdated', 'Last updated')}: February 4, 2026
           </p>
           <Link

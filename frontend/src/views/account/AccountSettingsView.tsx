@@ -143,7 +143,7 @@ export function AccountSettingsView(): ReactNode {
       >
         <Card>
           <CardContent className="py-8">
-            <p className="text-center text-gray-500">{t('account.loadError')}</p>
+            <p className="text-center text-muted-foreground">{t('account.loadError')}</p>
           </CardContent>
         </Card>
       </PageContainer>
@@ -187,7 +187,7 @@ export function AccountSettingsView(): ReactNode {
               <CardDescription>{t('account.security.description')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {t('account.security.comingSoon')}
               </p>
             </CardContent>

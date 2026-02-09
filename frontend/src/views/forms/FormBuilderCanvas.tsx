@@ -115,11 +115,11 @@ export function FormBuilderCanvas({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-foreground">
             {t('forms.builder.title')}
           </h2>
           {formName && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{formName}</p>
+            <p className="text-sm text-muted-foreground">{formName}</p>
           )}
         </div>
         <div className="flex gap-2">
@@ -158,8 +158,8 @@ export function FormBuilderCanvas({
             </CardHeader>
             <CardContent>
               {schema.fields.length === 0 ? (
-                <div className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-                  <p className="text-gray-500 dark:text-gray-400">
+                <div className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-border">
+                  <p className="text-muted-foreground">
                     {t('forms.builder.emptyCanvas')}
                   </p>
                 </div>
@@ -172,10 +172,10 @@ export function FormBuilderCanvas({
                       tabIndex={0}
                       className={cn(
                         'group flex items-center gap-2 rounded-lg border p-3 transition-colors cursor-pointer',
-                        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                        'focus:outline-none focus:ring-2 focus:ring-cta focus:ring-offset-2',
                         selectedFieldId === field.id
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                          ? 'border-cta bg-cta/10'
+                          : 'border-border hover:border-border'
                       )}
                       onClick={() => setSelectedFieldId(field.id)}
                       onKeyDown={(e) => {
@@ -215,18 +215,18 @@ export function FormBuilderCanvas({
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium uppercase text-gray-400">
+                          <span className="text-xs font-medium uppercase text-muted-foreground">
                             {field.type}
                           </span>
                           {field.validation?.required && (
                             <span className="text-xs text-red-500">*</span>
                           )}
                         </div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                        <p className="font-medium text-foreground">
                           {field.label}
                         </p>
                         {field.helperText && (
-                          <p className="text-sm text-gray-500">{field.helperText}</p>
+                          <p className="text-sm text-muted-foreground">{field.helperText}</p>
                         )}
                       </div>
                       <Button
@@ -259,7 +259,7 @@ export function FormBuilderCanvas({
               {selectedField ? (
                 <FieldConfigPanel field={selectedField} onUpdate={handleUpdateField} />
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   {t('forms.builder.selectField')}
                 </p>
               )}

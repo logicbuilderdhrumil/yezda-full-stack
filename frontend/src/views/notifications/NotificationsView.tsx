@@ -136,9 +136,9 @@ function NotificationItem({
   return (
     <div
       className={cn(
-        'flex items-start gap-4 p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-colors',
-        'hover:bg-gray-50 dark:hover:bg-gray-800/50',
-        isUnread && 'bg-blue-50/50 dark:bg-blue-900/10'
+        'flex items-start gap-4 p-4 border-b border-border cursor-pointer transition-colors',
+        'hover:bg-muted/50',
+        isUnread && 'bg-cta/10'
       )}
       onClick={() => onClick(notification)}
       onKeyDown={(e) => {
@@ -155,7 +155,7 @@ function NotificationItem({
         <div
           className={cn(
             'h-2.5 w-2.5 rounded-full',
-            isUnread ? 'bg-blue-500' : 'bg-transparent'
+            isUnread ? 'bg-cta' : 'bg-transparent'
           )}
           aria-hidden="true"
         />
@@ -163,7 +163,7 @@ function NotificationItem({
       </div>
 
       {/* Icon */}
-      <div className="flex-shrink-0 pt-0.5 text-gray-500 dark:text-gray-400">
+      <div className="flex-shrink-0 pt-0.5 text-muted-foreground">
         {getTypeIcon(notification.type)}
       </div>
 
@@ -174,8 +174,8 @@ function NotificationItem({
             className={cn(
               'text-sm truncate',
               isUnread
-                ? 'font-semibold text-gray-900 dark:text-gray-100'
-                : 'font-medium text-gray-700 dark:text-gray-300'
+                ? 'font-semibold text-foreground'
+                : 'font-medium text-foreground'
             )}
           >
             {notification.title}
@@ -184,10 +184,10 @@ function NotificationItem({
             {NOTIFICATION_PRIORITY_CONFIG[notification.priority]?.label}
           </Badge>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+        <p className="text-sm text-muted-foreground line-clamp-2">
           {notification.body}
         </p>
-        <div className="flex items-center gap-2 mt-2 text-xs text-gray-500 dark:text-gray-500">
+        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
           <span>{getTypeLabel(notification.type)}</span>
           <span>·</span>
           <span>{formatRelativeTime(notification.createdAt)}</span>
@@ -227,7 +227,7 @@ function NotificationItem({
  */
 function NotificationSkeleton(): ReactNode {
   return (
-    <div className="flex items-start gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="flex items-start gap-4 p-4 border-b border-border">
       <Skeleton className="h-2.5 w-2.5 rounded-full" />
       <Skeleton className="h-4 w-4" />
       <div className="flex-1 space-y-2">
@@ -247,9 +247,9 @@ function EmptyState({ filter }: { filter?: NotificationFilters }): ReactNode {
 
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+      <div className="rounded-full bg-muted p-4 mb-4">
         <svg
-          className="h-8 w-8 text-gray-400"
+          className="h-8 w-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -262,10 +262,10 @@ function EmptyState({ filter }: { filter?: NotificationFilters }): ReactNode {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         {hasFilters ? 'No matching notifications' : 'All caught up!'}
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         {hasFilters
           ? 'Try adjusting your filters to see more notifications.'
           : "You don't have any notifications at the moment."}
@@ -301,10 +301,10 @@ function ErrorState({
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         Failed to load notifications
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{message}</p>
+      <p className="text-sm text-muted-foreground mb-4">{message}</p>
       <Button onClick={onRetry} variant="outline">
         Try again
       </Button>

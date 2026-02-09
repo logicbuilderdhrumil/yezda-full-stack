@@ -95,12 +95,12 @@ function IntegrationCard({
   return (
     <Card className="flex items-center justify-between p-4">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-50">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/50">
           {config.icon}
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-gray-900">{config.displayName}</h3>
+            <h3 className="font-medium text-foreground">{config.displayName}</h3>
             {isConnected && !hasError && (
               <Badge variant="success">{t('oauth.connected')}</Badge>
             )}
@@ -108,9 +108,9 @@ function IntegrationCard({
               <Badge variant="warning">{t('oauth.error')}</Badge>
             )}
           </div>
-          <p className="mt-0.5 text-sm text-gray-600">{config.description}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{config.description}</p>
           {status?.providerAccountId && (
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               {t('oauth.connectedAs', { account: status.providerAccountId })}
             </p>
           )}
@@ -229,7 +229,7 @@ export function AccountIntegrationsView(): ReactNode {
         </CardHeader>
         <CardContent className="space-y-4">
           {availableProviders.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               {t('oauth.noProviders')}
             </p>
           ) : (

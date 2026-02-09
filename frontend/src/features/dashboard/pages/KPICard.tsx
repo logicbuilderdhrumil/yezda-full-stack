@@ -60,13 +60,13 @@ export function KPICard({ metric, className }: KPICardProps): ReactNode {
       )}
     >
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        <CardTitle className="text-sm font-medium text-[var(--color-muted-foreground)]">
           {metric.title}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-end justify-between">
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <p className="text-2xl font-bold text-[var(--color-foreground)]">
             {metric.formattedValue ?? metric.value}
           </p>
           {metric.deltaText && (

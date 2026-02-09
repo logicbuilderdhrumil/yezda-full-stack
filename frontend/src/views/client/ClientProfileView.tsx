@@ -66,10 +66,10 @@ export function ClientProfileView(): ReactNode {
               <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <User className="h-10 w-10 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-foreground">
                 {displayName}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {user?.email}
               </p>
               <div className="flex flex-wrap gap-1 mt-3 justify-center">
@@ -148,11 +148,11 @@ function DetailRow({ icon, label, value }: DetailRowProps): ReactNode {
   return (
     <div className="flex items-center gap-3">
       {icon && (
-        <div className="text-gray-400 dark:text-gray-500 shrink-0">{icon}</div>
+        <div className="text-muted-foreground shrink-0">{icon}</div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{value}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-medium text-foreground truncate">{value}</p>
       </div>
     </div>
   );

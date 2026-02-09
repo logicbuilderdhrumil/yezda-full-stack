@@ -162,7 +162,7 @@ export function ReportsView(): ReactNode {
             <TableSkeleton />
           ) : byType.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 No type data available.
               </p>
             </div>
@@ -201,7 +201,7 @@ export function ReportsView(): ReactNode {
             <TableSkeleton />
           ) : monthlyTrend.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 No trend data available.
               </p>
             </div>
