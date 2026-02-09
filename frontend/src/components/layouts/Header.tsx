@@ -43,7 +43,7 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900',
+        'sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[var(--color-border)] bg-white px-4 dark:border-[#1e293b] dark:bg-[#0c1222]',
         className
       )}
       data-testid="header"
@@ -53,7 +53,7 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
         <button
           type="button"
           onClick={toggleMobile}
-          className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          className="lg:hidden p-2 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors duration-200"
           aria-label={t('common.toggleMobileMenu')}
           data-testid="mobile-menu-toggle"
         >
@@ -64,7 +64,7 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
         <button
           type="button"
           onClick={toggleCollapsed}
-          className="hidden lg:flex p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          className="hidden lg:flex p-2 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors duration-200"
           aria-label={isCollapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
           data-testid="sidebar-toggle"
         >
@@ -74,7 +74,7 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
         {/* Logo/Brand */}
         <Link
           to="/"
-          className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100"
+          className="flex items-center gap-2 font-bold tracking-tight text-[var(--color-primary)] dark:text-white"
           data-testid="header-logo"
         >
           <span className="text-xl">{t('app.name')}</span>

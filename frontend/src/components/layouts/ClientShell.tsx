@@ -34,7 +34,7 @@ export function ClientShell({
   return (
     <SidebarProvider>
       <div
-        className={cn('flex h-screen flex-col bg-neutral-950 text-neutral-100', className)}
+        className={cn('flex h-screen flex-col bg-[var(--color-background)] text-[var(--color-foreground)]', className)}
         data-testid="client-shell"
       >
         <Header showSearch={showSearch} />
@@ -56,7 +56,7 @@ export function ClientShell({
                 </button>
               </div>
             )}
-            <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
+            <main className="flex-1 overflow-y-auto bg-[var(--color-background)]">
               {children ?? <Outlet />}
             </main>
           </div>

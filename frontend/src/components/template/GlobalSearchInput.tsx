@@ -100,11 +100,11 @@ export function GlobalSearchInput({
         onBlur={handleBlur}
         placeholder={defaultPlaceholder}
         className={cn(
-          'w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-10 pr-8 text-sm',
-          'placeholder:text-gray-400',
-          'focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary',
-          'dark:border-gray-700 dark:bg-gray-800 dark:placeholder:text-gray-500',
-          'dark:focus:border-primary dark:focus:bg-gray-900'
+          'w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)] py-2 pl-10 pr-8 text-sm transition-all duration-200',
+          'placeholder:text-[var(--color-muted-foreground)]',
+          'focus:border-[var(--color-cta)] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-cta)]',
+          'dark:border-[var(--color-border)] dark:bg-[var(--color-muted)] dark:placeholder:text-[var(--color-muted-foreground)]',
+          'dark:focus:border-[var(--color-cta)] dark:focus:bg-[var(--color-background)]'
         )}
         aria-label={defaultPlaceholder}
         data-testid="global-search-input"
