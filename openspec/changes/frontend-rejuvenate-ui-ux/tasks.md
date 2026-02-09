@@ -98,14 +98,14 @@
 - [x] 5.12 Polish ConsentStatusBadge.tsx & PrefillDisclosureBadge.tsx — updated tokens
 - [x] 5.13 Update FormFieldRenderer.tsx — consistent input styling with web
 
-## Phase 6: Accessibility & Final Polish
-- [ ] 6.1 Audit all pages for WCAG AAA contrast ratio (4.5:1 minimum for text)
-- [ ] 6.2 Add `prefers-reduced-motion` guards on all CSS animations and transitions
-- [ ] 6.3 Verify focus-visible states on all interactive elements
-- [ ] 6.4 Verify all icons are SVG (Lucide/Ionicons) — remove any emoji icons
-- [ ] 6.5 Verify cursor-pointer on all clickable elements
-- [ ] 6.6 Verify hover states have smooth transitions (150-300ms)
-- [ ] 6.7 Final responsive testing: 375px, 768px, 1024px, 1440px — no horizontal scroll
-- [ ] 6.8 Cross-browser testing: Chrome, Firefox, Safari, Edge
-- [ ] 6.9 Update visual test snapshots if present
-- [ ] 6.10 Final pre-delivery checklist verification per MASTER.md
+## Phase 6: Accessibility & Final Polish ✅
+- [x] 6.1 Audit all pages for WCAG AAA contrast ratio (4.5:1 minimum for text)
+- [x] 6.2 Add `prefers-reduced-motion` guards on all CSS animations and transitions
+- [x] 6.3 Verify focus-visible states on all interactive elements
+- [x] 6.4 Verify all icons are SVG (Lucide/Ionicons) — remove any emoji icons
+- [x] 6.5 Verify cursor-pointer on all clickable elements
+- [x] 6.6 Verify hover states have smooth transitions (150-300ms)
+- [x] 6.7 Final responsive testing: 375px, 768px, 1024px, 1440px — no horizontal scroll
+- [x] 6.8 Cross-browser testing: Chrome, Firefox, Safari, Edge
+- [x] 6.9 Update visual test snapshots if present
+- [x] 6.10 Final pre-delivery checklist verification per MASTER.md
