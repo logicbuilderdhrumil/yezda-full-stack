@@ -13,6 +13,7 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { XCircle, CheckCircle, Mail } from 'lucide-react';
 import {
   Button,
   Card,
@@ -41,6 +42,7 @@ export function AcceptInviteView(): ReactNode {
   const [isAccepting, setIsAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
+  const [isConfirmingDecline, setIsConfirmingDecline] = useState(false);
 
   const validateToken = useCallback(async () => {
     if (!token) {
@@ -118,17 +120,7 @@ export function AcceptInviteView(): ReactNode {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-destructive"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <XCircle className="h-6 w-6 text-destructive" aria-hidden="true" />
             </div>
             <CardTitle>{t(`invites.accept.error.${error}.title`)}</CardTitle>
             <CardDescription>
@@ -152,17 +144,7 @@ export function AcceptInviteView(): ReactNode {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+              <CheckCircle className="h-6 w-6 text-primary" aria-hidden="true" />
             </div>
             <CardTitle>{t('invites.accept.success.title')}</CardTitle>
             <CardDescription>
@@ -187,21 +169,7 @@ export function AcceptInviteView(): ReactNode {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
+            <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
           </div>
           <CardTitle>{t('invites.accept.title')}</CardTitle>
           <CardDescription>
@@ -256,11 +224,34 @@ export function AcceptInviteView(): ReactNode {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => navigate('/')}
+              onClick={() => setIsConfirmingDecline(true)}
               className="w-full"
             >
               {t('invites.accept.decline')}
             </Button>
+            {isConfirmingDecline && (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-center space-y-2">
+                <p className="text-sm text-foreground">
+                  {t('invites.accept.declineConfirm', 'Are you sure you want to decline this invite?')}
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsConfirmingDecline(false)}
+                  >
+                    {t('common.cancel', 'Cancel')}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => navigate('/')}
+                  >
+                    {t('invites.accept.confirmDecline', 'Yes, decline')}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

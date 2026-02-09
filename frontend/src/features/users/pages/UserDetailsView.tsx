@@ -17,38 +17,8 @@ import {
   toastError,
 } from '@/components/ui';
 import { UsersService } from '@/services';
-import { formatDate, handleApiError } from '@/utils';
-import type { ManagedUser, UserStatus, UserRole } from '@/@types/user';
-
-/**
- * Returns badge variant for user status.
- */
-function getStatusVariant(status: UserStatus): 'default' | 'secondary' | 'destructive' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'inactive':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-}
-
-/**
- * Returns badge variant for user role.
- */
-function getRoleVariant(role: UserRole): 'default' | 'secondary' | 'outline' {
-  switch (role) {
-    case 'admin':
-      return 'default';
-    case 'manager':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-}
+import { formatDate, handleApiError, getUserStatusVariant, getUserRoleVariant } from '@/utils';
+import type { ManagedUser } from '@/@types/user';
 
 interface DetailRowProps {
   label: string;
@@ -155,10 +125,10 @@ export function UserDetailsView(): ReactNode {
                 <CardDescription>{user.email}</CardDescription>
               </div>
               <div className="flex gap-2">
-                <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
+                <Badge variant={getUserRoleVariant(user.roles?.[0] || 'viewer')}>
                   {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
                 </Badge>
-                <Badge variant={getStatusVariant(user.status)}>
+                <Badge variant={getUserStatusVariant(user.status)}>
                   {t(`users.status.${user.status}`)}
                 </Badge>
               </div>

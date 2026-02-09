@@ -26,7 +26,7 @@ import {
   toastError,
 } from '@/components/ui';
 import { UsersService } from '@/services';
-import { formatDate, debounce } from '@/utils';
+import { formatDate, debounce, getUserStatusVariant, getUserRoleVariant } from '@/utils';
 import type {
   ManagedUser,
   UserListParams,
@@ -35,36 +35,6 @@ import type {
 } from '@/@types/user';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-/**
- * Returns badge variant for user status.
- */
-function getStatusVariant(status: UserStatus): 'default' | 'secondary' | 'destructive' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'inactive':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-}
-
-/**
- * Returns badge variant for user role.
- */
-function getRoleVariant(role: UserRole): 'default' | 'secondary' | 'outline' {
-  switch (role) {
-    case 'admin':
-      return 'default';
-    case 'manager':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-}
 
 /**
  * UsersListView displays a paginated table of users.
@@ -123,16 +93,18 @@ export function UsersListView(): ReactNode {
   // Debounced search
   const updateSearchParams = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
-      if (value) {
-        params.set('search', value);
-      } else {
-        params.delete('search');
-      }
-      params.set('page', '1');
-      setSearchParams(params);
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        if (value) {
+          params.set('search', value);
+        } else {
+          params.delete('search');
+        }
+        params.set('page', '1');
+        return params;
+      });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const debouncedSearch = useMemo(
@@ -257,6 +229,7 @@ export function UsersListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('firstName')}
+                  aria-sort={sortBy === 'firstName' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('users.columns.name')}
                   {renderSortIcon('firstName')}
@@ -264,6 +237,7 @@ export function UsersListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('email')}
+                  aria-sort={sortBy === 'email' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('users.columns.email')}
                   {renderSortIcon('email')}
@@ -273,6 +247,7 @@ export function UsersListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('createdAt')}
+                  aria-sort={sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('users.columns.created')}
                   {renderSortIcon('createdAt')}
@@ -305,12 +280,12 @@ export function UsersListView(): ReactNode {
                     <TableCell className="font-medium">{getUserFullName(user)}</TableCell>
                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
+                      <Badge variant={getUserRoleVariant(user.roles?.[0] || 'viewer')}>
                         {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(user.status)}>
+                      <Badge variant={getUserStatusVariant(user.status)}>
                         {t(`users.status.${user.status}`)}
                       </Badge>
                     </TableCell>

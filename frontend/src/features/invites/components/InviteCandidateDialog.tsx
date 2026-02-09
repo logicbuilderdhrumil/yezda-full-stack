@@ -23,6 +23,7 @@ import {
   toastError,
 } from '@/components/ui';
 import { InviteService } from '@/features/invites/services/InviteService';
+import { extractApiError } from '@/utils';
 import type { InviteCandidatePayload } from '@/@types/invite';
 
 export interface InviteCandidateDialogProps {
@@ -117,8 +118,7 @@ export function InviteCandidateDialog({
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      const err = error as { response?: { data?: { code?: string } } };
-      const code = err?.response?.data?.code;
+      const code = extractApiError(error).code;
       if (code === 'DUPLICATE_EMAIL') {
         setErrors({ email: t('invites.candidate.duplicateEmail') });
       } else if (code === 'INVITE_ALREADY_PENDING') {

@@ -28,6 +28,7 @@ import {
   toastError,
 } from '@/components/ui';
 import { InviteService } from '@/features/invites/services/InviteService';
+import { extractApiError } from '@/utils';
 import type { InviteMemberPayload } from '@/@types/invite';
 
 export interface InviteMemberDialogProps {
@@ -100,8 +101,7 @@ export function InviteMemberDialog({
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
-      const err = error as { response?: { data?: { code?: string } } };
-      const code = err?.response?.data?.code;
+      const code = extractApiError(error).code;
       if (code === 'DUPLICATE_EMAIL') {
         setEmailError(t('invites.member.duplicateEmail'));
       } else if (code === 'INVITE_ALREADY_PENDING') {

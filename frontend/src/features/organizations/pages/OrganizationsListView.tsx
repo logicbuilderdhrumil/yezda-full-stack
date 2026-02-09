@@ -26,7 +26,7 @@ import {
   toastError,
 } from '@/components/ui';
 import { OrganizationsService } from '@/services';
-import { formatDate, debounce } from '@/utils';
+import { formatDate, debounce, getOrganizationStatusVariant } from '@/utils';
 import type {
   Organization,
   OrganizationListParams,
@@ -34,22 +34,6 @@ import type {
 } from '@/@types/organization';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-/**
- * Returns badge variant for organization status.
- */
-function getStatusVariant(status: OrganizationStatus): 'default' | 'secondary' | 'destructive' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'suspended':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-}
 
 /**
  * OrganizationsListView displays a paginated table of organizations.
@@ -113,16 +97,18 @@ export function OrganizationsListView(): ReactNode {
   // Debounced search
   const updateSearchParams = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
-      if (value) {
-        params.set('search', value);
-      } else {
-        params.delete('search');
-      }
-      params.set('page', '1');
-      setSearchParams(params);
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        if (value) {
+          params.set('search', value);
+        } else {
+          params.delete('search');
+        }
+        params.set('page', '1');
+        return params;
+      });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const debouncedSearch = useMemo(
@@ -220,6 +206,7 @@ export function OrganizationsListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('name')}
+                  aria-sort={sortBy === 'name' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('organizations.columns.name')}
                   {renderSortIcon('name')}
@@ -230,6 +217,7 @@ export function OrganizationsListView(): ReactNode {
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort('createdAt')}
+                  aria-sort={sortBy === 'createdAt' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {t('organizations.columns.created')}
                   {renderSortIcon('createdAt')}
@@ -262,7 +250,7 @@ export function OrganizationsListView(): ReactNode {
                     <TableCell className="font-medium">{org.name}</TableCell>
                     <TableCell className="text-muted-foreground">{org.slug}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(org.status)}>
+                      <Badge variant={getOrganizationStatusVariant(org.status)}>
                         {t(`organizations.status.${org.status}`)}
                       </Badge>
                     </TableCell>

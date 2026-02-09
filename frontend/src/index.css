@@ -168,6 +168,10 @@ button,
 [role="tab"],
 [role="switch"],
 [role="link"],
+[role="menuitem"],
+[role="option"],
+[role="checkbox"],
+[role="radio"],
 a[href],
 summary {
   cursor: pointer;
@@ -202,5 +206,13 @@ textarea:disabled {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Windows High Contrast Mode */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid LinkText;
+    outline-offset: 2px;
   }
 }

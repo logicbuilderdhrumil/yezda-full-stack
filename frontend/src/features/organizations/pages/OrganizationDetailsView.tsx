@@ -17,26 +17,10 @@ import {
   toastError,
 } from '@/components/ui';
 import { OrganizationsService } from '@/services';
-import { formatDate, handleApiError } from '@/utils';
+import { formatDate, handleApiError, getOrganizationStatusVariant } from '@/utils';
 import { InviteMemberDialog } from '@/features/invites/components/InviteMemberDialog';
 import { AdminInviteCandidateDialog } from '@/features/invites/components/AdminInviteCandidateDialog';
-import type { Organization, OrganizationStatus } from '@/@types/organization';
-
-/**
- * Returns badge variant for organization status.
- */
-function getStatusVariant(status: OrganizationStatus): 'default' | 'secondary' | 'destructive' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'suspended':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-}
+import type { Organization } from '@/@types/organization';
 
 interface DetailRowProps {
   label: string;
@@ -171,7 +155,7 @@ export function OrganizationDetailsView(): ReactNode {
                     <CardTitle>{organization.name}</CardTitle>
                     <CardDescription>{organization.slug}</CardDescription>
                   </div>
-                  <Badge variant={getStatusVariant(organization.status)}>
+                  <Badge variant={getOrganizationStatusVariant(organization.status)}>
                     {t(`organizations.status.${organization.status}`)}
                   </Badge>
                 </div>

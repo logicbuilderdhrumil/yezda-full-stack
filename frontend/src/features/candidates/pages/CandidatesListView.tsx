@@ -26,7 +26,7 @@ import {
   toastError,
 } from '@/components/ui';
 import { CandidatesService } from '@/services';
-import { formatDate, debounce } from '@/utils';
+import { formatDate, debounce, getCandidateStatusVariant } from '@/utils';
 import { InviteCandidateDialog } from '@/features/invites/components/InviteCandidateDialog';
 import type {
   Candidate,
@@ -35,24 +35,6 @@ import type {
 } from '@/@types/candidate';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-/**
- * Returns badge variant for candidate status.
- */
-function getStatusVariant(status: CandidateStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'certified':
-      return 'default';
-    case 'archived':
-      return 'destructive';
-    default:
-      return 'outline';
-  }
-}
 
 /**
  * CandidatesListView displays a paginated table of candidates.
@@ -110,16 +92,18 @@ export function CandidatesListView(): ReactNode {
   // Debounced search
   const updateSearchParams = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
-      if (value) {
-        params.set('search', value);
-      } else {
-        params.delete('search');
-      }
-      params.set('page', '1');
-      setSearchParams(params);
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        if (value) {
+          params.set('search', value);
+        } else {
+          params.delete('search');
+        }
+        params.set('page', '1');
+        return params;
+      });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const debouncedSearch = useMemo(
@@ -285,7 +269,7 @@ export function CandidatesListView(): ReactNode {
                     <TableCell className="font-medium">{getCandidateFullName(candidate)}</TableCell>
                     <TableCell className="text-muted-foreground">{candidate.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(candidate.status)}>
+                      <Badge variant={getCandidateStatusVariant(candidate.status)}>
                         {t(`candidates.status.${candidate.status}`)}
                       </Badge>
                     </TableCell>

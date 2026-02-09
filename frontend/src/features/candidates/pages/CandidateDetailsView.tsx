@@ -34,27 +34,9 @@ import {
   SelectValue,
 } from '@/components/ui';
 import { CandidatesService, PipelineService } from '@/services';
-import { formatDate, handleApiError } from '@/utils';
-import type { Candidate, CandidateStatus } from '@/@types/candidate';
+import { formatDate, handleApiError, getCandidateStatusVariant } from '@/utils';
+import type { Candidate } from '@/@types/candidate';
 import type { PipelineAssignment, ScreeningPipeline, AssignmentStatus } from '@/@types/pipeline';
-
-/**
- * Returns badge variant for candidate status.
- */
-function getStatusVariant(status: CandidateStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'certified':
-      return 'default';
-    case 'archived':
-      return 'destructive';
-    default:
-      return 'outline';
-  }
-}
 
 /**
  * Returns badge variant for assignment status.
@@ -256,7 +238,7 @@ export function CandidateDetailsView(): ReactNode {
                     <CardTitle>{fullName || candidate.email}</CardTitle>
                     <CardDescription>{candidate.email}</CardDescription>
                   </div>
-                  <Badge variant={getStatusVariant(candidate.status)}>
+                  <Badge variant={getCandidateStatusVariant(candidate.status)}>
                     {t(`candidates.status.${candidate.status}`)}
                   </Badge>
                 </div>
