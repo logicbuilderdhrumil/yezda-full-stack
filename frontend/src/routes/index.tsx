@@ -28,6 +28,13 @@ const PrivacyView = lazy(() =>
   import('@/features/shared/pages/PrivacyView').then((m) => ({ default: m.PrivacyView }))
 );
 
+// Invites feature
+const AcceptInviteView = lazy(() =>
+  import('@/features/invites/pages/AcceptInviteView').then((m) => ({
+    default: m.AcceptInviteView,
+  }))
+);
+
 // Account feature
 const AccountIntegrationsView = lazy(() =>
   import('@/features/account/pages/AccountIntegrationsView').then((m) => ({
@@ -319,6 +326,10 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/privacy',
     element: withSuspense(PrivacyView),
+  },
+  {
+    path: '/accept-invite',
+    element: withSuspense(AcceptInviteView),
   },
   /**
    * Public candidate submission form.

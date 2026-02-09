@@ -27,6 +27,7 @@ import {
 } from '@/components/ui';
 import { CandidatesService } from '@/services';
 import { formatDate, debounce } from '@/utils';
+import { InviteCandidateDialog } from '@/features/invites/components/InviteCandidateDialog';
 import type {
   Candidate,
   CandidateListParams,
@@ -66,6 +67,7 @@ export function CandidatesListView(): ReactNode {
   const [isLoading, setIsLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   // URL-synced filters
   const page = Number(searchParams.get('page')) || 1;
@@ -214,7 +216,10 @@ export function CandidatesListView(): ReactNode {
           <Button variant="outline" onClick={handleBulkCreate}>
             {t('candidates.list.bulkCreateButton')}
           </Button>
-          <Button onClick={handleCreate}>{t('candidates.list.createButton')}</Button>
+          <Button variant="outline" onClick={handleCreate}>{t('candidates.list.createButton')}</Button>
+          <Button onClick={() => setIsInviteOpen(true)}>
+            {t('invites.candidate.inviteButton')}
+          </Button>
         </div>
       </div>
 
@@ -323,6 +328,13 @@ export function CandidatesListView(): ReactNode {
           />
         </div>
       )}
+
+      {/* Invite Candidate Dialog */}
+      <InviteCandidateDialog
+        open={isInviteOpen}
+        onOpenChange={setIsInviteOpen}
+        onSuccess={fetchCandidates}
+      />
     </PageContainer>
   );
 }
