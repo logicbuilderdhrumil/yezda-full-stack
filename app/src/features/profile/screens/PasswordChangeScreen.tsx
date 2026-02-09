@@ -41,7 +41,7 @@ export function PasswordChangeScreen({
           Password Requirements
         </Text>
 
-        <View className="space-y-3">
+        <View className="gap-y-3">
           <SecurityTip text="At least 8 characters long" />
           <SecurityTip text="Include uppercase and lowercase letters" />
           <SecurityTip text="Include at least one number" />
@@ -90,7 +90,7 @@ export function PasswordChangeScreen({
       </View>
 
       {/* Action Buttons */}
-      <View className="px-6 mt-6 space-y-3">
+      <View className="px-6 mt-6 gap-y-3">
         <TouchableOpacity
           testID="continue-password-change-button"
           className="bg-navy-600 py-4 rounded-lg"

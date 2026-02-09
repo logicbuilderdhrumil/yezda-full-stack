@@ -78,7 +78,7 @@ export default function SettingsRoute() {
 
       {/* Account Section */}
       <View className="bg-white mt-4 px-6">
-        <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide pt-4 pb-2">
+        <Text className="text-xs font-semibold text-slate-500 uppercase tracking-wide pt-4 pb-2">
           Account
         </Text>
         <SettingsItem
@@ -103,7 +103,7 @@ export default function SettingsRoute() {
 
       {/* About Section */}
       <View className="bg-white mt-4 px-6">
-        <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide pt-4 pb-2">
+        <Text className="text-xs font-semibold text-slate-500 uppercase tracking-wide pt-4 pb-2">
           About
         </Text>
         <View className="py-4 border-b border-slate-100">

@@ -109,7 +109,7 @@ function TextareaFieldComponent({
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
       {field.maxLength && (
-        <Text className="text-xs text-slate-400 mt-1 text-right">
+        <Text className="text-xs text-slate-500 mt-1 text-right">
           {(typeof value === 'string' ? value : '').length}/{field.maxLength}
         </Text>
       )}

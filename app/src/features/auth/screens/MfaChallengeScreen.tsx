@@ -234,7 +234,7 @@ export function MfaChallengeScreen() {
             accessibilityRole="button"
             accessibilityLabel={resendCooldown > 0 ? `Resend code available in ${resendCooldown} seconds` : 'Resend code'}
           >
-            <Text className={`text-center text-sm ${resendCooldown > 0 ? 'text-slate-400' : 'text-navy-600'}`}>
+            <Text className={`text-center text-sm ${resendCooldown > 0 ? 'text-slate-500' : 'text-navy-600'}`}>
               {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code'}
             </Text>
           </TouchableOpacity>

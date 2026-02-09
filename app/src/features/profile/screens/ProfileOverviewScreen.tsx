@@ -214,7 +214,7 @@ function ProfileField({
     >
       <Text className="text-slate-500 text-sm">{label}</Text>
       <Text
-        className={`text-base mt-1 ${value ? 'text-slate-900' : 'text-slate-400'}`}
+        className={`text-base mt-1 ${value ? 'text-slate-900' : 'text-slate-500'}`}
       >
         {value ?? placeholder}
       </Text>

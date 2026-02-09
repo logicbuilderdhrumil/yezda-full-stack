@@ -301,7 +301,7 @@ export function ProfileEditScreen({
         </View>
 
         {/* Action Buttons */}
-        <View className="px-6 mt-6 space-y-3">
+        <View className="px-6 mt-6 gap-y-3">
           <TouchableOpacity
             className={`py-4 rounded-lg ${
               isSaving ? 'bg-navy-400' : 'bg-navy-600'

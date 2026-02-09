@@ -121,7 +121,7 @@ export function LoginScreen() {
           </View>
         )}
 
-        <View className="space-y-4">
+        <View className="gap-y-4">
           {/* Email Field */}
           <View>
             <Text className="text-sm font-medium text-slate-700 mb-1">Email</Text>
