@@ -67,21 +67,21 @@
 - [x] 3.33 AccessDeniedView.tsx, GenericErrorView.tsx, NotFoundView.tsx — error pages
 - [x] 3.34 TermsView.tsx, PrivacyView.tsx — legal pages
 
-## Phase 4: Invite Flow UI
-- [ ] 4.1 Create InviteMemberDialog.tsx in `frontend/src/features/organizations/components/`
-- [ ] 4.2 Wire InviteMemberDialog into OrganizationDetailsView.tsx Users tab
-- [ ] 4.3 Create invite member service in `frontend/src/features/organizations/services/`
-- [ ] 4.4 Create InviteCandidateDialog.tsx in `frontend/src/features/candidates/components/`
-- [ ] 4.5 Wire InviteCandidateDialog into CandidatesListView.tsx
-- [ ] 4.6 Create AdminInviteCandidateDialog.tsx in `frontend/src/features/organizations/components/`
-- [ ] 4.7 Wire AdminInviteCandidateDialog into OrganizationDetailsView.tsx Candidates tab
-- [ ] 4.8 Add global identity lookup validation (email check → conditional fields)
-- [ ] 4.9 Create invite candidate service in `frontend/src/features/candidates/services/`
-- [ ] 4.10 Create AcceptInviteView.tsx in `frontend/src/features/shared/pages/`
-- [ ] 4.11 Add `/accept-invite` route to `frontend/src/routes/index.tsx`
-- [ ] 4.12 Add invite status badges (Pending, Accepted, Expired) to UsersListView and CandidatesListView
-- [ ] 4.13 Add success/error toast notifications for invite actions
-- [ ] 4.14 Handle invite error states (duplicate email, expired token, invalid token)
+## Phase 4: Invite Flow UI ✅
+- [x] 4.1 Create InviteMemberDialog.tsx in `frontend/src/features/organizations/components/`
+- [x] 4.2 Wire InviteMemberDialog into OrganizationDetailsView.tsx Users tab
+- [x] 4.3 Create invite member service in `frontend/src/features/organizations/services/`
+- [x] 4.4 Create InviteCandidateDialog.tsx in `frontend/src/features/candidates/components/`
+- [x] 4.5 Wire InviteCandidateDialog into CandidatesListView.tsx
+- [x] 4.6 Create AdminInviteCandidateDialog.tsx in `frontend/src/features/organizations/components/`
+- [x] 4.7 Wire AdminInviteCandidateDialog into OrganizationDetailsView.tsx Candidates tab
+- [x] 4.8 Add global identity lookup validation (email check → conditional fields)
+- [x] 4.9 Create invite candidate service in `frontend/src/features/candidates/services/`
+- [x] 4.10 Create AcceptInviteView.tsx in `frontend/src/features/shared/pages/`
+- [x] 4.11 Add `/accept-invite` route to `frontend/src/routes/index.tsx`
+- [x] 4.12 Add invite status badges (Pending, Accepted, Expired) to UsersListView and CandidatesListView
+- [x] 4.13 Add success/error toast notifications for invite actions
+- [x] 4.14 Handle invite error states (duplicate email, expired token, invalid token)
 
 ## Phase 5: Mobile App Polish
 - [ ] 5.1 Install `@expo-google-fonts/plus-jakarta-sans` in app workspace
