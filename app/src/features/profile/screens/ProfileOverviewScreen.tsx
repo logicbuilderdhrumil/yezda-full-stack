@@ -52,8 +52,8 @@ export function ProfileOverviewScreen({
   if (isLoading && !profile) {
     return (
       <View className="flex-1 bg-white justify-center items-center">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="text-gray-600 mt-4">Loading profile...</Text>
+        <ActivityIndicator size="large" color="#0369A1" />
+        <Text className="text-slate-600 mt-4">Loading profile...</Text>
       </View>
     );
   }
@@ -64,7 +64,7 @@ export function ProfileOverviewScreen({
       <View className="flex-1 bg-white justify-center items-center px-6">
         <Text className="text-red-600 text-center mb-4">{error}</Text>
         <TouchableOpacity
-          className="bg-blue-600 px-6 py-3 rounded-lg"
+          className="bg-navy-600 px-6 py-3 rounded-lg"
           onPress={handleRefresh}
           accessibilityRole="button"
           accessibilityLabel="Retry loading profile"
@@ -93,7 +93,7 @@ export function ProfileOverviewScreen({
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-slate-50"
       contentContainerClassName="pb-8"
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
@@ -110,22 +110,22 @@ export function ProfileOverviewScreen({
       )}
 
       {/* Profile Header */}
-      <View className="bg-white px-6 py-6 border-b border-gray-200">
+      <View className="bg-white px-6 py-6 border-b border-slate-200">
         <View className="items-center">
-          <View className="w-20 h-20 bg-blue-100 rounded-full justify-center items-center mb-4">
-            <Text className="text-blue-600 text-2xl font-bold">
+          <View className="w-20 h-20 bg-navy-100 rounded-full justify-center items-center mb-4">
+            <Text className="text-navy-600 text-2xl font-bold">
               {profile?.firstName?.charAt(0) ?? ''}
               {profile?.lastName?.charAt(0) ?? ''}
             </Text>
           </View>
-          <Text className="text-xl font-semibold text-gray-900">{fullName}</Text>
-          <Text className="text-gray-600 mt-1">{profile?.email}</Text>
+          <Text className="text-xl font-semibold text-slate-900">{fullName}</Text>
+          <Text className="text-slate-600 mt-1">{profile?.email}</Text>
         </View>
       </View>
 
       {/* Profile Details */}
       <View className="bg-white mt-4 px-6 py-4">
-        <Text className="text-lg font-semibold text-gray-900 mb-4">
+        <Text className="text-lg font-semibold text-slate-900 mb-4">
           Personal Information
         </Text>
 
@@ -149,7 +149,7 @@ export function ProfileOverviewScreen({
       <View className="px-6 mt-6">
         <TouchableOpacity
           testID="edit-profile-button"
-          className="bg-blue-600 py-4 rounded-lg"
+          className="bg-navy-600 py-4 rounded-lg"
           onPress={onEditPress}
           accessibilityRole="button"
           accessibilityLabel="Edit profile"
@@ -162,29 +162,29 @@ export function ProfileOverviewScreen({
 
       {/* Security Section */}
       <View className="bg-white mt-6 px-6 py-4">
-        <Text className="text-lg font-semibold text-gray-900 mb-4">
+        <Text className="text-lg font-semibold text-slate-900 mb-4">
           Account Security
         </Text>
 
         <TouchableOpacity
           testID="change-password-button"
-          className="flex-row justify-between items-center py-4 border-b border-gray-100"
+          className="flex-row justify-between items-center py-4 border-b border-slate-100"
           onPress={onSecurityPress}
           accessibilityRole="button"
           accessibilityLabel="Change password"
           accessibilityHint="Navigate to password change screen"
         >
           <View>
-            <Text className="text-gray-900 font-medium">Password</Text>
-            <Text className="text-gray-500 text-sm mt-1">
+            <Text className="text-slate-900 font-medium">Password</Text>
+            <Text className="text-slate-500 text-sm mt-1">
               Update your account password
             </Text>
           </View>
-          <Text className="text-blue-600 text-2xl">›</Text>
+          <Text className="text-navy-600 text-2xl">›</Text>
         </TouchableOpacity>
 
         <View className="py-4">
-          <Text className="text-gray-500 text-sm">
+          <Text className="text-slate-500 text-sm">
             Keep your account secure by using a strong password and enabling
             two-factor authentication when available.
           </Text>
@@ -209,12 +209,12 @@ function ProfileField({
 }: ProfileFieldProps) {
   return (
     <View
-      className={`py-3 ${isLast ? '' : 'border-b border-gray-100'}`}
+      className={`py-3 ${isLast ? '' : 'border-b border-slate-100'}`}
       accessibilityLabel={`${label}: ${value ?? placeholder}`}
     >
-      <Text className="text-gray-500 text-sm">{label}</Text>
+      <Text className="text-slate-500 text-sm">{label}</Text>
       <Text
-        className={`text-base mt-1 ${value ? 'text-gray-900' : 'text-gray-400'}`}
+        className={`text-base mt-1 ${value ? 'text-slate-900' : 'text-slate-400'}`}
       >
         {value ?? placeholder}
       </Text>

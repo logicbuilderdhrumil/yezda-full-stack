@@ -103,8 +103,8 @@ export function ConsentPromptScreen({
   if (screenState === 'loading' && !prompt) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="text-gray-500 mt-4">Loading...</Text>
+        <ActivityIndicator size="large" color="#0369A1" />
+        <Text className="text-slate-500 mt-4">Loading...</Text>
       </View>
     );
   }
@@ -126,17 +126,17 @@ export function ConsentPromptScreen({
     >
       {/* Header */}
       <View className="mb-6">
-        <Text className="text-2xl font-bold text-gray-900">
+        <Text className="text-2xl font-bold text-slate-900">
           {consentCopy.promptTitle}
         </Text>
-        <Text className="text-base text-gray-600 mt-2">
+        <Text className="text-base text-slate-600 mt-2">
           {consentCopy.promptDescription}
         </Text>
       </View>
 
       {/* Source Info */}
-      <View className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <Text className="text-blue-800 text-sm">
+      <View className="bg-navy-50 border border-navy-200 rounded-lg p-4 mb-6">
+        <Text className="text-navy-800 text-sm">
           {consentCopy.sourceExplanation(prompt.sourceOrganization, formattedDate)}
         </Text>
       </View>
@@ -154,11 +154,11 @@ export function ConsentPromptScreen({
       {/* Scope Selection */}
       <View className="mb-6">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-semibold text-gray-900">
+          <Text className="text-lg font-semibold text-slate-900">
             Select Data to Reuse
           </Text>
           <TouchableOpacity onPress={handleToggleAll}>
-            <Text className="text-blue-600 text-sm font-medium">
+            <Text className="text-navy-600 text-sm font-medium">
               {allSelected ? 'Deselect All' : 'Select All'}
             </Text>
           </TouchableOpacity>
@@ -169,21 +169,21 @@ export function ConsentPromptScreen({
           return (
             <View
               key={scope}
-              className="flex-row items-center justify-between py-4 border-b border-gray-100"
+              className="flex-row items-center justify-between py-4 border-b border-slate-100"
             >
               <View className="flex-1 mr-4">
-                <Text className="text-base font-medium text-gray-900">
+                <Text className="text-base font-medium text-slate-900">
                   {consentScopeLabels[scope]}
                 </Text>
-                <Text className="text-sm text-gray-500 mt-1">
+                <Text className="text-sm text-slate-500 mt-1">
                   {consentScopeDescriptions[scope]}
                 </Text>
               </View>
               <Switch
                 value={isSelected}
                 onValueChange={handleScopeToggle(scope)}
-                trackColor={{ false: '#D1D5DB', true: '#93C5FD' }}
-                thumbColor={isSelected ? '#2563EB' : '#F9FAFB'}
+                trackColor={{ false: '#CBD5E1', true: '#93bbee' }}
+                thumbColor={isSelected ? '#0369A1' : '#F8FAFC'}
                 accessibilityLabel={`Toggle ${consentScopeLabels[scope]}`}
                 accessibilityRole="switch"
               />
@@ -193,8 +193,8 @@ export function ConsentPromptScreen({
       </View>
 
       {/* Privacy Notice */}
-      <View className="bg-gray-50 rounded-lg p-4 mb-8">
-        <Text className="text-sm text-gray-600">{consentCopy.privacyNotice}</Text>
+      <View className="bg-slate-50 rounded-lg p-4 mb-8">
+        <Text className="text-sm text-slate-600">{consentCopy.privacyNotice}</Text>
       </View>
 
       {/* Action Buttons */}
@@ -202,8 +202,8 @@ export function ConsentPromptScreen({
         <TouchableOpacity
           className={`py-4 rounded-lg ${
             selectedScopes.length === 0 || screenState === 'loading'
-              ? 'bg-blue-300'
-              : 'bg-blue-600'
+              ? 'bg-navy-300'
+              : 'bg-navy-600'
           }`}
           onPress={handleAccept}
           disabled={selectedScopes.length === 0 || screenState === 'loading'}
@@ -221,13 +221,13 @@ export function ConsentPromptScreen({
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="py-4 rounded-lg border border-gray-300"
+          className="py-4 rounded-lg border border-slate-300"
           onPress={handleDecline}
           disabled={screenState === 'loading'}
           accessibilityRole="button"
           accessibilityLabel={consentCopy.declineButton}
         >
-          <Text className="text-gray-700 text-center font-medium text-base">
+          <Text className="text-slate-700 text-center font-medium text-base">
             {consentCopy.declineButton}
           </Text>
         </TouchableOpacity>

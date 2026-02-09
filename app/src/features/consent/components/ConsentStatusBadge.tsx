@@ -36,17 +36,17 @@ export function ConsentStatusBadge({
       iconName: 'checkmark-circle' as const,
     },
     pending: {
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
+      bgColor: 'bg-navy-50',
+      borderColor: 'border-navy-200',
+      textColor: 'text-navy-800',
       iconColor: '#1E40AF',
       label: 'Consent Pending',
       iconName: 'time' as const,
     },
     denied: {
-      bgColor: 'bg-gray-50',
-      borderColor: 'border-gray-200',
-      textColor: 'text-gray-600',
+      bgColor: 'bg-slate-50',
+      borderColor: 'border-slate-200',
+      textColor: 'text-slate-600',
       iconColor: '#4B5563',
       label: 'Data Reuse Declined',
       iconName: 'close-circle' as const,
@@ -82,11 +82,11 @@ export function ConsentStatusBadge({
 
       {showScopes && consent.status === 'granted' && consent.scopes.length > 0 && (
         <View className="mt-2">
-          <Text className="text-gray-500 text-xs mb-1">Sharing:</Text>
+          <Text className="text-slate-500 text-xs mb-1">Sharing:</Text>
           <View className="flex-row flex-wrap gap-1">
             {consent.scopes.map((scope: ConsentScope) => (
               <View key={scope} className="bg-white px-2 py-0.5 rounded">
-                <Text className="text-xs text-gray-700">
+                <Text className="text-xs text-slate-700">
                   {consentScopeLabels[scope]}
                 </Text>
               </View>
@@ -131,10 +131,10 @@ export function ConsentStatusInline({
     <View className="flex-row items-center">
       <View
         className={`w-2 h-2 rounded-full mr-2 ${
-          hasActiveConsent ? 'bg-green-500' : 'bg-gray-400'
+          hasActiveConsent ? 'bg-green-500' : 'bg-slate-400'
         }`}
       />
-      <Text className="text-sm text-gray-600">
+      <Text className="text-sm text-slate-600">
         {hasActiveConsent
           ? `Reusing ${scopeCount} data ${scopeCount === 1 ? 'type' : 'types'}`
           : 'Not reusing prior data'}

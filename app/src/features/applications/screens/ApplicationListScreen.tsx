@@ -50,9 +50,9 @@ function getStatusLabel(status: ApplicationStatus): string {
 function getStatusStyle(status: ApplicationStatus): { container: string; text: string } {
   switch (status) {
     case 'pending':
-      return { container: 'bg-gray-100', text: 'text-gray-700' };
+      return { container: 'bg-slate-100', text: 'text-slate-700' };
     case 'in_progress':
-      return { container: 'bg-blue-100', text: 'text-blue-700' };
+      return { container: 'bg-navy-100', text: 'text-navy-700' };
     case 'submitted':
       return { container: 'bg-green-100', text: 'text-green-700' };
     case 'approved':
@@ -60,7 +60,7 @@ function getStatusStyle(status: ApplicationStatus): { container: string; text: s
     case 'rejected':
       return { container: 'bg-red-100', text: 'text-red-700' };
     default:
-      return { container: 'bg-gray-100', text: 'text-gray-700' };
+      return { container: 'bg-slate-100', text: 'text-slate-700' };
   }
 }
 
@@ -102,7 +102,7 @@ function getDueDateStyle(dueDate: string | null): string {
   } else if (diffDays <= 3) {
     return 'text-orange-600';
   } else {
-    return 'text-gray-500';
+    return 'text-slate-500';
   }
 }
 
@@ -123,13 +123,13 @@ function ApplicationCard({
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-lg border border-gray-200 p-4 mb-3 mx-4"
+      className="bg-white rounded-lg border border-slate-200 p-4 mb-3 mx-4"
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${application.title}, ${statusLabel}${dueDateText ? `, ${dueDateText}` : ''}`}
     >
       <View className="flex-row justify-between items-start mb-2">
-        <Text className="text-lg font-semibold text-gray-900 flex-1 mr-2">
+        <Text className="text-lg font-semibold text-slate-900 flex-1 mr-2">
           {application.title}
         </Text>
         <View className={`px-2 py-1 rounded-full ${statusStyles.container}`}>
@@ -140,13 +140,13 @@ function ApplicationCard({
       {/* Progress bar */}
       {application.status === 'in_progress' && (
         <View className="mb-2">
-          <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <View className="h-2 bg-slate-200 rounded-full overflow-hidden">
             <View
-              className="h-full bg-blue-500 rounded-full"
+              className="h-full bg-navy-500 rounded-full"
               style={{ width: `${application.progress}%` }}
             />
           </View>
-          <Text className="text-xs text-gray-500 mt-1">
+          <Text className="text-xs text-slate-500 mt-1">
             {application.progress}% complete
           </Text>
         </View>
@@ -159,7 +159,7 @@ function ApplicationCard({
 
       {/* Submitted date */}
       {application.status === 'submitted' && application.updatedAt && (
-        <Text className="text-sm text-gray-500">
+        <Text className="text-sm text-slate-500">
           Submitted {new Date(application.updatedAt).toLocaleDateString()}
         </Text>
       )}
@@ -173,10 +173,10 @@ function ApplicationCard({
 function EmptyState() {
   return (
     <View className="flex-1 justify-center items-center px-6">
-      <Text className="text-xl font-semibold text-gray-900 mb-2">
+      <Text className="text-xl font-semibold text-slate-900 mb-2">
         No Applications
       </Text>
-      <Text className="text-base text-gray-600 text-center">
+      <Text className="text-base text-slate-600 text-center">
         You don't have any assigned applications yet. Check back later.
       </Text>
     </View>
@@ -189,12 +189,12 @@ function EmptyState() {
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <View className="flex-1 justify-center items-center px-6">
-      <Text className="text-xl font-semibold text-gray-900 mb-2">
+      <Text className="text-xl font-semibold text-slate-900 mb-2">
         Something went wrong
       </Text>
-      <Text className="text-base text-gray-600 text-center mb-4">{message}</Text>
+      <Text className="text-base text-slate-600 text-center mb-4">{message}</Text>
       <TouchableOpacity
-        className="bg-blue-600 px-6 py-3 rounded-lg"
+        className="bg-navy-600 px-6 py-3 rounded-lg"
         onPress={onRetry}
         accessibilityRole="button"
         accessibilityLabel="Try again"
@@ -237,9 +237,9 @@ export function ApplicationListScreen({ onSelectApplication }: ApplicationListSc
   // Loading state
   if (screenState === 'loading' && applications.length === 0) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="text-gray-600 mt-4">Loading applications...</Text>
+      <View className="flex-1 justify-center items-center bg-slate-50">
+        <ActivityIndicator size="large" color="#0369A1" />
+        <Text className="text-slate-600 mt-4">Loading applications...</Text>
       </View>
     );
   }
@@ -247,7 +247,7 @@ export function ApplicationListScreen({ onSelectApplication }: ApplicationListSc
   // Error state
   if (screenState === 'error' && applications.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-slate-50">
         <ErrorState message={error || 'Unable to load applications'} onRetry={handleRefresh} />
       </View>
     );
@@ -256,14 +256,14 @@ export function ApplicationListScreen({ onSelectApplication }: ApplicationListSc
   // Empty state
   if (applications.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-slate-50">
         <EmptyState />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-slate-50">
       <FlatList
         data={applications}
         renderItem={renderItem}
@@ -273,11 +273,11 @@ export function ApplicationListScreen({ onSelectApplication }: ApplicationListSc
           <RefreshControl
             refreshing={screenState === 'loading'}
             onRefresh={handleRefresh}
-            colors={['#2563EB']}
+            colors={['#0369A1']}
           />
         }
         ListHeaderComponent={
-          <Text className="text-2xl font-bold text-gray-900 px-4 mb-4">
+          <Text className="text-2xl font-bold text-slate-900 px-4 mb-4">
             Your Applications
           </Text>
         }

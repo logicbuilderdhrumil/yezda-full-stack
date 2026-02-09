@@ -159,10 +159,10 @@ export function MfaChallengeScreen() {
       <View className="flex-1 justify-center px-6">
         {/* Header */}
         <View className="mb-8">
-          <Text className="text-2xl font-bold text-gray-900 text-center">
+          <Text className="text-2xl font-bold text-slate-900 text-center">
             {getMfaTitle(pendingMfa.type)}
           </Text>
-          <Text className="text-base text-gray-600 text-center mt-2">
+          <Text className="text-base text-slate-600 text-center mt-2">
             {getMfaDescription(pendingMfa.type, pendingMfa.hint)}
           </Text>
         </View>
@@ -181,7 +181,7 @@ export function MfaChallengeScreen() {
         <View className="mb-6">
           <TextInput
             ref={inputRef}
-            className="border border-gray-300 rounded-lg px-4 py-4 text-2xl text-center tracking-widest font-mono"
+            className="border border-slate-300 rounded-lg px-4 py-4 text-2xl text-center tracking-widest font-mono"
             value={code}
             onChangeText={handleCodeChange}
             keyboardType="number-pad"
@@ -196,7 +196,7 @@ export function MfaChallengeScreen() {
         {/* Submit Button */}
         <TouchableOpacity
           className={`py-4 rounded-lg ${
-            isLoading || !isCodeComplete ? 'bg-blue-400' : 'bg-blue-600'
+            isLoading || !isCodeComplete ? 'bg-navy-400' : 'bg-navy-600'
           }`}
           onPress={handleSubmit}
           disabled={isLoading || !isCodeComplete}
@@ -214,11 +214,11 @@ export function MfaChallengeScreen() {
         </TouchableOpacity>
 
         {/* Fallback Guidance */}
-        <View className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <Text className="text-sm text-gray-700 font-medium mb-2">
+        <View className="mt-8 p-4 bg-slate-50 rounded-lg">
+          <Text className="text-sm text-slate-700 font-medium mb-2">
             Having trouble?
           </Text>
-          <Text className="text-sm text-gray-600">
+          <Text className="text-sm text-slate-600">
             {pendingMfa.type === 'totp'
               ? "Make sure your authenticator app is synced and try again. If you've lost access to your device, contact support."
               : "Didn't receive a code? Wait a few moments and check your spam folder. If you still don't see it, contact support."}
@@ -234,7 +234,7 @@ export function MfaChallengeScreen() {
             accessibilityRole="button"
             accessibilityLabel={resendCooldown > 0 ? `Resend code available in ${resendCooldown} seconds` : 'Resend code'}
           >
-            <Text className={`text-center text-sm ${resendCooldown > 0 ? 'text-gray-400' : 'text-blue-600'}`}>
+            <Text className={`text-center text-sm ${resendCooldown > 0 ? 'text-slate-400' : 'text-navy-600'}`}>
               {resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code'}
             </Text>
           </TouchableOpacity>
@@ -248,7 +248,7 @@ export function MfaChallengeScreen() {
           accessibilityRole="button"
           accessibilityLabel="Cancel and sign out"
         >
-          <Text className="text-gray-600 text-center text-sm">
+          <Text className="text-slate-600 text-center text-sm">
             Cancel and return to sign in
           </Text>
         </TouchableOpacity>
