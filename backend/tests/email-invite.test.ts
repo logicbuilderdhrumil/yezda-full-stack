@@ -295,17 +295,13 @@ describe('SendOrgMemberInviteUseCase', () => {
     expect(tokenRepo.create).toHaveBeenCalledTimes(1);
 
     // Verify email sent
-    expect(emailPort.sendEmailWithTemplate).toHaveBeenCalledWith(
-      'bob@example.com',
-      'org-member-invite',
+    expect(emailPort.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        inviterName: 'Jane Doe',
-        orgName: 'Acme Corp',
-        role: 'agent',
-        inviteLink: expect.stringContaining('http://localhost:5173/invite?token='),
-        expiryDays: 7,
+        to: 'bob@example.com',
+        subject: expect.stringContaining('Acme Corp'),
+        htmlBody: expect.stringContaining('agent'),
+        tag: 'org-member-invite',
       }),
-      expect.objectContaining({ tag: 'org-member-invite' }),
     );
   });
 
@@ -326,11 +322,11 @@ describe('SendOrgMemberInviteUseCase', () => {
     }
 
     expect(tokenRepo.create).not.toHaveBeenCalled();
-    expect(emailPort.sendEmailWithTemplate).not.toHaveBeenCalled();
+    expect(emailPort.sendEmail).not.toHaveBeenCalled();
   });
 
   it('returns failure when email send fails', async () => {
-    (emailPort.sendEmailWithTemplate as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (emailPort.sendEmail as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: false,
       error: 'SMTP error',
     });
@@ -406,17 +402,13 @@ describe('SendCandidateInviteUseCase', () => {
 
     expect(result.success).toBe(true);
 
-    expect(emailPort.sendEmailWithTemplate).toHaveBeenCalledWith(
-      'candidate@example.com',
-      'candidate-invite',
+    expect(emailPort.sendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
-        candidateName: 'Alice Smith',
-        orgName: 'Acme Corp',
-        inviterName: 'Jane Doe',
-        inviteLink: expect.stringContaining('http://localhost:5173/invite?token='),
-        expiryDays: 14,
+        to: 'candidate@example.com',
+        subject: expect.stringContaining('Acme Corp'),
+        htmlBody: expect.stringContaining('Alice Smith'),
+        tag: 'candidate-invite',
       }),
-      expect.objectContaining({ tag: 'candidate-invite' }),
     );
   });
 
@@ -428,11 +420,12 @@ describe('SendCandidateInviteUseCase', () => {
       inviterName: 'Jane',
     });
 
-    expect(emailPort.sendEmailWithTemplate).toHaveBeenCalledWith(
-      'candidate@example.com',
-      'candidate-invite',
-      expect.objectContaining({ candidateName: 'Candidate' }),
-      expect.anything(),
+    expect(emailPort.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: 'candidate@example.com',
+        htmlBody: expect.stringContaining('Candidate'),
+        tag: 'candidate-invite',
+      }),
     );
   });
 

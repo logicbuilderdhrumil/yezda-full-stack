@@ -67,20 +67,36 @@ export class SendCandidateInviteUseCase {
       const inviteLink = `${this.baseInviteUrl}?token=${plaintextToken}`;
       const candidateName = params.candidateInfo?.firstName
         ? `${params.candidateInfo.firstName}${params.candidateInfo.lastName ? ' ' + params.candidateInfo.lastName : ''}`
-        : undefined;
+        : 'Candidate';
 
-      const emailResult = await this.emailPort.sendEmailWithTemplate(
-        email,
-        'candidate-invite',
-        {
-          candidateName: candidateName ?? 'Candidate',
-          orgName: params.orgName,
-          inviterName: params.inviterName,
-          inviteLink,
-          expiryDays: 14,
-        },
-        { tag: 'candidate-invite', metadata: { tenantId: ctx.tenantId, inviteId: entity.id } },
-      );
+      const emailResult = await this.emailPort.sendEmail({
+        to: email,
+        subject: `${params.inviterName} invited you to complete screening for ${params.orgName}`,
+        htmlBody: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
+            <h2 style="color: #1e293b;">You&rsquo;re Invited!</h2>
+            <p style="color: #334155; line-height: 1.6;">
+              Hi <strong>${candidateName}</strong>,
+            </p>
+            <p style="color: #334155; line-height: 1.6;">
+              <strong>${params.inviterName}</strong> from <strong>${params.orgName}</strong>
+              has invited you to complete a screening process on Yezda.
+            </p>
+            <p style="margin: 24px 0;">
+              <a href="${inviteLink}"
+                 style="display: inline-block; background: #2563eb; color: #fff; padding: 12px 24px;
+                        border-radius: 6px; text-decoration: none; font-weight: 600;">
+                Accept Invitation
+              </a>
+            </p>
+            <p style="color: #64748b; font-size: 14px;">
+              This invitation expires in 14 days. If you didn&rsquo;t expect this email, you can safely ignore it.
+            </p>
+          </div>`,
+        textBody: `Hi ${candidateName}, ${params.inviterName} from ${params.orgName} has invited you to complete a screening process on Yezda. Accept your invitation: ${inviteLink}`,
+        tag: 'candidate-invite',
+        metadata: { tenantId: ctx.tenantId, inviteId: entity.id },
+      });
 
       if (!emailResult.success) {
         return {
