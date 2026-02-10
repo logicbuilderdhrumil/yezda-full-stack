@@ -1,5 +1,5 @@
 import type { IStateStoreRepository } from '../../domain/ports/IStateStoreRepository.js';
-import { stateStoreRepository as legacyRepo } from '../../../repositories/state-store.repository.js';
+import { stateStoreRepository as legacyRepo } from '../../../../repositories/state-store.repository.js';
 
 export class LegacyStateStoreRepository implements IStateStoreRepository {
   async findByKey(tenantId: string, userId: string, userType: string, key: string): Promise<{ value: string } | null> {

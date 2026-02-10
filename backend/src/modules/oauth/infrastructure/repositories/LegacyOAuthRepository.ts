@@ -1,6 +1,6 @@
 import type { OAuthProvider, OAuthState, IntegrationToken } from '../../domain/entities/oauth.entity.js';
 import type { IOAuthRepository } from '../../domain/ports/IOAuthRepository.js';
-import { oauthRepository as legacyRepo } from '../../../repositories/oauth.repository.js';
+import { oauthRepository as legacyRepo } from '../../../../repositories/oauth.repository.js';
 
 /**
  * Adapts the legacy oauthRepository singleton to the IOAuthRepository port.
