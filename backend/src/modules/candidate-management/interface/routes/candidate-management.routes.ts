@@ -38,7 +38,7 @@ export function createCandidateManagementRoutes(controller: CandidateManagementC
 
   const authAndRoleGuards = [
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager', 'agent'),
+    requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
   ];
 
   // GET /api/v1/candidates
@@ -120,7 +120,7 @@ export function createCandidateManagementRoutes(controller: CandidateManagementC
   router.delete(
     '/:id',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     candidateManagementDeleteRateLimiter,
     validateParams(candidateIdParamSchema),
     controller.deleteCandidate,

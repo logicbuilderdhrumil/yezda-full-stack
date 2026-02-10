@@ -24,7 +24,7 @@ router.use(requireAuthGuard);
 
 // Chart endpoints require at least viewer role
 // This enforces RBAC and tenant isolation for all charting operations
-router.use(requireRoleGuard('viewer', 'agent', 'manager', 'admin'));
+router.use(requireRoleGuard('platform_viewer', 'platform_agent', 'platform_manager', 'platform_admin'));
 
 /**
  * GET /api/v1/charts/metrics
@@ -87,7 +87,7 @@ router.post(
  */
 router.get(
   '/health',
-  requireRoleGuard('admin', 'manager'),
+  requireRoleGuard('platform_admin', 'platform_manager'),
   chartController.getChartingHealth
 );
 

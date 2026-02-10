@@ -37,7 +37,7 @@ async function isAuthorizedForConsent(
   const userRoles = req.user?.roles;
 
   // Admin users can perform any consent action
-  if (userRoles?.includes('admin')) {
+  if (userRoles?.includes('platform_admin')) {
     return { authorized: true, consent };
   }
 

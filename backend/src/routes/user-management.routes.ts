@@ -31,7 +31,7 @@ const router = Router();
 // All user management endpoints require authentication and admin/manager role
 const authAndRoleGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager'),
+  requireRoleGuard('platform_admin', 'platform_manager'),
 ];
 
 // GET /api/v1/users - List users with search, filter, and pagination
@@ -95,7 +95,7 @@ router.patch(
 router.delete(
   '/:id',
   requireAuthGuard,
-  requireRoleGuard('admin'), // Only admins can delete
+  requireRoleGuard('platform_admin'), // Only admins can delete
   userManagementDeleteRateLimiter,
   validateParams(userIdParamSchema),
   userManagementController.deleteUser

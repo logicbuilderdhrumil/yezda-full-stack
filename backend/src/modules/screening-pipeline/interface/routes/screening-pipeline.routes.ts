@@ -31,8 +31,8 @@ export function createScreeningPipelineRouter(
 ): Router {
   const router = Router();
 
-  const authAndViewGuards = [requireAuthGuard, requireRoleGuard('admin', 'manager', 'agent')];
-  const authAndManageGuards = [requireAuthGuard, requireRoleGuard('admin', 'manager')];
+  const authAndViewGuards = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent')];
+  const authAndManageGuards = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager')];
 
   // Rate limiters with injected services
   const listRL = createScreeningPipelineRateLimiter('list', audit, metrics);

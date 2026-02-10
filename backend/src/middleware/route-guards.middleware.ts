@@ -19,7 +19,15 @@ export type { AuthenticatedRequest };
 /**
  * Role types for authorization
  */
-export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'client_admin';
+export type UserRole = 'platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer' | 'org_admin' | 'org_manager' | 'org_viewer';
+
+/**
+ * User space determines whether a user belongs to the platform or an organization
+ */
+export type UserSpace = 'platform' | 'organization';
+
+export const PLATFORM_ROLES: UserRole[] = ['platform_admin', 'platform_manager', 'platform_agent', 'platform_viewer'];
+export const ORG_ROLES: UserRole[] = ['org_admin', 'org_manager', 'org_viewer'];
 
 /**
  * Extended user payload with roles and tenant context
@@ -27,6 +35,7 @@ export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'cl
 export interface AuthenticatedUserPayload extends AccessTokenPayload {
   roles?: UserRole[];
   tenantId?: string;
+  userSpace?: UserSpace;
 }
 
 export interface AuthenticatedRoleRequest extends Request {
@@ -418,13 +427,13 @@ export function requireRoleOrOwnerGuard(
  * Admin users have super-access to client data.
  * Chain after requireAuthGuard.
  */
-export const requireClientGuard = requireRoleGuard('client', 'client_admin', 'admin');
+export const requireClientGuard = requireRoleGuard('org_viewer', 'org_admin', 'platform_admin');
 
 /**
- * Convenience guard: require `client_admin` role only.
+ * Convenience guard: require `org_admin` role only.
  * Chain after requireAuthGuard.
  */
-export const requireClientAdminGuard = requireRoleGuard('client_admin');
+export const requireClientAdminGuard = requireRoleGuard('org_admin');
 
 /**
  * Extended request with tenant scope.

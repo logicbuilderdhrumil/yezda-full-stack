@@ -36,7 +36,7 @@ const router = Router();
 // All candidate management endpoints require authentication and admin/manager/agent role
 const authAndRoleGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager', 'agent'),
+  requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
 ];
 
 // GET /api/v1/candidates - List candidates with search, filter, and pagination
@@ -112,7 +112,7 @@ router.patch(
 router.delete(
   '/:id',
   requireAuthGuard,
-  requireRoleGuard('admin'), // Only admins can delete
+  requireRoleGuard('platform_admin'), // Only admins can delete
   candidateManagementDeleteRateLimiter,
   validateParams(candidateIdParamSchema),
   candidateManagementController.deleteCandidate

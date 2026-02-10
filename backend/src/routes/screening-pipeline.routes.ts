@@ -34,13 +34,13 @@ const router = Router();
 // Auth and role guards for pipeline viewing
 const authAndViewGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager', 'agent'),
+  requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
 ];
 
 // Auth and role guards for pipeline management (create/update/delete)
 const authAndManageGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager'),
+  requireRoleGuard('platform_admin', 'platform_manager'),
 ];
 
 // ========================================

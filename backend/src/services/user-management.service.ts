@@ -35,7 +35,7 @@ export interface UserManagementContext {
  * Check if actor has admin or manager role
  */
 function canManageUsers(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
+  return roles.includes('platform_admin') || roles.includes('platform_manager');
 }
 
 /**
@@ -43,9 +43,9 @@ function canManageUsers(roles: UserRole[]): boolean {
  * Admins can assign any role, managers can only assign agent/viewer
  */
 function canAssignRole(actorRoles: UserRole[], targetRole: UserRole): boolean {
-  if (actorRoles.includes('admin')) return true;
-  if (actorRoles.includes('manager')) {
-    return targetRole === 'agent' || targetRole === 'viewer';
+  if (actorRoles.includes('platform_admin')) return true;
+  if (actorRoles.includes('platform_manager')) {
+    return targetRole === 'platform_agent' || targetRole === 'platform_viewer';
   }
   return false;
 }
@@ -573,8 +573,7 @@ export class UserManagementService {
     const startTime = Date.now();
 
     // Only admins can delete users
-    if (!ctx.actorRoles.includes('admin')) {
-      this.logAccessDenied(ctx, 'delete', 'Only admins can delete users');
+    if (!ctx.actorRoles.includes('platform_admin')) {
       return {
         success: false,
         error: 'Only admins can delete users',

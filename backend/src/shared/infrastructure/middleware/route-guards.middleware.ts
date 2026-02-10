@@ -16,8 +16,11 @@ export {
   composeGuards,
   GUARD_SLOS,
   GUARD_METRICS,
+  PLATFORM_ROLES,
+  ORG_ROLES,
   type AuthenticatedRoleRequest,
   type AuthenticatedUserPayload,
   type UserRole,
+  type UserSpace,
   type TenantScopedRequest,
 } from '../../../middleware/route-guards.middleware.js';

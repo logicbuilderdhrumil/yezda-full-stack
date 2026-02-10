@@ -8,8 +8,8 @@ import { requireAuthGuard, requireRoleGuard } from '../../../../middleware/route
 export function createReviewTaskRoutes(controller: ReviewTaskController): Router {
   const router = Router();
 
-  const authAndView = [requireAuthGuard, requireRoleGuard('admin', 'manager', 'agent')];
-  const authAndManage = [requireAuthGuard, requireRoleGuard('admin', 'manager')];
+  const authAndView = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent')];
+  const authAndManage = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager')];
 
   router.get('/', ...authAndView, controller.listReviewTasks);
   router.get('/my-queue', ...authAndView, controller.getMyQueue);

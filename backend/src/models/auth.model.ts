@@ -43,6 +43,7 @@ export interface Session {
   createdAt: Date;
   revokedAt?: Date;
   rotatedFromId?: string;
+  userSpace?: 'platform' | 'organization';
 }
 
 /** Access token payload claims */
@@ -50,6 +51,7 @@ export interface AccessTokenPayload {
   sub: string;
   type: 'user' | 'candidate';
   tenantId?: string;
+  userSpace?: 'platform' | 'organization';
   iat: number;
   exp: number;
   jti: string;

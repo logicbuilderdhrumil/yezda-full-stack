@@ -31,7 +31,7 @@ export function createFormBuilderRoutes(controller: FormBuilderController): Rout
     formBuilderReadRateLimiter,
     validateQuery(listFormsQuerySchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.listForms,
   );
 
@@ -41,7 +41,7 @@ export function createFormBuilderRoutes(controller: FormBuilderController): Rout
     formBuilderWriteRateLimiter,
     validateBody(createFormRequestSchema),
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     controller.createForm,
   );
 
@@ -51,7 +51,7 @@ export function createFormBuilderRoutes(controller: FormBuilderController): Rout
     formBuilderReadRateLimiter,
     validateParams(formIdParamSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager', 'agent'),
+    requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
     controller.getForm,
   );
 
@@ -62,7 +62,7 @@ export function createFormBuilderRoutes(controller: FormBuilderController): Rout
     validateParams(formIdParamSchema),
     validateBody(updateFormRequestSchema),
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     controller.updateForm,
   );
 
@@ -72,7 +72,7 @@ export function createFormBuilderRoutes(controller: FormBuilderController): Rout
     formBuilderWriteRateLimiter,
     validateParams(formIdParamSchema),
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     controller.deleteForm,
   );
 

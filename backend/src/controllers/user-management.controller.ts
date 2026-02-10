@@ -103,10 +103,10 @@ export async function createUser(req: AuthenticatedRoleRequest, res: Response): 
     return;
   }
 
-  const { email, displayName, firstName, lastName, status, roles, password } = req.body;
+  const { email, displayName, firstName, lastName, status, roles, password, userSpace } = req.body;
 
   const result = await userManagementService.createUser(
-    { email, displayName, firstName, lastName, status, roles, password },
+    { email, displayName, firstName, lastName, status, roles, password, userSpace: userSpace ?? 'platform' },
     ctx
   );
 

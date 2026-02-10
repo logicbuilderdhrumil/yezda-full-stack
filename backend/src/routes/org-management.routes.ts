@@ -28,7 +28,7 @@ router.use(requireAuthGuard);
 
 // All organization endpoints require admin role
 // This enforces RBAC for all organization management operations
-router.use(requireRoleGuard('admin'));
+router.use(requireRoleGuard('platform_admin'));
 
 /**
  * GET /api/v1/organizations

@@ -25,6 +25,7 @@ type ManagedUserRow = {
   status: UserStatus;
   roles: UserRole[];
   tenant_id: string;
+  user_space: string;
   mfa_enabled: boolean;
   locked_until: Date | null;
   last_login_at: Date | null;
@@ -44,6 +45,7 @@ function rowToManagedUser(row: ManagedUserRow): ManagedUser {
     status: row.status,
     roles: row.roles,
     tenantId: row.tenant_id,
+    userSpace: row.user_space as 'platform' | 'organization',
     mfaEnabled: row.mfa_enabled,
     lockedUntil: row.locked_until ?? undefined,
     lastLoginAt: row.last_login_at ?? undefined,
@@ -62,8 +64,8 @@ export class UserManagementRepository {
     const now = new Date();
     const result = await query<ManagedUserRow>(
       `INSERT INTO managed_users 
-       (id, email, password_hash, display_name, first_name, last_name, status, roles, tenant_id, mfa_enabled, created_at, updated_at, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       (id, email, password_hash, display_name, first_name, last_name, status, roles, tenant_id, user_space, mfa_enabled, created_at, updated_at, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING *`,
       [
         input.id,
@@ -75,6 +77,7 @@ export class UserManagementRepository {
         input.status ?? 'pending',
         input.roles,
         input.tenantId,
+        input.userSpace,
         false,
         now,
         now,

@@ -22,6 +22,7 @@ export interface ManagedUser {
   status: UserStatus;
   roles: UserRole[];
   tenantId: string;
+  userSpace: 'platform' | 'organization';
   mfaEnabled: boolean;
   lockedUntil?: Date;
   lastLoginAt?: Date;
@@ -42,6 +43,7 @@ export interface CreateUserInput {
   status?: UserStatus;
   roles: UserRole[];
   tenantId: string;
+  userSpace: 'platform' | 'organization';
   password?: string;
 }
 
@@ -61,6 +63,7 @@ export interface UpdateUserInput {
  */
 export interface UserSearchParams {
   tenantId: string;
+  userSpace?: 'platform' | 'organization';
   query?: string;
   status?: UserStatus;
   role?: UserRole;

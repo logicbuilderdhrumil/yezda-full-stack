@@ -28,21 +28,21 @@ import type { UserRole } from '../middleware/route-guards.middleware.js';
  * Check if actor has permission to manage candidates
  */
 function canManageCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager') || roles.includes('agent');
+  return roles.includes('platform_admin') || roles.includes('platform_manager') || roles.includes('platform_agent');
 }
 
 /**
  * Check if actor can certify candidates
  */
 function canCertifyCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
+  return roles.includes('platform_admin') || roles.includes('platform_manager');
 }
 
 /**
  * Check if actor can archive candidates
  */
 function canArchiveCandidates(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
+  return roles.includes('platform_admin') || roles.includes('platform_manager');
 }
 
 export class CandidateManagementService {
@@ -676,8 +676,7 @@ export class CandidateManagementService {
     const startTime = Date.now();
 
     // Only admins can delete candidates
-    if (!ctx.actorRoles.includes('admin')) {
-      this.logAccessDenied(ctx, 'delete', 'Only admins can delete candidates');
+    if (!ctx.actorRoles.includes('platform_admin')) {
       return {
         success: false,
         error: 'Only admins can delete candidates',

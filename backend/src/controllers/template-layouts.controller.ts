@@ -27,7 +27,7 @@ function getUserAuthorities(req: AuthenticatedRoleRequest): string[] {
   const baseAuthorities: string[] = [];
 
   // Add 'admin' authority if user has admin role
-  if (user.roles?.includes('admin')) {
+  if (user.roles?.includes('platform_admin')) {
     baseAuthorities.push('admin');
   }
 

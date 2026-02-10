@@ -70,7 +70,7 @@ export function requireMockModeToggleAccess(
 
   // Check for admin role - only admins can toggle mock mode
   const userRoles = req.user?.roles || [];
-  if (!userRoles.includes('admin')) {
+  if (!userRoles.includes('platform_admin')) {
     mockApiService.logMockModeBlocked({
       reason: 'Insufficient permissions to toggle mock mode',
       actorId: req.user?.sub,

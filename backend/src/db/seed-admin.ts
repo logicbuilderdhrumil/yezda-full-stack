@@ -51,7 +51,8 @@ async function seedAdmin(): Promise<void> {
       id: adminId,
       email: adminEmail,
       tenantId: adminTenantId,
-      roles: ['admin'],
+      roles: ['platform_admin'],
+      userSpace: 'platform',
       status: 'active',
       displayName: adminDisplayName,
       firstName: adminFirstName,
@@ -60,13 +61,13 @@ async function seedAdmin(): Promise<void> {
       passwordHash,
     });
     console.info(`[seed-admin] Created admin in managed_users ${adminEmail}.`);
-  } else if (!existingManaged.roles.includes('admin')) {
+  } else if (!existingManaged.roles.includes('platform_admin')) {
     // Ensure admin role is present
-    const updatedRoles: UserRole[] = [...existingManaged.roles, 'admin'];
+    const updatedRoles: UserRole[] = [...existingManaged.roles, 'platform_admin'];
     await userManagementRepository.updateRoles(existingManaged.id, adminTenantId, updatedRoles);
-    console.info(`[seed-admin] Added 'admin' role to existing user ${adminEmail}.`);
+    console.info(`[seed-admin] Added 'platform_admin' role to existing user ${adminEmail}.`);
   } else {
-    console.info(`[seed-admin] User ${adminEmail} already has 'admin' role.`);
+    console.info(`[seed-admin] User ${adminEmail} already has 'platform_admin' role.`);
   }
 }
 

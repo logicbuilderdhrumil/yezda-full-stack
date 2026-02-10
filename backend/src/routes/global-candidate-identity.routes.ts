@@ -11,8 +11,8 @@ const router = Router();
 
 // All routes require authentication
 const authGuard = [requireAuthGuard];
-const adminOnly = [requireAuthGuard, requireRoleGuard('admin')];
-const adminOrManager = [requireAuthGuard, requireRoleGuard('admin', 'manager')];
+const adminOnly = [requireAuthGuard, requireRoleGuard('platform_admin')];
+const adminOrManager = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager')];
 
 // ── Lookup (admin only) ──────────────────────────────────────────────────────
 // GET /api/v1/global-candidates/lookup?email=

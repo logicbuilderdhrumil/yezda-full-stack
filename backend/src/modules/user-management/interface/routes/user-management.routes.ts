@@ -32,7 +32,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     userManagementListRateLimiter,
     validateQuery(userSearchQuerySchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.listUsers,
   );
 
@@ -42,7 +42,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     userManagementCreateRateLimiter,
     validateBody(createUserSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.createUser,
   );
 
@@ -52,7 +52,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     userManagementListRateLimiter,
     validateParams(userIdParamSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.getUserById,
   );
 
@@ -63,7 +63,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     validateParams(userIdParamSchema),
     validateBody(updateUserSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.updateUser,
   );
 
@@ -74,7 +74,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     validateParams(userIdParamSchema),
     validateBody(updateUserStatusSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.updateUserStatus,
   );
 
@@ -85,7 +85,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     validateParams(userIdParamSchema),
     validateBody(updateUserRolesSchema),
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     controller.updateUserRoles,
   );
 
@@ -95,7 +95,7 @@ export function createUserManagementRoutes(controller: UserManagementController)
     userManagementDeleteRateLimiter,
     validateParams(userIdParamSchema),
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     controller.deleteUser,
   );
 

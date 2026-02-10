@@ -27,7 +27,7 @@ router.use(requireAuthGuard);
 
 // Dashboard endpoints require at least 'viewer' role
 // This enforces RBAC for dashboard access (any authenticated role can view)
-router.use(requireRoleGuard('viewer', 'agent', 'manager', 'admin'));
+router.use(requireRoleGuard('platform_viewer', 'platform_agent', 'platform_manager', 'platform_admin'));
 
 /**
  * GET /api/v1/dashboard/summary
