@@ -71,7 +71,7 @@ export const AuthService = {
         const user = {
           id: userData.id,
           email: userData.email,
-          roles: [userData.role as 'admin' | 'manager' | 'agent' | 'viewer'],
+          roles: [userData.role as 'platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer'],
           type: userData.userType as 'user' | 'candidate',
           mfaEnabled: userData.mfaEnabled,
           createdAt: userData.createdAt,
@@ -220,7 +220,7 @@ export const AuthService = {
       const user = {
         id: userData.id,
         email: userData.email,
-        roles: [userData.role as 'admin' | 'manager' | 'agent' | 'viewer'],
+        roles: [userData.role as 'platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer'],
         type: userData.userType as 'user' | 'candidate',
         mfaEnabled: userData.mfaEnabled,
         createdAt: userData.createdAt,

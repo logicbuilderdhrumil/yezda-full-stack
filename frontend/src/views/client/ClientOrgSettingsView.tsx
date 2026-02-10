@@ -28,9 +28,9 @@ import type { ClientOrgSettings } from '@/services/ClientPortalService';
 // Helpers
 // -----------------------------------------------------------------------------
 
-/** Checks if the user has client_admin role. */
+/** Checks if the user has org_admin role. */
 function isClientAdmin(roles: string[] | undefined): boolean {
-  return roles?.includes('client_admin') ?? false;
+  return roles?.includes('org_admin') ?? false;
 }
 
 // -----------------------------------------------------------------------------

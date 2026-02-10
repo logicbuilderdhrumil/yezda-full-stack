@@ -35,9 +35,9 @@ export function Header({ className, showSearch = true }: HeaderProps): ReactNode
   const { toggleMobile, toggleCollapsed, isCollapsed } = useSidebar();
   const location = useLocation();
 
-  // Show org perspective switcher for admin/manager users on client routes
+  // Show org perspective switcher for platform admin/manager users on client routes
   const isOnClientRoutes = !location.pathname.startsWith('/admin');
-  const isAdminOrManager = hasRole(user, 'admin', 'manager');
+  const isAdminOrManager = hasRole(user, 'platform_admin', 'platform_manager');
   const showOrgSwitcher = isOnClientRoutes && isAdminOrManager;
 
   return (

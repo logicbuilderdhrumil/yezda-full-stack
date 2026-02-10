@@ -20,8 +20,8 @@ interface AdminRedirectWrapperProps {
 export function AdminRedirectWrapper({ children }: AdminRedirectWrapperProps): ReactNode {
   const { user } = useAuth();
 
-  // Admin/manager users are redirected to admin area
-  if (hasRole(user, 'admin', 'manager')) {
+  // Platform admin/manager users are redirected to admin area
+  if (hasRole(user, 'platform_admin', 'platform_manager')) {
     return <Navigate to="/admin" replace />;
   }
 

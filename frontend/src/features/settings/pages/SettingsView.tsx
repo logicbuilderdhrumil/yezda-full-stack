@@ -238,8 +238,8 @@ function ScreeningConfigSection(): ReactNode {
               onChange={(e) => setConfig({ ...config, autoAssignRole: e.target.value })}
               className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
             >
-              <option value="agent">Agent</option>
-              <option value="manager">Manager</option>
+              <option value="platform_agent">Platform Agent</option>
+              <option value="platform_manager">Platform Manager</option>
             </select>
           </FormField>
         )}

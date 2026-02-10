@@ -17,7 +17,7 @@ describe('AuthService', () => {
       email: 'test@example.com',
       firstName: 'Test',
       lastName: 'User',
-      roles: ['viewer'],
+      roles: ['platform_viewer'],
       type: 'user',
       mfaEnabled: false,
       createdAt: '2026-01-01T00:00:00Z',

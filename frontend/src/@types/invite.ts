@@ -28,7 +28,7 @@ export interface Invite {
 /** Payload for inviting a member to an organization. */
 export interface InviteMemberPayload {
   email: string;
-  role: 'admin' | 'manager' | 'user';
+  role: 'org_admin' | 'org_manager' | 'org_viewer';
   orgName: string;
   inviterName: string;
 }

@@ -14,7 +14,7 @@ export function createMockUser(id: string, overrides?: Partial<MockUser>): MockU
     displayName: `User ${id}`,
     firstName: `First${id}`,
     lastName: `Last${id}`,
-    roles: ['viewer'],
+    roles: ['platform_viewer'],
     tenantId: 'tenant-001',
     status: 'active',
     mfaEnabled: false,
@@ -46,10 +46,10 @@ export interface MockUser {
 
 /** Predefined mock users list. */
 export const mockUsers: MockUser[] = [
-  createMockUser('001', { email: 'admin@example.com', displayName: 'Sarah Mitchell', firstName: 'Sarah', lastName: 'Mitchell', roles: ['admin'] }),
-  createMockUser('002', { email: 'manager@example.com', displayName: 'David Chen', firstName: 'David', lastName: 'Chen', roles: ['manager'] }),
-  createMockUser('003', { email: 'agent1@example.com', displayName: 'Alice Nguyen', firstName: 'Alice', lastName: 'Nguyen', roles: ['agent'] }),
-  createMockUser('004', { email: 'agent2@example.com', displayName: 'Bob Patel', firstName: 'Bob', lastName: 'Patel', roles: ['agent'] }),
+  createMockUser('001', { email: 'admin@example.com', displayName: 'Sarah Mitchell', firstName: 'Sarah', lastName: 'Mitchell', roles: ['platform_admin'] }),
+  createMockUser('002', { email: 'manager@example.com', displayName: 'David Chen', firstName: 'David', lastName: 'Chen', roles: ['platform_manager'] }),
+  createMockUser('003', { email: 'agent1@example.com', displayName: 'Alice Nguyen', firstName: 'Alice', lastName: 'Nguyen', roles: ['platform_agent'] }),
+  createMockUser('004', { email: 'agent2@example.com', displayName: 'Bob Patel', firstName: 'Bob', lastName: 'Patel', roles: ['platform_agent'] }),
   createMockUser('005', { email: 'viewer@example.com', displayName: 'Charlie Wilson', firstName: 'Charlie', lastName: 'Wilson', status: 'inactive' }),
 ];
 

@@ -180,30 +180,30 @@ describe('Role-based filtering', () => {
       label: 'Admin Only',
       path: '/admin',
       icon: 'shield',
-      authorities: ['admin'],
+      authorities: ['platform_admin'],
     },
     {
       id: '3',
       label: 'Manager+',
       path: '/manage',
       icon: 'users',
-      authorities: ['admin', 'manager'],
+      authorities: ['platform_admin', 'platform_manager'],
     },
   ];
 
   it('shows all items to admin', () => {
-    const filtered = filterByAuthority(testItems, 'admin');
+    const filtered = filterByAuthority(testItems, 'platform_admin');
     expect(filtered.length).toBe(3);
   });
 
   it('filters admin-only items for manager', () => {
-    const filtered = filterByAuthority(testItems, 'manager');
+    const filtered = filterByAuthority(testItems, 'platform_manager');
     expect(filtered.length).toBe(2);
     expect(filtered.find((i) => i.id === '2')).toBeUndefined();
   });
 
   it('shows only public items to viewer', () => {
-    const filtered = filterByAuthority(testItems, 'viewer');
+    const filtered = filterByAuthority(testItems, 'platform_viewer');
     expect(filtered.length).toBe(1);
     expect(filtered[0]?.id).toBe('1');
   });

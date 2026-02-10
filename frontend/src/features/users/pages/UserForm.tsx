@@ -122,7 +122,7 @@ export function UserForm({
   const [email, setEmail] = useState(initialData?.email || '');
   const [firstName, setFirstName] = useState(initialData?.firstName || '');
   const [lastName, setLastName] = useState(initialData?.lastName || '');
-  const [role, setRole] = useState<UserRole>(initialData?.roles?.[0] || 'viewer');
+  const [role, setRole] = useState<UserRole>(initialData?.roles?.[0] || 'platform_viewer');
   const [status, setStatus] = useState<UserStatus>(initialData?.status || 'pending');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [password, setPassword] = useState('');
@@ -257,9 +257,13 @@ export function UserForm({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">{t('users.role.admin')}</SelectItem>
-                <SelectItem value="manager">{t('users.role.manager')}</SelectItem>
-                <SelectItem value="user">{t('users.role.user')}</SelectItem>
+                <SelectItem value="platform_admin">{t('users.role.platform_admin')}</SelectItem>
+                <SelectItem value="platform_manager">{t('users.role.platform_manager')}</SelectItem>
+                <SelectItem value="platform_agent">{t('users.role.platform_agent')}</SelectItem>
+                <SelectItem value="platform_viewer">{t('users.role.platform_viewer')}</SelectItem>
+                <SelectItem value="org_admin">{t('users.role.org_admin')}</SelectItem>
+                <SelectItem value="org_manager">{t('users.role.org_manager')}</SelectItem>
+                <SelectItem value="org_viewer">{t('users.role.org_viewer')}</SelectItem>
               </SelectContent>
             </Select>
           </FormField>

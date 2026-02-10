@@ -41,9 +41,9 @@ function getStatusVariant(status: UserStatus): 'default' | 'secondary' | 'destru
  */
 function getRoleVariant(role: UserRole): 'default' | 'secondary' | 'outline' {
   switch (role) {
-    case 'admin':
+    case 'platform_admin':
       return 'default';
-    case 'manager':
+    case 'platform_manager':
       return 'secondary';
     default:
       return 'outline';
@@ -155,8 +155,8 @@ export function UserDetailsView(): ReactNode {
                 <CardDescription>{user.email}</CardDescription>
               </div>
               <div className="flex gap-2">
-                <Badge variant={getRoleVariant(user.roles?.[0] || 'viewer')}>
-                  {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
+                <Badge variant={getRoleVariant(user.roles?.[0] || 'platform_viewer')}>
+                  {t(`users.role.${user.roles?.[0] || 'platform_viewer'}`)}
                 </Badge>
                 <Badge variant={getStatusVariant(user.status)}>
                   {t(`users.status.${user.status}`)}

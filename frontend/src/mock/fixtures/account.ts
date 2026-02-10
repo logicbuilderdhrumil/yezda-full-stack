@@ -14,7 +14,7 @@ export const accountProfileResponse = {
   phone: '+44 7700 900123',
   timezone: 'Europe/London',
   language: 'en',
-  role: 'admin',
+  role: 'platform_admin',
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2026-02-01T12:00:00.000Z',
 };

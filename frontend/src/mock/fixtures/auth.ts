@@ -17,7 +17,7 @@ export const mockUser = {
   displayName: 'Demo User',
   firstName: 'Demo',
   lastName: 'User',
-  roles: ['admin'] as const,
+  roles: ['platform_admin'] as const,
   tenantId: 'tenant-001',
   type: 'user' as const,
   mfaEnabled: false,

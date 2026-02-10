@@ -44,7 +44,7 @@ const mockSession: AuthSession = {
     email: 'test@example.com',
     firstName: 'Test',
     lastName: 'User',
-    roles: ['viewer'],
+    roles: ['platform_viewer'],
     type: 'user',
     mfaEnabled: false,
     createdAt: '2026-01-01T00:00:00Z',
@@ -56,7 +56,7 @@ const mockAdminSession: AuthSession = {
   ...mockSession,
   user: {
     ...mockSession.user,
-    roles: ['admin'],
+    roles: ['platform_admin'],
   },
 };
 
@@ -283,7 +283,7 @@ describe('RouteGuards', () => {
 
       render(
         <TestWrapper>
-          <AuthorityGuard authority={['admin']}>
+          <AuthorityGuard authority={['platform_admin']}>
             <div>Admin Content</div>
           </AuthorityGuard>
         </TestWrapper>
@@ -305,7 +305,7 @@ describe('RouteGuards', () => {
             <Route
               path="/"
               element={
-                <AuthorityGuard authority={['admin']}>
+                <AuthorityGuard authority={['platform_admin']}>
                   <div>Admin Content</div>
                 </AuthorityGuard>
               }
@@ -328,7 +328,7 @@ describe('RouteGuards', () => {
 
       render(
         <TestWrapper>
-          <AuthorityGuard authority={['admin', 'viewer']}>
+          <AuthorityGuard authority={['platform_admin', 'platform_viewer']}>
             <div>Multi-role Content</div>
           </AuthorityGuard>
         </TestWrapper>
@@ -392,7 +392,7 @@ describe('RouteGuards', () => {
             <Route
               path="/"
               element={
-                <AppRoute meta={{ authority: ['admin'] }}>
+                <AppRoute meta={{ authority: ['platform_admin'] }}>
                   <div>Admin Only</div>
                 </AppRoute>
               }
