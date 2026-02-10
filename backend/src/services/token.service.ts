@@ -55,7 +55,8 @@ export class TokenService {
     userType: 'user' | 'candidate',
     deviceInfo?: string,
     ipAddress?: string,
-    tenantId?: string
+    tenantId?: string,
+    userSpace?: 'platform' | 'organization'
   ): Promise<{ tokenPair: TokenPair; session: Session }> {
     const sessionId = uuidv4();
     const accessTokenJti = uuidv4();
@@ -66,6 +67,7 @@ export class TokenService {
       sub: userId,
       type: userType,
       ...(tenantId && { tenantId }),
+      ...(userSpace && { userSpace }),
       iat: now,
       exp: now + config.jwt.accessTokenTtlSeconds,
       jti: accessTokenJti,
@@ -183,20 +185,23 @@ export class TokenService {
     oldSession.revokedAt = new Date();
     await sessionRepository.update(oldSession);
 
-    // Fetch tenantId for user type from managed_users
+    // Fetch tenantId and userSpace for user type from managed_users
     let tenantId: string | undefined;
+    let userSpace: 'platform' | 'organization' | undefined;
     if (payload.type === 'user') {
       const managedUser = await userManagementRepository.findByIdWithoutTenantScope(payload.sub);
       tenantId = managedUser?.tenantId;
+      userSpace = managedUser?.userSpace;
     }
 
-    // Generate new token pair with tenantId
+    // Generate new token pair with tenantId and userSpace
     const result = await this.generateTokenPair(
       payload.sub,
       payload.type,
       deviceInfo ?? oldSession.deviceInfo,
       ipAddress ?? oldSession.ipAddress,
-      tenantId
+      tenantId,
+      userSpace
     );
 
     // Link to old session for audit trail

@@ -123,7 +123,7 @@ async function checkGuardDenialRateLimit(ip: string): Promise<{
  */
 function logGuardDenial(
   req: AuthenticatedRoleRequest,
-  reason: 'auth' | 'role',
+  reason: 'auth' | 'role' | 'space',
   userId?: string,
   userType?: 'user' | 'candidate',
   requiredRole?: string,
@@ -142,6 +142,7 @@ function logGuardDenial(
       userAgent,
     });
   } else {
+    // Both 'role' and 'space' use role denial logging
     auditService.logGuardRoleDenied({
       userId: userId || 'unknown',
       userType: userType || 'user',
@@ -242,6 +243,7 @@ export async function requireAuthGuard(
       if (managedUser) {
         enrichedPayload.roles = managedUser.roles as UserRole[];
         enrichedPayload.tenantId = managedUser.tenantId;
+        enrichedPayload.userSpace = managedUser.userSpace as UserSpace;
       }
     } catch (error) {
       // Log but don't fail auth - roles will be empty
@@ -434,6 +436,84 @@ export const requireClientGuard = requireRoleGuard('org_viewer', 'org_admin', 'p
  * Chain after requireAuthGuard.
  */
 export const requireClientAdminGuard = requireRoleGuard('org_admin');
+
+/**
+ * Require platform user space.
+ * Checks req.user.userSpace === 'platform'. Returns 403 with SPACE_VIOLATION code.
+ * Chain after requireAuthGuard.
+ */
+export async function requirePlatformGuard(
+  req: AuthenticatedRoleRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const startTime = Date.now();
+
+  if (!req.user) {
+    metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'no_user' });
+    logGuardDenial(req, 'auth');
+    metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
+    res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+    return;
+  }
+
+  if (req.user.userSpace !== 'platform') {
+    metricsService.incrementCounter(GUARD_METRICS.ROLE_DENIED, { reason: 'space_violation', required: 'platform', actual: req.user.userSpace || 'unknown' });
+    logGuardDenial(req, 'space', req.user.sub, req.user.type, 'platform', [req.user.userSpace || 'unknown']);
+    metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
+    res.status(403).json({ error: 'Platform access required', code: 'SPACE_VIOLATION' });
+    return;
+  }
+
+  metricsService.incrementCounter(GUARD_METRICS.ACCESS_GRANTED, { type: 'platform' });
+  logGuardAccessGranted(req, 'platform');
+  metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'granted' });
+  next();
+}
+
+/**
+ * Require organization user space.
+ * Checks req.user.userSpace === 'organization' and optionally validates tenant scope.
+ * Chain after requireAuthGuard.
+ */
+export function requireOrgGuard(tenantIdExtractor?: (req: Request) => string | undefined) {
+  return async (req: AuthenticatedRoleRequest, res: Response, next: NextFunction): Promise<void> => {
+    const startTime = Date.now();
+
+    if (!req.user) {
+      metricsService.incrementCounter(GUARD_METRICS.AUTH_DENIED, { reason: 'no_user' });
+      logGuardDenial(req, 'auth');
+      metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
+      res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' });
+      return;
+    }
+
+    if (req.user.userSpace !== 'organization') {
+      metricsService.incrementCounter(GUARD_METRICS.ROLE_DENIED, { reason: 'space_violation', required: 'organization', actual: req.user.userSpace || 'unknown' });
+      logGuardDenial(req, 'space', req.user.sub, req.user.type, 'organization', [req.user.userSpace || 'unknown']);
+      metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
+      res.status(403).json({ error: 'Organization access required', code: 'SPACE_VIOLATION' });
+      return;
+    }
+
+    // If a tenant extractor is provided, validate the user's tenantId matches the resource
+    if (tenantIdExtractor) {
+      const resourceTenantId = tenantIdExtractor(req);
+      if (resourceTenantId && req.user.tenantId !== resourceTenantId) {
+        metricsService.incrementCounter(GUARD_METRICS.ROLE_DENIED, { reason: 'tenant_mismatch' });
+        logGuardDenial(req, 'space', req.user.sub, req.user.type, 'organization', [req.user.tenantId || 'unknown']);
+        metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'denied' });
+        res.status(403).json({ error: 'Organization scope mismatch', code: 'SPACE_VIOLATION' });
+        return;
+      }
+    }
+
+    metricsService.incrementCounter(GUARD_METRICS.ACCESS_GRANTED, { type: 'organization' });
+    logGuardAccessGranted(req, 'organization');
+    metricsService.recordLatency(GUARD_METRICS.CHECK_LATENCY, Date.now() - startTime, { result: 'granted' });
+    next();
+  };
+}
 
 /**
  * Extended request with tenant scope.

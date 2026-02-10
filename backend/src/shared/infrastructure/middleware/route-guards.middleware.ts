@@ -12,6 +12,8 @@ export {
   requireRoleOrOwnerGuard,
   requireClientGuard,
   requireClientAdminGuard,
+  requirePlatformGuard,
+  requireOrgGuard,
   requireTenantScopeGuard,
   composeGuards,
   GUARD_SLOS,

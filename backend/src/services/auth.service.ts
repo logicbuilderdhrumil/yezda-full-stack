@@ -199,15 +199,17 @@ export class AuthService {
     entity.updatedAt = new Date();
     await userRepository.updateEntity(entity, userType);
 
-    // Fetch tenantId for user type from managed_users
+    // Fetch tenantId and userSpace for user type from managed_users
     let tenantId: string | undefined;
+    let userSpace: 'platform' | 'organization' | undefined;
     if (userType === 'user') {
       const managedUser = await userManagementRepository.findByIdWithoutTenantScope(entity.id);
       tenantId = managedUser?.tenantId;
+      userSpace = managedUser?.userSpace;
     }
 
     // Generate tokens
-    const { tokenPair } = await tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress, tenantId);
+    const { tokenPair } = await tokenService.generateTokenPair(entity.id, userType, deviceInfo, ipAddress, tenantId, userSpace);
 
     auditService.logSignInSuccess({
       userId: entity.id,
@@ -253,11 +255,13 @@ export class AuthService {
       return { success: false, error: 'Invalid MFA code', errorCode: 'INVALID_MFA' };
     }
 
-    // Fetch tenantId for user type from managed_users
+    // Fetch tenantId and userSpace for user type from managed_users
     let tenantId: string | undefined;
+    let userSpace: 'platform' | 'organization' | undefined;
     if (session.userType === 'user') {
       const managedUser = await userManagementRepository.findByIdWithoutTenantScope(entity.id);
       tenantId = managedUser?.tenantId;
+      userSpace = managedUser?.userSpace;
     }
 
     // Generate tokens
@@ -266,7 +270,8 @@ export class AuthService {
       session.userType,
       deviceInfo,
       ipAddress,
-      tenantId
+      tenantId,
+      userSpace
     );
 
     auditService.logSignInSuccess({
