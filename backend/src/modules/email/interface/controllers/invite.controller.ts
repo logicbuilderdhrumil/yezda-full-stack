@@ -14,7 +14,8 @@ interface AuthenticatedRequest extends Request {
 }
 
 function buildInviteContext(req: AuthenticatedRequest): InviteContext {
-  const tenantId = req.user?.tenantId ?? req.get('x-tenant-id');
+  // Prefer explicit x-tenant-id header (set by frontend for org-scoped invites) over user's default tenant
+  const tenantId = req.get('x-tenant-id') ?? req.user?.tenantId;
   if (!tenantId) {
     throw new Error('MISSING_TENANT');
   }
