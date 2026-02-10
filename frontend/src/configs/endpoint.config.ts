@@ -174,10 +174,10 @@ export const endpoints = {
   'client.reports': { path: '/client/reports', version: 'v1' },
 
   // Invite endpoints
-  'invites.sendMember': { path: '/invites/member', version: 'v1' },
-  'invites.sendCandidate': { path: '/invites/candidate', version: 'v1' },
+  'invites.sendMember': { path: '/invites/orgs/members', version: 'v1' },
+  'invites.sendCandidate': { path: '/invites/orgs/candidates', version: 'v1' },
   'invites.sendAdminCandidate': { path: '/invites/admin-candidate', version: 'v1' },
-  'invites.validate': { path: '/invites/:token/validate', version: 'v1' },
+  'invites.validate': { path: '/invites/:token/verify', version: 'v1' },
   'invites.accept': { path: '/invites/:token/accept', version: 'v1' },
   'invites.lookupIdentity': { path: '/invites/lookup-identity', version: 'v1' },
   'invites.listByOrg': { path: '/organizations/:organizationId/invites', version: 'v1' },

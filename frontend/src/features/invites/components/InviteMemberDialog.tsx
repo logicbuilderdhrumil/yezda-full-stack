@@ -30,6 +30,7 @@ import {
 import { InviteService } from '@/features/invites/services/InviteService';
 import { extractApiError } from '@/utils';
 import type { InviteMemberPayload } from '@/@types/invite';
+import { useAuthStore } from '@/store';
 
 export interface InviteMemberDialogProps {
   /** Whether the dialog is open. */
@@ -57,6 +58,7 @@ export function InviteMemberDialog({
   onSuccess,
 }: InviteMemberDialogProps): ReactNode {
   const { t } = useTranslation();
+  const session = useAuthStore((s) => s.session);
 
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<MemberRole>('user');
@@ -90,12 +92,16 @@ export function InviteMemberDialog({
 
     setIsSubmitting(true);
     try {
+      const inviterName = session?.displayName
+        || [session?.firstName, session?.lastName].filter(Boolean).join(' ')
+        || 'Admin';
       const payload: InviteMemberPayload = {
         email: email.trim().toLowerCase(),
         role,
-        organizationId,
+        orgName: organizationName,
+        inviterName,
       };
-      await InviteService.sendMemberInvite(payload);
+      await InviteService.sendMemberInvite(payload, organizationId);
       toastSuccess(t('invites.member.success', { email: payload.email }));
       resetForm();
       onOpenChange(false);

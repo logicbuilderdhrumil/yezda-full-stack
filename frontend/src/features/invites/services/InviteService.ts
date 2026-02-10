@@ -23,10 +23,11 @@ export const InviteService = {
    * @param payload - Member invite data
    * @returns Invite response with status
    */
-  async sendMemberInvite(payload: InviteMemberPayload): Promise<InviteResponse> {
+  async sendMemberInvite(payload: InviteMemberPayload, organizationId: string): Promise<InviteResponse> {
     const response = await ApiService.post<InviteResponse, InviteMemberPayload>(
       'invites.sendMember',
       payload,
+      { headers: { 'x-tenant-id': organizationId } },
     );
     return response.data;
   },

@@ -44,10 +44,7 @@ function rowToEntry(row: AuditLogRow): AuditLogEntry {
 
 export class AuditLogRepository {
   async create(entry: AuditLogEntry): Promise<void> {
-    await query(
-      `INSERT INTO audit_logs (id, event_type, actor_id, actor_type, target_id, target_type, channel, ip_address, user_agent, metadata, success, error_message, timestamp)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-      [
+    const params = [
         entry.event.id,
         entry.event.eventType,
         entry.event.actorId ?? null,
@@ -61,7 +58,11 @@ export class AuditLogRepository {
         entry.success,
         entry.errorMessage ?? null,
         entry.event.timestamp,
-      ]
+      ];
+    await query(
+      `INSERT INTO audit_logs (id, event_type, actor_id, actor_type, target_id, target_type, channel, ip_address, user_agent, metadata, success, error_message, timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      params
     );
   }
 
