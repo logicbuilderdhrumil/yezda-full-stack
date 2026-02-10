@@ -98,7 +98,7 @@ export function SignInView(): ReactNode {
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-[var(--color-foreground)]">
               {t('auth.emailLabel')}
             </label>
             <input
@@ -108,10 +108,10 @@ export function SignInView(): ReactNode {
               value={formData.email}
               onChange={handleChange('email')}
               onBlur={handleBlur('email')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.email && formErrors.email
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder={t('auth.emailPlaceholder')}
             />
@@ -121,7 +121,7 @@ export function SignInView(): ReactNode {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--color-foreground)]">
               {t('auth.passwordLabel')}
             </label>
             <input
@@ -131,10 +131,10 @@ export function SignInView(): ReactNode {
               value={formData.password}
               onChange={handleChange('password')}
               onBlur={handleBlur('password')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.password && formErrors.password
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder={t('auth.passwordPlaceholder')}
             />
@@ -144,16 +144,16 @@ export function SignInView(): ReactNode {
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm text-gray-600">
+            <label className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                className="h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-cta)] focus:ring-[var(--color-cta)]"
               />
               {t('auth.rememberMe')}
             </label>
             <Link
               to="/forgot-password"
-              className="text-sm font-medium text-primary hover:text-primary/80"
+              className="text-sm font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]"
             >
               {t('auth.forgotPassword')}
             </Link>
@@ -162,14 +162,14 @@ export function SignInView(): ReactNode {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-cta)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t('auth.signIn')}
           </button>
 
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-[var(--color-muted-foreground)]">
             {t('auth.noAccount')}{' '}
-            <Link to="/sign-up" className="font-medium text-primary hover:text-primary/80">
+            <Link to="/sign-up" className="font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]">
               {t('auth.signUp')}
             </Link>
           </p>

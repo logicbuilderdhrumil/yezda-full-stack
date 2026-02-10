@@ -44,8 +44,8 @@ function ConversationItem({
     <div
       className={cn(
         'flex items-center gap-3 p-3 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-800',
-        'hover:bg-gray-50 dark:hover:bg-gray-800/50',
-        isSelected && 'bg-blue-50 dark:bg-blue-900/20 border-l-2 border-l-blue-500'
+        'hover:bg-muted/50',
+        isSelected && 'bg-cta/10 border-l-2 border-l-cta'
       )}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -60,7 +60,7 @@ function ConversationItem({
     >
       {/* Avatar */}
       <div className="flex-shrink-0">
-        <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-300">
+        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-muted-foreground">
           {conversation.title.charAt(0).toUpperCase()}
         </div>
       </div>
@@ -72,20 +72,20 @@ function ConversationItem({
             className={cn(
               'text-sm truncate',
               hasUnread
-                ? 'font-semibold text-gray-900 dark:text-gray-100'
-                : 'font-medium text-gray-700 dark:text-gray-300'
+                ? 'font-semibold text-foreground'
+                : 'font-medium text-foreground'
             )}
           >
             {conversation.title}
           </h4>
           {conversation.lastMessage && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+            <span className="text-xs text-muted-foreground flex-shrink-0">
               {formatRelativeTime(conversation.lastMessage.createdAt)}
             </span>
           )}
         </div>
         <div className="flex items-center justify-between gap-2 mt-0.5">
-          <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+          <p className="text-sm text-muted-foreground truncate">
             {conversation.lastMessage?.content || 'No messages yet'}
           </p>
           {hasUnread && (
@@ -124,17 +124,17 @@ function ConversationSkeleton(): ReactNode {
 function MessageStatusIcon({ status }: { status: MessageStatus }): ReactNode {
   const icons: Record<MessageStatus, ReactNode> = {
     sending: (
-      <svg className="h-3 w-3 text-gray-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="h-3 w-3 text-muted-foreground animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <circle cx="12" cy="12" r="10" />
       </svg>
     ),
     sent: (
-      <svg className="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="h-3 w-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
       </svg>
     ),
     delivered: (
-      <svg className="h-3 w-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="h-3 w-3 text-cta" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7M5 13l4 4L19 7" />
       </svg>
     ),
@@ -177,7 +177,7 @@ function MessageBubble({
       {/* Avatar (only for other users) */}
       {!isOwnMessage && (
         <div className="flex-shrink-0">
-          <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-600 dark:text-gray-300">
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
             {message.sender.name.charAt(0).toUpperCase()}
           </div>
         </div>
@@ -186,7 +186,7 @@ function MessageBubble({
       {/* Message content */}
       <div className="flex flex-col gap-1">
         {!isOwnMessage && (
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-muted-foreground">
             {message.sender.name}
           </span>
         )}
@@ -194,8 +194,8 @@ function MessageBubble({
           className={cn(
             'rounded-lg px-3 py-2 text-sm',
             isOwnMessage
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100',
+              ? 'bg-cta text-white'
+              : 'bg-muted text-foreground',
             isFailed && 'opacity-60'
           )}
         >
@@ -203,7 +203,7 @@ function MessageBubble({
         </div>
         <div
           className={cn(
-            'flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400',
+            'flex items-center gap-1 text-xs text-muted-foreground',
             isOwnMessage ? 'justify-end' : 'justify-start'
           )}
         >
@@ -290,7 +290,7 @@ function MessageCompose({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+      className="flex items-center gap-2 p-4 border-t border-border bg-white dark:bg-muted"
     >
       <Input
         ref={inputRef}
@@ -345,9 +345,9 @@ function MessageCompose({
 function EmptyConversations({ hasSearch }: { hasSearch: boolean }): ReactNode {
   return (
     <div className="flex flex-col items-center justify-center h-full py-12 text-center px-4">
-      <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+      <div className="rounded-full bg-muted p-4 mb-4">
         <svg
-          className="h-8 w-8 text-gray-400"
+          className="h-8 w-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -360,10 +360,10 @@ function EmptyConversations({ hasSearch }: { hasSearch: boolean }): ReactNode {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         {hasSearch ? 'No conversations found' : 'No conversations yet'}
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         {hasSearch
           ? 'Try adjusting your search query.'
           : 'Start a conversation to see it here.'}
@@ -378,9 +378,9 @@ function EmptyConversations({ hasSearch }: { hasSearch: boolean }): ReactNode {
 function EmptyMessages(): ReactNode {
   return (
     <div className="flex flex-col items-center justify-center h-full py-12 text-center px-4">
-      <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+      <div className="rounded-full bg-muted p-4 mb-4">
         <svg
-          className="h-8 w-8 text-gray-400"
+          className="h-8 w-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -393,10 +393,10 @@ function EmptyMessages(): ReactNode {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         No messages yet
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         Send a message to start the conversation.
       </p>
     </div>
@@ -409,9 +409,9 @@ function EmptyMessages(): ReactNode {
 function NoConversationSelected(): ReactNode {
   return (
     <div className="flex flex-col items-center justify-center h-full py-12 text-center px-4">
-      <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+      <div className="rounded-full bg-muted p-4 mb-4">
         <svg
-          className="h-8 w-8 text-gray-400"
+          className="h-8 w-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -424,10 +424,10 @@ function NoConversationSelected(): ReactNode {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         Select a conversation
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground">
         Choose a conversation from the list to start chatting.
       </p>
     </div>
@@ -461,10 +461,10 @@ function ErrorState({
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <h3 className="text-lg font-medium text-foreground mb-1">
         Something went wrong
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{message}</p>
+      <p className="text-sm text-muted-foreground mb-4">{message}</p>
       <Button onClick={onRetry} variant="outline">
         Try again
       </Button>
@@ -564,11 +564,11 @@ export function ChatView(): ReactNode {
     >
       <Card className="flex h-[calc(100vh-12rem)] overflow-hidden">
         {/* Conversations sidebar */}
-        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        <div className="w-80 flex-shrink-0 border-r border-border flex flex-col">
           {/* Search header */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-border">
             <div className="flex items-center gap-2 mb-2">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-foreground">
                 Messages
               </h2>
               {totalUnreadCount > 0 && (
@@ -651,12 +651,12 @@ export function ChatView(): ReactNode {
           ) : (
             <>
               {/* Conversation header */}
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+              <div className="p-4 border-b border-border bg-white dark:bg-muted">
+                <h3 className="font-semibold text-foreground truncate">
                   {selectedConversation?.title || 'Loading...'}
                 </h3>
                 {selectedConversation && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {selectedConversation.participants.length} participants
                   </p>
                 )}

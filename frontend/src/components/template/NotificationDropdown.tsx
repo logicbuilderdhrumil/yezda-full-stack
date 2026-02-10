@@ -85,8 +85,8 @@ export function NotificationDropdown({
         <button
           type="button"
           className={cn(
-            'relative p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700',
-            'dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200',
+            'relative p-2 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors duration-200',
+            'dark:hover:bg-[var(--color-muted)] dark:hover:text-[var(--color-foreground)]',
             className
           )}
           aria-label={t('notifications.title')}
@@ -111,7 +111,7 @@ export function NotificationDropdown({
             <button
               type="button"
               onClick={handleMarkAllAsRead}
-              className="text-xs text-primary hover:underline"
+              className="text-xs text-[var(--color-cta)] hover:text-[var(--color-cta-hover)] hover:underline"
             >
               {t('notifications.markAllRead')}
             </button>
@@ -119,7 +119,7 @@ export function NotificationDropdown({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {isLoading ? (
-          <div className="py-6 text-center text-sm text-gray-500">
+          <div className="py-6 text-center text-sm text-[var(--color-muted-foreground)]">
             {t('common.loading')}
           </div>
         ) : hasNotifications ? (
@@ -129,7 +129,7 @@ export function NotificationDropdown({
                 key={notification.id}
                 className={cn(
                   'flex flex-col items-start gap-1 py-3 cursor-pointer',
-                  notification.status === 'unread' && 'bg-blue-50/50 dark:bg-blue-900/10'
+                  notification.status === 'unread' && 'bg-[var(--color-cta)]/5 dark:bg-[var(--color-cta)]/10'
                 )}
                 onClick={() => handleNotificationClick(notification)}
               >
@@ -138,13 +138,13 @@ export function NotificationDropdown({
                     {notification.title}
                   </span>
                   {notification.status === 'unread' && (
-                    <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1" />
+                    <span className="h-2 w-2 rounded-full bg-[var(--color-cta)] shrink-0 mt-1" />
                   )}
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                <p className="text-xs text-[var(--color-muted-foreground)] line-clamp-2">
                   {notification.body}
                 </p>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-[var(--color-muted-foreground)]">
                   {formatTimeAgo(notification.createdAt)}
                 </span>
               </DropdownMenuItem>
@@ -153,7 +153,7 @@ export function NotificationDropdown({
             <DropdownMenuItem asChild>
               <Link
                 to="/notifications"
-                className="flex items-center justify-center gap-2 py-2 text-primary cursor-pointer"
+                className="flex items-center justify-center gap-2 py-2 text-[var(--color-cta)] cursor-pointer"
               >
                 <span>{t('notifications.viewAll')}</span>
                 <ExternalLink className="h-3 w-3" />
@@ -161,7 +161,7 @@ export function NotificationDropdown({
             </DropdownMenuItem>
           </>
         ) : (
-          <div className="py-6 text-center text-sm text-gray-500">
+          <div className="py-6 text-center text-sm text-[var(--color-muted-foreground)]">
             {t('notifications.empty')}
           </div>
         )}

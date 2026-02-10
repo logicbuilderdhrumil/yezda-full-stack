@@ -55,9 +55,9 @@ function useAuthGuard() {
 function SplashScreen() {
   return (
     <View className="flex-1 bg-white items-center justify-center">
-      <Text className="text-3xl font-bold text-blue-600 mb-4">Yezda</Text>
-      <ActivityIndicator size="large" color="#2563EB" />
-      <Text className="text-gray-500 mt-4 text-sm">Loading...</Text>
+      <Text className="text-3xl font-bold text-navy-600 mb-4">Yezda</Text>
+      <ActivityIndicator size="large" color="#0369A1" />
+      <Text className="text-slate-500 mt-4 text-sm">Loading...</Text>
     </View>
   );
 }

@@ -109,11 +109,11 @@ export function FormPreview({ schema, formName, onClose }: FormPreviewProps): Re
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-foreground">
             {t('forms.preview.title')}
           </h2>
           {formName && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{formName}</p>
+            <p className="text-sm text-muted-foreground">{formName}</p>
           )}
         </div>
         <Button variant="outline" onClick={onClose}>
@@ -127,7 +127,7 @@ export function FormPreview({ schema, formName, onClose }: FormPreviewProps): Re
         </CardHeader>
         <CardContent>
           {schema.fields.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+            <p className="text-center text-muted-foreground py-8">
               {t('forms.preview.noFields')}
             </p>
           ) : (

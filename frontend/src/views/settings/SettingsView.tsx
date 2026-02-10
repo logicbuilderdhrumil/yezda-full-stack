@@ -81,11 +81,11 @@ interface FormFieldProps {
 function FormField({ label, htmlFor, description, children }: FormFieldProps): ReactNode {
   return (
     <div className="grid gap-2">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">
         {label}
       </label>
       {description && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       )}
       {children}
     </div>
@@ -104,11 +104,11 @@ function ToggleField({
   onChange: (checked: boolean) => void;
 }): ReactNode {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+    <div className="flex items-center justify-between rounded-lg border border-border p-4">
       <div className="space-y-0.5">
         <div className="text-sm font-medium">{label}</div>
         {description && (
-          <div className="text-xs text-gray-500 dark:text-gray-400">{description}</div>
+          <div className="text-xs text-muted-foreground">{description}</div>
         )}
       </div>
       <button
@@ -118,7 +118,7 @@ function ToggleField({
         onClick={() => onChange(!checked)}
         className={cn(
           'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors',
-          checked ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'
+          checked ? 'bg-primary' : 'bg-muted'
         )}
       >
         <span
@@ -158,7 +158,7 @@ function GeneralSection(): ReactNode {
             type="text"
             value={general.applicationName}
             onChange={(e) => setGeneral({ ...general, applicationName: e.target.value })}
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-gray-800"
           />
         </FormField>
 
@@ -167,7 +167,7 @@ function GeneralSection(): ReactNode {
             id="timezone"
             value={general.timezone}
             onChange={(e) => setGeneral({ ...general, timezone: e.target.value })}
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-gray-800"
           >
             {TIMEZONE_OPTIONS.map((tz) => (
               <option key={tz} value={tz}>{tz}</option>
@@ -180,7 +180,7 @@ function GeneralSection(): ReactNode {
             id="language"
             value={general.defaultLanguage}
             onChange={(e) => setGeneral({ ...general, defaultLanguage: e.target.value })}
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-gray-800"
           >
             {LANGUAGE_OPTIONS.map((lang) => (
               <option key={lang.value} value={lang.value}>{lang.label}</option>
@@ -219,7 +219,7 @@ function ScreeningConfigSection(): ReactNode {
             value={config.defaultPipeline}
             onChange={(e) => setConfig({ ...config, defaultPipeline: e.target.value })}
             placeholder="Select a pipeline..."
-            className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-gray-800"
           />
         </FormField>
 
@@ -236,7 +236,7 @@ function ScreeningConfigSection(): ReactNode {
               id="auto-assign-role"
               value={config.autoAssignRole}
               onChange={(e) => setConfig({ ...config, autoAssignRole: e.target.value })}
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm dark:bg-gray-800"
             >
               <option value="agent">Agent</option>
               <option value="manager">Manager</option>
@@ -328,17 +328,17 @@ function IntegrationsSection(): ReactNode {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* API Key */}
-        <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+        <div className="rounded-lg border border-border p-4">
           <h4 className="text-sm font-medium mb-2">API Key</h4>
           <div className="flex items-center gap-3">
-            <code className="flex-1 rounded bg-gray-100 px-3 py-2 text-sm font-mono dark:bg-gray-800">
+            <code className="flex-1 rounded bg-muted px-3 py-2 text-sm font-mono">
               {integrations.apiKeyPrefix}
             </code>
             <Button variant="outline" size="sm">
               Regenerate
             </Button>
           </div>
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-xs text-muted-foreground">
             Use this key to authenticate API requests. Keep it secret.
           </p>
         </div>
@@ -352,7 +352,7 @@ function IntegrationsSection(): ReactNode {
             </Button>
           </div>
           {integrations.webhooks.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               No webhooks configured yet.
             </p>
           ) : (
@@ -360,11 +360,11 @@ function IntegrationsSection(): ReactNode {
               {integrations.webhooks.map((webhook) => (
                 <div
                   key={webhook.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+                  className="flex items-center justify-between rounded-lg border border-border p-3"
                 >
                   <div>
                     <div className="text-sm font-medium">{webhook.url}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       Events: {webhook.events.join(', ')}
                     </div>
                   </div>

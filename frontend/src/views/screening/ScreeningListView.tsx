@@ -238,7 +238,7 @@ export function ScreeningListView(): ReactNode {
             <TableSkeleton />
           ) : screenings.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {status !== 'all' || type !== 'all'
                   ? 'No screenings match your filters.'
                   : 'No screenings yet.'}
@@ -268,10 +268,10 @@ export function ScreeningListView(): ReactNode {
                         {formatLabel(screening.status)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
                       {formatDate(screening.requestedAt)}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {formatDate(screening.completedAt)}
                     </TableCell>
                     <TableCell>

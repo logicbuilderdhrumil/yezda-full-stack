@@ -161,7 +161,7 @@ export function ProfileEditScreen({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-slate-50"
     >
       <ScrollView
         className="flex-1"
@@ -192,7 +192,7 @@ export function ProfileEditScreen({
 
         {/* Personal Information Section */}
         <View className="bg-white mt-4 px-6 py-4">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
+          <Text className="text-lg font-semibold text-slate-900 mb-4">
             Personal Information
           </Text>
 
@@ -235,7 +235,7 @@ export function ProfileEditScreen({
 
         {/* Address Section */}
         <View className="bg-white mt-4 px-6 py-4">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
+          <Text className="text-lg font-semibold text-slate-900 mb-4">
             Address
           </Text>
 
@@ -301,10 +301,10 @@ export function ProfileEditScreen({
         </View>
 
         {/* Action Buttons */}
-        <View className="px-6 mt-6 space-y-3">
+        <View className="px-6 mt-6 gap-y-3">
           <TouchableOpacity
             className={`py-4 rounded-lg ${
-              isSaving ? 'bg-blue-400' : 'bg-blue-600'
+              isSaving ? 'bg-navy-400' : 'bg-navy-600'
             }`}
             onPress={handleSubmit}
             disabled={isSaving}
@@ -322,13 +322,13 @@ export function ProfileEditScreen({
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="py-4 rounded-lg mt-3 bg-gray-100"
+            className="py-4 rounded-lg mt-3 bg-slate-100"
             onPress={handleCancel}
             disabled={isSaving}
             accessibilityRole="button"
             accessibilityLabel="Cancel editing"
           >
-            <Text className="text-gray-700 text-center font-semibold text-base">
+            <Text className="text-slate-700 text-center font-semibold text-base">
               Cancel
             </Text>
           </TouchableOpacity>
@@ -369,7 +369,7 @@ function FormField({
 
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-1">
+      <Text className="text-sm font-medium text-slate-700 mb-1">
         {label}
         {required && <Text className="text-red-500"> *</Text>}
       </Text>
@@ -377,14 +377,14 @@ function FormField({
         className={`border rounded-lg px-4 py-3 text-base ${
           showError
             ? 'border-red-500 bg-red-50'
-            : 'border-gray-300 bg-white'
+            : 'border-slate-300 bg-white'
         } ${disabled ? 'opacity-50' : ''}`}
         value={value}
         onChangeText={onChangeText}
         onBlur={onBlur}
         editable={!disabled}
         placeholder={placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#94A3B8"
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         accessibilityLabel={label}

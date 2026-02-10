@@ -9,6 +9,8 @@ import { themePresets } from '@/constants/theme.constant';
 const COLOR_VAR_MAP: Record<keyof ColorTokens, string> = {
   primary: '--color-primary',
   primaryHover: '--color-primary-hover',
+  cta: '--color-cta',
+  ctaHover: '--color-cta-hover',
   secondary: '--color-secondary',
   secondaryHover: '--color-secondary-hover',
   background: '--color-background',
@@ -55,6 +57,7 @@ export function generateCSSVariables(tokens: ThemeTokens): string {
   lines.push(`--spacing-lg: ${tokens.spacing.lg};`);
   lines.push(`--spacing-xl: ${tokens.spacing.xl};`);
   lines.push(`--spacing-xxl: ${tokens.spacing.xxl};`);
+  lines.push(`--spacing-xxxl: ${tokens.spacing.xxxl};`);
 
   // Radius tokens
   lines.push(`--radius-none: ${tokens.radius.none};`);
@@ -113,6 +116,7 @@ export function applyThemeToDocument(theme: 'light' | 'dark'): void {
   root.style.setProperty('--spacing-lg', tokens.spacing.lg);
   root.style.setProperty('--spacing-xl', tokens.spacing.xl);
   root.style.setProperty('--spacing-xxl', tokens.spacing.xxl);
+  root.style.setProperty('--spacing-xxxl', tokens.spacing.xxxl);
 
   // Radius
   root.style.setProperty('--radius-none', tokens.radius.none);

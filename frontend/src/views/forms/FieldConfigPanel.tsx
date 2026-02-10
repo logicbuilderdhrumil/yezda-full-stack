@@ -131,7 +131,7 @@ export function FieldConfigPanel({ field, onUpdate }: FieldConfigPanelProps): Re
               setTimeout(triggerUpdate, 0);
             }}
           />
-          <label htmlFor="required" className="text-sm text-gray-700 dark:text-gray-300">
+          <label htmlFor="required" className="text-sm text-foreground">
             {t('forms.config.required')}
           </label>
         </div>

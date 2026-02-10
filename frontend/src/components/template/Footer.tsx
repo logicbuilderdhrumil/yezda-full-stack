@@ -26,13 +26,13 @@ export function Footer({ className, compact = false }: FooterProps): ReactNode {
     return (
       <footer
         className={cn(
-          'flex h-12 items-center justify-center border-t border-gray-200 bg-white px-4',
-          'dark:border-gray-800 dark:bg-gray-900',
+          'flex h-12 items-center justify-center border-t border-[var(--color-border)] bg-[var(--color-background)] px-4',
+          'dark:border-[var(--color-border)]',
           className
         )}
         data-testid="footer"
       >
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-[var(--color-muted-foreground)]">
           © {currentYear} {t('app.name')}. {t('footer.allRightsReserved')}
         </p>
       </footer>
@@ -42,8 +42,8 @@ export function Footer({ className, compact = false }: FooterProps): ReactNode {
   return (
     <footer
       className={cn(
-        'border-t border-gray-200 bg-white px-4 py-6',
-        'dark:border-gray-800 dark:bg-gray-900',
+        'border-t border-[var(--color-border)] bg-[var(--color-background)] px-4 py-6',
+        'dark:border-[var(--color-border)]',
         className
       )}
       data-testid="footer"
@@ -51,29 +51,29 @@ export function Footer({ className, compact = false }: FooterProps): ReactNode {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex flex-col items-center gap-1 sm:items-start">
-            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">
               {t('app.name')}
             </span>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-[var(--color-muted-foreground)]">
               © {currentYear}. {t('footer.allRightsReserved')}
             </p>
           </div>
           <nav className="flex items-center gap-4 text-sm">
             <Link
               to="/privacy"
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-[var(--color-muted-foreground)] hover:text-[var(--color-cta)] transition-colors duration-200"
             >
               {t('footer.privacy')}
             </Link>
             <Link
               to="/terms"
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-[var(--color-muted-foreground)] hover:text-[var(--color-cta)] transition-colors duration-200"
             >
               {t('footer.terms')}
             </Link>
             <Link
               to="/help"
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-[var(--color-muted-foreground)] hover:text-[var(--color-cta)] transition-colors duration-200"
             >
               {t('footer.help')}
             </Link>

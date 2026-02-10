@@ -101,7 +101,7 @@ export function FilesListView(): ReactNode {
       pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
       clean: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
       infected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      error: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+      error: 'bg-muted text-gray-800 dark:text-gray-200',
     };
     return (
       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${styles[status]}`}>
@@ -119,7 +119,7 @@ export function FilesListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={5} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -134,7 +134,7 @@ export function FilesListView(): ReactNode {
             <TableBody>
               {files.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-gray-500">
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                     {t('files.noResults', 'No files found')}
                   </TableCell>
                 </TableRow>
@@ -143,14 +143,14 @@ export function FilesListView(): ReactNode {
                   <TableRow key={file.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <FileIcon className="h-4 w-4 text-gray-400" />
+                        <FileIcon className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{file.originalFilename}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-500">{file.mimeType}</TableCell>
-                    <TableCell className="text-gray-500">{file.sizeFormatted}</TableCell>
+                    <TableCell className="text-muted-foreground">{file.mimeType}</TableCell>
+                    <TableCell className="text-muted-foreground">{file.sizeFormatted}</TableCell>
                     <TableCell>{getScanStatusBadge(file.scanStatus)}</TableCell>
-                    <TableCell className="text-gray-500">{formatDate(file.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(file.createdAt)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button

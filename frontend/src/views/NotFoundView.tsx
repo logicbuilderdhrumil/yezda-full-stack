@@ -18,7 +18,7 @@ export function NotFoundView(): ReactNode {
 
   return (
     <ErrorPageLayout
-      icon={<FileQuestion className="h-16 w-16 text-gray-400 dark:text-gray-500" />}
+      icon={<FileQuestion className="h-16 w-16 text-muted-foreground" />}
       code="404"
       title={t('errors.notFound')}
       description={t('errors.notFoundMessage')}
@@ -47,7 +47,7 @@ export function NotFoundView(): ReactNode {
     >
       {/* Show the attempted path for debugging in development */}
       {import.meta.env.DEV && (
-        <p className="text-sm text-gray-500 dark:text-gray-500 font-mono bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded">
+        <p className="text-sm text-muted-foreground font-mono bg-muted px-3 py-1 rounded">
           {location.pathname}
         </p>
       )}

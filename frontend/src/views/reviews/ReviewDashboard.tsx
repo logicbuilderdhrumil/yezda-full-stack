@@ -124,7 +124,7 @@ export function ReviewDashboard(): ReactNode {
               className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
                 statusFilter === btn.key
                   ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 font-medium'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
+                  : 'text-muted-foreground hover:bg-muted'
               }`}
             >
               {btn.label}
@@ -168,7 +168,7 @@ export function ReviewDashboard(): ReactNode {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-sm text-foreground">
                       {t('reviews.dashboard.table.candidate', 'Candidate')}:{' '}
                       {((task as unknown as Record<string, unknown>).candidateName as string) || task.candidateId}
                     </span>
@@ -176,7 +176,7 @@ export function ReviewDashboard(): ReactNode {
                       {task.status.replace(/_/g, ' ')}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                     <span>
                       {t('reviews.dashboard.table.pipeline', 'Pipeline')}:{' '}
                       {((task as unknown as Record<string, unknown>).pipelineName as string) || task.pipelineId}
@@ -194,7 +194,7 @@ export function ReviewDashboard(): ReactNode {
                   </div>
                 </div>
                 <div className="flex-shrink-0">
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                  <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
                     {task.assigneeRole}
                   </span>
                 </div>
@@ -207,14 +207,14 @@ export function ReviewDashboard(): ReactNode {
       {/* Decision panel */}
       {selectedTask && (
         <Card className="p-6 mt-4 border-primary-200 dark:border-primary-800">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             {t('reviews.dashboard.detail.title', 'Review Task')}
           </h3>
 
           <div className="space-y-4">
             {/* Decision options */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 {t('reviews.dashboard.detail.decision', 'Decision')}
               </label>
               <div className="flex flex-wrap gap-2">
@@ -225,7 +225,7 @@ export function ReviewDashboard(): ReactNode {
                     className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                       decision === opt
                         ? 'bg-primary-600 text-white border-primary-600'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400'
+                        : 'bg-white dark:bg-gray-800 text-foreground border-border hover:border-primary-400'
                     }`}
                   >
                     {opt.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
@@ -236,7 +236,7 @@ export function ReviewDashboard(): ReactNode {
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 {t('reviews.dashboard.detail.notes', 'Notes')}
               </label>
               <textarea
@@ -246,7 +246,7 @@ export function ReviewDashboard(): ReactNode {
                   'reviews.dashboard.detail.notesPlaceholder',
                   'Add review notes...'
                 )}
-                className="w-full h-24 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full h-24 px-3 py-2 text-sm border border-border rounded-lg bg-white dark:bg-gray-800 text-foreground resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 

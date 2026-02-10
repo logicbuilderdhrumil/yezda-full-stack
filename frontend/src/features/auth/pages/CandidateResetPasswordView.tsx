@@ -98,12 +98,12 @@ export function CandidateResetPasswordView(): ReactNode {
         subtitle="This password reset link is invalid or expired."
       >
         <div className="text-center">
-          <p className="mb-6 text-sm text-gray-600">
+          <p className="mb-6 text-sm text-[var(--color-muted-foreground)]">
             Please contact your employer to request a new password reset link.
           </p>
           <Link
             to="/sign-in"
-            className="inline-flex justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
+            className="inline-flex justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)]"
           >
             Go to sign in
           </Link>
@@ -136,7 +136,7 @@ export function CandidateResetPasswordView(): ReactNode {
           </div>
           <button
             onClick={() => navigate('/sign-in')}
-            className="inline-flex justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
+            className="inline-flex justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)]"
           >
             Sign in to continue
           </button>
@@ -155,7 +155,7 @@ export function CandidateResetPasswordView(): ReactNode {
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--color-foreground)]">
               Password
             </label>
             <input
@@ -165,23 +165,23 @@ export function CandidateResetPasswordView(): ReactNode {
               value={formData.password}
               onChange={handleChange('password')}
               onBlur={handleBlur('password')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.password && formErrors.password
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder="••••••••"
             />
             {touched.password && formErrors.password && (
               <p className="mt-1.5 text-xs text-red-600">{formErrors.password}</p>
             )}
-            <p className="mt-1.5 text-xs text-gray-500">
+            <p className="mt-1.5 text-xs text-[var(--color-muted-foreground)]">
               Must be at least 8 characters with uppercase, lowercase, and a number.
             </p>
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--color-foreground)]">
               Confirm password
             </label>
             <input
@@ -191,10 +191,10 @@ export function CandidateResetPasswordView(): ReactNode {
               value={formData.confirmPassword}
               onChange={handleChange('confirmPassword')}
               onBlur={handleBlur('confirmPassword')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.confirmPassword && formErrors.confirmPassword
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                  : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
               }`}
               placeholder="••••••••"
             />
@@ -206,7 +206,7 @@ export function CandidateResetPasswordView(): ReactNode {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-cta)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Set password
           </button>

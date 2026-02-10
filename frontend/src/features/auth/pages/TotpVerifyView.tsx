@@ -116,7 +116,7 @@ export function TotpVerifyView(): ReactNode {
           <ErrorMessage error={error} onDismiss={clearError} className="mb-4" />
 
           {attempts >= 3 && (
-            <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-sm text-yellow-800">
+            <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-3 text-sm text-yellow-800 dark:text-yellow-200">
               Multiple failed attempts. Make sure your authenticator app is synced and showing the
               current code.
             </div>
@@ -135,7 +135,7 @@ export function TotpVerifyView(): ReactNode {
                 value={digit}
                 onChange={handleChange(index)}
                 onKeyDown={handleKeyDown(index)}
-                className="h-12 w-10 rounded-lg border border-gray-300 text-center text-lg font-semibold shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:h-14 sm:w-12"
+                className="h-12 w-10 rounded-lg border border-[var(--color-border)] bg-white dark:bg-slate-700 text-[var(--color-foreground)] text-center text-lg font-semibold shadow-sm transition focus:border-[var(--color-cta)] focus:outline-none focus:ring-2 focus:ring-[var(--color-cta)]/20 sm:h-14 sm:w-12"
                 aria-label={`Digit ${index + 1}`}
               />
             ))}
@@ -144,17 +144,17 @@ export function TotpVerifyView(): ReactNode {
           <button
             type="submit"
             disabled={isLoading || !isComplete}
-            className="flex w-full justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full justify-center rounded-lg bg-[var(--color-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--color-cta-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-cta)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Verify code
           </button>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[var(--color-muted-foreground)]">
               Can't access your authenticator?{' '}
               <Link
                 to="/sign-in"
-                className="font-medium text-primary hover:text-primary/80"
+                className="font-medium text-[var(--color-cta)] hover:text-[var(--color-cta-hover)]"
                 onClick={handleClearMfaState}
               >
                 Try another method

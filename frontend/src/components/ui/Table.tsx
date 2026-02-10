@@ -30,7 +30,14 @@ export const TableHeader = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn('[&_tr]:border-b', className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn(
+      'bg-primary/5 dark:bg-primary/10 [&_tr]:border-b [&_tr]:border-border',
+      className
+    )}
+    {...props}
+  />
 ));
 
 TableHeader.displayName = 'TableHeader';
@@ -43,7 +50,14 @@ export const TableBody = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={cn('[&_tr:last-child]:border-0', className)} {...props} />
+  <tbody
+    ref={ref}
+    className={cn(
+      '[&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-muted/50',
+      className
+    )}
+    {...props}
+  />
 ));
 
 TableBody.displayName = 'TableBody';
@@ -58,7 +72,7 @@ export const TableFooter = forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    className={cn('border-t bg-gray-100/50 font-medium dark:bg-gray-800/50', className)}
+    className={cn('border-t bg-muted/50 font-medium dark:bg-muted/50', className)}
     {...props}
   />
 ));
@@ -74,9 +88,9 @@ export const TableRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTable
     <tr
       ref={ref}
       className={cn(
-        'border-b border-gray-200 transition-colors',
-        'hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50',
-        'data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-gray-800',
+        'border-b border-border transition-colors duration-200',
+        'hover:bg-cta/5 dark:border-border dark:hover:bg-cta/10',
+        'data-[state=selected]:bg-cta/10 dark:data-[state=selected]:bg-cta/20',
         className
       )}
       {...props}
@@ -95,9 +109,9 @@ export const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLT
     <th
       ref={ref}
       className={cn(
-        'h-12 px-4 text-left align-middle font-medium text-gray-500',
+        'h-12 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-secondary',
         '[&:has([role=checkbox])]:pr-0',
-        'dark:text-gray-400',
+        'dark:text-muted-foreground',
         className
       )}
       {...props}
@@ -133,7 +147,7 @@ export const TableCaption = forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-sm text-gray-500 dark:text-gray-400', className)}
+    className={cn('mt-4 text-sm text-muted-foreground', className)}
     {...props}
   />
 ));

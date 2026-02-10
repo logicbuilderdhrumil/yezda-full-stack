@@ -102,13 +102,13 @@ export function InputGroup({
   return (
     <div className={cn('flex', className)}>
       {leftAddon && (
-        <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-600 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+        <span className="inline-flex items-center rounded-l-lg border border-r-0 border-border bg-muted px-3 text-sm text-secondary dark:border-border dark:bg-muted dark:text-muted-foreground">
           {leftAddon}
         </span>
       )}
       <div className="relative flex-1">
         {leftElement && (
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
             {leftElement}
           </div>
         )}
@@ -123,13 +123,13 @@ export function InputGroup({
           {children}
         </div>
         {rightElement && (
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground">
             {rightElement}
           </div>
         )}
       </div>
       {rightAddon && (
-        <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-600 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
+        <span className="inline-flex items-center rounded-r-lg border border-l-0 border-border bg-muted px-3 text-sm text-secondary dark:border-border dark:bg-muted dark:text-muted-foreground">
           {rightAddon}
         </span>
       )}

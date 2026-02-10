@@ -48,8 +48,8 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(
       <span
         ref={ref}
         className={cn(
-          'inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700',
-          'dark:bg-gray-700 dark:text-gray-200',
+          'inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-secondary',
+          'dark:bg-muted dark:text-muted-foreground',
           disabled && 'opacity-50',
           className
         )}
@@ -60,7 +60,7 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(
           <button
             type="button"
             onClick={onRemove}
-            className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="ml-1 inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-secondary/20 dark:hover:bg-muted-foreground/20"
             aria-label="Remove"
           >
             <svg

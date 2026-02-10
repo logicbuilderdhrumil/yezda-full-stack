@@ -102,15 +102,15 @@ export function FormDetailsView(): ReactNode {
           <CardContent>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <dt className="text-sm font-medium text-muted-foreground">
                   {t('forms.details.id')}
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100 font-mono">
+                <dd className="mt-1 text-sm text-foreground font-mono">
                   {form.id}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <dt className="text-sm font-medium text-muted-foreground">
                   {t('forms.details.status')}
                 </dt>
                 <dd className="mt-1">
@@ -120,27 +120,27 @@ export function FormDetailsView(): ReactNode {
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <dt className="text-sm font-medium text-muted-foreground">
                   {t('forms.details.createdAt')}
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                <dd className="mt-1 text-sm text-foreground">
                   {formatDate(form.createdAt)}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <dt className="text-sm font-medium text-muted-foreground">
                   {t('forms.details.updatedAt')}
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                <dd className="mt-1 text-sm text-foreground">
                   {formatDate(form.updatedAt)}
                 </dd>
               </div>
               {form.description && (
                 <div className="sm:col-span-2">
-                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <dt className="text-sm font-medium text-muted-foreground">
                     {t('forms.details.description')}
                   </dt>
-                  <dd className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                  <dd className="mt-1 text-sm text-foreground">
                     {form.description}
                   </dd>
                 </div>
@@ -156,7 +156,7 @@ export function FormDetailsView(): ReactNode {
           </CardHeader>
           <CardContent>
             {form.schema.fields.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {t('forms.details.noFields')}
               </p>
             ) : (
@@ -164,21 +164,21 @@ export function FormDetailsView(): ReactNode {
                 {form.schema.fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="flex items-center gap-4 rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+                    className="flex items-center gap-4 rounded-lg border border-border p-3"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-sm font-medium dark:bg-gray-800">
+                    <span className="flex h-8 w-8 items-center justify-center rounded bg-muted text-sm font-medium">
                       {index + 1}
                     </span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                        <span className="font-medium text-foreground">
                           {field.label}
                         </span>
                         {field.validation?.required && (
                           <span className="text-xs text-red-500">*</span>
                         )}
                       </div>
-                      <span className="text-xs uppercase text-gray-400">{field.type}</span>
+                      <span className="text-xs uppercase text-muted-foreground">{field.type}</span>
                     </div>
                   </div>
                 ))}

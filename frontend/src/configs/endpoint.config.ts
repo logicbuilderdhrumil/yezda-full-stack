@@ -172,6 +172,17 @@ export const endpoints = {
   'client.org.updateSettings': { path: '/client/org/settings', version: 'v1' },
   'client.screenings.list': { path: '/client/screenings', version: 'v1' },
   'client.reports': { path: '/client/reports', version: 'v1' },
+
+  // Invite endpoints
+  'invites.sendMember': { path: '/invites/member', version: 'v1' },
+  'invites.sendCandidate': { path: '/invites/candidate', version: 'v1' },
+  'invites.sendAdminCandidate': { path: '/invites/admin-candidate', version: 'v1' },
+  'invites.validate': { path: '/invites/:token/validate', version: 'v1' },
+  'invites.accept': { path: '/invites/:token/accept', version: 'v1' },
+  'invites.lookupIdentity': { path: '/invites/lookup-identity', version: 'v1' },
+  'invites.listByOrg': { path: '/organizations/:organizationId/invites', version: 'v1' },
+  'invites.revoke': { path: '/invites/:id/revoke', version: 'v1' },
+  'invites.resend': { path: '/invites/:id/resend', version: 'v1' },
 } as const satisfies Record<string, EndpointConfig>;
 
 /** Endpoint names derived from the configuration. */

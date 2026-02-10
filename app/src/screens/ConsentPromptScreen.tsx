@@ -198,7 +198,7 @@ export function ConsentPromptScreen({
       </View>
 
       {/* Action Buttons */}
-      <View className="space-y-3">
+      <View className="gap-y-3">
         <TouchableOpacity
           className={`py-4 rounded-lg ${
             selectedScopes.length === 0 || screenState === 'loading'

@@ -28,14 +28,14 @@ export default function ConsentRoute() {
   if (!applicationId) {
     return (
       <View className="flex-1 bg-white items-center justify-center px-6">
-        <Text className="text-lg font-semibold text-gray-900 mb-2">
+        <Text className="text-lg font-semibold text-slate-900 mb-2">
           No Consent Required
         </Text>
-        <Text className="text-gray-600 text-center mb-6">
+        <Text className="text-slate-600 text-center mb-6">
           There are no pending consent prompts at this time.
         </Text>
         <TouchableOpacity
-          className="bg-blue-600 px-6 py-3 rounded-lg"
+          className="bg-navy-600 px-6 py-3 rounded-lg"
           onPress={() => router.replace('/(tabs)')}
           accessibilityRole="button"
           accessibilityLabel="Continue to app"

@@ -8,13 +8,14 @@ import { cn } from '@/utils';
 // CARD
 // ============================================================================
 
-export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>
+  (({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-gray-200 bg-white shadow-sm',
-        'dark:border-gray-700 dark:bg-gray-800',
+        'rounded-xl border border-border bg-background',
+        'shadow-[var(--shadow-md)] transition-all duration-200 ease-in-out',
+        'dark:border-border dark:bg-background',
         className
       )}
       {...props}
@@ -64,7 +65,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-gray-500 dark:text-gray-400', className)}
+      className={cn('text-sm text-muted-foreground', className)}
       {...props}
     />
   )

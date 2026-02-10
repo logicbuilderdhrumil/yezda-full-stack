@@ -217,7 +217,7 @@ export function AdminScreeningListView({ orgId: propOrgId }: AdminScreeningListV
             <TableSkeleton />
           ) : pipelines.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {status !== 'all'
                   ? 'No pipelines match your filters.'
                   : 'No screening pipelines yet.'}
@@ -241,7 +241,7 @@ export function AdminScreeningListView({ orgId: propOrgId }: AdminScreeningListV
                     <TableCell className="font-medium">
                       {pipeline.name}
                       {pipeline.description && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {pipeline.description}
                         </p>
                       )}
@@ -251,16 +251,16 @@ export function AdminScreeningListView({ orgId: propOrgId }: AdminScreeningListV
                         {formatLabel(pipeline.status)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
                       {pipeline.stages?.length ?? 0}
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden sm:table-cell text-muted-foreground">
                       v{pipeline.version}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {formatDate(pipeline.createdAt)}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-500 dark:text-gray-400">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {formatDate(pipeline.updatedAt)}
                     </TableCell>
                   </TableRow>

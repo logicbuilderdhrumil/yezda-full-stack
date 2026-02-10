@@ -326,7 +326,7 @@ export function CandidateBulkCreateView(): ReactNode {
                   transition-colors duration-200
                   ${isDragOver 
                     ? 'border-primary bg-primary/5' 
-                    : 'border-gray-300 dark:border-gray-600 hover:border-primary/50'
+                    : 'border-border hover:border-primary/50'
                   }
                   ${uploadState === 'error' ? 'border-destructive bg-destructive/5' : ''}
                 `}
@@ -355,7 +355,7 @@ export function CandidateBulkCreateView(): ReactNode {
                   <p className="text-lg font-medium">
                     {t('candidates.bulkCreate.dropzoneText')}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {t('candidates.bulkCreate.dropzoneSubtext')}
                   </p>
                 </div>
@@ -410,12 +410,12 @@ export function CandidateBulkCreateView(): ReactNode {
               {uploadState === 'uploading' && (
                 <div className="mb-4">
                   <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {t('candidates.bulkCreate.progress', { percent: uploadProgress })}
                   </p>
                 </div>
               )}
-              <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="rounded-lg border border-border">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -429,10 +429,10 @@ export function CandidateBulkCreateView(): ReactNode {
                   <TableBody>
                     {parsedCandidates.slice(0, 10).map((candidate) => (
                       <TableRow key={candidate.rowIndex}>
-                        <TableCell className="text-gray-500">{candidate.rowIndex}</TableCell>
+                        <TableCell className="text-muted-foreground">{candidate.rowIndex}</TableCell>
                         <TableCell>{candidate.email}</TableCell>
                         <TableCell>{`${candidate.firstName} ${candidate.lastName}`}</TableCell>
-                        <TableCell className="text-gray-500">{candidate.phone || '-'}</TableCell>
+                        <TableCell className="text-muted-foreground">{candidate.phone || '-'}</TableCell>
                         <TableCell>
                           {candidate.isValid ? (
                             <Badge variant="outline">{t('candidates.bulkCreate.valid')}</Badge>
@@ -448,7 +448,7 @@ export function CandidateBulkCreateView(): ReactNode {
                 </Table>
               </div>
               {parsedCandidates.length > 10 && (
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {t('candidates.bulkCreate.moreRows', { count: parsedCandidates.length - 10 })}
                 </p>
               )}
@@ -472,17 +472,17 @@ export function CandidateBulkCreateView(): ReactNode {
             <CardContent>
               <div className="flex gap-4 mb-6">
                 <div className="text-center p-4 bg-muted rounded-lg flex-1">
-                  <p className="text-2xl font-bold text-green-600">{uploadResult.successCount}</p>
-                  <p className="text-sm text-gray-500">{t('candidates.bulkCreate.successCount')}</p>
+                  <p className="text-2xl font-bold text-cta">{uploadResult.successCount}</p>
+                  <p className="text-sm text-muted-foreground">{t('candidates.bulkCreate.successCount')}</p>
                 </div>
                 <div className="text-center p-4 bg-muted rounded-lg flex-1">
-                  <p className="text-2xl font-bold text-red-600">{uploadResult.failureCount}</p>
-                  <p className="text-sm text-gray-500">{t('candidates.bulkCreate.failureCount')}</p>
+                  <p className="text-2xl font-bold text-destructive">{uploadResult.failureCount}</p>
+                  <p className="text-sm text-muted-foreground">{t('candidates.bulkCreate.failureCount')}</p>
                 </div>
               </div>
 
               {uploadResult.results.length > 0 && (
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="rounded-lg border border-border">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -495,10 +495,10 @@ export function CandidateBulkCreateView(): ReactNode {
                     <TableBody>
                       {uploadResult.results.map((result, index) => (
                         <TableRow key={index}>
-                          <TableCell className="text-gray-500">{result.index + 1}</TableCell>
+                          <TableCell className="text-muted-foreground">{result.index + 1}</TableCell>
                           <TableCell>{validCandidates[result.index]?.email || '-'}</TableCell>
                           <TableCell>{renderResultBadge(result)}</TableCell>
-                          <TableCell className="text-gray-500 text-sm">
+                          <TableCell className="text-muted-foreground text-sm">
                             {result.error || '-'}
                           </TableCell>
                         </TableRow>

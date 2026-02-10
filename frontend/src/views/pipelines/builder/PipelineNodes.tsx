@@ -201,7 +201,7 @@ export const HumanReviewNode = memo(function HumanReviewNode({
         <div>
           <span className="block truncate">Role: {config.assigneeRole}</span>
           {config.decisionOptions && (
-            <span className="block text-gray-400 truncate">
+            <span className="block text-muted-foreground truncate">
               {config.decisionOptions.length} decision option(s)
             </span>
           )}

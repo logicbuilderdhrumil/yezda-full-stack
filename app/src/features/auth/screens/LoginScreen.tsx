@@ -103,10 +103,10 @@ export function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="mb-8">
-          <Text className="text-3xl font-bold text-gray-900 text-center">
+          <Text className="text-3xl font-bold text-slate-900 text-center">
             Welcome Back
           </Text>
-          <Text className="text-base text-gray-600 text-center mt-2">
+          <Text className="text-base text-slate-600 text-center mt-2">
             Sign in to continue your screening application
           </Text>
         </View>
@@ -121,18 +121,18 @@ export function LoginScreen() {
           </View>
         )}
 
-        <View className="space-y-4">
+        <View className="gap-y-4">
           {/* Email Field */}
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-1">Email</Text>
+            <Text className="text-sm font-medium text-slate-700 mb-1">Email</Text>
             <TextInput
               className={`border rounded-lg px-4 py-3 text-base ${
                 formErrors.email && touched.email
                   ? 'border-red-500 bg-red-50'
-                  : 'border-gray-300 bg-white'
+                  : 'border-slate-300 bg-white'
               }`}
               placeholder="you@example.com"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#94A3B8"
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -151,15 +151,15 @@ export function LoginScreen() {
 
           {/* Password Field */}
           <View className="mt-4">
-            <Text className="text-sm font-medium text-gray-700 mb-1">Password</Text>
+            <Text className="text-sm font-medium text-slate-700 mb-1">Password</Text>
             <TextInput
               className={`border rounded-lg px-4 py-3 text-base ${
                 formErrors.password && touched.password
                   ? 'border-red-500 bg-red-50'
-                  : 'border-gray-300 bg-white'
+                  : 'border-slate-300 bg-white'
               }`}
               placeholder="Enter your password"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#94A3B8"
               secureTextEntry
               autoCapitalize="none"
               autoComplete="password"
@@ -178,7 +178,7 @@ export function LoginScreen() {
           {/* Submit Button */}
           <TouchableOpacity
             className={`mt-6 py-4 rounded-lg ${
-              isLoading ? 'bg-blue-400' : 'bg-blue-600'
+              isLoading ? 'bg-navy-400' : 'bg-navy-600'
             }`}
             onPress={handleSubmit}
             disabled={isLoading}
@@ -206,7 +206,7 @@ export function LoginScreen() {
             accessibilityRole="link"
             accessibilityLabel="Forgot your password"
           >
-            <Text className="text-blue-600 text-center text-sm">
+            <Text className="text-navy-600 text-center text-sm">
               Forgot your password?
             </Text>
           </TouchableOpacity>

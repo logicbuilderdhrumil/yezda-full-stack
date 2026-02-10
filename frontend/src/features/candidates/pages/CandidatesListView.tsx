@@ -26,7 +26,8 @@ import {
   toastError,
 } from '@/components/ui';
 import { CandidatesService } from '@/services';
-import { formatDate, debounce } from '@/utils';
+import { formatDate, debounce, getCandidateStatusVariant } from '@/utils';
+import { InviteCandidateDialog } from '@/features/invites/components/InviteCandidateDialog';
 import type {
   Candidate,
   CandidateListParams,
@@ -34,24 +35,6 @@ import type {
 } from '@/@types/candidate';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-/**
- * Returns badge variant for candidate status.
- */
-function getStatusVariant(status: CandidateStatus): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'active':
-      return 'default';
-    case 'pending':
-      return 'secondary';
-    case 'certified':
-      return 'default';
-    case 'archived':
-      return 'destructive';
-    default:
-      return 'outline';
-  }
-}
 
 /**
  * CandidatesListView displays a paginated table of candidates.
@@ -66,6 +49,7 @@ export function CandidatesListView(): ReactNode {
   const [isLoading, setIsLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   // URL-synced filters
   const page = Number(searchParams.get('page')) || 1;
@@ -108,16 +92,18 @@ export function CandidatesListView(): ReactNode {
   // Debounced search
   const updateSearchParams = useCallback(
     (value: string) => {
-      const params = new URLSearchParams(searchParams);
-      if (value) {
-        params.set('search', value);
-      } else {
-        params.delete('search');
-      }
-      params.set('page', '1');
-      setSearchParams(params);
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        if (value) {
+          params.set('search', value);
+        } else {
+          params.delete('search');
+        }
+        params.set('page', '1');
+        return params;
+      });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const debouncedSearch = useMemo(
@@ -214,7 +200,10 @@ export function CandidatesListView(): ReactNode {
           <Button variant="outline" onClick={handleBulkCreate}>
             {t('candidates.list.bulkCreateButton')}
           </Button>
-          <Button onClick={handleCreate}>{t('candidates.list.createButton')}</Button>
+          <Button variant="outline" onClick={handleCreate}>{t('candidates.list.createButton')}</Button>
+          <Button onClick={() => setIsInviteOpen(true)}>
+            {t('invites.candidate.inviteButton')}
+          </Button>
         </div>
       </div>
 
@@ -222,7 +211,7 @@ export function CandidatesListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={6} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -258,7 +247,7 @@ export function CandidatesListView(): ReactNode {
             <TableBody>
               {candidates.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     {t('candidates.list.noResults')}
                   </TableCell>
                 </TableRow>
@@ -278,16 +267,16 @@ export function CandidatesListView(): ReactNode {
                     }}
                   >
                     <TableCell className="font-medium">{getCandidateFullName(candidate)}</TableCell>
-                    <TableCell className="text-gray-500">{candidate.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{candidate.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(candidate.status)}>
+                      <Badge variant={getCandidateStatusVariant(candidate.status)}>
                         {t(`candidates.status.${candidate.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {candidate.organizationName || '-'}
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(candidate.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(candidate.createdAt)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
@@ -323,6 +312,13 @@ export function CandidatesListView(): ReactNode {
           />
         </div>
       )}
+
+      {/* Invite Candidate Dialog */}
+      <InviteCandidateDialog
+        open={isInviteOpen}
+        onOpenChange={setIsInviteOpen}
+        onSuccess={fetchCandidates}
+      />
     </PageContainer>
   );
 }

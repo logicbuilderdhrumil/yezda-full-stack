@@ -38,12 +38,12 @@ export function PageContainer({
       {(title || description) && (
         <header className="mb-6">
           {title && (
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-[var(--color-foreground)]">
               {title}
             </h1>
           )}
           {description && (
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
               {description}
             </p>
           )}

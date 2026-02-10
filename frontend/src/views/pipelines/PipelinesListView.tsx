@@ -271,7 +271,7 @@ export function PipelinesListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={5} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -299,7 +299,7 @@ export function PipelinesListView(): ReactNode {
             <TableBody>
               {pipelines.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     {t('pipelines.list.noResults', 'No pipelines found')}
                   </TableCell>
                 </TableRow>
@@ -319,7 +319,7 @@ export function PipelinesListView(): ReactNode {
                     }}
                   >
                     <TableCell className="font-medium">{pipeline.name}</TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {pipeline.stages?.length || 0}
                     </TableCell>
                     <TableCell>
@@ -327,7 +327,7 @@ export function PipelinesListView(): ReactNode {
                         {t(`pipelines.status.${pipeline.status}`, pipeline.status)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(pipeline.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(pipeline.createdAt)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         {pipeline.status === 'draft' && (

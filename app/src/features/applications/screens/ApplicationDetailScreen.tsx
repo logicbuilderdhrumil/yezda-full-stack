@@ -58,9 +58,9 @@ function formatTimestamp(timestamp: number): string {
 function SectionHeader({ section }: { section: FormSection }) {
   return (
     <View className="mb-4 pt-4">
-      <Text className="text-xl font-bold text-gray-900">{section.title}</Text>
+      <Text className="text-xl font-bold text-slate-900">{section.title}</Text>
       {section.description && (
-        <Text className="text-sm text-gray-600 mt-1">{section.description}</Text>
+        <Text className="text-sm text-slate-600 mt-1">{section.description}</Text>
       )}
     </View>
   );
@@ -101,15 +101,15 @@ function SubmissionConfirmation({
       <View className="w-20 h-20 rounded-full bg-green-100 items-center justify-center mb-6">
         <Text className="text-4xl">✓</Text>
       </View>
-      <Text className="text-2xl font-bold text-gray-900 text-center mb-2">
+      <Text className="text-2xl font-bold text-slate-900 text-center mb-2">
         Application Submitted!
       </Text>
-      <Text className="text-base text-gray-600 text-center mb-4">{message}</Text>
-      <Text className="text-sm text-gray-500 mb-8">
+      <Text className="text-base text-slate-600 text-center mb-4">{message}</Text>
+      <Text className="text-sm text-slate-500 mb-8">
         Submitted on {new Date(submittedAt).toLocaleString()}
       </Text>
       <TouchableOpacity
-        className="bg-blue-600 px-8 py-4 rounded-lg"
+        className="bg-navy-600 px-8 py-4 rounded-lg"
         onPress={onBack}
         accessibilityRole="button"
         accessibilityLabel="Go back to applications"
@@ -117,7 +117,7 @@ function SubmissionConfirmation({
         <Text className="text-white font-semibold text-base">Back to Applications</Text>
       </TouchableOpacity>
       <View className="mt-8 px-4">
-        <Text className="text-sm text-gray-600 text-center">
+        <Text className="text-sm text-slate-600 text-center">
           <Text className="font-medium">What's next?</Text> We'll review your application
           and notify you of any updates. You can check the status in your applications list.
         </Text>
@@ -263,8 +263,8 @@ export function ApplicationDetailScreen({
   if (screenState === 'loading') {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="text-gray-600 mt-4">Loading application...</Text>
+        <ActivityIndicator size="large" color="#0369A1" />
+        <Text className="text-slate-600 mt-4">Loading application...</Text>
       </View>
     );
   }
@@ -273,14 +273,14 @@ export function ApplicationDetailScreen({
   if (screenState === 'error' && !application) {
     return (
       <View className="flex-1 justify-center items-center px-6 bg-white">
-        <Text className="text-xl font-semibold text-gray-900 mb-2">
+        <Text className="text-xl font-semibold text-slate-900 mb-2">
           Something went wrong
         </Text>
-        <Text className="text-base text-gray-600 text-center mb-4">
+        <Text className="text-base text-slate-600 text-center mb-4">
           {detailError || 'Unable to load application'}
         </Text>
         <TouchableOpacity
-          className="bg-blue-600 px-6 py-3 rounded-lg"
+          className="bg-navy-600 px-6 py-3 rounded-lg"
           onPress={() => loadApplication(applicationId)}
           accessibilityRole="button"
           accessibilityLabel="Try again"
@@ -293,7 +293,7 @@ export function ApplicationDetailScreen({
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <Text className="text-blue-600">Go Back</Text>
+          <Text className="text-navy-600">Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -323,18 +323,18 @@ export function ApplicationDetailScreen({
     >
       <View className="flex-1">
         {/* Header */}
-        <View className="border-b border-gray-200 px-4 py-3 flex-row items-center justify-between">
+        <View className="border-b border-slate-200 px-4 py-3 flex-row items-center justify-between">
           <TouchableOpacity
             onPress={handleBack}
             className="py-2 pr-4"
             accessibilityRole="button"
             accessibilityLabel="Go back"
           >
-            <Text className="text-blue-600 text-base">← Back</Text>
+            <Text className="text-navy-600 text-base">← Back</Text>
           </TouchableOpacity>
           <View className="flex-row items-center">
             {lastSavedAt && (
-              <Text className="text-xs text-gray-500 mr-3">
+              <Text className="text-xs text-slate-500 mr-3">
                 Saved {formatTimestamp(lastSavedAt)}
               </Text>
             )}
@@ -342,7 +342,7 @@ export function ApplicationDetailScreen({
               <TouchableOpacity
                 onPress={handleSaveDraft}
                 disabled={isSaving || !isDirty}
-                className={`bg-gray-100 px-4 py-2 rounded-lg ${
+                className={`bg-slate-100 px-4 py-2 rounded-lg ${
                   isSaving || !isDirty ? 'opacity-50' : ''
                 }`}
                 accessibilityRole="button"
@@ -350,9 +350,9 @@ export function ApplicationDetailScreen({
                 accessibilityState={{ disabled: isSaving || !isDirty }}
               >
                 {isSaving ? (
-                  <ActivityIndicator size="small" color="#6B7280" />
+                  <ActivityIndicator size="small" color="#64748B" />
                 ) : (
-                  <Text className="text-gray-700 font-medium">Save Draft</Text>
+                  <Text className="text-slate-700 font-medium">Save Draft</Text>
                 )}
               </TouchableOpacity>
             )}
@@ -367,12 +367,12 @@ export function ApplicationDetailScreen({
         >
           {/* Application title */}
           <View className="py-4">
-            <Text className="text-2xl font-bold text-gray-900">{application.title}</Text>
+            <Text className="text-2xl font-bold text-slate-900">{application.title}</Text>
             {application.description && (
-              <Text className="text-base text-gray-600 mt-2">{application.description}</Text>
+              <Text className="text-base text-slate-600 mt-2">{application.description}</Text>
             )}
             {application.dueDate && application.status !== 'submitted' && (
-              <Text className="text-sm text-gray-500 mt-2">
+              <Text className="text-sm text-slate-500 mt-2">
                 Due: {new Date(application.dueDate).toLocaleDateString()}
               </Text>
             )}
@@ -424,10 +424,10 @@ export function ApplicationDetailScreen({
 
         {/* Submit button */}
         {!isDisabled && (
-          <View className="border-t border-gray-200 px-4 py-4 bg-white">
+          <View className="border-t border-slate-200 px-4 py-4 bg-white">
             <TouchableOpacity
               className={`py-4 rounded-lg ${
-                isSubmitting ? 'bg-blue-400' : 'bg-blue-600'
+                isSubmitting ? 'bg-navy-400' : 'bg-navy-600'
               }`}
               onPress={handleSubmit}
               disabled={isSubmitting}

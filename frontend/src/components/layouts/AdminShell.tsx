@@ -39,7 +39,7 @@ export function AdminShell({
         <div className="flex flex-1 overflow-hidden">
           <AdminSidebar />
           <div className="flex flex-1 flex-col overflow-hidden">
-            <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
+            <main className="flex-1 overflow-y-auto bg-[var(--color-background)]">
               {children ?? <Outlet />}
             </main>
             {showFooter && <Footer compact />}

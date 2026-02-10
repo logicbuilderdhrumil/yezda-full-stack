@@ -86,6 +86,14 @@ export {
   highlightMatches,
 } from './search';
 
+// Badge variant helpers
+export {
+  getOrganizationStatusVariant,
+  getUserStatusVariant,
+  getUserRoleVariant,
+  getCandidateStatusVariant,
+} from './badgeVariants';
+
 // File utilities
 export {
   formatFileSize,

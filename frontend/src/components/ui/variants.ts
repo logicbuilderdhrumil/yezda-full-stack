@@ -7,10 +7,10 @@ import { cva, type VariantProps } from 'class-variance-authority';
 // FOCUS RING TOKENS
 // ============================================================================
 export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta';
 
 export const focusRingInput =
-  'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+  'focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary';
 
 // ============================================================================
 // BUTTON VARIANTS
@@ -18,8 +18,8 @@ export const focusRingInput =
 export const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2',
-    'whitespace-nowrap rounded-md text-sm font-medium',
-    'transition-colors duration-150',
+    'whitespace-nowrap rounded-lg text-sm font-semibold',
+    'transition-all duration-200 ease-in-out cursor-pointer',
     'disabled:pointer-events-none disabled:opacity-50',
     focusRing,
   ],
@@ -27,16 +27,16 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-white hover:bg-primary-hover shadow-sm',
+          'bg-cta text-white hover:bg-cta-hover hover:translate-y-[-1px] shadow-sm',
         destructive:
           'bg-red-600 text-white hover:bg-red-700 shadow-sm',
         outline:
-          'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700',
+          'border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-white dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-background',
         secondary:
-          'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
+          'bg-muted text-secondary hover:bg-muted/80 dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted/80',
         ghost:
-          'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'text-secondary hover:bg-muted dark:text-muted-foreground dark:hover:bg-muted',
+        link: 'text-cta underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-10 px-4 py-2',
@@ -61,17 +61,18 @@ export const badgeVariants = cva(
   [
     'inline-flex items-center rounded-full px-2.5 py-0.5',
     'text-xs font-medium',
-    'transition-colors',
+    'transition-colors duration-200',
   ],
   {
     variants: {
       variant: {
-        default: 'bg-primary text-white',
-        secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+        default: 'bg-cta text-white',
+        secondary: 'bg-muted text-secondary dark:bg-muted dark:text-muted-foreground',
         success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
         warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
         destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
         outline: 'border border-current bg-transparent',
+        pulse: 'bg-cta text-white animate-pulse',
       },
     },
     defaultVariants: {
@@ -87,16 +88,17 @@ export type BadgeVariants = VariantProps<typeof badgeVariants>;
 // ============================================================================
 export const inputVariants = cva(
   [
-    'flex w-full rounded-md border bg-white px-3 py-2 text-sm',
-    'placeholder:text-gray-400',
-    'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-50',
-    'dark:bg-gray-900 dark:placeholder:text-gray-500',
+    'flex w-full rounded-lg border bg-white px-3 py-2 text-sm',
+    'placeholder:text-muted-foreground',
+    'disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50',
+    'dark:bg-background dark:placeholder:text-muted-foreground',
+    'transition-[border-color,box-shadow] duration-200 ease-in-out',
     focusRingInput,
   ],
   {
     variants: {
       variant: {
-        default: 'border-gray-300 dark:border-gray-600',
+        default: 'border-border dark:border-border',
         error: 'border-red-500 text-red-900 placeholder:text-red-400',
       },
       inputSize: {

@@ -7,6 +7,8 @@
 export interface ColorTokens {
   primary: string;
   primaryHover: string;
+  cta: string;
+  ctaHover: string;
   secondary: string;
   secondaryHover: string;
   background: string;
@@ -44,6 +46,7 @@ export interface SpacingTokens {
   lg: string;
   xl: string;
   xxl: string;
+  xxxl: string;
 }
 
 /** Border radius token values. */
@@ -81,7 +84,7 @@ export interface ThemePreset {
 /** Default typography tokens shared across themes. */
 export const defaultTypography: TypographyTokens = {
   fontFamily:
-    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+    "'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   fontFamilyMono: "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
   fontSizeBase: '1rem',
   fontSizeSm: '0.875rem',
@@ -101,6 +104,7 @@ export const defaultSpacing: SpacingTokens = {
   lg: '1.5rem',
   xl: '2rem',
   xxl: '3rem',
+  xxxl: '4rem',
 };
 
 /** Default radius tokens. */

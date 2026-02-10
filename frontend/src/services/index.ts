@@ -22,6 +22,7 @@ export { LedgerService } from '@/features/billing';
 export { ChatService, type MessageListOptions } from '@/features/chat';
 export { PipelineService } from '@/features/pipelines';
 export { ReviewService, type ReviewTask, type ReviewDecisionDto } from '@/features/reviews';
+export { InviteService } from '@/features/invites';
 export {
   ClientPortalService,
   type ClientDashboardData,

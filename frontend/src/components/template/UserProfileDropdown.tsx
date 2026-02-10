@@ -61,17 +61,17 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
         <button
           type="button"
           className={cn(
-            'flex items-center gap-2 rounded-full p-1 text-gray-500 hover:bg-gray-100',
-            'dark:text-gray-400 dark:hover:bg-gray-800',
+            'flex items-center gap-2 rounded-full p-1 text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] transition-colors duration-200',
+            'dark:hover:bg-[var(--color-muted)]',
             className
           )}
           aria-label={t('common.userMenu')}
           data-testid="user-profile-dropdown-trigger"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-medium">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-cta)] text-white text-sm font-medium">
             {initials}
           </div>
-          <span className="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
+          <span className="hidden sm:block text-sm text-[var(--color-foreground)]">
             {displayLabel}
           </span>
         </button>
@@ -82,7 +82,7 @@ export function UserProfileDropdown({ className }: UserProfileDropdownProps): Re
             <p className="text-sm font-medium leading-none">
               {fullName}
             </p>
-            <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
+            <p className="text-xs leading-none text-[var(--color-muted-foreground)]">
               {user.email}
             </p>
           </div>

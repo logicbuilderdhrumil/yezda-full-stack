@@ -5,6 +5,15 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  Search,
+  CheckCircle2,
+  UserPlus,
+  Sparkles,
+  Building2,
+  BarChart3,
+  Settings,
+} from 'lucide-react';
+import {
   Card,
   CardContent,
   CardHeader,
@@ -23,25 +32,26 @@ interface ActivityFeedProps {
 }
 
 /**
- * Returns an emoji icon for activity type.
+ * Returns a Lucide icon for activity type.
  */
-function getActivityIcon(type: ActivityType): string {
+function getActivityIcon(type: ActivityType): ReactNode {
+  const iconClass = 'h-5 w-5 text-[var(--color-cta)]';
   switch (type) {
     case 'screening_started':
-      return '🔍';
+      return <Search className={iconClass} />;
     case 'screening_completed':
-      return '✅';
+      return <CheckCircle2 className={iconClass} />;
     case 'candidate_added':
-      return '👤';
+      return <UserPlus className={iconClass} />;
     case 'user_created':
-      return '🆕';
+      return <Sparkles className={iconClass} />;
     case 'org_updated':
-      return '🏢';
+      return <Building2 className={iconClass} />;
     case 'report_generated':
-      return '📊';
+      return <BarChart3 className={iconClass} />;
     case 'system':
     default:
-      return '⚙️';
+      return <Settings className={iconClass} />;
   }
 }
 
@@ -53,24 +63,24 @@ function ActivityRow({ activity }: { activity: ActivityItem }): ReactNode {
     <div
       className={cn(
         'flex items-start gap-3 py-3 px-2 rounded-md',
-        'hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors',
+        'hover:bg-[var(--color-muted)] transition-colors',
         activity.href && 'cursor-pointer'
       )}
     >
-      <span className="text-lg" role="img" aria-label={activity.type}>
+      <span className="text-lg flex items-center" aria-label={activity.type}>
         {getActivityIcon(activity.type)}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-gray-900 dark:text-gray-100 truncate">
+        <p className="text-sm text-[var(--color-foreground)] truncate">
           {activity.message}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
           {activity.actor && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-[var(--color-muted-foreground)]">
               {activity.actor}
             </span>
           )}
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="text-xs text-[var(--color-muted-foreground)]">
             {formatRelativeTime(activity.timestamp)}
           </span>
         </div>
@@ -109,11 +119,11 @@ export function ActivityFeed({
       </CardHeader>
       <CardContent className="pt-0">
         {displayedActivities.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+          <p className="text-sm text-[var(--color-muted-foreground)] text-center py-4">
             {t('pages.home.noActivity')}
           </p>
         ) : (
-          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+          <div className="divide-y divide-[var(--color-border)]">
             {displayedActivities.map((activity) => (
               <ActivityRow key={activity.id} activity={activity} />
             ))}

@@ -62,11 +62,11 @@ function NavItemButton({ item, isCollapsed }: NavItemButtonProps): ReactNode {
       to={item.path}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-          'hover:bg-gray-100 dark:hover:bg-gray-800',
+          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
+          'hover:bg-white/10',
           isActive
-            ? 'bg-primary/10 text-primary dark:bg-primary/20'
-            : 'text-gray-700 dark:text-gray-300',
+            ? 'bg-[var(--color-cta)] text-white shadow-sm'
+            : 'text-slate-300',
           isCollapsed && 'justify-center px-2'
         )
       }
@@ -118,7 +118,7 @@ export function ClientSidebar({ className }: ClientSidebarProps): ReactNode {
         {filteredSections.map((section, index) => (
           <div key={section.title || index} className="mb-4">
             {section.title && !isCollapsed && (
-              <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
                 {getSectionTitle(section.title)}
               </h3>
             )}
@@ -134,19 +134,19 @@ export function ClientSidebar({ className }: ClientSidebarProps): ReactNode {
       </div>
 
       {/* Collapse toggle for desktop */}
-      <div className="hidden lg:flex border-t border-gray-200 dark:border-gray-800 p-2">
+      <div className="hidden lg:flex border-t border-white/10 p-2">
         <button
           type="button"
           onClick={toggleCollapsed}
           className={cn(
-            'flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800',
+            'flex items-center gap-2 w-full rounded-md px-3 py-2 text-sm text-slate-400 hover:bg-white/10 hover:text-white transition-colors duration-200',
             isCollapsed && 'justify-center'
           )}
           aria-label={isCollapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
         >
           <ChevronLeft
             className={cn(
-              'h-4 w-4 transition-transform',
+              'h-4 w-4 transition-transform duration-300',
               isCollapsed && 'rotate-180'
             )}
           />
@@ -170,18 +170,18 @@ export function ClientSidebar({ className }: ClientSidebarProps): ReactNode {
       {/* Mobile sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 transform bg-white transition-transform duration-200 ease-in-out dark:bg-gray-900 lg:hidden',
+          'fixed inset-y-0 left-0 z-50 w-64 transform bg-[var(--color-primary)] transition-transform duration-300 ease-in-out lg:hidden',
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-800">
-          <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
+          <span className="text-xl font-semibold text-white">
             {t('app.name')}
           </span>
           <button
             type="button"
             onClick={closeMobile}
-            className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="p-2 rounded-md text-slate-400 hover:bg-white/10 hover:text-white transition-colors duration-200"
             aria-label={t('common.closeSidebar')}
           >
             <ChevronLeft className="h-5 w-5" />
@@ -193,7 +193,7 @@ export function ClientSidebar({ className }: ClientSidebarProps): ReactNode {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'hidden lg:flex lg:flex-col border-r border-gray-200 bg-white transition-all duration-200 dark:border-gray-800 dark:bg-gray-900',
+          'hidden lg:flex lg:flex-col border-r border-white/10 bg-[var(--color-primary)] dark:bg-[#0c1222] transition-all duration-300',
           isCollapsed ? 'w-16' : 'w-64',
           className
         )}

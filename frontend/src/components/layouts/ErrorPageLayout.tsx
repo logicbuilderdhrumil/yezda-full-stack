@@ -38,7 +38,7 @@ export function ErrorPageLayout({
   return (
     <div
       className={cn(
-        'flex min-h-screen items-center justify-center p-6',
+        'flex min-h-screen items-center justify-center p-6 bg-[var(--color-background)]',
         className
       )}
     >
@@ -48,18 +48,18 @@ export function ErrorPageLayout({
 
         {/* Error Code */}
         {code && (
-          <p className="text-5xl font-bold text-gray-300 dark:text-gray-700 mb-2">
+          <p className="text-5xl font-bold text-[var(--color-cta)]/20 mb-2">
             {code}
           </p>
         )}
 
         {/* Title */}
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <h1 className="text-2xl font-bold text-[var(--color-foreground)] mb-2">
           {title}
         </h1>
 
         {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{description}</p>
+        <p className="text-[var(--color-muted-foreground)] mb-6">{description}</p>
 
         {/* Additional Content */}
         {children && <div className="mb-6">{children}</div>}

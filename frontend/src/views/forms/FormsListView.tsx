@@ -214,7 +214,7 @@ export function FormsListView(): ReactNode {
       {isLoading ? (
         <SkeletonTable rows={5} columns={5} />
       ) : (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -258,7 +258,7 @@ export function FormsListView(): ReactNode {
             <TableBody>
               {forms.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-8 text-center text-gray-500">
+                  <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                     {t('forms.list.noResults')}
                   </TableCell>
                 </TableRow>
@@ -266,7 +266,7 @@ export function FormsListView(): ReactNode {
                 forms.map((form) => (
                   <TableRow
                     key={form.id}
-                    className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                    className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-cta focus:ring-inset"
                     tabIndex={0}
                     onClick={() => handleRowClick(form.id)}
                     onKeyDown={(e) => {
@@ -277,13 +277,13 @@ export function FormsListView(): ReactNode {
                     }}
                   >
                     <TableCell className="font-medium">{form.name}</TableCell>
-                    <TableCell className="text-gray-500">{form.description || '—'}</TableCell>
+                    <TableCell className="text-muted-foreground">{form.description || '—'}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusVariant(form.status)}>
                         {t(`forms.status.${form.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-gray-500">{formatDate(form.createdAt)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(form.createdAt)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

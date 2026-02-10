@@ -101,11 +101,11 @@ function StepIcon({ step }: { step: ScreeningStep }): ReactNode {
         <CheckCircle className="h-5 w-5 text-green-500" />
       );
     case 'in_progress':
-      return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />;
+      return <Loader2 className="h-5 w-5 text-cta animate-spin" />;
     case 'failed':
       return <XCircle className="h-5 w-5 text-red-500" />;
     default:
-      return <Clock className="h-5 w-5 text-gray-400" />;
+      return <Clock className="h-5 w-5 text-muted-foreground" />;
   }
 }
 
@@ -115,9 +115,9 @@ function PipelineStepRow({ step }: { step: ScreeningStep }): ReactNode {
     <div className="flex items-center gap-4 py-3">
       <StepIcon step={step} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{step.name}</p>
+        <p className="text-sm font-medium text-foreground">{step.name}</p>
         {step.completedAt && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Completed {formatDate(step.completedAt)}
           </p>
         )}
@@ -248,7 +248,7 @@ export function ClientCandidateDetailView(): ReactNode {
         </Button>
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-gray-500 dark:text-gray-400">Candidate not found.</p>
+            <p className="text-muted-foreground">Candidate not found.</p>
           </CardContent>
         </Card>
       </PageContainer>
@@ -296,8 +296,8 @@ export function ClientCandidateDetailView(): ReactNode {
                 <>
                   <Separator />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Notes</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">{candidate.notes}</p>
+                    <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                    <p className="text-sm text-foreground">{candidate.notes}</p>
                   </div>
                 </>
               )}
@@ -311,7 +311,7 @@ export function ClientCandidateDetailView(): ReactNode {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Screening Pipeline</CardTitle>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-muted-foreground">
                   {progress}% complete
                 </span>
               </div>
@@ -319,11 +319,11 @@ export function ClientCandidateDetailView(): ReactNode {
             </CardHeader>
             <CardContent>
               {(candidate.screeningPipeline?.length ?? 0) === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                <p className="text-sm text-muted-foreground text-center py-4">
                   No screening steps configured.
                 </p>
               ) : (
-                <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                <div className="divide-y divide-border">
                   {candidate.screeningPipeline.map((step) => (
                     <PipelineStepRow key={step.id} step={step} />
                   ))}
@@ -351,8 +351,8 @@ interface InfoRowProps {
 function InfoRow({ label, value, children }: InfoRowProps): ReactNode {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-gray-500 dark:text-gray-400">{label}</span>
-      {children ?? <span className="text-gray-900 dark:text-gray-100">{value}</span>}
+      <span className="text-muted-foreground">{label}</span>
+      {children ?? <span className="text-foreground">{value}</span>}
     </div>
   );
 }

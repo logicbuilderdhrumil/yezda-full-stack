@@ -18,22 +18,22 @@ interface SettingsItemProps {
 function SettingsItem({ icon, title, subtitle, onPress }: SettingsItemProps) {
   return (
     <TouchableOpacity
-      className="flex-row items-center py-4 border-b border-gray-100"
+      className="flex-row items-center py-4 border-b border-slate-100"
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityHint={subtitle}
     >
-      <View className="w-10 h-10 bg-blue-50 rounded-lg items-center justify-center mr-4">
+      <View className="w-10 h-10 bg-navy-50 rounded-lg items-center justify-center mr-4">
         {/* @ts-expect-error Known React 18 type incompatibility with @expo/vector-icons */}
-        <Ionicons name={icon} size={20} color="#2563EB" />
+        <Ionicons name={icon} size={20} color="#0369A1" />
       </View>
       <View className="flex-1">
-        <Text className="text-base font-medium text-gray-900">{title}</Text>
-        <Text className="text-sm text-gray-500 mt-0.5">{subtitle}</Text>
+        <Text className="text-base font-medium text-slate-900">{title}</Text>
+        <Text className="text-sm text-slate-500 mt-0.5">{subtitle}</Text>
       </View>
       {/* @ts-expect-error Known React 18 type incompatibility with @expo/vector-icons */}
-      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+      <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
     </TouchableOpacity>
   );
 }
@@ -70,15 +70,15 @@ export default function SettingsRoute() {
   }, [doSignOut]);
 
   return (
-    <ScrollView className="flex-1 bg-gray-50" contentContainerClassName="pb-8">
+    <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="pb-8">
       {/* Header */}
-      <View className="bg-white px-6 py-6 border-b border-gray-200">
-        <Text className="text-2xl font-bold text-gray-900">Settings</Text>
+      <View className="bg-white px-6 py-6 border-b border-slate-200">
+        <Text className="text-2xl font-bold text-slate-900">Settings</Text>
       </View>
 
       {/* Account Section */}
       <View className="bg-white mt-4 px-6">
-        <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-4 pb-2">
+        <Text className="text-xs font-semibold text-slate-500 uppercase tracking-wide pt-4 pb-2">
           Account
         </Text>
         <SettingsItem
@@ -103,12 +103,12 @@ export default function SettingsRoute() {
 
       {/* About Section */}
       <View className="bg-white mt-4 px-6">
-        <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-4 pb-2">
+        <Text className="text-xs font-semibold text-slate-500 uppercase tracking-wide pt-4 pb-2">
           About
         </Text>
-        <View className="py-4 border-b border-gray-100">
-          <Text className="text-base font-medium text-gray-900">Version</Text>
-          <Text className="text-sm text-gray-500 mt-0.5">1.0.0</Text>
+        <View className="py-4 border-b border-slate-100">
+          <Text className="text-base font-medium text-slate-900">Version</Text>
+          <Text className="text-sm text-slate-500 mt-0.5">1.0.0</Text>
         </View>
       </View>
 

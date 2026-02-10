@@ -75,8 +75,8 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
   if (screenState === 'loading' && consents.length === 0) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text className="text-gray-500 mt-4">Loading consent history...</Text>
+        <ActivityIndicator size="large" color="#0369A1" />
+        <Text className="text-slate-500 mt-4">Loading consent history...</Text>
       </View>
     );
   }
@@ -89,10 +89,10 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
       >
         {/* Header */}
         <View className="mb-6">
-          <Text className="text-2xl font-bold text-gray-900">
+          <Text className="text-2xl font-bold text-slate-900">
             Data Reuse Consents
           </Text>
-          <Text className="text-base text-gray-600 mt-2">
+          <Text className="text-base text-slate-600 mt-2">
             Review and manage your consent decisions for data reuse.
           </Text>
         </View>
@@ -113,13 +113,13 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
 
         {/* Active Consents */}
         <View className="mb-8">
-          <Text className="text-lg font-semibold text-gray-900 mb-4">
+          <Text className="text-lg font-semibold text-slate-900 mb-4">
             Active Consents
           </Text>
 
           {activeConsents.length === 0 ? (
-            <View className="bg-gray-50 rounded-lg p-4">
-              <Text className="text-gray-500 text-center">
+            <View className="bg-slate-50 rounded-lg p-4">
+              <Text className="text-slate-500 text-center">
                 No active consents
               </Text>
             </View>
@@ -138,7 +138,7 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
         {/* History */}
         {historyConsents.length > 0 && (
           <View>
-            <Text className="text-lg font-semibold text-gray-900 mb-4">
+            <Text className="text-lg font-semibold text-slate-900 mb-4">
               History
             </Text>
             {historyConsents.map((consent) => (
@@ -154,14 +154,14 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
 
       {/* Back Button */}
       {onBack && (
-        <View className="px-6 py-4 border-t border-gray-200">
+        <View className="px-6 py-4 border-t border-slate-200">
           <TouchableOpacity
-            className="py-3 rounded-lg border border-gray-300"
+            className="py-3 rounded-lg border border-slate-300"
             onPress={onBack}
             accessibilityRole="button"
             accessibilityLabel="Go back"
           >
-            <Text className="text-gray-700 text-center font-medium">
+            <Text className="text-slate-700 text-center font-medium">
               Back
             </Text>
           </TouchableOpacity>
@@ -177,10 +177,10 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
       >
         <View className="flex-1 bg-black/50 items-center justify-center px-6">
           <View className="bg-white rounded-xl p-6 w-full max-w-sm">
-            <Text className="text-xl font-bold text-gray-900 mb-2">
+            <Text className="text-xl font-bold text-slate-900 mb-2">
               {consentCopy.withdrawTitle}
             </Text>
-            <Text className="text-gray-600 mb-6">
+            <Text className="text-slate-600 mb-6">
               {consentCopy.withdrawMessage}
             </Text>
 
@@ -196,12 +196,12 @@ export function ConsentReviewScreen({ onBack }: ConsentReviewScreenProps) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="py-3 rounded-lg border border-gray-300"
+              className="py-3 rounded-lg border border-slate-300"
               onPress={handleCancelWithdraw}
               accessibilityRole="button"
               accessibilityLabel={consentCopy.cancelButton}
             >
-              <Text className="text-gray-700 text-center font-medium">
+              <Text className="text-slate-700 text-center font-medium">
                 {consentCopy.cancelButton}
               </Text>
             </TouchableOpacity>
@@ -227,9 +227,9 @@ function ConsentCard({
 }: ConsentCardProps) {
   const statusColors: Record<string, string> = {
     granted: 'bg-green-100 text-green-800',
-    denied: 'bg-gray-100 text-gray-600',
+    denied: 'bg-slate-100 text-slate-600',
     withdrawn: 'bg-yellow-100 text-yellow-800',
-    pending: 'bg-blue-100 text-blue-800',
+    pending: 'bg-navy-100 text-navy-800',
   };
 
   const statusLabels: Record<string, string> = {
@@ -254,14 +254,14 @@ function ConsentCard({
     : 'N/A';
 
   return (
-    <View className="bg-white border border-gray-200 rounded-lg p-4 mb-3">
+    <View className="bg-white border border-slate-200 rounded-lg p-4 mb-3">
       {/* Header */}
       <View className="flex-row justify-between items-start mb-3">
         <View className="flex-1">
-          <Text className="text-base font-medium text-gray-900">
+          <Text className="text-base font-medium text-slate-900">
             Application Data Reuse
           </Text>
-          <Text className="text-sm text-gray-500 mt-1">{formattedDate}</Text>
+          <Text className="text-sm text-slate-500 mt-1">{formattedDate}</Text>
         </View>
         <View className={`px-3 py-1 rounded-full ${statusColors[consent.status]}`}>
           <Text className="text-xs font-medium">
@@ -272,22 +272,22 @@ function ConsentCard({
 
       {/* Scopes */}
       <View className="mb-3">
-        <Text className="text-sm text-gray-500 mb-2">Shared data:</Text>
+        <Text className="text-sm text-slate-500 mb-2">Shared data:</Text>
         {consent.scopes.length > 0 ? (
           <View className="flex-row flex-wrap gap-2">
             {consent.scopes.map((scope: ConsentScope) => (
               <View
                 key={scope}
-                className="bg-gray-100 px-2 py-1 rounded"
+                className="bg-slate-100 px-2 py-1 rounded"
               >
-                <Text className="text-xs text-gray-700">
+                <Text className="text-xs text-slate-700">
                   {consentScopeLabels[scope]}
                 </Text>
               </View>
             ))}
           </View>
         ) : (
-          <Text className="text-xs text-gray-500 italic">No data shared</Text>
+          <Text className="text-xs text-slate-500 italic">No data shared</Text>
         )}
       </View>
 

@@ -37,16 +37,16 @@ function TextFieldComponent({
 
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-1">
+      <Text className="text-sm font-medium text-slate-700 mb-1">
         {field.label}
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
       <TextInput
         className={`border rounded-lg px-4 py-3 text-base ${
-          error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-        } ${disabled ? 'bg-gray-100' : ''}`}
+          error ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+        } ${disabled ? 'bg-slate-100' : ''}`}
         placeholder={field.placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#94A3B8"
         value={typeof value === 'string' ? value : ''}
         onChangeText={(text) => onChange(text)}
         onBlur={onBlur}
@@ -60,7 +60,7 @@ function TextFieldComponent({
         accessibilityHint={field.helpText}
       />
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
     </View>
@@ -82,16 +82,16 @@ function TextareaFieldComponent({
 
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-1">
+      <Text className="text-sm font-medium text-slate-700 mb-1">
         {field.label}
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
       <TextInput
         className={`border rounded-lg px-4 py-3 text-base ${
-          error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-        } ${disabled ? 'bg-gray-100' : ''}`}
+          error ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+        } ${disabled ? 'bg-slate-100' : ''}`}
         placeholder={field.placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#94A3B8"
         value={typeof value === 'string' ? value : ''}
         onChangeText={(text) => onChange(text)}
         onBlur={onBlur}
@@ -105,11 +105,11 @@ function TextareaFieldComponent({
         accessibilityHint={field.helpText}
       />
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
       {field.maxLength && (
-        <Text className="text-xs text-gray-400 mt-1 text-right">
+        <Text className="text-xs text-slate-500 mt-1 text-right">
           {(typeof value === 'string' ? value : '').length}/{field.maxLength}
         </Text>
       )}
@@ -131,16 +131,16 @@ function DateFieldComponent({
   // Simple date input - in production would use DateTimePicker
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-1">
+      <Text className="text-sm font-medium text-slate-700 mb-1">
         {field.label}
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
       <TextInput
         className={`border rounded-lg px-4 py-3 text-base ${
-          error ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
-        } ${disabled ? 'bg-gray-100' : ''}`}
+          error ? 'border-red-500 bg-red-50' : 'border-slate-300 bg-white'
+        } ${disabled ? 'bg-slate-100' : ''}`}
         placeholder={field.placeholder || 'YYYY-MM-DD'}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#94A3B8"
         value={typeof value === 'string' ? value : ''}
         onChangeText={(text) => onChange(text)}
         onBlur={onBlur}
@@ -149,7 +149,7 @@ function DateFieldComponent({
         accessibilityHint={field.helpText || 'Enter date in YYYY-MM-DD format'}
       />
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
     </View>
@@ -178,17 +178,17 @@ function SelectFieldComponent({
 
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-2">
+      <Text className="text-sm font-medium text-slate-700 mb-2">
         {field.label}
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
-      <View className="border rounded-lg overflow-hidden border-gray-300">
+      <View className="border rounded-lg overflow-hidden border-slate-300">
         {(field.options ?? []).map((option, index) => (
           <TouchableOpacity
             key={option.value}
             className={`px-4 py-3 flex-row justify-between items-center ${
-              index > 0 ? 'border-t border-gray-200' : ''
-            } ${selectedValue === option.value ? 'bg-blue-50' : 'bg-white'} ${
+              index > 0 ? 'border-t border-slate-200' : ''
+            } ${selectedValue === option.value ? 'bg-navy-50' : 'bg-white'} ${
               disabled ? 'opacity-50' : ''
             }`}
             onPress={() => handleSelect(option.value)}
@@ -196,9 +196,9 @@ function SelectFieldComponent({
             accessibilityRole="radio"
             accessibilityState={{ checked: selectedValue === option.value }}
           >
-            <Text className="text-base text-gray-900">{option.label}</Text>
+            <Text className="text-base text-slate-900">{option.label}</Text>
             {selectedValue === option.value && (
-              <View className="w-5 h-5 rounded-full bg-blue-600 items-center justify-center">
+              <View className="w-5 h-5 rounded-full bg-navy-600 items-center justify-center">
                 <Text className="text-white text-xs">✓</Text>
               </View>
             )}
@@ -206,7 +206,7 @@ function SelectFieldComponent({
         ))}
       </View>
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
     </View>
@@ -227,7 +227,7 @@ function RadioFieldComponent({
 
   return (
     <View className="mb-4">
-      <Text className="text-sm font-medium text-gray-700 mb-2">
+      <Text className="text-sm font-medium text-slate-700 mb-2">
         {field.label}
         {field.required && <Text className="text-red-500"> *</Text>}
       </Text>
@@ -244,20 +244,20 @@ function RadioFieldComponent({
             <View
               className={`w-5 h-5 rounded-full border-2 mr-3 items-center justify-center ${
                 selectedValue === option.value
-                  ? 'border-blue-600'
-                  : 'border-gray-400'
+                  ? 'border-navy-600'
+                  : 'border-slate-400'
               }`}
             >
               {selectedValue === option.value && (
-                <View className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <View className="w-2.5 h-2.5 rounded-full bg-navy-600" />
               )}
             </View>
-            <Text className="text-base text-gray-900">{option.label}</Text>
+            <Text className="text-base text-slate-900">{option.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
     </View>
@@ -290,7 +290,7 @@ function CheckboxFieldComponent({
 
     return (
       <View className="mb-4">
-        <Text className="text-sm font-medium text-gray-700 mb-2">
+        <Text className="text-sm font-medium text-slate-700 mb-2">
           {field.label}
           {field.required && <Text className="text-red-500"> *</Text>}
         </Text>
@@ -307,20 +307,20 @@ function CheckboxFieldComponent({
               <View
                 className={`w-5 h-5 rounded border-2 mr-3 items-center justify-center ${
                   selectedValues.includes(option.value)
-                    ? 'border-blue-600 bg-blue-600'
-                    : 'border-gray-400 bg-white'
+                    ? 'border-navy-600 bg-navy-600'
+                    : 'border-slate-400 bg-white'
                 }`}
               >
                 {selectedValues.includes(option.value) && (
                   <Text className="text-white text-xs font-bold">✓</Text>
                 )}
               </View>
-              <Text className="text-base text-gray-900">{option.label}</Text>
+              <Text className="text-base text-slate-900">{option.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
         {field.helpText && !error && (
-          <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+          <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
         )}
         {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
       </View>
@@ -341,18 +341,18 @@ function CheckboxFieldComponent({
       >
         <View
           className={`w-5 h-5 rounded border-2 mr-3 items-center justify-center ${
-            isChecked ? 'border-blue-600 bg-blue-600' : 'border-gray-400 bg-white'
+            isChecked ? 'border-navy-600 bg-navy-600' : 'border-slate-400 bg-white'
           }`}
         >
           {isChecked && <Text className="text-white text-xs font-bold">✓</Text>}
         </View>
-        <Text className="text-base text-gray-900">
+        <Text className="text-base text-slate-900">
           {field.label}
           {field.required && <Text className="text-red-500"> *</Text>}
         </Text>
       </TouchableOpacity>
       {field.helpText && !error && (
-        <Text className="text-xs text-gray-500 mt-1">{field.helpText}</Text>
+        <Text className="text-xs text-slate-500 mt-1">{field.helpText}</Text>
       )}
       {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
     </View>
