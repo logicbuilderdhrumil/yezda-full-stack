@@ -25,7 +25,7 @@ const router = Router();
 // All dashboard endpoints require authentication
 router.use(requireAuthGuard);
 
-// Dashboard endpoints require at least 'viewer' role
+// Dashboard endpoints require at least 'platform_viewer' role
 // This enforces RBAC for dashboard access (any authenticated role can view)
 router.use(requireRoleGuard('platform_viewer', 'platform_agent', 'platform_manager', 'platform_admin'));
 

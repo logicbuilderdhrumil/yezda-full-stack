@@ -268,7 +268,7 @@ describe('Route Guards', () => {
 
   describe('requireRoleGuard', () => {
     it('should reject unauthenticated request', async () => {
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -286,10 +286,10 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['viewer'] as UserRole[],
+        roles: ['platform_viewer'] as UserRole[],
       };
 
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -299,7 +299,7 @@ describe('Route Guards', () => {
 
       expect(statusSpy).toHaveBeenCalledWith(403);
       expect(jsonSpy).toHaveBeenCalledWith({
-        error: 'Access denied. Required role: admin',
+        error: 'Access denied. Required role: platform_admin',
         code: 'FORBIDDEN',
       });
     });
@@ -311,10 +311,10 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['admin'] as UserRole[],
+        roles: ['platform_admin'] as UserRole[],
       };
 
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -332,10 +332,10 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['manager'] as UserRole[],
+        roles: ['platform_manager'] as UserRole[],
       };
 
-      const guard = requireRoleGuard('admin', 'manager');
+      const guard = requireRoleGuard('platform_admin', 'platform_manager');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -355,7 +355,7 @@ describe('Route Guards', () => {
         jti: 'jti-123',
       };
 
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -379,7 +379,7 @@ describe('Route Guards', () => {
       };
       mockReq.params = { userId: 'user-123' };
 
-      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'admin');
+      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -397,11 +397,11 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['admin'] as UserRole[],
+        roles: ['platform_admin'] as UserRole[],
       };
       mockReq.params = { userId: 'user-123' };
 
-      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'admin');
+      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -419,11 +419,11 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['viewer'] as UserRole[],
+        roles: ['platform_viewer'] as UserRole[],
       };
       mockReq.params = { userId: 'user-123' };
 
-      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'admin');
+      const guard = requireRoleOrOwnerGuard((req) => req.params?.userId, 'platform_admin');
 
       await guard(
         mockReq as AuthenticatedRoleRequest,
@@ -444,12 +444,12 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['admin'],
+        roles: ['platform_admin'],
       });
 
       const composedGuard = composeGuards(
         requireAuthGuard,
-        requireRoleGuard('admin')
+        requireRoleGuard('platform_admin')
       );
 
       await composedGuard(
@@ -465,7 +465,7 @@ describe('Route Guards', () => {
       // No auth header - first guard should fail
       const composedGuard = composeGuards(
         requireAuthGuard,
-        requireRoleGuard('admin')
+        requireRoleGuard('platform_admin')
       );
 
       await composedGuard(
@@ -503,7 +503,7 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['admin'],
+        roles: ['platform_admin'],
       });
 
       const asyncError = new Error('Async guard error');
@@ -551,10 +551,10 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['viewer'] as UserRole[],
+        roles: ['platform_viewer'] as UserRole[],
       };
 
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
       await guard(
         mockReq as AuthenticatedRoleRequest,
         mockRes as Response,
@@ -567,8 +567,8 @@ describe('Route Guards', () => {
           userType: 'user',
           route: '/api/v1/test',
           method: 'GET',
-          requiredRole: 'admin',
-          actualRoles: ['viewer'],
+          requiredRole: 'platform_admin',
+          actualRoles: ['platform_viewer'],
           channel: 'api',
         })
       );
@@ -590,10 +590,10 @@ describe('Route Guards', () => {
         iat: Date.now(),
         exp: Date.now() + 3600000,
         jti: 'jti-123',
-        roles: ['admin'] as UserRole[],
+        roles: ['platform_admin'] as UserRole[],
       };
 
-      const guard = requireRoleGuard('admin');
+      const guard = requireRoleGuard('platform_admin');
       await guard(
         mockReq as AuthenticatedRoleRequest,
         mockRes as Response,

@@ -27,21 +27,21 @@ import type { StageInput } from '../models/screening-pipeline.model.js';
  * Check if actor has permission to manage pipelines
  */
 function canManagePipelines(roles: string[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
+  return roles.includes('platform_admin') || roles.includes('platform_manager');
 }
 
 /**
  * Check if actor has permission to view pipelines
  */
 function canViewPipelines(roles: string[]): boolean {
-  return roles.includes('admin') || roles.includes('manager') || roles.includes('agent');
+  return roles.includes('platform_admin') || roles.includes('platform_manager') || roles.includes('platform_agent');
 }
 
 /**
  * Check if actor has permission to assign pipelines
  */
 function canAssignPipelines(roles: string[]): boolean {
-  return roles.includes('admin') || roles.includes('manager') || roles.includes('agent');
+  return roles.includes('platform_admin') || roles.includes('platform_manager') || roles.includes('platform_agent');
 }
 
 export class ScreeningPipelineService {

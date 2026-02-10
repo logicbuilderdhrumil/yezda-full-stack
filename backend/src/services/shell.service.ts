@@ -154,19 +154,19 @@ const NAVIGATION_ITEMS: NavItem[] = [
     label: 'Admin',
     icon: 'shield',
     path: '/admin',
-    authorities: ['admin'],
+    authorities: ['platform_admin'],
     children: [
       {
         id: 'admin-users',
         label: 'Users',
         path: '/admin/users',
-        authorities: ['admin'],
+        authorities: ['platform_admin'],
       },
       {
         id: 'admin-audit',
         label: 'Audit Log',
         path: '/admin/audit',
-        authorities: ['admin'],
+        authorities: ['platform_admin'],
       },
     ],
   },
@@ -189,7 +189,7 @@ const ROUTE_POLICIES: RoutePolicy[] = [
   { route: '/api/v1/candidates', public: false, authorities: ['candidate:read'] },
   { route: '/api/v1/screenings', public: false, authorities: ['screening:read'] },
   { route: '/api/v1/reports', public: false, authorities: ['report:read'] },
-  { route: '/api/v1/admin/*', public: false, authorities: ['admin'] },
+  { route: '/api/v1/admin/*', public: false, authorities: ['platform_admin'] },
 ];
 
 // In-memory preference storage (would be replaced by database repository in production)

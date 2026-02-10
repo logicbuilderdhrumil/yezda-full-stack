@@ -87,7 +87,7 @@ describe('Shell Service', () => {
       const adminPolicy = policies.policies.find(p => p.route.includes('admin'));
       expect(adminPolicy).toBeDefined();
       expect(adminPolicy?.public).toBe(false);
-      expect(adminPolicy?.authorities).toContain('admin');
+      expect(adminPolicy?.authorities).toContain('platform_admin');
     });
   });
 
@@ -108,7 +108,7 @@ describe('Shell Service', () => {
       const limitedNav = await shellService.getNavigation(['candidate:read']);
       
       // User with admin authority
-      const adminNav = await shellService.getNavigation(['admin']);
+      const adminNav = await shellService.getNavigation(['platform_admin']);
 
       // Admin should see admin items
       const adminItem = adminNav.items.find(item => item.id === 'admin');

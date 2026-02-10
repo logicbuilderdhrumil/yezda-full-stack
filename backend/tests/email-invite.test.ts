@@ -66,7 +66,7 @@ function makePendingRecord(overrides: Partial<InviteTokenRecord> = {}): InviteTo
     email: 'invitee@example.com',
     tenantId: 'tenant-abc',
     invitedByUserId: 'user-123',
-    metadata: { orgName: 'Acme', role: 'agent', inviterName: 'Jane' },
+    metadata: { orgName: 'Acme', role: 'platform_agent', inviterName: 'Jane' },
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     createdAt: new Date(),
     consumedAt: null,
@@ -278,7 +278,7 @@ describe('SendOrgMemberInviteUseCase', () => {
     const ctx = createTestContext();
     const result = await useCase.execute(ctx, {
       email: 'bob@example.com',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme Corp',
       inviterName: 'Jane Doe',
     });
@@ -311,7 +311,7 @@ describe('SendOrgMemberInviteUseCase', () => {
     const ctx = createTestContext();
     const result = await useCase.execute(ctx, {
       email: 'bob@example.com',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme',
       inviterName: 'Jane',
     });
@@ -334,7 +334,7 @@ describe('SendOrgMemberInviteUseCase', () => {
     const ctx = createTestContext();
     const result = await useCase.execute(ctx, {
       email: 'bob@example.com',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme',
       inviterName: 'Jane',
     });
@@ -351,7 +351,7 @@ describe('SendOrgMemberInviteUseCase', () => {
     const ctx = createTestContext();
     const result = await useCase.execute(ctx, {
       email: 'bob@example.com',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme',
       inviterName: 'Jane',
     });
@@ -367,7 +367,7 @@ describe('SendOrgMemberInviteUseCase', () => {
     const ctx = createTestContext();
     await useCase.execute(ctx, {
       email: 'Bob@Example.COM',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme',
       inviterName: 'Jane',
     });
@@ -729,7 +729,7 @@ describe('End-to-end invite flow (in-memory)', () => {
     const ctx = createTestContext();
     const sendResult = await sendUC.execute(ctx, {
       email: 'member@example.com',
-      role: 'agent',
+      role: 'platform_agent',
       orgName: 'Acme',
       inviterName: 'Jane',
     });

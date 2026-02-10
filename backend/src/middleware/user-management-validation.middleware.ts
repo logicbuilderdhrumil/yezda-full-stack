@@ -9,7 +9,7 @@ import { z } from 'zod';
 const userStatusSchema = z.enum(['active', 'inactive', 'suspended', 'pending']);
 
 // User role enum
-const userRoleSchema = z.enum(['admin', 'manager', 'agent', 'viewer']);
+const userRoleSchema = z.enum(['platform_admin', 'platform_manager', 'platform_agent', 'platform_viewer', 'org_admin', 'org_manager', 'org_viewer']);
 
 /**
  * Create user request body schema

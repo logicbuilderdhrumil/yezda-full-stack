@@ -15,7 +15,7 @@ import type { AuditEventType } from '../models/audit.model.js';
 // ──────────────────────────────────────────────────────────
 
 /** User role within an organization */
-export type OrgRole = 'owner' | 'admin' | 'manager' | 'agent' | 'viewer';
+export type OrgRole = 'owner' | 'platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer';
 
 /** Theme mode preference */
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -82,9 +82,9 @@ const themePreferences = new Map<string, { mode: ThemeMode; updatedAt: Date }>()
 function seedMockData(): void {
   // Default organizations for any authenticated user
   const defaultOrgs: OrgMembership[] = [
-    { orgId: 'org-1', orgName: 'Acme Corporation', logoUrl: 'https://example.com/acme-logo.png', role: 'admin' },
-    { orgId: 'org-2', orgName: 'Globex Industries', logoUrl: 'https://example.com/globex-logo.png', role: 'viewer' },
-    { orgId: 'org-3', orgName: 'Initech', role: 'manager' },
+    { orgId: 'org-1', orgName: 'Acme Corporation', logoUrl: 'https://example.com/acme-logo.png', role: 'platform_admin' },
+    { orgId: 'org-2', orgName: 'Globex Industries', logoUrl: 'https://example.com/globex-logo.png', role: 'platform_viewer' },
+    { orgId: 'org-3', orgName: 'Initech', role: 'platform_manager' },
   ];
 
   userOrgMemberships.set('__default__', defaultOrgs);

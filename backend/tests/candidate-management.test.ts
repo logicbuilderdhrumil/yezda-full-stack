@@ -53,7 +53,7 @@ function createAdminContext(tenantId = 'tenant-1'): CandidateManagementContext {
   return {
     actorId: 'admin-user-123',
     actorType: 'user',
-    actorRoles: ['admin'],
+    actorRoles: ['platform_admin'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -66,7 +66,7 @@ function createManagerContext(tenantId = 'tenant-1'): CandidateManagementContext
   return {
     actorId: 'manager-user-456',
     actorType: 'user',
-    actorRoles: ['manager'],
+    actorRoles: ['platform_manager'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -79,7 +79,7 @@ function createAgentContext(tenantId = 'tenant-1'): CandidateManagementContext {
   return {
     actorId: 'agent-user-789',
     actorType: 'user',
-    actorRoles: ['agent'],
+    actorRoles: ['platform_agent'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -92,7 +92,7 @@ function createViewerContext(tenantId = 'tenant-1'): CandidateManagementContext 
   return {
     actorId: 'viewer-user-000',
     actorType: 'user',
-    actorRoles: ['viewer'],
+    actorRoles: ['platform_viewer'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',

@@ -204,7 +204,7 @@ describe('BillingLedgerService', () => {
           organizationId,
           {},
           userId,
-          ['viewer', 'member'] // No admin roles
+          ['platform_viewer', 'member'] // No admin roles
         );
 
         expect(result.success).toBe(false);
@@ -421,7 +421,7 @@ describe('BillingLedgerService', () => {
           'entry-1',
           { description: 'Hacked description' },
           userId,
-          ['viewer']
+          ['platform_viewer']
         );
 
         expect(result.success).toBe(false);

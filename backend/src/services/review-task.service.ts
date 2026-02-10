@@ -73,7 +73,7 @@ export class ReviewTaskService {
     });
 
     // Permission check: only admin/manager can create
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions to create review tasks',
@@ -172,7 +172,7 @@ export class ReviewTaskService {
     });
 
     // Permission check
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager', 'agent'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager', 'platform_agent'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions to list review tasks',
@@ -227,7 +227,7 @@ export class ReviewTaskService {
       tenantId: ctx.tenantId,
     });
 
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager', 'agent'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager', 'platform_agent'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions to view review tasks',
@@ -264,7 +264,7 @@ export class ReviewTaskService {
     });
 
     // Permission check: only admin/manager can assign
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions to assign review tasks',
@@ -344,7 +344,7 @@ export class ReviewTaskService {
       tenantId: ctx.tenantId,
     });
 
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager', 'agent'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager', 'platform_agent'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions to submit decisions',
@@ -453,7 +453,7 @@ export class ReviewTaskService {
       tenantId: ctx.tenantId,
     });
 
-    if (!ctx.actorRoles.some((r) => ['admin', 'manager', 'agent'].includes(r))) {
+    if (!ctx.actorRoles.some((r) => ['platform_admin', 'platform_manager', 'platform_agent'].includes(r))) {
       return {
         success: false,
         error: 'Insufficient permissions',
@@ -546,7 +546,7 @@ export class ReviewTaskService {
       case 'reassign':
         // In production: create a new task assigned to targetRole
         console.error(
-          `[ReviewTaskService] Escalation: reassigning task ${task.id} to role '${targetRole ?? 'manager'}'`,
+          `[ReviewTaskService] Escalation: reassigning task ${task.id} to role '${targetRole ?? 'platform_manager'}'`,
         );
         break;
       case 'notify_manager':
