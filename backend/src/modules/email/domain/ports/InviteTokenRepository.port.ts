@@ -21,4 +21,7 @@ export interface IInviteTokenRepository {
 
   /** Revoke (invalidate) all pending tokens for an email + type + tenant. Returns revoked count. */
   revokeByEmail(email: string, type: InviteType, tenantId: string): Promise<number>;
+
+  /** List all invite tokens for a tenant, ordered by most recent first. */
+  listByTenantId(tenantId: string): Promise<InviteTokenRecord[]>;
 }
