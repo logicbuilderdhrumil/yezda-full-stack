@@ -61,18 +61,31 @@ export class SendOrgMemberInviteUseCase {
 
       // ── Send email ───────────────────────────────────────────────────────
       const inviteLink = `${this.baseInviteUrl}?token=${plaintextToken}`;
-      const emailResult = await this.emailPort.sendEmailWithTemplate(
-        email,
-        'org-member-invite',
-        {
-          inviterName: params.inviterName,
-          orgName: params.orgName,
-          role: params.role,
-          inviteLink,
-          expiryDays: 7,
-        },
-        { tag: 'org-member-invite', metadata: { tenantId: ctx.tenantId, inviteId: entity.id } },
-      );
+      const emailResult = await this.emailPort.sendEmail({
+        to: email,
+        subject: `${params.inviterName} invited you to join ${params.orgName}`,
+        htmlBody: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
+            <h2 style="color: #1e293b;">You&rsquo;re Invited!</h2>
+            <p style="color: #334155; line-height: 1.6;">
+              <strong>${params.inviterName}</strong> has invited you to join
+              <strong>${params.orgName}</strong> as a <strong>${params.role}</strong> on Yezda.
+            </p>
+            <p style="margin: 24px 0;">
+              <a href="${inviteLink}"
+                 style="display: inline-block; background: #2563eb; color: #fff; padding: 12px 24px;
+                        border-radius: 6px; text-decoration: none; font-weight: 600;">
+                Accept Invitation
+              </a>
+            </p>
+            <p style="color: #64748b; font-size: 14px;">
+              This invitation expires in 7 days. If you didn&rsquo;t expect this email, you can safely ignore it.
+            </p>
+          </div>`,
+        textBody: `${params.inviterName} invited you to join ${params.orgName} as a ${params.role}. Accept your invitation: ${inviteLink}`,
+        tag: 'org-member-invite',
+        metadata: { tenantId: ctx.tenantId, inviteId: entity.id },
+      });
 
       if (!emailResult.success) {
         return {

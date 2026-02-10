@@ -61,12 +61,11 @@ export class InviteController {
         eventType: 'INVITE_SEND_FAILED',
         actorId: ctx.actorId,
         actorType: 'user',
-        targetId: req.body.email,
         targetType: 'invite',
         channel: 'api',
         ipAddress: ctx.ipAddress,
         userAgent: ctx.userAgent,
-        metadata: { inviteType: 'org_member_invite', errorCode: result.errorCode },
+        metadata: { inviteType: 'org_member_invite', email: req.body.email, errorCode: result.errorCode },
         success: false,
         errorMessage: result.error,
       });
@@ -79,12 +78,11 @@ export class InviteController {
       eventType: 'INVITE_SENT',
       actorId: ctx.actorId,
       actorType: 'user',
-      targetId: req.body.email,
       targetType: 'invite',
       channel: 'api',
       ipAddress: ctx.ipAddress,
       userAgent: ctx.userAgent,
-      metadata: { inviteType: 'org_member_invite', role: req.body.role, orgName: req.body.orgName },
+      metadata: { inviteType: 'org_member_invite', email: req.body.email, role: req.body.role, orgName: req.body.orgName },
       success: true,
     });
 
@@ -117,12 +115,11 @@ export class InviteController {
         eventType: 'INVITE_SEND_FAILED',
         actorId: ctx.actorId,
         actorType: 'user',
-        targetId: req.body.email,
         targetType: 'invite',
         channel: 'api',
         ipAddress: ctx.ipAddress,
         userAgent: ctx.userAgent,
-        metadata: { inviteType: 'candidate_invite', errorCode: result.errorCode },
+        metadata: { inviteType: 'candidate_invite', email: req.body.email, errorCode: result.errorCode },
         success: false,
         errorMessage: result.error,
       });
@@ -135,12 +132,11 @@ export class InviteController {
       eventType: 'INVITE_SENT',
       actorId: ctx.actorId,
       actorType: 'user',
-      targetId: req.body.email,
       targetType: 'invite',
       channel: 'api',
       ipAddress: ctx.ipAddress,
       userAgent: ctx.userAgent,
-      metadata: { inviteType: 'candidate_invite', orgName: req.body.orgName },
+      metadata: { inviteType: 'candidate_invite', email: req.body.email, orgName: req.body.orgName },
       success: true,
     });
 
@@ -193,7 +189,6 @@ export class InviteController {
 
     auditService.log({
       eventType: 'INVITE_ACCEPTED',
-      targetId: result.invite.email,
       targetType: 'invite',
       channel: 'api',
       ipAddress: req.ip || req.socket.remoteAddress,
