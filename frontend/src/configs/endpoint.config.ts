@@ -176,7 +176,7 @@ export const endpoints = {
   // Invite endpoints
   'invites.sendMember': { path: '/invites/orgs/members', version: 'v1' },
   'invites.sendCandidate': { path: '/invites/orgs/candidates', version: 'v1' },
-  'invites.sendAdminCandidate': { path: '/invites/admin-candidate', version: 'v1' },
+  'invites.sendAdminCandidate': { path: '/invites/orgs/candidates', version: 'v1' },
   'invites.validate': { path: '/invites/:token/verify', version: 'v1' },
   'invites.accept': { path: '/invites/:token/accept', version: 'v1' },
   'invites.lookupIdentity': { path: '/invites/lookup-identity', version: 'v1' },

@@ -6,7 +6,6 @@ import { ApiService } from '@/services/ApiService';
 import type {
   InviteMemberPayload,
   InviteCandidatePayload,
-  AdminInviteCandidatePayload,
   InviteResponse,
   AcceptInviteResponse,
   InviteValidation,
@@ -35,25 +34,32 @@ export const InviteService = {
   /**
    * Sends a candidate invite from org context.
    * @param payload - Candidate invite data
+   * @param organizationId - Optional organization ID for tenant context
    * @returns Invite response with status
    */
-  async sendCandidateInvite(payload: InviteCandidatePayload): Promise<InviteResponse> {
+  async sendCandidateInvite(payload: InviteCandidatePayload, organizationId?: string): Promise<InviteResponse> {
     const response = await ApiService.post<InviteResponse, InviteCandidatePayload>(
       'invites.sendCandidate',
       payload,
+      organizationId ? { headers: { 'x-tenant-id': organizationId } } : undefined,
     );
     return response.data;
   },
 
   /**
    * Admin sends a candidate invite to a specific organization.
-   * @param payload - Admin candidate invite data
+   * @param payload - Candidate invite data matching backend schema
+   * @param organizationId - Organization ID for tenant context
    * @returns Invite response with status
    */
-  async sendAdminCandidateInvite(payload: AdminInviteCandidatePayload): Promise<InviteResponse> {
-    const response = await ApiService.post<InviteResponse, AdminInviteCandidatePayload>(
+  async sendAdminCandidateInvite(
+    payload: { email: string; orgName: string; inviterName: string; candidateInfo?: { firstName?: string; lastName?: string } },
+    organizationId: string,
+  ): Promise<InviteResponse> {
+    const response = await ApiService.post<InviteResponse, typeof payload>(
       'invites.sendAdminCandidate',
       payload,
+      { headers: { 'x-tenant-id': organizationId } },
     );
     return response.data;
   },

@@ -27,7 +27,8 @@ import {
 } from '@/components/ui';
 import { InviteService } from '@/features/invites/services/InviteService';
 import { extractApiError } from '@/utils';
-import type { AdminInviteCandidatePayload, GlobalIdentityLookupResult } from '@/@types/invite';
+import { useAuthStore } from '@/store';
+import type { GlobalIdentityLookupResult } from '@/@types/invite';
 
 export interface AdminInviteCandidateDialogProps {
   /** Whether the dialog is open. */
@@ -61,6 +62,7 @@ export function AdminInviteCandidateDialog({
   onSuccess,
 }: AdminInviteCandidateDialogProps): ReactNode {
   const { t } = useTranslation();
+  const session = useAuthStore((s) => s.session);
 
   // Email & lookup state
   const [email, setEmail] = useState('');
@@ -141,21 +143,22 @@ export function AdminInviteCandidateDialog({
 
     setIsSubmitting(true);
     try {
-      const payload: AdminInviteCandidatePayload = {
+      const inviterName = session?.displayName
+        || [session?.firstName, session?.lastName].filter(Boolean).join(' ')
+        || 'Admin';
+
+      const candidateInfo = lookupState === 'not-found'
+        ? { firstName: firstName.trim(), lastName: lastName.trim() }
+        : undefined;
+
+      const payload = {
         email: email.trim().toLowerCase(),
-        organizationId,
+        orgName: organizationName,
+        inviterName,
+        candidateInfo,
       };
 
-      // Only include additional fields when creating new identity
-      if (lookupState === 'not-found') {
-        payload.firstName = firstName.trim();
-        payload.lastName = lastName.trim();
-        payload.phone = phone.trim() || undefined;
-        payload.dateOfBirth = dateOfBirth || undefined;
-        payload.nationalInsuranceNumber = nationalInsuranceNumber.trim() || undefined;
-      }
-
-      await InviteService.sendAdminCandidateInvite(payload);
+      await InviteService.sendAdminCandidateInvite(payload, organizationId);
       toastSuccess(t('invites.adminCandidate.success', { email: payload.email }));
       resetForm();
       onOpenChange(false);

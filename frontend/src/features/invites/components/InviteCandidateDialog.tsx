@@ -112,7 +112,7 @@ export function InviteCandidateDialog({
         nationalInsuranceNumber: nationalInsuranceNumber.trim() || undefined,
         organizationId,
       };
-      await InviteService.sendCandidateInvite(payload);
+      await InviteService.sendCandidateInvite(payload, organizationId);
       toastSuccess(t('invites.candidate.success', { email: payload.email }));
       resetForm();
       onOpenChange(false);
