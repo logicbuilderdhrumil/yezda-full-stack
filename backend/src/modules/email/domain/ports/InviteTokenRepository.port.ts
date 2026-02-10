@@ -24,4 +24,7 @@ export interface IInviteTokenRepository {
 
   /** List all invite tokens for a tenant, ordered by most recent first. */
   listByTenantId(tenantId: string): Promise<InviteTokenRecord[]>;
+
+  /** List all invite tokens whose metadata.orgId matches the given organization ID. */
+  listByOrgId(orgId: string): Promise<InviteTokenRecord[]>;
 }

@@ -138,13 +138,14 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const { organizationId } = req.params;
-      const invites = await emailModule.repositories.inviteToken.listByTenantId(organizationId);
+      const invites = await emailModule.repositories.inviteToken.listByOrgId(organizationId);
       const mapped = invites.map((inv) => ({
         id: inv.id,
         email: inv.email,
+        role: (inv.metadata as Record<string, unknown>)?.role ?? 'user',
         type: inv.type === 'org_member_invite' ? 'member' : 'candidate',
         status: inv.status === 'consumed' ? 'accepted' : inv.status,
-        organizationId: inv.tenantId,
+        organizationId: (inv.metadata as Record<string, unknown>)?.orgId ?? inv.tenantId,
         invitedBy: inv.invitedByUserId,
         expiresAt: inv.expiresAt,
         createdAt: inv.createdAt,

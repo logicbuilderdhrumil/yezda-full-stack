@@ -183,16 +183,16 @@ export class OrgManagementController {
       return;
     }
 
-    const tenantId = req.user.tenantId ?? req.get('x-tenant-id');
-    if (!tenantId) {
-      res.status(400).json({ error: 'Tenant ID is required', code: 'MISSING_TENANT' });
+    const orgId = req.params.id;
+    if (!orgId) {
+      res.status(400).json({ error: 'Organization ID is required', code: 'MISSING_ORG_ID' });
       return;
     }
 
     const inviteCtx: InviteContext = {
       actorId: req.user.sub,
       actorType: 'user',
-      tenantId,
+      tenantId: orgId,
       ipAddress: req.ip || req.socket.remoteAddress,
       userAgent: req.get('user-agent'),
     };

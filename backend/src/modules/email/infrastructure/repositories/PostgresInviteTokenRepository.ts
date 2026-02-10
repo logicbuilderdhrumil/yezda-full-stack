@@ -103,4 +103,12 @@ export class PostgresInviteTokenRepository implements IInviteTokenRepository {
     );
     return result.rows.map(rowToRecord);
   }
+
+  async listByOrgId(orgId: string): Promise<InviteTokenRecord[]> {
+    const result = await query<InviteTokenRow>(
+      `SELECT * FROM invite_tokens WHERE metadata->>'orgId' = $1 ORDER BY created_at DESC LIMIT 100`,
+      [orgId],
+    );
+    return result.rows.map(rowToRecord);
+  }
 }
