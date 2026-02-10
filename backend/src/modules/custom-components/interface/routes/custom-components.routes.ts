@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { CustomComponentsController } from '../controllers/custom-components.controller.js';
-import { requireAuth } from '../../../../shared/infrastructure/middleware.js';
+import { requireAuth } from '../../../../shared/infrastructure/middleware/index.js';
 
 export function createCustomComponentsRoutes(controller: CustomComponentsController): Router {
   const router = Router();

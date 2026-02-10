@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { FirebaseController } from '../controllers/firebase.controller.js';
-import { requireAuth } from '../../../../shared/infrastructure/middleware.js';
+import { requireAuth } from '../../../../shared/infrastructure/middleware/index.js';
 export function createFirebaseRoutes(ctrl: FirebaseController): Router {
   const r = Router();
   r.post('/tokens', requireAuth, ctrl.register);

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { OAuthController } from '../controllers/oauth.controller.js';
-import { requireAuth } from '../../../../shared/infrastructure/middleware.js';
+import { requireAuth } from '../../../../shared/infrastructure/middleware/index.js';
 
 export function createOAuthRoutes(controller: OAuthController): Router {
   const router = Router();

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { ShellController } from '../controllers/shell.controller.js';
-import { requireAuth } from '../../../../shared/infrastructure/middleware.js';
+import { requireAuth } from '../../../../shared/infrastructure/middleware/index.js';
 
 export function createShellRoutes(controller: ShellController): Router {
   const router = Router();
