@@ -69,19 +69,31 @@ export class BillingLedgerController {
   ) {}
 
   handleGetBilledEntries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    if (!req.user) { res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' }); return; }
-    const ctx = getCtx(req);
-    const result = await this.getBilledEntries.execute(ctx, getOrgId(req), parseFilters(req.query as Record<string, unknown>), getUserRoles(req));
-    if (!result.success) { res.status(result.code === 'FORBIDDEN' ? 403 : 500).json({ error: result.error, code: result.code }); return; }
-    res.status(200).json(result.data);
+    try {
+      if (!req.user) { res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' }); return; }
+      const ctx = getCtx(req);
+      const result = await this.getBilledEntries.execute(ctx, getOrgId(req), parseFilters(req.query as Record<string, unknown>), getUserRoles(req));
+      if (!result.success) { res.status(result.code === 'FORBIDDEN' ? 403 : 500).json({ error: result.error, code: result.code }); return; }
+      res.status(200).json(result.data);
+    } catch (err: unknown) {
+      const statusCode = (err as { status?: number }).status || 500;
+      const message = err instanceof Error ? err.message : 'Internal server error';
+      res.status(statusCode).json({ error: message, code: 'LEDGER_ERROR' });
+    }
   };
 
   handleGetUnbilledEntries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-    if (!req.user) { res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' }); return; }
-    const ctx = getCtx(req);
-    const result = await this.getUnbilledEntries.execute(ctx, getOrgId(req), parseFilters(req.query as Record<string, unknown>), getUserRoles(req));
-    if (!result.success) { res.status(result.code === 'FORBIDDEN' ? 403 : 500).json({ error: result.error, code: result.code }); return; }
-    res.status(200).json(result.data);
+    try {
+      if (!req.user) { res.status(401).json({ error: 'Authentication required', code: 'UNAUTHORIZED' }); return; }
+      const ctx = getCtx(req);
+      const result = await this.getUnbilledEntries.execute(ctx, getOrgId(req), parseFilters(req.query as Record<string, unknown>), getUserRoles(req));
+      if (!result.success) { res.status(result.code === 'FORBIDDEN' ? 403 : 500).json({ error: result.error, code: result.code }); return; }
+      res.status(200).json(result.data);
+    } catch (err: unknown) {
+      const statusCode = (err as { status?: number }).status || 500;
+      const message = err instanceof Error ? err.message : 'Internal server error';
+      res.status(statusCode).json({ error: message, code: 'LEDGER_ERROR' });
+    }
   };
 
   handleCreateEntry = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

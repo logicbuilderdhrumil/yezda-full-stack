@@ -91,13 +91,31 @@ export function createBillingLedgerRoutes(controller: BillingLedgerController): 
   router.get(
     '/ledger',
     requireAuthGuard,
-    validateQuery(ledgerFilterSchema.extend({ status: z.enum(['billed', 'unbilled']).optional() })),
+    validateQuery(ledgerFilterSchema.extend({ status: z.enum(['billed', 'unbilled']).optional(), organizationId: z.string().uuid().optional() })),
     async (req, res) => {
-      const status = (req.query as Record<string, string>).status;
-      if (status === 'unbilled') {
-        return controller.handleGetUnbilledEntries(req as any, res);
+      try {
+        // Forward query-param organizationId into route params so getOrgId can find it
+        const orgIdFromQuery = (req.query as Record<string, string>).organizationId;
+        if (orgIdFromQuery) {
+          req.params.organizationId = orgIdFromQuery;
+        }
+
+        // If no org ID available, return empty results (admin cross-org view)
+        if (!req.params.organizationId && !req.get('x-organization-id')) {
+          res.status(200).json({ entries: [], pagination: { page: 1, pageSize: 10, totalCount: 0, totalPages: 0 }, totals: { totalAmount: 0, entryCount: 0, currency: 'GBP' } });
+          return;
+        }
+
+        const status = (req.query as Record<string, string>).status;
+        if (status === 'unbilled') {
+          return controller.handleGetUnbilledEntries(req as any, res);
+        }
+        return controller.handleGetBilledEntries(req as any, res);
+      } catch (err: unknown) {
+        const statusCode = (err as { status?: number }).status || 500;
+        const message = err instanceof Error ? err.message : 'Internal server error';
+        res.status(statusCode).json({ error: message, code: 'LEDGER_ERROR' });
       }
-      return controller.handleGetBilledEntries(req as any, res);
     },
   );
 
