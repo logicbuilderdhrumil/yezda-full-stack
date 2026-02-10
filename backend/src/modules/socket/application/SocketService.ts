@@ -4,15 +4,15 @@
  */
 import type { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
-import type { IAuditService } from '../../domain/ports/IAuditService.js';
-import type { ITokenService } from '../../domain/ports/ITokenService.js';
-import type { ISocketMetricsService } from '../../domain/ports/ISocketMetricsService.js';
+import type { IAuditService } from '../domain/ports/IAuditService.js';
+import type { ITokenService } from '../domain/ports/ITokenService.js';
+import type { ISocketMetricsService } from '../domain/ports/ISocketMetricsService.js';
 import type {
   SocketAuthData,
   UserPresence,
   PresenceStatus,
   PresenceUpdatePayload,
-} from '../../domain/entities/index.js';
+} from '../domain/entities/index.js';
 import {
   SOCKET_NAMESPACES,
   SERVER_EVENTS,
@@ -23,7 +23,7 @@ import {
   getUserRoom,
   getPresenceRoom,
   SOCKET_RATE_LIMITS,
-} from '../../domain/entities/index.js';
+} from '../domain/entities/index.js';
 
 interface AuthenticatedSocket extends Socket {
   data: SocketAuthData;
