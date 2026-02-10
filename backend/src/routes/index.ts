@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import type { Request, Response } from 'express';
+import { requireAuthGuard } from '../shared/infrastructure/middleware/index.js';
 // ── Clean Architecture module imports ────────────────────────────────────────
 import { createAuthModule } from '../modules/auth/index.js';
 import { createCandidateManagementModule } from '../modules/candidate-management/index.js';
@@ -128,5 +130,31 @@ router.use('/components', customComponentsModule.router);
 router.use('/webhooks', webhookModule.router);
 router.use('/reviews', reviewTaskModule.router);
 router.use('/invites', emailModule.routes);
+
+// List invites for an organization (used by frontend org settings)
+router.get(
+  '/organizations/:organizationId/invites',
+  requireAuthGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const { organizationId } = req.params;
+      const invites = await emailModule.repositories.inviteToken.listByTenantId(organizationId);
+      const mapped = invites.map((inv) => ({
+        id: inv.id,
+        email: inv.email,
+        type: inv.type === 'org_member_invite' ? 'member' : 'candidate',
+        status: inv.status === 'consumed' ? 'accepted' : inv.status,
+        organizationId: inv.tenantId,
+        invitedBy: inv.invitedByUserId,
+        expiresAt: inv.expiresAt,
+        createdAt: inv.createdAt,
+      }));
+      res.json(mapped);
+    } catch (err) {
+      console.error('[ListInvites] Error:', err);
+      res.status(500).json({ error: 'Failed to list invites' });
+    }
+  },
+);
 
 export default router;

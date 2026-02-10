@@ -95,4 +95,12 @@ export class PostgresInviteTokenRepository implements IInviteTokenRepository {
     );
     return result.rowCount ?? 0;
   }
+
+  async listByTenantId(tenantId: string): Promise<InviteTokenRecord[]> {
+    const result = await query<InviteTokenRow>(
+      `SELECT * FROM invite_tokens WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT 100`,
+      [tenantId],
+    );
+    return result.rows.map(rowToRecord);
+  }
 }
