@@ -19,7 +19,7 @@ import type {
   UserManagementResult,
   UserStatus,
 } from '../models/user-management.model.js';
-import type { UserRole } from '../middleware/route-guards.middleware.js';
+import { PLATFORM_ROLES, ORG_ROLES, type UserRole, type UserSpace } from '../middleware/route-guards.middleware.js';
 
 export interface UserManagementContext {
   actorId: string;
@@ -29,6 +29,19 @@ export interface UserManagementContext {
   ipAddress?: string;
   userAgent?: string;
   channel: 'web' | 'mobile' | 'api';
+}
+
+/**
+ * Validate that the given roles are consistent with the user space.
+ * Platform users can only have platform roles; org users can only have org roles.
+ */
+function validateRoleSpaceConsistency(roles: UserRole[], userSpace: UserSpace): string | null {
+  const validRoles = userSpace === 'platform' ? PLATFORM_ROLES : ORG_ROLES;
+  const invalidRoles = roles.filter(r => !validRoles.includes(r));
+  if (invalidRoles.length > 0) {
+    return `Roles [${invalidRoles.join(', ')}] are not valid for ${userSpace} space`;
+  }
+  return null;
 }
 
 /**
@@ -203,6 +216,18 @@ export class UserManagementService {
       }
     }
 
+    // Validate role-space consistency
+    if (input.userSpace) {
+      const roleSpaceError = validateRoleSpaceConsistency(input.roles, input.userSpace);
+      if (roleSpaceError) {
+        return {
+          success: false,
+          error: roleSpaceError,
+          errorCode: 'INVALID_ROLE_SPACE',
+        };
+      }
+    }
+
     try {
       // Check if email already exists in this tenant
       const emailExists = await userManagementRepository.emailExists(
@@ -322,6 +347,18 @@ export class UserManagementService {
     try {
       // Get existing user first
       const existingUser = await userManagementRepository.findById(userId, ctx.tenantId);
+
+      // Validate role-space consistency against the user's existing space
+      if (input.roles && existingUser) {
+        const roleSpaceError = validateRoleSpaceConsistency(input.roles, existingUser.userSpace);
+        if (roleSpaceError) {
+          return {
+            success: false,
+            error: roleSpaceError,
+            errorCode: 'INVALID_ROLE_SPACE',
+          };
+        }
+      }
       if (!existingUser) {
         return {
           success: false,
@@ -509,6 +546,16 @@ export class UserManagementService {
           success: false,
           error: 'User not found',
           errorCode: 'NOT_FOUND',
+        };
+      }
+
+      // Validate role-space consistency against the user's existing space
+      const roleSpaceError = validateRoleSpaceConsistency(roles, existingUser.userSpace);
+      if (roleSpaceError) {
+        return {
+          success: false,
+          error: roleSpaceError,
+          errorCode: 'INVALID_ROLE_SPACE',
         };
       }
 

@@ -428,12 +428,14 @@ export function requireRoleOrOwnerGuard(
  * Convenience guard: require `client`, `client_admin`, or platform `admin` role.
  * Admin users have super-access to client data.
  * Chain after requireAuthGuard.
+ * @deprecated Use requireOrgGuard + requireRoleGuard instead
  */
 export const requireClientGuard = requireRoleGuard('org_viewer', 'org_admin', 'platform_admin');
 
 /**
  * Convenience guard: require `org_admin` role only.
  * Chain after requireAuthGuard.
+ * @deprecated Use requireOrgGuard + requireRoleGuard('org_admin') instead
  */
 export const requireClientAdminGuard = requireRoleGuard('org_admin');
 

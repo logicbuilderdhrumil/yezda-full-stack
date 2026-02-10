@@ -225,6 +225,11 @@ export class UserManagementRepository {
       values.push(role);
     }
 
+    if (params.userSpace) {
+      conditions.push(`user_space = $${paramIndex++}`);
+      values.push(params.userSpace);
+    }
+
     const whereClause = conditions.join(' AND ');
 
     // Map sortBy to database column names
