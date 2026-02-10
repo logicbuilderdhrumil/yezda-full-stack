@@ -122,7 +122,7 @@ export function OrganizationForm({
     const formData = {
       name: name.trim(),
       slug: slug.trim(),
-      ...(email.trim() && { email: email.trim() }),
+      ...(email.trim() && { primaryContactEmail: email.trim() }),
       ...(phone.trim() && { phone: phone.trim() }),
       ...(website.trim() && { website: website.trim() }),
       ...(address.trim() && { address: address.trim() }),
