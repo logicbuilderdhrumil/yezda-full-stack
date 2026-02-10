@@ -4,7 +4,7 @@
 
 import type { IAppConsentRepository } from '../../domain/ports/IAppConsentRepository.js';
 import type { ConsentResult } from '../../domain/entities/app-consent.entity.js';
-import { appConsentService } from '../../../services/app-consent.service.js';
+import { appConsentService } from '../../../../services/app-consent.service.js';
 
 export class LegacyAppConsentRepository implements IAppConsentRepository {
   async captureConsent(tenantId: string, candidateId: string, body: unknown, actorId: string, actorType: string, channel: string, ipAddress?: string, userAgent?: string): Promise<ConsentResult> {

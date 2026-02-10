@@ -5,7 +5,7 @@
 
 import type { IAppAuthRepository } from '../../domain/ports/IAppAuthRepository.js';
 import type { AppSignInCredentials, AppSignInResult, AppRefreshRequest, AppSession, SignOutResult } from '../../domain/entities/app-auth.entity.js';
-import { appAuthService } from '../../../services/app-auth.service.js';
+import { appAuthService } from '../../../../services/app-auth.service.js';
 
 export class LegacyAppAuthRepository implements IAppAuthRepository {
   async signIn(credentials: AppSignInCredentials, ipAddress?: string): Promise<AppSignInResult> {

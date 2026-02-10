@@ -5,7 +5,7 @@
 
 import type { IAppProfileRepository } from '../../domain/ports/IAppProfileRepository.js';
 import type { CandidateProfile, ProfileUpdateInput } from '../../domain/entities/app-profile.entity.js';
-import { query } from '../../../db/postgres.js';
+import { query } from '../../../../db/postgres.js';
 
 interface CandidateProfileRow {
   id: string;

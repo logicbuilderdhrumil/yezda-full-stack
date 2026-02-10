@@ -4,7 +4,7 @@
 
 import type { IAppApplicationIntakeRepository } from '../../domain/ports/IAppApplicationIntakeRepository.js';
 import type { ApplicationResponse, ApplicationResult, Channel } from '../../domain/entities/app-application-intake.entity.js';
-import { appApplicationIntakeService } from '../../../services/app-application-intake.service.js';
+import { appApplicationIntakeService } from '../../../../services/app-application-intake.service.js';
 
 export class LegacyAppApplicationIntakeRepository implements IAppApplicationIntakeRepository {
   async listAssignedApplications(candidateId: string, tenantId: string, channel: Channel, ipAddress?: string): Promise<ApplicationResult> {
