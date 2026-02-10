@@ -57,6 +57,9 @@ services:
       ADMIN_SEED_PASSWORD: DataWyse26!
       ADMIN_SEED_TENANT_ID: 00000000-0000-0000-0000-000000000001
       ADMIN_SEED_DISPLAY_NAME: Yezda Admin
+      POSTMARK_SERVER_TOKEN: ${POSTMARK_SERVER_TOKEN:-}
+      POSTMARK_FROM_ADDRESS: ${POSTMARK_FROM_ADDRESS:-no-reply@dynabric.com}
+      INVITE_BASE_URL: ${INVITE_BASE_URL:-http://localhost:6313/invite}
     ports:
       - "6312:3000"
     command: sh -c "npm install && cd /workspace/shared && npm install && npm run build && cd /workspace/backend && npm run migrate && npm run seed:admin && npm run seed:candidate && npm run dev"
