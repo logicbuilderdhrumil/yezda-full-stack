@@ -27,10 +27,10 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps): Reac
             {t('app.name')}
           </Link>
         </div>
-        <div className="rounded-xl bg-white px-8 py-10 shadow-lg ring-1 ring-gray-900/5">
+        <div className="rounded-xl bg-white dark:bg-slate-800 px-8 py-10 shadow-lg ring-1 ring-gray-900/5 dark:ring-slate-700">
           <div className="mb-6 text-center">
-            <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
-            {subtitle && <p className="mt-2 text-sm text-gray-600">{subtitle}</p>}
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{title}</h1>
+            {subtitle && <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{subtitle}</p>}
           </div>
           {children}
         </div>

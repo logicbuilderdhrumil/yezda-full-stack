@@ -27,7 +27,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps): Reac
             {t('app.name')}
           </Link>
         </div>
-        <div className="rounded-xl bg-white px-8 py-10 shadow-lg ring-1 ring-[var(--color-border)]">
+        <div className="rounded-xl bg-white dark:bg-slate-800 px-8 py-10 shadow-lg ring-1 ring-[var(--color-border)]">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold text-[var(--color-foreground)]">{title}</h1>
             {subtitle && <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">{subtitle}</p>}

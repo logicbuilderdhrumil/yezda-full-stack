@@ -108,7 +108,7 @@ export function SignInView(): ReactNode {
               value={formData.email}
               onChange={handleChange('email')}
               onBlur={handleBlur('email')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.email && formErrors.email
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
@@ -131,7 +131,7 @@ export function SignInView(): ReactNode {
               value={formData.password}
               onChange={handleChange('password')}
               onBlur={handleBlur('password')}
-              className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
+              className={`mt-1 block w-full rounded-lg border bg-white dark:bg-slate-700 text-[var(--color-foreground)] px-4 py-2.5 text-sm shadow-sm transition focus:outline-none focus:ring-2 ${
                 touched.password && formErrors.password
                   ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                   : 'border-[var(--color-border)] focus:border-[var(--color-cta)] focus:ring-[var(--color-cta)]/20'
