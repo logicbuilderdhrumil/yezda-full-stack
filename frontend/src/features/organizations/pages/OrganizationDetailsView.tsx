@@ -20,7 +20,9 @@ import { OrganizationsService } from '@/services';
 import { formatDate, handleApiError, getOrganizationStatusVariant } from '@/utils';
 import { InviteMemberDialog } from '@/features/invites/components/InviteMemberDialog';
 import { AdminInviteCandidateDialog } from '@/features/invites/components/AdminInviteCandidateDialog';
+import { InviteService } from '@/features/invites/services/InviteService';
 import type { Organization } from '@/@types/organization';
+import type { Invite, InviteStatus } from '@/@types/invite';
 
 interface DetailRowProps {
   label: string;
@@ -51,6 +53,8 @@ export function OrganizationDetailsView(): ReactNode {
   const [activeTab, setActiveTab] = useState<'details' | 'users' | 'candidates'>('details');
   const [isInviteMemberOpen, setIsInviteMemberOpen] = useState(false);
   const [isInviteCandidateOpen, setIsInviteCandidateOpen] = useState(false);
+  const [invites, setInvites] = useState<Invite[]>([]);
+  const [isLoadingInvites, setIsLoadingInvites] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -83,6 +87,35 @@ export function OrganizationDetailsView(): ReactNode {
       isMounted = false;
     };
   }, [id, navigate, t]);
+
+  const fetchInvites = async () => {
+    if (!id) return;
+    setIsLoadingInvites(true);
+    try {
+      const data = await InviteService.listByOrganization(id);
+      setInvites(data);
+    } catch (err) {
+      handleApiError(err);
+    } finally {
+      setIsLoadingInvites(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'users' && id) {
+      fetchInvites();
+    }
+  }, [activeTab, id]);
+
+  const statusVariant = (status: InviteStatus) => {
+    const map: Record<InviteStatus, 'outline' | 'default' | 'secondary' | 'destructive'> = {
+      pending: 'outline',
+      accepted: 'default',
+      expired: 'secondary',
+      revoked: 'destructive',
+    };
+    return map[status];
+  };
 
   const handleEdit = () => {
     if (id) {
@@ -243,13 +276,45 @@ export function OrganizationDetailsView(): ReactNode {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {t('organizations.users.viewAll')}
-              </p>
+            <CardContent className="space-y-4">
+              {isLoadingInvites ? (
+                <p className="text-sm text-muted-foreground">{t('common.loading')}</p>
+              ) : invites.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t('organizations.users.noPendingInvites')}
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left">
+                        <th className="pb-2 font-medium text-muted-foreground">{t('invites.table.email')}</th>
+                        <th className="pb-2 font-medium text-muted-foreground">{t('invites.table.type')}</th>
+                        <th className="pb-2 font-medium text-muted-foreground">{t('invites.table.status')}</th>
+                        <th className="pb-2 font-medium text-muted-foreground">{t('invites.table.sentAt')}</th>
+                        <th className="pb-2 font-medium text-muted-foreground">{t('invites.table.expiresAt')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {invites.map((invite) => (
+                        <tr key={invite.id} className="border-b border-border">
+                          <td className="py-2">{invite.email}</td>
+                          <td className="py-2 capitalize">{invite.type}</td>
+                          <td className="py-2">
+                            <Badge variant={statusVariant(invite.status)}>
+                              {t(`invites.status.${invite.status}`)}
+                            </Badge>
+                          </td>
+                          <td className="py-2">{formatDate(invite.createdAt)}</td>
+                          <td className="py-2">{formatDate(invite.expiresAt)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <Button
                 variant="outline"
-                className="mt-3"
                 onClick={() => navigate(`/admin/organizations/${id}/users`)}
               >
                 {t('organizations.users.manageButton')}
@@ -299,6 +364,7 @@ export function OrganizationDetailsView(): ReactNode {
         onOpenChange={setIsInviteMemberOpen}
         organizationId={organization.id}
         organizationName={organization.name}
+        onSuccess={fetchInvites}
       />
 
       {/* Admin Invite Candidate Dialog */}

@@ -152,7 +152,69 @@
     "de": "Deutsch",
     "pt": "Português"
   },
+  "invites": {
+    "member": {
+      "inviteButton": "Invite User",
+      "title": "Invite Team Member",
+      "description": "Send an invitation to join {{organization}}",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "user@example.com",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "roleLabel": "Role",
+      "rolePlaceholder": "Select a role",
+      "sendButton": "Send Invitation",
+      "sending": "Sending...",
+      "success": "Invitation sent to {{email}}",
+      "error": "Failed to send invitation",
+      "duplicateEmail": "This email has already been invited",
+      "alreadyPending": "An invitation is already pending for this email"
+    },
+    "adminCandidate": {
+      "inviteButton": "Invite Candidate",
+      "title": "Invite Candidate",
+      "description": "Send an invitation for a candidate to submit their information",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "candidate@example.com",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "sendButton": "Send Invitation",
+      "sending": "Sending...",
+      "success": "Invitation sent to {{email}}",
+      "error": "Failed to send invitation"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "table": {
+      "email": "Email",
+      "type": "Type",
+      "status": "Status",
+      "sentAt": "Sent",
+      "expiresAt": "Expires"
+    }
+  },
   "organizations": {
+    "tabs": {
+      "details": "Details",
+      "users": "Users",
+      "candidates": "Candidates"
+    },
+    "users": {
+      "description": "View and manage users belonging to {{organization}}",
+      "viewAll": "View all users in this organization",
+      "manageButton": "Manage Users",
+      "noUsers": "No users found for this organization",
+      "noPendingInvites": "No pending invites"
+    },
+    "candidates": {
+      "description": "View and manage candidates for {{organization}}",
+      "viewAll": "View all candidates in this organization",
+      "manageButton": "Manage Candidates"
+    },
     "list": {
       "title": "Organizations",
       "description": "Manage tenant organizations in the platform",
