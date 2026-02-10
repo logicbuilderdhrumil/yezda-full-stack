@@ -7,7 +7,6 @@
  * the pipeline graph or ordered stage list.
  */
 
-import { v4 as uuidv4 } from 'uuid';
 import { screeningPipelineService } from './screening-pipeline.service.js';
 import { externalServiceAdapterService } from './external-service-adapter.service.js';
 import { reviewTaskService } from './review-task.service.js';
@@ -22,11 +21,10 @@ import type {
 } from '../models/screening-pipeline.model.js';
 import type {
   ModuleType,
-  PipelineGraph,
   ExternalServiceModuleConfig,
   HumanReviewModuleConfig,
   NotificationModuleConfig,
-} from '../../../shared/@types/pipeline-modules.js';
+} from '../shared-types/pipeline-modules.js';
 
 // ---------------------------------------------------------------------------
 // Result Types
@@ -193,7 +191,7 @@ export class PipelineRunnerService {
   async handleStageCompletion(
     assignmentId: string,
     stageId: string,
-    result: Record<string, unknown> | undefined,
+    _result: Record<string, unknown> | undefined,
     ctx: PipelineContext
   ): Promise<PipelineExecutionResult> {
     const startTime = Date.now();
@@ -287,7 +285,7 @@ export class PipelineRunnerService {
         };
       }
 
-      const { assignment, pipeline } = progress.data;
+      const { pipeline, assignment } = progress.data;
 
       // Determine next stage from graph or order
       const nextStage = this.getNextStage(
@@ -485,7 +483,7 @@ export class PipelineRunnerService {
    */
   private async executeFormStage(
     stage: PipelineStage,
-    assignment: PipelineAssignment,
+    _assignment: PipelineAssignment,
     _ctx: PipelineContext
   ): Promise<StageExecutionResult> {
     console.log(

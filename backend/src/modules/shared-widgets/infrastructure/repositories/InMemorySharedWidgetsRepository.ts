@@ -10,7 +10,7 @@ const DEFAULT_WIDGETS: Widget[] = [
 export class InMemorySharedWidgetsRepository implements ISharedWidgetsRepository {
   async getAvailableWidgets(): Promise<Widget[]> { return DEFAULT_WIDGETS; }
 
-  async getTableData(_tenantId: string | null, widgetId: string, query: TableDataQuery): Promise<TableDataResult> {
+  async getTableData(_tenantId: string | null, _widgetId: string, query: TableDataQuery): Promise<TableDataResult> {
     return { rows: [], total: 0, page: query.page ?? 1, pageSize: query.pageSize ?? 10 };
   }
 

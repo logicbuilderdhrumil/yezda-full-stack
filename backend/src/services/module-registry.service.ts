@@ -7,7 +7,7 @@
  */
 
 import type { ZodSchema } from 'zod';
-import type { ModuleType } from '../../../shared/@types/pipeline-modules.js';
+import type { ModuleType } from '../shared-types/pipeline-modules.js';
 import {
   FormModuleConfigSchema,
   ExternalServiceModuleConfigSchema,

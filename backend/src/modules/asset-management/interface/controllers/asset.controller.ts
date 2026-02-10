@@ -11,7 +11,7 @@ import type {
   GetTemplateByIdUseCase,
   GetHealthSummaryUseCase,
 } from '../../application/index.js';
-import type { AssetType, TemplateType, RequestContext } from '../../domain/index.js';
+import type { AssetType, AssetUsage, TemplateType, RequestContext } from '../../domain/index.js';
 
 export class AssetController {
   constructor(
@@ -24,7 +24,7 @@ export class AssetController {
   ) {}
 
   private buildCtx(req: Request): RequestContext {
-    const user = (req as Record<string, unknown>).user as Record<string, unknown> | undefined;
+    const user = (req as unknown as Record<string, unknown>).user as Record<string, unknown> | undefined;
     return {
       userId: (user?.id as string) ?? 'anonymous',
       userType: (user?.userType as 'user' | 'candidate') ?? 'user',
@@ -38,7 +38,7 @@ export class AssetController {
     const ctx = this.buildCtx(req);
     const filters = {
       type: req.query.type as AssetType | undefined,
-      usage: req.query.usage as string | undefined,
+      usage: req.query.usage as AssetUsage | undefined,
       tags: req.query.tags ? String(req.query.tags).split(',') : undefined,
       search: req.query.search as string | undefined,
       limit: req.query.limit ? Number(req.query.limit) : undefined,

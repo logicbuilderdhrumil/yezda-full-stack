@@ -35,7 +35,7 @@ function rowToAppSession(row: AppSessionRow): AppSession {
     refreshTokenHash: row.refresh_token_hash,
     deviceId: row.device_id,
     deviceName: row.device_name ?? undefined,
-    platform: row.platform,
+    platform: row.platform as 'ios' | 'android',
     appVersion: row.app_version,
     osVersion: row.os_version ?? undefined,
     model: row.model ?? undefined,

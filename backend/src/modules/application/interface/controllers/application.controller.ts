@@ -13,7 +13,8 @@ export class ApplicationController {
   list = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     res.json({ success: true, data: await this.listUC.execute(tenantId, userId) });
@@ -22,7 +23,8 @@ export class ApplicationController {
   get = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const app = await this.getUC.execute(tenantId, req.params.applicationId);
     if (!app) { res.status(404).json({ success: false, error: 'Not found' }); return; }
@@ -32,7 +34,8 @@ export class ApplicationController {
   getDraft = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const draft = await this.getDraftUC.execute(tenantId, req.params.applicationId);
     res.json({ success: true, data: draft });
@@ -41,7 +44,8 @@ export class ApplicationController {
   saveDraft = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const app = await this.saveDraftUC.execute(tenantId, req.params.applicationId, req.body);
     if (!app) { res.status(404).json({ success: false, error: 'Not found' }); return; }
@@ -51,7 +55,8 @@ export class ApplicationController {
   submit = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const app = await this.submitUC.execute(tenantId, req.params.applicationId);
     if (!app) { res.status(404).json({ success: false, error: 'Not found' }); return; }

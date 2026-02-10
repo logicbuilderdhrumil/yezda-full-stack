@@ -8,7 +8,7 @@
 export interface RecentActivityItem {
   id: string;
   type: 'screening_completed' | 'candidate_added' | 'action_required' | 'report_ready';
-  description: string;
+  message: string;
   timestamp: string;
   candidateId?: string;
   candidateName?: string;
@@ -43,8 +43,11 @@ export interface CandidateListItem {
 }
 
 export interface PaginatedCandidateList {
-  data: CandidateListItem[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
+  candidates: CandidateListItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface ScreeningStep {
@@ -70,24 +73,24 @@ export interface CandidateDetail {
 // ── Org Settings ─────────────────────────────────────────────────
 
 export interface OrgSettings {
-  name: string;
+  orgName: string;
   contactEmail: string;
   logo?: string;
   contactPhone?: string;
   address?: string;
-  notificationPreferences: {
+  notificationPrefs: {
     emailOnScreeningComplete: boolean;
-    emailOnCandidateSubmission: boolean;
+    emailOnActionRequired: boolean;
     weeklyDigest: boolean;
   };
 }
 
 export interface UpdateOrgSettingsDto {
-  name?: string;
+  orgName?: string;
   contactEmail?: string;
   contactPhone?: string;
   address?: string;
-  notificationPreferences?: Partial<OrgSettings['notificationPreferences']>;
+  notificationPrefs?: Partial<OrgSettings['notificationPrefs']>;
 }
 
 // ── Screenings ───────────────────────────────────────────────────

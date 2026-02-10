@@ -24,7 +24,8 @@ export class ReviewTaskController {
   listReviewTasks = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const tasks = await this.listReviewTasksUC.execute(tenantId, req.query as any);
     res.json({ success: true, data: tasks });
@@ -33,7 +34,8 @@ export class ReviewTaskController {
   getMyQueue = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     const tasks = await this.getMyQueueUC.execute(tenantId, userId);
@@ -43,17 +45,19 @@ export class ReviewTaskController {
   getReviewTask = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const task = await this.getReviewTaskUC.execute(tenantId, req.params.id);
-    if (!task) return res.status(404).json({ success: false, error: 'Not found' });
+    if (!task) { res.status(404).json({ success: false, error: 'Not found' }); return; }
     res.json({ success: true, data: task });
   };
 
   createReviewTask = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const task = await this.createReviewTaskUC.execute(tenantId, req.body);
     res.status(201).json({ success: true, data: task });
@@ -62,21 +66,23 @@ export class ReviewTaskController {
   assignReviewTask = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const task = await this.assignReviewTaskUC.execute(tenantId, req.params.id, req.body.assigneeId);
-    if (!task) return res.status(404).json({ success: false, error: 'Not found' });
+    if (!task) { res.status(404).json({ success: false, error: 'Not found' }); return; }
     res.json({ success: true, data: task });
   };
 
   submitDecision = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     const task = await this.submitDecisionUC.execute(tenantId, req.params.id, userId, req.body);
-    if (!task) return res.status(404).json({ success: false, error: 'Not found' });
+    if (!task) { res.status(404).json({ success: false, error: 'Not found' }); return; }
     res.json({ success: true, data: task });
   };
 }

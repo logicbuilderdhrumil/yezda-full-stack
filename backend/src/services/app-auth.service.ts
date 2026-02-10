@@ -468,7 +468,7 @@ export class AppAuthService {
       refreshTokenHash: hashToken(refreshToken),
       deviceId: metadata.deviceId,
       deviceName: metadata.deviceName,
-      platform: metadata.platform,
+      platform: metadata.platform as 'ios' | 'android',
       appVersion: metadata.appVersion,
       osVersion: metadata.osVersion,
       model: metadata.model,
@@ -513,7 +513,7 @@ export class AppAuthService {
         userId: candidate.id,
         reason: 'Exceeded maximum failed login attempts',
         deviceId,
-        platform,
+        platform: platform as 'ios' | 'android',
         appVersion,
         ipAddress,
       });

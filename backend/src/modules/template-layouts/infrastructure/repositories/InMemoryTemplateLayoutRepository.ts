@@ -2,7 +2,7 @@ import type { ITemplateLayoutRepository } from '../../domain/ports/ITemplateLayo
 import type { TemplateLayoutNavigation, GlobalControlSummary, LayoutAccessContext } from '../../domain/entities/template-layout.entity.js';
 
 export class InMemoryTemplateLayoutRepository implements ITemplateLayoutRepository {
-  async getNavigation(context: LayoutAccessContext): Promise<TemplateLayoutNavigation> {
+  async getNavigation(_context: LayoutAccessContext): Promise<TemplateLayoutNavigation> {
     return {
       header: {
         title: 'Yezda', showSearch: true, showNotifications: true, showProfile: true,

@@ -40,13 +40,70 @@ export * from './app-consent.model.js';
 export * from './app-application-intake.model.js';
 export * from './view-components.model.js';
 export * from './candidate-management.model.js';
-export * from './form-builder.model.js';
+// Form-builder model exports explicitly to avoid FormDefinition/FormField/FormFieldType/FormSection conflicts with app-application-intake
+export {
+  FORM_FIELD_TYPES,
+  type FormFieldType as FormBuilderFieldType,
+  VALIDATION_RULE_TYPES,
+  type ValidationRuleType,
+  FORM_STATUSES,
+  type FormStatus,
+  type ValidationRule,
+  type SelectOption,
+  type ConditionalRule,
+  type FormField as FormBuilderField,
+  type FormSection as FormBuilderSection,
+  type FormDefinition as FormBuilderDefinition,
+  type FormSettings,
+  type FormDefinitionSummary,
+  type CreateFormRequest,
+  type UpdateFormRequest,
+  type ListFormsQuery,
+  type ListFormsResponse,
+  type GetFormResponse,
+  validationRuleSchema,
+  selectOptionSchema,
+  conditionalRuleSchema,
+  formFieldSchema,
+  formSectionSchema,
+  formSettingsSchema,
+  createFormRequestSchema,
+  updateFormRequestSchema,
+  listFormsQuerySchema,
+  formIdParamSchema,
+  validateFieldIdUniqueness,
+  validateConditionalReferences,
+  countFormFields,
+  isValidFieldType,
+  isValidFormStatus,
+} from './form-builder.model.js';
 export * from './file-management.model.js';
 export * from './asset-management.model.js';
 export * from './chat.model.js';
 export * from './charting.model.js';
 export * from './billing-ledger.model.js';
-export * from './home-dashboard.model.js';
+// Home-dashboard model exports explicitly to avoid timeRangeSchema conflict with charting
+export {
+  type DashboardTimeRange,
+  type KpiMetricType,
+  type ActivityType,
+  type KpiMetric,
+  type KpiSummary,
+  type ActivityItem,
+  type ActivityFeed,
+  type TrendDataPoint,
+  type TrendSeries,
+  type TrendData,
+  type DashboardSummary,
+  type DashboardOperationResult,
+  type DashboardQueryOptions,
+  timeRangeSchema as dashboardTimeRangeSchema,
+  kpiMetricTypeSchema,
+  dashboardSummaryQuerySchema,
+  activityFeedQuerySchema,
+  trendDataQuerySchema,
+  type DashboardAuditEventType,
+} from './home-dashboard.model.js';
 export * from './template-layouts.model.js';
 // Shared integration models
 export * from './job.model.js';

@@ -4,13 +4,9 @@
  */
 
 import { z } from 'zod';
-import type {
-  ModuleType,
-  PipelineGraph,
-} from '../../../shared/@types/pipeline-modules.js';
 
 // Re-export shared types for convenience
-export type { ModuleType, PipelineGraph } from '../../../shared/@types/pipeline-modules.js';
+export type { ModuleType, PipelineGraph } from '../shared-types/pipeline-modules.js';
 
 // ---------------------------------------------------------------------------
 // Module Type Enum & Per-Module Config Schemas (Zod)

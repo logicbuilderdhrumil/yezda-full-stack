@@ -12,13 +12,11 @@ import {
   updateConsent,
   validateConsentScopes,
 } from '../services/consent.service.js';
-import { getApplicationInternal } from '../services/application.service.js';
 import type {
   ConsentSubmitDTO,
   ConsentUpdateDTO,
   ApiErrorResponse,
-  ConsentErrorCodes,
-} from '../../shared/@types/consent.types.js';
+} from '../shared-types/consent.types.js';
 
 /**
  * Get consent prompt for an application.

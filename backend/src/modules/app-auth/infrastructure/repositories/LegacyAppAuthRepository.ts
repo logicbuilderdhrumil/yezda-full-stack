@@ -5,11 +5,12 @@
 
 import type { IAppAuthRepository } from '../../domain/ports/IAppAuthRepository.js';
 import type { AppSignInCredentials, AppSignInResult, AppRefreshRequest, AppSession, SignOutResult } from '../../domain/entities/app-auth.entity.js';
+import type { AppSignInRequest, AppRefreshRequest as ModelRefreshRequest } from '../../../../models/app-auth.model.js';
 import { appAuthService } from '../../../../services/app-auth.service.js';
 
 export class LegacyAppAuthRepository implements IAppAuthRepository {
   async signIn(credentials: AppSignInCredentials, ipAddress?: string): Promise<AppSignInResult> {
-    return appAuthService.signIn(credentials, ipAddress) as Promise<AppSignInResult>;
+    return appAuthService.signIn(credentials as unknown as AppSignInRequest, ipAddress) as Promise<AppSignInResult>;
   }
 
   async completeMfaSignIn(mfaSessionToken: string, mfaCode: string, ipAddress?: string): Promise<AppSignInResult> {
@@ -17,7 +18,7 @@ export class LegacyAppAuthRepository implements IAppAuthRepository {
   }
 
   async refreshTokens(request: AppRefreshRequest, ipAddress?: string): Promise<AppSignInResult> {
-    return appAuthService.refreshTokens(request, ipAddress) as Promise<AppSignInResult>;
+    return appAuthService.refreshTokens(request as unknown as ModelRefreshRequest, ipAddress) as Promise<AppSignInResult>;
   }
 
   async signOut(userId: string, sessionJti?: string, revokeAll?: boolean): Promise<SignOutResult> {
@@ -29,6 +30,6 @@ export class LegacyAppAuthRepository implements IAppAuthRepository {
   }
 
   async revokeSession(sessionId: string): Promise<void> {
-    return appAuthService.revokeSession(sessionId);
+    await appAuthService.revokeSession(sessionId);
   }
 }

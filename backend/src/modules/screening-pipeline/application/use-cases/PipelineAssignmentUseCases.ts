@@ -97,7 +97,7 @@ export class CompleteStageUseCase {
 }
 
 export class GetAssignmentProgressUseCase {
-  constructor(private readonly repo: IScreeningPipelineRepository, private readonly metrics: IMetricsService) {}
+  constructor(private readonly repo: IScreeningPipelineRepository, _metrics: IMetricsService) {}
 
   async execute(assignmentId: string, ctx: PipelineContext): Promise<PipelineOperationResult<AssignmentProgress>> {
     if (!canViewPipelines(ctx.actorRoles)) return { success: false, error: 'Insufficient permissions', errorCode: 'FORBIDDEN' };
@@ -120,7 +120,7 @@ export class GetAssignmentProgressUseCase {
 }
 
 export class GetCandidateAssignmentsUseCase {
-  constructor(private readonly repo: IScreeningPipelineRepository, private readonly metrics: IMetricsService) {}
+  constructor(private readonly repo: IScreeningPipelineRepository, _metrics: IMetricsService) {}
 
   async execute(candidateId: string, ctx: PipelineContext): Promise<PipelineOperationResult<PipelineAssignment[]>> {
     if (!canViewPipelines(ctx.actorRoles)) return { success: false, error: 'Insufficient permissions', errorCode: 'FORBIDDEN' };

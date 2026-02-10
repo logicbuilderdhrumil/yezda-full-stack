@@ -14,7 +14,8 @@ export class JobController {
   listJobs = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const result = await this.listJobsUC.execute({ tenantId, ...req.query } as any);
     res.json({ success: true, data: result });
@@ -23,7 +24,8 @@ export class JobController {
   getJobStatus = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const job = await this.getJobStatusUC.execute(tenantId, req.params.jobId);
     if (!job) {
@@ -36,7 +38,8 @@ export class JobController {
   cancelJob = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const job = await this.cancelJobUC.execute(tenantId, req.params.jobId);
     if (!job) {

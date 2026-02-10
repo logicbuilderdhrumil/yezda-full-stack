@@ -102,14 +102,14 @@ export async function getOrgSettings(req: TenantScopedRequest, res: Response): P
 export async function updateOrgSettings(req: TenantScopedRequest, res: Response): Promise<void> {
   try {
     const tenantId = req.tenantScope!;
-    const { name, contactEmail, contactPhone, address, notificationPreferences } = req.body;
+    const { orgName, contactEmail, contactPhone, address, notificationPrefs } = req.body;
 
     const result = clientPortalService.updateOrgSettings(tenantId, {
-      name,
+      orgName,
       contactEmail,
       contactPhone,
       address,
-      notificationPreferences,
+      notificationPrefs,
     });
 
     if (!result.success) {

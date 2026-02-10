@@ -26,11 +26,11 @@ export class ClientPortalController {
   ) {}
 
   private buildCtx(req: Request): RequestContext {
-    const user = (req as Record<string, unknown>).user as Record<string, unknown> | undefined;
+    const user = (req as unknown as Record<string, unknown>).user as Record<string, unknown> | undefined;
     return {
       userId: (user?.id as string) ?? 'anonymous',
       userType: (user?.userType as 'user' | 'candidate') ?? 'user',
-      tenantId: (user?.tenantId as string) ?? (req as Record<string, unknown>).tenantScope as string ?? (req.get('x-tenant-id') as string) ?? '',
+      tenantId: (user?.tenantId as string) ?? (req as unknown as Record<string, unknown>).tenantScope as string ?? (req.get('x-tenant-id') as string) ?? '',
       ipAddress: req.ip,
       channel: 'web',
     };

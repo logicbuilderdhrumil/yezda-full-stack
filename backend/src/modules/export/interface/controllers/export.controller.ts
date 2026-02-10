@@ -11,7 +11,8 @@ export class ExportController {
   requestExport = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     const exp = await this.requestExportUC.execute({ tenantId, userId, ...req.body });
@@ -21,7 +22,8 @@ export class ExportController {
   getExportStatus = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const exp = await this.getExportStatusUC.execute(tenantId, req.params.exportId);
     if (!exp) {
@@ -34,7 +36,8 @@ export class ExportController {
   downloadExport = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const url = await this.downloadExportUC.execute(tenantId, req.params.exportId);
     if (!url) {

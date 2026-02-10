@@ -17,7 +17,7 @@ class MemoryRateLimiter {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
   }
 
   check(

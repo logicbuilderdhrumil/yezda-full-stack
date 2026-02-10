@@ -12,7 +12,7 @@ import type {
   NotificationModuleConfig,
   NotificationRecipientType,
   NotificationTriggerOn,
-} from '../../../shared/@types/pipeline-modules.js';
+} from '../shared-types/pipeline-modules.js';
 import { auditService } from './audit.service.js';
 import { metricsService } from './metrics.service.js';
 import { notificationService } from './notification.service.js';

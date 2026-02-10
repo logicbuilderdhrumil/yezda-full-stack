@@ -22,7 +22,8 @@ export class ConsentController {
   getStatus = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     res.json({ success: true, data: await this.getStatusUC.execute(tenantId, userId) });
@@ -31,7 +32,8 @@ export class ConsentController {
   getById = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const consent = await this.getByIdUC.execute(tenantId, req.params.consentId);
     if (!consent) {
@@ -44,7 +46,8 @@ export class ConsentController {
   submit = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const userId = (req as any).user?.id ?? '';
     const consent = await this.submitUC.execute(tenantId, userId, req.body);
@@ -54,7 +57,8 @@ export class ConsentController {
   update = async (req: Request, res: Response) => {
     const tenantId = (req as any).user?.tenantId ?? req.get('x-tenant-id');
     if (!tenantId) {
-      return res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      res.status(400).json({ success: false, error: 'Tenant ID is required' });
+      return;
     }
     const consent = await this.updateUC.execute(tenantId, req.params.consentId, req.body);
     if (!consent) {

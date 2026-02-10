@@ -20,7 +20,6 @@ import type {
   AssignmentProgress,
   StageStatus,
   ModuleType,
-  PipelineGraph,
 } from '../models/screening-pipeline.model.js';
 import type { StageInput } from '../models/screening-pipeline.model.js';
 
@@ -225,7 +224,7 @@ export class ScreeningPipelineService {
       // Validate module configs for each stage
       const configError = this.validateStageModuleConfigs(dto.stages);
       if (configError) {
-        return configError;
+        return { success: false, error: configError.error, errorCode: configError.errorCode };
       }
 
       const now = new Date();
@@ -375,7 +374,7 @@ export class ScreeningPipelineService {
       if (dto.stages) {
         const configError = this.validateStageModuleConfigs(dto.stages);
         if (configError) {
-          return configError;
+          return { success: false, error: configError.error, errorCode: configError.errorCode };
         }
 
         const stages: PipelineStage[] = dto.stages.map((stageInput) => {

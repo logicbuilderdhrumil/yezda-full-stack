@@ -10,7 +10,7 @@ export class LegacyOAuthRepository implements IOAuthRepository {
     return legacyRepo.createState(state);
   }
   async consumeState(stateId: string): Promise<OAuthState | null> {
-    return legacyRepo.consumeState(stateId);
+    return (await legacyRepo.consumeState(stateId)) ?? null;
   }
   async deleteExpiredStates(): Promise<number> {
     return legacyRepo.deleteExpiredStates();
@@ -19,13 +19,13 @@ export class LegacyOAuthRepository implements IOAuthRepository {
     return legacyRepo.upsertToken(token);
   }
   async findToken(tenantId: string, userId: string, userType: string, provider: OAuthProvider): Promise<IntegrationToken | null> {
-    return legacyRepo.findToken(tenantId, userId, userType, provider);
+    return (await legacyRepo.findToken(tenantId, userId, userType as 'user' | 'candidate', provider)) ?? null;
   }
   async findTokenById(tokenId: string): Promise<IntegrationToken | null> {
-    return legacyRepo.findTokenById(tokenId);
+    return (await legacyRepo.findTokenById(tokenId)) ?? null;
   }
   async findTokensByUser(tenantId: string, userId: string, userType: string): Promise<IntegrationToken[]> {
-    return legacyRepo.findTokensByUser(tenantId, userId, userType);
+    return legacyRepo.findTokensByUser(tenantId, userId, userType as 'user' | 'candidate');
   }
   async updateTokenRefresh(tokenId: string, accessTokenEncrypted: string, expiresAt: Date, refreshTokenEncrypted?: string): Promise<void> {
     return legacyRepo.updateTokenRefresh(tokenId, accessTokenEncrypted, expiresAt, refreshTokenEncrypted);
@@ -34,7 +34,7 @@ export class LegacyOAuthRepository implements IOAuthRepository {
     return legacyRepo.markTokenError(tokenId, errorMessage);
   }
   async deactivateToken(tenantId: string, userId: string, userType: string, provider: OAuthProvider): Promise<void> {
-    return legacyRepo.deactivateToken(tenantId, userId, userType, provider);
+    return legacyRepo.deactivateToken(tenantId, userId, userType as 'user' | 'candidate', provider);
   }
   async findExpiringTokens(thresholdMinutes: number): Promise<IntegrationToken[]> {
     return legacyRepo.findExpiringTokens(thresholdMinutes);

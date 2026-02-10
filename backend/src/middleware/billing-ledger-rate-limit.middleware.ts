@@ -16,7 +16,7 @@ class MemoryRateLimiter {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
   }
 
   check(
@@ -238,7 +238,7 @@ class LedgerCache {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.cleanupInterval = setInterval(() => this.cleanup(), 30000);
+    this.cleanupInterval = setInterval(() => this.cleanup(), 30000) as unknown as NodeJS.Timeout;
   }
 
   get<T>(key: string): T | undefined {

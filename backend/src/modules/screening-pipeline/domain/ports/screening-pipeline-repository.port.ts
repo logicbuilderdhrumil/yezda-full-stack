@@ -5,7 +5,6 @@ import type {
   ScreeningPipeline,
   PipelineAssignment,
   PipelineStatus,
-  StageStatus,
 } from '../entities/screening-pipeline.entity.js';
 
 export interface IScreeningPipelineRepository {

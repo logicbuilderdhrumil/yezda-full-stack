@@ -10,7 +10,7 @@
 export interface RecentActivityItem {
   id: string;
   type: 'screening_completed' | 'candidate_added' | 'action_required' | 'report_ready';
-  description: string;
+  message: string;
   timestamp: string;
   candidateId?: string;
   candidateName?: string;
@@ -47,13 +47,11 @@ export interface CandidateListItem {
 
 /** Paginated candidate list */
 export interface PaginatedCandidateList {
-  data: CandidateListItem[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  candidates: CandidateListItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 /** Screening step within candidate detail */
@@ -80,25 +78,25 @@ export interface CandidateDetail {
 
 /** Org settings */
 export interface OrgSettings {
-  name: string;
+  orgName: string;
   contactEmail: string;
   logo?: string;
   contactPhone?: string;
   address?: string;
-  notificationPreferences: {
+  notificationPrefs: {
     emailOnScreeningComplete: boolean;
-    emailOnCandidateSubmission: boolean;
+    emailOnActionRequired: boolean;
     weeklyDigest: boolean;
   };
 }
 
 /** Org settings update DTO */
 export interface UpdateOrgSettingsDto {
-  name?: string;
+  orgName?: string;
   contactEmail?: string;
   contactPhone?: string;
   address?: string;
-  notificationPreferences?: Partial<OrgSettings['notificationPreferences']>;
+  notificationPrefs?: Partial<OrgSettings['notificationPrefs']>;
 }
 
 /** Screening request item */
@@ -154,7 +152,7 @@ function mockDashboard(tenantId: string): DashboardSummary {
       {
         id: `${tenantId}-act-1`,
         type: 'screening_completed',
-        description: 'Background check completed for Jane Smith',
+        message: 'Background check completed for Jane Smith',
         timestamp: new Date(Date.now() - 3600_000).toISOString(),
         candidateId: 'cand-1',
         candidateName: 'Jane Smith',
@@ -162,7 +160,7 @@ function mockDashboard(tenantId: string): DashboardSummary {
       {
         id: `${tenantId}-act-2`,
         type: 'candidate_added',
-        description: 'New candidate John Doe added',
+        message: 'New candidate John Doe added',
         timestamp: new Date(Date.now() - 7200_000).toISOString(),
         candidateId: 'cand-2',
         candidateName: 'John Doe',
@@ -170,7 +168,7 @@ function mockDashboard(tenantId: string): DashboardSummary {
       {
         id: `${tenantId}-act-3`,
         type: 'action_required',
-        description: 'Document verification pending for Alex Johnson',
+        message: 'Document verification pending for Alex Johnson',
         timestamp: new Date(Date.now() - 10800_000).toISOString(),
         candidateId: 'cand-3',
         candidateName: 'Alex Johnson',
@@ -178,7 +176,7 @@ function mockDashboard(tenantId: string): DashboardSummary {
       {
         id: `${tenantId}-act-4`,
         type: 'report_ready',
-        description: 'Screening report ready for Maria Garcia',
+        message: 'Screening report ready for Maria Garcia',
         timestamp: new Date(Date.now() - 14400_000).toISOString(),
         candidateId: 'cand-4',
         candidateName: 'Maria Garcia',
@@ -242,14 +240,14 @@ const orgSettingsStore = new Map<string, OrgSettings>();
 function getOrgSettings(tenantId: string): OrgSettings {
   if (!orgSettingsStore.has(tenantId)) {
     orgSettingsStore.set(tenantId, {
-      name: 'Acme Screening Ltd',
+      orgName: 'Acme Screening Ltd',
       contactEmail: 'admin@acme-screening.co.uk',
       logo: undefined,
       contactPhone: '+44 20 7946 0958',
       address: '123 Screening Lane, London, EC1A 1BB',
-      notificationPreferences: {
+      notificationPrefs: {
         emailOnScreeningComplete: true,
-        emailOnCandidateSubmission: true,
+        emailOnActionRequired: true,
         weeklyDigest: false,
       },
     });
@@ -270,7 +268,7 @@ export function getDashboardSummary(tenantId: string): ServiceResult<DashboardSu
  * List candidates with pagination, search and status filter.
  */
 export function listCandidates(
-  tenantId: string,
+  _tenantId: string,
   params: { page?: number; limit?: number; search?: string; status?: string }
 ): ServiceResult<PaginatedCandidateList> {
   let filtered = [...MOCK_CANDIDATES];
@@ -294,11 +292,11 @@ export function listCandidates(
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const start = (page - 1) * limit;
-  const data = filtered.slice(start, start + limit);
+  const candidates = filtered.slice(start, start + limit);
 
   return {
     success: true,
-    data: { data, meta: { page, limit, total, totalPages } },
+    data: { candidates, page, limit, total, totalPages },
   };
 }
 
@@ -306,7 +304,7 @@ export function listCandidates(
  * Get single candidate detail.
  */
 export function getCandidateDetail(
-  tenantId: string,
+  _tenantId: string,
   candidateId: string
 ): ServiceResult<CandidateDetail> {
   const detail = mockCandidateDetail(candidateId);
@@ -332,12 +330,12 @@ export function updateOrgSettings(
 ): ServiceResult<OrgSettings> {
   const current = getOrgSettings(tenantId);
 
-  if (dto.name !== undefined) current.name = dto.name;
+  if (dto.orgName !== undefined) current.orgName = dto.orgName;
   if (dto.contactEmail !== undefined) current.contactEmail = dto.contactEmail;
   if (dto.contactPhone !== undefined) current.contactPhone = dto.contactPhone;
   if (dto.address !== undefined) current.address = dto.address;
-  if (dto.notificationPreferences) {
-    current.notificationPreferences = { ...current.notificationPreferences, ...dto.notificationPreferences };
+  if (dto.notificationPrefs) {
+    current.notificationPrefs = { ...current.notificationPrefs, ...dto.notificationPrefs };
   }
 
   orgSettingsStore.set(tenantId, current);
@@ -348,7 +346,7 @@ export function updateOrgSettings(
  * List screening requests with pagination, type and status filter.
  */
 export function listScreenings(
-  tenantId: string,
+  _tenantId: string,
   params: { page?: number; limit?: number; status?: string; type?: string; candidateId?: string }
 ): ServiceResult<ScreeningListResponse> {
   let filtered = [...MOCK_SCREENINGS];
@@ -379,7 +377,7 @@ export function listScreenings(
 /**
  * Get screening report / analytics for a tenant.
  */
-export function getReport(tenantId: string): ServiceResult<ScreeningReport> {
+export function getReport(_tenantId: string): ServiceResult<ScreeningReport> {
   const completed = MOCK_SCREENINGS.filter((s) => s.status === 'completed');
   const passed = completed.filter((s) => s.result === 'pass');
 

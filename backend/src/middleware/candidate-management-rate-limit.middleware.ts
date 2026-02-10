@@ -17,10 +17,8 @@ class MemoryRateLimiter {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
-    if (this.cleanupInterval.unref) {
-      this.cleanupInterval.unref();
-    }
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
+    this.cleanupInterval!.unref();
   }
 
   check(
@@ -61,10 +59,8 @@ class MemoryCache {
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
-    if (this.cleanupInterval.unref) {
-      this.cleanupInterval.unref();
-    }
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
+    this.cleanupInterval!.unref();
   }
 
   get<T>(key: string): T | null {

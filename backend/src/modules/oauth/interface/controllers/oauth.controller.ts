@@ -17,7 +17,7 @@ export class OAuthController {
     private readonly getStatus: GetIntegrationStatusUseCase,
     private readonly getAllStatuses: GetAllIntegrationStatusesUseCase,
     private readonly disconnectIntegration: DisconnectIntegrationUseCase,
-    private readonly refreshToken: RefreshTokenUseCase,
+    _refreshToken: RefreshTokenUseCase,
     private readonly getConfiguredProviders: () => OAuthProvider[],
   ) {}
 

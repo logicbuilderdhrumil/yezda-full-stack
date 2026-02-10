@@ -122,7 +122,7 @@ router.get(
 router.get(
   '/ledger/export',
   requireAuth,
-  async (req, res) => {
+  async (_req, res) => {
     // Return empty CSV for now - placeholder for future implementation
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="ledger-export.csv"');

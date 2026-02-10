@@ -3,7 +3,7 @@
  * Core domain types for screening pipeline management.
  */
 
-import type { ModuleType, PipelineGraph } from '../../../../../../shared/@types/pipeline-modules.js';
+import type { ModuleType, PipelineGraph } from '../../../../shared-types/pipeline-modules.js';
 
 // Re-export for convenience within the module
 export type { ModuleType, PipelineGraph };

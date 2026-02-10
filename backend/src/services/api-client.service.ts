@@ -635,7 +635,7 @@ export class ApiClient {
       const fetchOptions: RequestInit = {
         method,
         headers,
-        signal,
+        signal: signal as RequestInit['signal'],
       };
 
       if (body !== undefined && method !== 'GET' && method !== 'HEAD') {

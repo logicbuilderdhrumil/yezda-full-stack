@@ -17,7 +17,7 @@ export interface IClientPortalRepository {
   listCandidates(
     tenantId: string,
     params: { page?: number; limit?: number; search?: string; status?: string },
-  ): { data: CandidateListItem[]; meta: { page: number; limit: number; total: number; totalPages: number } };
+  ): { candidates: CandidateListItem[]; page: number; limit: number; total: number; totalPages: number };
   getCandidateDetail(tenantId: string, candidateId: string): CandidateDetail | null;
   getOrgSettings(tenantId: string): OrgSettings;
   updateOrgSettings(tenantId: string, dto: UpdateOrgSettingsDto): OrgSettings;

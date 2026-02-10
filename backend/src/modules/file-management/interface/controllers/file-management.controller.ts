@@ -22,14 +22,14 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-interface FileUploadRequest extends AuthenticatedRequest {
+type FileUploadRequest = Omit<AuthenticatedRequest, 'file'> & {
   file?: {
     buffer: Buffer;
     originalname: string;
     mimetype: string;
     size: number;
   };
-}
+};
 
 /**
  * Extract tenant ID from request (header or user context)
@@ -74,7 +74,7 @@ export class FileManagementController {
       return;
     }
 
-    const ctx = buildContext(req);
+    const ctx = buildContext(req as unknown as AuthenticatedRequest);
     if (!ctx.tenantId) {
       res.status(400).json({ error: 'Tenant ID required', code: 'TENANT_REQUIRED' });
       return;

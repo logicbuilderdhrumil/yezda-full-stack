@@ -1,11 +1,11 @@
 export { SignUpUseCase } from './SignUpUseCase.js';
 export { SignInUseCase } from './SignInUseCase.js';
-export type { IUserManagementLookup } from './SignInUseCase.js';
+export type { IUserManagementLookup } from '../../domain/ports/IUserManagementLookup.js';
 export { CompleteMfaSignInUseCase } from './CompleteMfaSignInUseCase.js';
 export { RefreshTokenUseCase } from './RefreshTokenUseCase.js';
 export { RequestPasswordResetUseCase } from './RequestPasswordResetUseCase.js';
 export { CompletePasswordResetUseCase } from './CompletePasswordResetUseCase.js';
-export type { ITransactionManager, ITransactionClient } from './CompletePasswordResetUseCase.js';
+export type { ITransactionManager, ITransactionClient } from '../../domain/ports/ITransactionManager.js';
 export { SignOutUseCase } from './SignOutUseCase.js';
 export { EnableMfaUseCase } from './EnableMfaUseCase.js';
 export { DisableMfaUseCase } from './DisableMfaUseCase.js';

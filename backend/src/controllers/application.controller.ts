@@ -16,7 +16,7 @@ import type {
   SubmitApplicationRequestDTO,
   ApiErrorResponse,
   SubmissionValidationErrorDTO,
-} from '../../shared/@types/application.types.js';
+} from '../shared-types/application.types.js';
 
 /**
  * Get all applications for current user.

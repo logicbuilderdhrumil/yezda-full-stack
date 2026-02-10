@@ -9,7 +9,7 @@ export interface SloStatus {
 }
 
 export class CheckFormBuilderSLOsUseCase {
-  constructor(private readonly metrics: IMetricsService) {}
+  constructor(_metrics: IMetricsService) {}
 
   execute(): FormOperationResult<SloStatus> {
     // Delegate to the metrics service which tracks SLO compliance

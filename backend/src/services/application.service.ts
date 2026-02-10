@@ -15,11 +15,9 @@ import type {
   SubmitApplicationRequestDTO,
   SubmitApplicationResponseDTO,
   FormValues,
-  SubmissionLifecycleState,
-  ApplicationStatus,
   FormSectionDTO,
   ValidationErrorDetail,
-} from '../../shared/@types/application.types.js';
+} from '../shared-types/application.types.js';
 
 /** In-memory application store for development */
 const applicationStore = new Map<string, ApplicationDTO>();
@@ -139,7 +137,7 @@ initSampleData();
  * Get all applications for a candidate.
  */
 export async function getApplications(
-  candidateId: string
+  _candidateId: string
 ): Promise<ApplicationListResponseDTO> {
   const applications: ApplicationSummaryDTO[] = [];
   for (const app of applicationStore.values()) {
@@ -162,7 +160,7 @@ export async function getApplications(
  */
 export async function getApplication(
   applicationId: string,
-  candidateId: string
+  _candidateId: string
 ): Promise<ApplicationDetailResponseDTO | null> {
   const app = applicationStore.get(applicationId);
   if (!app) {
@@ -176,7 +174,7 @@ export async function getApplication(
  */
 export async function getApplicationDraft(
   applicationId: string,
-  candidateId: string
+  _candidateId: string
 ): Promise<ApplicationDraftResponseDTO> {
   const draft = draftStore.get(applicationId);
   return { draft: draft ? { ...draft } : null };
@@ -187,7 +185,7 @@ export async function getApplicationDraft(
  */
 export async function saveApplicationDraft(
   applicationId: string,
-  candidateId: string,
+  _candidateId: string,
   data: SaveDraftRequestDTO
 ): Promise<SaveDraftResponseDTO> {
   const app = applicationStore.get(applicationId);
@@ -301,7 +299,7 @@ export function validateFormValues(
  */
 export async function submitApplication(
   applicationId: string,
-  candidateId: string,
+  _candidateId: string,
   data: SubmitApplicationRequestDTO
 ): Promise<{
   response?: SubmitApplicationResponseDTO;

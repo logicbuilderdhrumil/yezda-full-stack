@@ -34,10 +34,10 @@ async function isAuthorizedForConsent(
   }
 
   const userTenantId = req.user?.tenantId;
-  const userRole = req.user?.role;
+  const userRoles = req.user?.roles;
 
   // Admin users can perform any consent action
-  if (userRole === 'admin') {
+  if (userRoles?.includes('admin')) {
     return { authorized: true, consent };
   }
 

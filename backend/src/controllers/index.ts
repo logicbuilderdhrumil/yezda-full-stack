@@ -34,7 +34,16 @@ export {
 } from './asset-management.controller.js';
 export * from './chat.controller.js';
 export * from './charting.controller.js';
-export * from './billing-ledger.controller.js';
+// Billing-ledger controller exports explicitly to avoid getHealthSummary naming conflict
+export {
+  getBilledEntries,
+  getUnbilledEntries,
+  createEntry,
+  updateEntry,
+  finalizeEntry,
+  getHealthSummary as getBillingLedgerHealthSummary,
+  getMetrics,
+} from './billing-ledger.controller.js';
 export * from './home-dashboard.controller.js';
 // Template layouts controller exports explicitly to avoid getHealthSummary naming conflict
 export {
@@ -42,6 +51,19 @@ export {
   getProfileSummary,
   getHealthSummary as getTemplateLayoutsHealthSummary,
 } from './template-layouts.controller.js';
-// Integration: consent and application controllers
-export * from './consent.controller.js';
-export * from './application.controller.js';
+// Consent controller exports explicitly to avoid getStatus/submit naming conflicts
+export {
+  getPrompt,
+  submit as submitConsent,
+  getStatus as getConsentStatus,
+  getById as getConsentById,
+  update as updateConsent,
+} from './consent.controller.js';
+// Application controller exports explicitly to avoid submit naming conflict
+export {
+  list as listApplications,
+  get as getApplication,
+  getDraft,
+  saveDraft,
+  submit as submitApplication,
+} from './application.controller.js';

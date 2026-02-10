@@ -11,6 +11,8 @@ import type {
   ConversationFilters,
   MessageFilters,
   ChatPaginationOptions,
+  ConversationListResult,
+  MessageListResult,
 } from '../models/chat.model.js';
 
 /**
@@ -112,8 +114,8 @@ export async function listConversations(
   }
 
   res.status(200).json({
-    conversations: result.data.conversations,
-    meta: { total: result.data.total },
+    conversations: (result.data as ConversationListResult).conversations,
+    meta: { total: (result.data as ConversationListResult).total },
   });
 }
 
@@ -167,8 +169,8 @@ export async function getThread(
   }
 
   res.status(200).json({
-    messages: result.data.messages,
-    meta: { total: result.data.total },
+    messages: (result.data as MessageListResult).messages,
+    meta: { total: (result.data as MessageListResult).total },
   });
 }
 

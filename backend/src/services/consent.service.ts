@@ -12,7 +12,7 @@ import type {
   ConsentStatusResponseDTO,
   ConsentWorkflowState,
   ConsentScope,
-} from '../../shared/@types/consent.types.js';
+} from '../shared-types/consent.types.js';
 
 /** In-memory consent store for development */
 const consentStore = new Map<string, ConsentDecision>();
@@ -40,7 +40,7 @@ initSampleData();
  */
 export async function getConsentPrompt(
   applicationId: string,
-  candidateId: string
+  _candidateId: string
 ): Promise<ConsentPromptDTO | null> {
   const prompt = promptStore.get(applicationId);
   if (!prompt) {

@@ -15,6 +15,7 @@ import {
   updateLocalePreferenceSchema,
   getTranslationsQuerySchema,
 } from '../models/localization.model.js';
+import { z } from 'zod';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/locales', localizationController.getSupportedLocales);
 router.get(
   '/translations',
   translationRateLimiter,
-  validateQuery(getTranslationsQuerySchema),
+  validateQuery(getTranslationsQuerySchema as z.ZodSchema<unknown>),
   optionalAuth,
   localizationController.getTranslations
 );

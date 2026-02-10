@@ -198,7 +198,7 @@ export async function createEntry(
     organizationId,
     req.body,
     req.user.sub,
-    req.user.type,
+    req.user.type as 'user' | 'system',
     userRoles,
     channel,
     ipAddress

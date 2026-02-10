@@ -48,7 +48,7 @@ const metricsAdapter: IMetricsService = {
   recordRedisError: (ctx) => metricsService.recordRedisError(ctx),
 };
 
-import type { ModuleType } from '../../../../shared/@types/pipeline-modules.js';
+import type { ModuleType } from '../../shared-types/pipeline-modules.js';
 
 const moduleRegistryAdapter: IModuleRegistryService = {
   validate: (moduleType, config) => moduleRegistry.validate(moduleType as ModuleType, config),

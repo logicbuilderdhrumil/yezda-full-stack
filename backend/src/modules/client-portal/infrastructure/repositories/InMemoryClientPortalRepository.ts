@@ -47,10 +47,10 @@ const orgSettingsStore = new Map<string, OrgSettings>();
 export class InMemoryClientPortalRepository implements IClientPortalRepository {
   getDashboardSummary(tenantId: string): DashboardSummary {
     const activity: RecentActivityItem[] = [
-      { id: `${tenantId}-act-1`, type: 'screening_completed', description: 'Background check completed for Jane Smith', timestamp: new Date(Date.now() - 3600_000).toISOString(), candidateId: 'cand-1', candidateName: 'Jane Smith' },
-      { id: `${tenantId}-act-2`, type: 'candidate_added', description: 'New candidate John Doe added', timestamp: new Date(Date.now() - 7200_000).toISOString(), candidateId: 'cand-2', candidateName: 'John Doe' },
-      { id: `${tenantId}-act-3`, type: 'action_required', description: 'Document verification pending for Alex Johnson', timestamp: new Date(Date.now() - 10800_000).toISOString(), candidateId: 'cand-3', candidateName: 'Alex Johnson' },
-      { id: `${tenantId}-act-4`, type: 'report_ready', description: 'Screening report ready for Maria Garcia', timestamp: new Date(Date.now() - 14400_000).toISOString(), candidateId: 'cand-4', candidateName: 'Maria Garcia' },
+      { id: `${tenantId}-act-1`, type: 'screening_completed', message: 'Background check completed for Jane Smith', timestamp: new Date(Date.now() - 3600_000).toISOString(), candidateId: 'cand-1', candidateName: 'Jane Smith' },
+      { id: `${tenantId}-act-2`, type: 'candidate_added', message: 'New candidate John Doe added', timestamp: new Date(Date.now() - 7200_000).toISOString(), candidateId: 'cand-2', candidateName: 'John Doe' },
+      { id: `${tenantId}-act-3`, type: 'action_required', message: 'Document verification pending for Alex Johnson', timestamp: new Date(Date.now() - 10800_000).toISOString(), candidateId: 'cand-3', candidateName: 'Alex Johnson' },
+      { id: `${tenantId}-act-4`, type: 'report_ready', message: 'Screening report ready for Maria Garcia', timestamp: new Date(Date.now() - 14400_000).toISOString(), candidateId: 'cand-4', candidateName: 'Maria Garcia' },
     ];
     return { totalCandidates: 142, activeScreenings: 38, completedScreenings: 96, pendingActions: 8, recentActivity: activity };
   }
@@ -72,8 +72,8 @@ export class InMemoryClientPortalRepository implements IClientPortalRepository {
     const total = filtered.length;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const start = (page - 1) * limit;
-    const data = filtered.slice(start, start + limit);
-    return { data, meta: { page, limit, total, totalPages } };
+    const candidates = filtered.slice(start, start + limit);
+    return { candidates, page, limit, total, totalPages };
   }
 
   getCandidateDetail(_tenantId: string, candidateId: string): CandidateDetail | null {
@@ -97,11 +97,11 @@ export class InMemoryClientPortalRepository implements IClientPortalRepository {
   getOrgSettings(tenantId: string): OrgSettings {
     if (!orgSettingsStore.has(tenantId)) {
       orgSettingsStore.set(tenantId, {
-        name: 'Acme Screening Ltd',
+        orgName: 'Acme Screening Ltd',
         contactEmail: 'admin@acme-screening.co.uk',
         contactPhone: '+44 20 7946 0958',
         address: '123 Screening Lane, London, EC1A 1BB',
-        notificationPreferences: { emailOnScreeningComplete: true, emailOnCandidateSubmission: true, weeklyDigest: false },
+        notificationPrefs: { emailOnScreeningComplete: true, emailOnActionRequired: true, weeklyDigest: false },
       });
     }
     return orgSettingsStore.get(tenantId)!;
@@ -109,12 +109,12 @@ export class InMemoryClientPortalRepository implements IClientPortalRepository {
 
   updateOrgSettings(tenantId: string, dto: UpdateOrgSettingsDto): OrgSettings {
     const current = this.getOrgSettings(tenantId);
-    if (dto.name !== undefined) current.name = dto.name;
+    if (dto.orgName !== undefined) current.orgName = dto.orgName;
     if (dto.contactEmail !== undefined) current.contactEmail = dto.contactEmail;
     if (dto.contactPhone !== undefined) current.contactPhone = dto.contactPhone;
     if (dto.address !== undefined) current.address = dto.address;
-    if (dto.notificationPreferences) {
-      current.notificationPreferences = { ...current.notificationPreferences, ...dto.notificationPreferences };
+    if (dto.notificationPrefs) {
+      current.notificationPrefs = { ...current.notificationPrefs, ...dto.notificationPrefs };
     }
     orgSettingsStore.set(tenantId, current);
     return current;

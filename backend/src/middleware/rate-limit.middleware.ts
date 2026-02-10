@@ -24,7 +24,7 @@ class MemoryRateLimiter {
 
   constructor() {
     // Clean up expired entries every minute
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
   }
 
   check(

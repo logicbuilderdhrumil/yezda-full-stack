@@ -43,8 +43,8 @@ class GuardDenialLimiter {
 
   constructor() {
     // Use unref() to prevent the interval from keeping Node.js alive during shutdown
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
-    this.cleanupInterval.unref();
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000) as unknown as NodeJS.Timeout;
+    this.cleanupInterval!.unref();
   }
 
   check(

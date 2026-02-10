@@ -1,4 +1,4 @@
-import type { ThemePreference, RequestContext, OperationResult, DEFAULT_THEME_PRESET_ID } from '../../domain/index.js';
+import type { ThemePreference, RequestContext, OperationResult } from '../../domain/index.js';
 import type { IThemeRepository } from '../../domain/ports/IThemeRepository.js';
 import type { IAuditService } from '../../domain/ports/IAuditService.js';
 

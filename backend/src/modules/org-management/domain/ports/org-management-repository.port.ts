@@ -7,8 +7,6 @@ import type {
   OrgFilters,
   OrgPaginationOptions,
   OrgListResult,
-  CreateOrgDto,
-  UpdateOrgDto,
 } from '../entities/org-management.entity.js';
 
 export interface IOrgManagementRepository {

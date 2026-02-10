@@ -23,33 +23,33 @@ export function createAppConsentRoutes(controller: AppConsentController): Router
     requireAuth,
     requireUserType('candidate'),
     validateBody(consentCaptureSchema),
-    (req, res, next) => controller.captureConsent(req, res, next),
+    (req, res) => controller.captureConsent(req, res),
   );
   router.get(
     '/',
     requireAuth,
-    (req, res, next) => controller.getConsentStatus(req, res, next),
+    (req, res) => controller.getConsentStatus(req, res),
   );
   router.get(
     '/:candidateId',
     requireAuth,
     requireUserType('user'),
     validateParams(candidateIdParamSchema),
-    (req, res, next) => controller.getCandidateConsentStatus(req, res, next),
+    (req, res) => controller.getCandidateConsentStatus(req, res),
   );
   router.delete(
     '/',
     requireAuth,
     requireUserType('candidate'),
     validateBody(consentWithdrawalSchema),
-    (req, res, next) => controller.withdrawConsent(req, res, next),
+    (req, res) => controller.withdrawConsent(req, res),
   );
   router.post(
     '/check-reuse',
     requireAuth,
     requireUserType('user'),
     validateBody(dataReuseCheckSchema),
-    (req, res, next) => controller.checkDataReuse(req, res, next),
+    (req, res) => controller.checkDataReuse(req, res),
   );
 
   return router;

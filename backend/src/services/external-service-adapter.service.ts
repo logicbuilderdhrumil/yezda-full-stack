@@ -11,7 +11,7 @@
 import type {
   ExternalServiceModuleConfig,
   FieldMappingEntry,
-} from '../../../shared/@types/pipeline-modules.js';
+} from '../shared-types/pipeline-modules.js';
 import { auditService } from './audit.service.js';
 import { metricsService } from './metrics.service.js';
 
