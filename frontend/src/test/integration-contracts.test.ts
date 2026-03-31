@@ -104,7 +104,7 @@ describe('Foundation Contracts', () => {
         email: 'user@example.com',
         firstName: 'John',
         lastName: 'Doe',
-        role: 'user',
+        role: 'platform_admin',
         userType: 'user',
         mfaEnabled: false,
         createdAt: '2024-01-01T00:00:00.000Z',
@@ -115,7 +115,7 @@ describe('Foundation Contracts', () => {
         expect.objectContaining({
           id: expect.any(String),
           email: expect.any(String),
-          role: expect.stringMatching(/^(admin|manager|user|candidate)$/),
+          role: expect.stringMatching(/^(platform_admin|platform_manager|platform_agent|platform_viewer|org_admin|org_manager|org_viewer|candidate)$/),
           userType: expect.stringMatching(/^(user|candidate)$/),
           mfaEnabled: expect.any(Boolean),
           createdAt: expect.any(String),

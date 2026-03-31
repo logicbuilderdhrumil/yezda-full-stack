@@ -132,7 +132,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
             email: 'test@example.com',
             displayName: 'Test User',
             status: 'active',
-            roles: ['admin'],
+            roles: ['platform_admin'],
             tenantId: 'tenant-1',
             mfaEnabled: false,
             createdAt: '2025-01-01T00:00:00.000Z',
@@ -152,7 +152,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
         pageSize: 20,
         search: 'test',
         status: 'active',
-        role: 'admin',
+        role: 'platform_admin',
       });
 
       // Backend uses 'q' for search query
@@ -162,7 +162,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
           limit: '20',
           q: 'test',
           status: 'active',
-          role: 'admin',
+          role: 'platform_admin',
         }),
       });
 
@@ -180,7 +180,7 @@ describe('Core Domains Integration - Contract Alignment', () => {
             id: 'user-1',
             email: 'suspended@example.com',
             status: 'suspended',
-            roles: ['viewer'],
+            roles: ['platform_viewer'],
             tenantId: 'tenant-1',
             mfaEnabled: false,
             createdAt: '2025-01-01T00:00:00.000Z',
@@ -273,14 +273,14 @@ describe('Type Alignment Verification', () => {
   it('should have aligned User types with roles array', () => {
     // Both frontend and backend use roles array now
     const backendUser = {
-      roles: ['admin', 'manager'] as const,
+      roles: ['platform_admin', 'platform_manager'] as const,
       tenantId: 'tenant-1',
     };
     
-    const frontendRoles: ('admin' | 'manager' | 'agent' | 'viewer')[] = 
-      backendUser.roles as unknown as ('admin' | 'manager' | 'agent' | 'viewer')[];
+    const frontendRoles: ('platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer' | 'org_admin' | 'org_manager' | 'org_viewer')[] = 
+      backendUser.roles as unknown as ('platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer' | 'org_admin' | 'org_manager' | 'org_viewer')[];
     
-    expect(frontendRoles).toContain('admin');
+    expect(frontendRoles).toContain('platform_admin');
   });
 
   it('should have aligned UserStatus with suspended state', () => {

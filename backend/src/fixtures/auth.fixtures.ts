@@ -9,6 +9,7 @@ export interface MockUser {
   passwordHash: string;
   type: 'user' | 'candidate';
   roles: string[];
+  userSpace?: 'platform' | 'organisation';
   tenantId: string;
   firstName: string;
   lastName: string;
@@ -38,7 +39,8 @@ export const mockUsers: MockUser[] = [
     email: 'admin@mock.yezda.dev',
     passwordHash: '$2b$10$mock-hash-admin-do-not-use-in-production',
     type: 'user',
-    roles: ['admin', 'manager'],
+    roles: ['platform_admin', 'platform_manager'],
+    userSpace: 'platform',
     tenantId: 'mock-tenant-001',
     firstName: 'Mock',
     lastName: 'Admin',
@@ -53,7 +55,8 @@ export const mockUsers: MockUser[] = [
     email: 'agent@mock.yezda.dev',
     passwordHash: '$2b$10$mock-hash-agent-do-not-use-in-production',
     type: 'user',
-    roles: ['agent'],
+    roles: ['platform_agent'],
+    userSpace: 'platform',
     tenantId: 'mock-tenant-001',
     firstName: 'Mock',
     lastName: 'Agent',

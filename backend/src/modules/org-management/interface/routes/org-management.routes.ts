@@ -26,7 +26,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.get(
     '/',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementReadRateLimiter,
     validateQuery(listOrganizationsQuerySchema),
     controller.listOrganizations,
@@ -36,7 +36,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.post(
     '/',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementWriteRateLimiter,
     validateBody(createOrganizationSchema),
     controller.createOrganization,
@@ -46,7 +46,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.get(
     '/:id',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementReadRateLimiter,
     validateParams(orgIdParamSchema),
     controller.getOrganizationById,
@@ -56,7 +56,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.put(
     '/:id',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementWriteRateLimiter,
     validateParams(orgIdParamSchema),
     validateBody(updateOrganizationSchema),
@@ -67,7 +67,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.patch(
     '/:id/status',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementWriteRateLimiter,
     validateParams(orgIdParamSchema),
     validateBody(updateStatusSchema),
@@ -78,7 +78,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.delete(
     '/:id',
     requireAuthGuard,
-    requireRoleGuard('admin'),
+    requireRoleGuard('platform_admin'),
     orgManagementWriteRateLimiter,
     validateParams(orgIdParamSchema),
     controller.deleteOrganization,
@@ -88,7 +88,7 @@ export function createOrgManagementRoutes(controller: OrgManagementController): 
   router.post(
     '/:id/invite-member',
     requireAuthGuard,
-    requireRoleGuard('admin', 'manager'),
+    requireRoleGuard('platform_admin', 'platform_manager'),
     orgManagementWriteRateLimiter,
     validateParams(orgIdParamSchema),
     validateBody(inviteMemberSchema),

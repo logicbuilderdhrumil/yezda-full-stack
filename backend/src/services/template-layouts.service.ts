@@ -127,20 +127,20 @@ const DEFAULT_SIDE_NAV_ITEMS: SideNavItem[] = [
     label: 'Admin',
     icon: 'shield',
     path: '/admin',
-    authorities: ['admin'],
+    authorities: ['platform_admin'],
     order: 6,
     children: [
       {
         id: 'admin-users',
         label: 'Users',
         path: '/admin/users',
-        authorities: ['admin'],
+        authorities: ['platform_admin'],
       },
       {
         id: 'admin-audit',
         label: 'Audit Log',
         path: '/admin/audit',
-        authorities: ['admin'],
+        authorities: ['platform_admin'],
       },
     ],
   },

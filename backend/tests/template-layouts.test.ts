@@ -107,7 +107,7 @@ describe('Template Layouts Service', () => {
         userId: 'admin-user',
         userType: 'user',
         tenantId: 'tenant-1',
-        authorities: ['admin', 'candidate:read'],
+        authorities: ['platform_admin', 'candidate:read'],
       };
 
       const navigation = await templateLayoutsService.getLayoutNavigation(context);
@@ -196,7 +196,7 @@ describe('Template Layouts Service', () => {
         id: 'custom-user',
         displayName: 'Custom Display Name',
         email: 'custom@example.com',
-        role: 'admin',
+        role: 'platform_admin',
         organizationName: 'Test Organization',
         tenantId: 'tenant-1',
       });
@@ -322,7 +322,7 @@ describe('Template Layouts Controller Authorization', () => {
         user: {
           sub: 'admin-user-123',
           type: 'user' as const,
-          roles: ['admin'],
+          roles: ['platform_admin'],
           iat: Date.now() / 1000,
           exp: (Date.now() / 1000) + 3600,
           jti: 'test-jti',

@@ -42,7 +42,7 @@ router.get(
   formBuilderReadRateLimiter,
   validateQuery(listFormsQuerySchema),
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager'),
+  requireRoleGuard('platform_admin', 'platform_manager'),
   formBuilderController.listForms
 );
 
@@ -58,7 +58,7 @@ router.post(
   formBuilderWriteRateLimiter,
   validateBody(createFormRequestSchema),
   requireAuthGuard,
-  requireRoleGuard('admin'),
+  requireRoleGuard('platform_admin'),
   formBuilderController.createForm
 );
 
@@ -74,7 +74,7 @@ router.get(
   formBuilderReadRateLimiter,
   validateParams(formIdParamSchema),
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager', 'agent'),
+  requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
   formBuilderController.getForm
 );
 
@@ -91,7 +91,7 @@ router.put(
   validateParams(formIdParamSchema),
   validateBody(updateFormRequestSchema),
   requireAuthGuard,
-  requireRoleGuard('admin'),
+  requireRoleGuard('platform_admin'),
   formBuilderController.updateForm
 );
 
@@ -107,7 +107,7 @@ router.delete(
   formBuilderWriteRateLimiter,
   validateParams(formIdParamSchema),
   requireAuthGuard,
-  requireRoleGuard('admin'),
+  requireRoleGuard('platform_admin'),
   formBuilderController.deleteForm
 );
 

@@ -32,9 +32,9 @@ function roleBadgeVariant(
   role: string
 ): 'default' | 'secondary' | 'success' {
   switch (role) {
-    case 'client_admin':
+    case 'org_admin':
       return 'default';
-    case 'client':
+    case 'org_viewer':
       return 'success';
     default:
       return 'secondary';

@@ -25,7 +25,7 @@ vi.mock('@/components/ui', () => ({
     <input value={value} onChange={onChange} {...props} />
   ),
   Select: ({ children, value, onValueChange }: { children: React.ReactNode; value: string; onValueChange: (v: string) => void }) => (
-    <div data-testid="select" data-value={value} onClick={() => onValueChange('user')}>
+    <div data-testid="select" data-value={value} onClick={() => onValueChange('platform_viewer')}>
       {children}
     </div>
   ),

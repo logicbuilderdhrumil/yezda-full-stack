@@ -226,7 +226,7 @@ vi.mock('../src/repositories/user.repository.js', () => ({
 // Mock User Management Repository
 vi.mock('../src/repositories/user-management.repository.js', () => ({
   userManagementRepository: {
-    create: vi.fn(async (input: { id: string; email: string; tenantId: string; roles: string[]; status?: string; displayName?: string; firstName?: string; lastName?: string; createdBy?: string; updatedBy?: string; passwordHash?: string }) => {
+    create: vi.fn(async (input: { id: string; email: string; tenantId: string; roles: string[]; status?: string; displayName?: string; firstName?: string; lastName?: string; createdBy?: string; updatedBy?: string; passwordHash?: string; userSpace?: string }) => {
       const now = new Date();
       const user = {
         id: input.id,
@@ -244,6 +244,7 @@ vi.mock('../src/repositories/user-management.repository.js', () => ({
         updatedAt: now,
         createdBy: input.createdBy,
         updatedBy: input.updatedBy,
+        userSpace: input.userSpace ?? 'platform',
       } as Record<string, unknown>;
       managedUsers.set(input.id, user);
       return user;

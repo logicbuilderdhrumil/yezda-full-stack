@@ -19,7 +19,7 @@ import type {
   UserManagementResult,
   UserStatus,
 } from '../models/user-management.model.js';
-import type { UserRole } from '../middleware/route-guards.middleware.js';
+import { PLATFORM_ROLES, ORG_ROLES, type UserRole, type UserSpace } from '../middleware/route-guards.middleware.js';
 
 export interface UserManagementContext {
   actorId: string;
@@ -32,10 +32,23 @@ export interface UserManagementContext {
 }
 
 /**
+ * Validate that the given roles are consistent with the user space.
+ * Platform users can only have platform roles; org users can only have org roles.
+ */
+function validateRoleSpaceConsistency(roles: UserRole[], userSpace: UserSpace): string | null {
+  const validRoles = userSpace === 'platform' ? PLATFORM_ROLES : ORG_ROLES;
+  const invalidRoles = roles.filter(r => !validRoles.includes(r));
+  if (invalidRoles.length > 0) {
+    return `Roles [${invalidRoles.join(', ')}] are not valid for ${userSpace} space`;
+  }
+  return null;
+}
+
+/**
  * Check if actor has admin or manager role
  */
 function canManageUsers(roles: UserRole[]): boolean {
-  return roles.includes('admin') || roles.includes('manager');
+  return roles.includes('platform_admin') || roles.includes('platform_manager');
 }
 
 /**
@@ -43,9 +56,9 @@ function canManageUsers(roles: UserRole[]): boolean {
  * Admins can assign any role, managers can only assign agent/viewer
  */
 function canAssignRole(actorRoles: UserRole[], targetRole: UserRole): boolean {
-  if (actorRoles.includes('admin')) return true;
-  if (actorRoles.includes('manager')) {
-    return targetRole === 'agent' || targetRole === 'viewer';
+  if (actorRoles.includes('platform_admin')) return true;
+  if (actorRoles.includes('platform_manager')) {
+    return targetRole === 'platform_agent' || targetRole === 'platform_viewer';
   }
   return false;
 }
@@ -203,6 +216,18 @@ export class UserManagementService {
       }
     }
 
+    // Validate role-space consistency
+    if (input.userSpace) {
+      const roleSpaceError = validateRoleSpaceConsistency(input.roles, input.userSpace);
+      if (roleSpaceError) {
+        return {
+          success: false,
+          error: roleSpaceError,
+          errorCode: 'INVALID_ROLE_SPACE',
+        };
+      }
+    }
+
     try {
       // Check if email already exists in this tenant
       const emailExists = await userManagementRepository.emailExists(
@@ -322,6 +347,18 @@ export class UserManagementService {
     try {
       // Get existing user first
       const existingUser = await userManagementRepository.findById(userId, ctx.tenantId);
+
+      // Validate role-space consistency against the user's existing space
+      if (input.roles && existingUser) {
+        const roleSpaceError = validateRoleSpaceConsistency(input.roles, existingUser.userSpace);
+        if (roleSpaceError) {
+          return {
+            success: false,
+            error: roleSpaceError,
+            errorCode: 'INVALID_ROLE_SPACE',
+          };
+        }
+      }
       if (!existingUser) {
         return {
           success: false,
@@ -512,6 +549,16 @@ export class UserManagementService {
         };
       }
 
+      // Validate role-space consistency against the user's existing space
+      const roleSpaceError = validateRoleSpaceConsistency(roles, existingUser.userSpace);
+      if (roleSpaceError) {
+        return {
+          success: false,
+          error: roleSpaceError,
+          errorCode: 'INVALID_ROLE_SPACE',
+        };
+      }
+
       const updatedUser = await userManagementRepository.updateRoles(
         userId,
         ctx.tenantId,
@@ -573,8 +620,7 @@ export class UserManagementService {
     const startTime = Date.now();
 
     // Only admins can delete users
-    if (!ctx.actorRoles.includes('admin')) {
-      this.logAccessDenied(ctx, 'delete', 'Only admins can delete users');
+    if (!ctx.actorRoles.includes('platform_admin')) {
       return {
         success: false,
         error: 'Only admins can delete users',

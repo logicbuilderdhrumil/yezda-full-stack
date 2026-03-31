@@ -18,7 +18,7 @@ function createAdminContext(tenantId = 'tenant-1'): UserManagementContext {
   return {
     actorId: 'admin-user-123',
     actorType: 'user',
-    actorRoles: ['admin'],
+    actorRoles: ['platform_admin'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -31,7 +31,7 @@ function createManagerContext(tenantId = 'tenant-1'): UserManagementContext {
   return {
     actorId: 'manager-user-456',
     actorType: 'user',
-    actorRoles: ['manager'],
+    actorRoles: ['platform_manager'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -44,7 +44,7 @@ function createViewerContext(tenantId = 'tenant-1'): UserManagementContext {
   return {
     actorId: 'viewer-user-789',
     actorType: 'user',
-    actorRoles: ['viewer'],
+    actorRoles: ['platform_viewer'],
     tenantId,
     ipAddress: '127.0.0.1',
     userAgent: 'test-agent',
@@ -62,7 +62,8 @@ describe('User Management Service', () => {
           displayName: 'New User',
           firstName: 'New',
           lastName: 'User',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx
       );
@@ -70,7 +71,7 @@ describe('User Management Service', () => {
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
       expect(result.data?.email).toBe('newuser@example.com');
-      expect(result.data?.roles).toContain('viewer');
+      expect(result.data?.roles).toContain('platform_viewer');
       expect(result.data?.tenantId).toBe('tenant-1');
     });
 
@@ -79,13 +80,14 @@ describe('User Management Service', () => {
       const result = await userManagementService.createUser(
         {
           email: 'agent@example.com',
-          roles: ['agent'],
+          roles: ['platform_agent'],
+          userSpace: 'platform',
         },
         ctx
       );
 
       expect(result.success).toBe(true);
-      expect(result.data?.roles).toContain('agent');
+      expect(result.data?.roles).toContain('platform_agent');
     });
 
     it('should reject manager creating admin user', async () => {
@@ -93,7 +95,8 @@ describe('User Management Service', () => {
       const result = await userManagementService.createUser(
         {
           email: 'wannabe-admin@example.com',
-          roles: ['admin'],
+          roles: ['platform_admin'],
+          userSpace: 'platform',
         },
         ctx
       );
@@ -107,7 +110,8 @@ describe('User Management Service', () => {
       const result = await userManagementService.createUser(
         {
           email: 'new@example.com',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx
       );
@@ -122,7 +126,8 @@ describe('User Management Service', () => {
       await userManagementService.createUser(
         {
           email: 'duplicate@example.com',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx
       );
@@ -130,7 +135,8 @@ describe('User Management Service', () => {
       const result = await userManagementService.createUser(
         {
           email: 'duplicate@example.com',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx
       );
@@ -146,7 +152,8 @@ describe('User Management Service', () => {
       const result1 = await userManagementService.createUser(
         {
           email: 'sameemail@example.com',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx1
       );
@@ -154,7 +161,8 @@ describe('User Management Service', () => {
       const result2 = await userManagementService.createUser(
         {
           email: 'sameemail@example.com',
-          roles: ['viewer'],
+          roles: ['platform_viewer'],
+          userSpace: 'platform',
         },
         ctx2
       );
@@ -171,15 +179,15 @@ describe('User Management Service', () => {
       const ctx = createAdminContext();
       // Create test users
       await userManagementService.createUser(
-        { email: 'user1@example.com', roles: ['viewer'], firstName: 'Alice' },
+        { email: 'user1@example.com', roles: ['platform_viewer'], firstName: 'Alice' },
         ctx
       );
       await userManagementService.createUser(
-        { email: 'user2@example.com', roles: ['agent'], firstName: 'Bob' },
+        { email: 'user2@example.com', roles: ['platform_agent'], firstName: 'Bob' },
         ctx
       );
       await userManagementService.createUser(
-        { email: 'user3@example.com', roles: ['manager'], firstName: 'Charlie' },
+        { email: 'user3@example.com', roles: ['platform_manager'], firstName: 'Charlie' },
         ctx
       );
     });
@@ -195,10 +203,10 @@ describe('User Management Service', () => {
 
     it('should filter users by role', async () => {
       const ctx = createAdminContext();
-      const result = await userManagementService.listUsers({ role: 'agent' }, ctx);
+      const result = await userManagementService.listUsers({ role: 'platform_agent' }, ctx);
 
       expect(result.success).toBe(true);
-      expect(result.data!.users.every((u) => u.roles.includes('agent'))).toBe(true);
+      expect(result.data!.users.every((u) => u.roles.includes('platform_agent'))).toBe(true);
     });
 
     it('should search users by query', async () => {
@@ -232,7 +240,7 @@ describe('User Management Service', () => {
     it('should get user details with admin role', async () => {
       const ctx = createAdminContext();
       const created = await userManagementService.createUser(
-        { email: 'getbyid@example.com', roles: ['viewer'] },
+        { email: 'getbyid@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
 
@@ -258,7 +266,7 @@ describe('User Management Service', () => {
       const ctx2 = createAdminContext('tenant-2');
 
       const created = await userManagementService.createUser(
-        { email: 'tenant1user@example.com', roles: ['viewer'] },
+        { email: 'tenant1user@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx1
       );
 
@@ -273,7 +281,7 @@ describe('User Management Service', () => {
     it('should update user details with admin role', async () => {
       const ctx = createAdminContext();
       const created = await userManagementService.createUser(
-        { email: 'toupdate@example.com', roles: ['viewer'], displayName: 'Old Name' },
+        { email: 'toupdate@example.com', roles: ['platform_viewer'], displayName: 'Old Name' },
         ctx
       );
 
@@ -290,19 +298,19 @@ describe('User Management Service', () => {
     it('should update user roles with admin role', async () => {
       const ctx = createAdminContext();
       const created = await userManagementService.createUser(
-        { email: 'toroleupdate@example.com', roles: ['viewer'] },
+        { email: 'toroleupdate@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
 
       const result = await userManagementService.updateUserRoles(
         created.data!.id,
-        ['agent', 'manager'],
+        ['platform_agent', 'platform_manager'],
         ctx
       );
 
       expect(result.success).toBe(true);
-      expect(result.data?.roles).toContain('agent');
-      expect(result.data?.roles).toContain('manager');
+      expect(result.data?.roles).toContain('platform_agent');
+      expect(result.data?.roles).toContain('platform_manager');
     });
 
     it('should prevent manager from assigning admin role', async () => {
@@ -310,7 +318,7 @@ describe('User Management Service', () => {
       const managerCtx = createManagerContext();
 
       const created = await userManagementService.createUser(
-        { email: 'cannotupgrade@example.com', roles: ['viewer'] },
+        { email: 'cannotupgrade@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         adminCtx
       );
 
@@ -329,7 +337,7 @@ describe('User Management Service', () => {
     it('should update user status with admin role', async () => {
       const ctx = createAdminContext();
       const created = await userManagementService.createUser(
-        { email: 'tostatus@example.com', roles: ['viewer'], status: 'active' },
+        { email: 'tostatus@example.com', roles: ['platform_viewer'], status: 'active' },
         ctx
       );
 
@@ -348,7 +356,7 @@ describe('User Management Service', () => {
     it('should soft delete user with admin role', async () => {
       const ctx = createAdminContext();
       const created = await userManagementService.createUser(
-        { email: 'todelete@example.com', roles: ['viewer'] },
+        { email: 'todelete@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
 
@@ -375,7 +383,7 @@ describe('User Management Service', () => {
       const managerCtx = createManagerContext();
 
       const created = await userManagementService.createUser(
-        { email: 'managercannotdelete@example.com', roles: ['viewer'] },
+        { email: 'managercannotdelete@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         adminCtx
       );
 
@@ -394,11 +402,11 @@ describe('User Management Security/Compliance', () => {
       const ctx2 = createAdminContext('tenant-b');
 
       await userManagementService.createUser(
-        { email: 'tenanta@example.com', roles: ['viewer'] },
+        { email: 'tenanta@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx1
       );
       await userManagementService.createUser(
-        { email: 'tenantb@example.com', roles: ['viewer'] },
+        { email: 'tenantb@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx2
       );
 
@@ -418,7 +426,7 @@ describe('User Management Security/Compliance', () => {
       const ctx2 = createAdminContext('tenant-y');
 
       const created = await userManagementService.createUser(
-        { email: 'isolateduser@example.com', roles: ['viewer'] },
+        { email: 'isolateduser@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx1
       );
 
@@ -438,25 +446,25 @@ describe('User Management Security/Compliance', () => {
     it('should allow admin to assign any role', async () => {
       const ctx = createAdminContext();
       const result = await userManagementService.createUser(
-        { email: 'fulladmin@example.com', roles: ['admin', 'manager', 'agent', 'viewer'] },
+        { email: 'fulladmin@example.com', roles: ['platform_admin', 'platform_manager', 'platform_agent', 'platform_viewer'], userSpace: 'platform' },
         ctx
       );
 
       expect(result.success).toBe(true);
-      expect(result.data?.roles).toContain('admin');
+      expect(result.data?.roles).toContain('platform_admin');
     });
 
     it('should restrict manager to agent/viewer roles only', async () => {
       const ctx = createManagerContext();
 
       const agentResult = await userManagementService.createUser(
-        { email: 'mgrcreateasagent@example.com', roles: ['agent'] },
+        { email: 'mgrcreateasagent@example.com', roles: ['platform_agent'], userSpace: 'platform' },
         ctx
       );
       expect(agentResult.success).toBe(true);
 
       const adminResult = await userManagementService.createUser(
-        { email: 'mgrcreateadmin@example.com', roles: ['admin'] },
+        { email: 'mgrcreateadmin@example.com', roles: ['platform_admin'], userSpace: 'platform' },
         ctx
       );
       expect(adminResult.success).toBe(false);
@@ -471,7 +479,7 @@ describe('User Management Security/Compliance', () => {
       expect(listResult.errorCode).toBe('FORBIDDEN');
 
       const createResult = await userManagementService.createUser(
-        { email: 'viewercreate@example.com', roles: ['viewer'] },
+        { email: 'viewercreate@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
       expect(createResult.success).toBe(false);
@@ -484,7 +492,7 @@ describe('User Management Security/Compliance', () => {
       const ctx = createAdminContext();
       // Create a user - this should trigger audit logging
       const result = await userManagementService.createUser(
-        { email: 'auditcreate@example.com', roles: ['viewer'] },
+        { email: 'auditcreate@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
 
@@ -541,7 +549,7 @@ describe('User Management Validation', () => {
       // Repository-level validation would catch invalid email format
       // This test verifies the service handles the input correctly
       const result = await userManagementService.createUser(
-        { email: 'valid@example.com', roles: ['viewer'] },
+        { email: 'valid@example.com', roles: ['platform_viewer'], userSpace: 'platform' },
         ctx
       );
 

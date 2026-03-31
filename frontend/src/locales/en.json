@@ -401,6 +401,13 @@
     },
     "role": {
       "all": "All Roles",
+      "platform_admin": "Platform Admin",
+      "platform_manager": "Platform Manager",
+      "platform_agent": "Platform Agent",
+      "platform_viewer": "Platform Viewer",
+      "org_admin": "Org Admin",
+      "org_manager": "Org Manager",
+      "org_viewer": "Org Viewer",
       "admin": "Admin",
       "manager": "Manager",
       "agent": "Agent",

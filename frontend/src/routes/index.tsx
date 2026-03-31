@@ -289,7 +289,7 @@ function withSuspense(Component: React.ComponentType): React.ReactNode {
  */
 function withAdminGuard(Component: React.ComponentType): React.ReactNode {
   return (
-    <AuthorityGuard authority={['admin']}>
+    <AuthorityGuard authority={['platform_admin']}>
       <Suspense fallback={<RouteLoadingFallback />}>
         <Component />
       </Suspense>
@@ -302,7 +302,7 @@ function withAdminGuard(Component: React.ComponentType): React.ReactNode {
  */
 function withCandidateGuard(Component: React.ComponentType): React.ReactNode {
   return (
-    <AuthorityGuard authority={['admin', 'manager']}>
+    <AuthorityGuard authority={['platform_admin', 'platform_manager']}>
       <Suspense fallback={<RouteLoadingFallback />}>
         <Component />
       </Suspense>

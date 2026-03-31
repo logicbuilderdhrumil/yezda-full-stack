@@ -45,7 +45,7 @@ export interface InviteMemberDialogProps {
   onSuccess?: () => void;
 }
 
-type MemberRole = 'admin' | 'manager' | 'user';
+type MemberRole = 'org_admin' | 'org_manager' | 'org_viewer';
 
 /**
  * InviteMemberDialog presents a form for inviting a user to join an organization.
@@ -61,13 +61,13 @@ export function InviteMemberDialog({
   const session = useAuthStore((s) => s.session);
 
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<MemberRole>('user');
+  const [role, setRole] = useState<MemberRole>('org_viewer');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailError, setEmailError] = useState('');
 
   const resetForm = () => {
     setEmail('');
-    setRole('user');
+    setRole('org_viewer');
     setEmailError('');
   };
 
@@ -185,9 +185,9 @@ export function InviteMemberDialog({
                 <SelectValue placeholder={t('invites.member.rolePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="user">{t('users.role.user')}</SelectItem>
-                <SelectItem value="manager">{t('users.role.manager')}</SelectItem>
-                <SelectItem value="admin">{t('users.role.admin')}</SelectItem>
+                <SelectItem value="org_viewer">{t('users.role.org_viewer')}</SelectItem>
+                <SelectItem value="org_manager">{t('users.role.org_manager')}</SelectItem>
+                <SelectItem value="org_admin">{t('users.role.org_admin')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

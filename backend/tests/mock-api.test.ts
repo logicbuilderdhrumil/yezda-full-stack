@@ -39,7 +39,7 @@ describe('Mock Fixtures', () => {
     it('should provide mock users with required fields', () => {
       expect(mockUsers.length).toBeGreaterThan(0);
 
-      const adminUser = mockUsers.find((u) => u.roles.includes('admin'));
+      const adminUser = mockUsers.find((u) => u.roles.includes('platform_admin'));
       expect(adminUser).toBeDefined();
       expect(adminUser?.email).toBeDefined();
       expect(adminUser?.firstName).toBeDefined();
@@ -50,7 +50,7 @@ describe('Mock Fixtures', () => {
     it('should find users by email (case-insensitive)', () => {
       const adminByEmail = findMockUserByEmail('admin@mock.yezda.dev');
       expect(adminByEmail).toBeDefined();
-      expect(adminByEmail?.roles).toContain('admin');
+      expect(adminByEmail?.roles).toContain('platform_admin');
 
       const adminByUpperCase = findMockUserByEmail('ADMIN@MOCK.YEZDA.DEV');
       expect(adminByUpperCase).toBeDefined();
@@ -237,8 +237,8 @@ describe('Mock Fixtures', () => {
     });
 
     it('should filter navigation by roles', () => {
-      const adminNav = getMockNavigationForRoles('mock-tenant-001', ['admin']);
-      const viewerNav = getMockNavigationForRoles('mock-tenant-001', ['viewer']);
+      const adminNav = getMockNavigationForRoles('mock-tenant-001', ['platform_admin']);
+      const viewerNav = getMockNavigationForRoles('mock-tenant-001', ['platform_viewer']);
 
       // Admin should have access to settings, viewer should not
       const adminHasSettings = adminNav.some((item) => item.id === 'nav-settings');
@@ -249,7 +249,7 @@ describe('Mock Fixtures', () => {
     });
 
     it('should return empty navigation for unknown tenant', () => {
-      const nav = getMockNavigationForRoles('unknown-tenant', ['admin']);
+      const nav = getMockNavigationForRoles('unknown-tenant', ['platform_admin']);
       expect(nav).toEqual([]);
     });
 
@@ -421,7 +421,7 @@ describe('Mock API Service', () => {
     const config = mockApiService.getShellConfig('mock-tenant-001');
     expect(config).toBeDefined();
 
-    const navigation = mockApiService.getNavigationForRoles('mock-tenant-001', ['admin']);
+    const navigation = mockApiService.getNavigationForRoles('mock-tenant-001', ['platform_admin']);
     expect(navigation.length).toBeGreaterThan(0);
   });
 });

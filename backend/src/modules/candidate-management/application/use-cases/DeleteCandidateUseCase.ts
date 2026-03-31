@@ -24,7 +24,7 @@ export class DeleteCandidateUseCase {
     const startTime = Date.now();
 
     // Only admins can delete candidates
-    if (!ctx.actorRoles.includes('admin')) {
+    if (!ctx.actorRoles.includes('platform_admin')) {
       this.auditService.log({
         eventType: 'GUARD_ROLE_DENIED',
         actorId: ctx.actorId,

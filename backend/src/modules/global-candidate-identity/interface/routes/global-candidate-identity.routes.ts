@@ -5,8 +5,8 @@ import { requireAuthGuard, requireRoleGuard } from '../../../../middleware/route
 export function createGlobalCandidateIdentityRoutes(controller: GlobalCandidateIdentityController): Router {
   const router = Router();
   const authGuard = [requireAuthGuard];
-  const adminOnly = [requireAuthGuard, requireRoleGuard('admin')];
-  const adminOrManager = [requireAuthGuard, requireRoleGuard('admin', 'manager')];
+  const adminOnly = [requireAuthGuard, requireRoleGuard('platform_admin')];
+  const adminOrManager = [requireAuthGuard, requireRoleGuard('platform_admin', 'platform_manager')];
 
   router.get('/lookup', ...adminOnly, controller.lookupByEmail);
   router.patch('/consent/:id/grant', ...authGuard, controller.grantConsent);

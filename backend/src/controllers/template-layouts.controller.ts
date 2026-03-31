@@ -26,9 +26,9 @@ function getUserAuthorities(req: AuthenticatedRoleRequest): string[] {
   const user = req.user as AuthenticatedUserPayload;
   const baseAuthorities: string[] = [];
 
-  // Add 'admin' authority if user has admin role
-  if (user.roles?.includes('admin')) {
-    baseAuthorities.push('admin');
+  // Add 'platform_admin' authority if user has admin role
+  if (user.roles?.includes('platform_admin')) {
+    baseAuthorities.push('platform_admin');
   }
 
   if (user.type === 'user') {
@@ -216,7 +216,7 @@ export async function getHealthSummary(
 
   // Health endpoint requires admin role
   const authorities = getUserAuthorities(req);
-  if (!authorities.includes('admin')) {
+  if (!authorities.includes('platform_admin')) {
     res.status(403).json({
       error: 'Admin access required',
       code: 'FORBIDDEN',

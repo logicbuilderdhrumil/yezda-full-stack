@@ -303,9 +303,9 @@ function mockRes(): Response & { _status: number; _body: unknown } {
 describe('Route Guards – Client RBAC', () => {
   describe('requireRoleGuard – client roles', () => {
     it('should allow client role', async () => {
-      const guard = requireRoleGuard('client', 'client_admin');
+      const guard = requireRoleGuard('org_viewer', 'org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_viewer'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       let nextCalled = false;
@@ -316,9 +316,9 @@ describe('Route Guards – Client RBAC', () => {
     });
 
     it('should allow client_admin role', async () => {
-      const guard = requireRoleGuard('client', 'client_admin');
+      const guard = requireRoleGuard('org_viewer', 'org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client_admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       let nextCalled = false;
@@ -329,9 +329,9 @@ describe('Route Guards – Client RBAC', () => {
     });
 
     it('should deny viewer role from client routes', async () => {
-      const guard = requireRoleGuard('client', 'client_admin');
+      const guard = requireRoleGuard('org_viewer', 'org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['viewer'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['platform_viewer'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       const next: NextFunction = () => {};
@@ -341,9 +341,9 @@ describe('Route Guards – Client RBAC', () => {
     });
 
     it('should deny admin role from client-only routes', async () => {
-      const guard = requireRoleGuard('client', 'client_admin');
+      const guard = requireRoleGuard('org_viewer', 'org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['platform_admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       const next: NextFunction = () => {};
@@ -353,7 +353,7 @@ describe('Route Guards – Client RBAC', () => {
     });
 
     it('should deny unauthenticated requests', async () => {
-      const guard = requireRoleGuard('client', 'client_admin');
+      const guard = requireRoleGuard('org_viewer', 'org_admin');
       const req = mockReq();
       const res = mockRes();
       const next: NextFunction = () => {};
@@ -365,9 +365,9 @@ describe('Route Guards – Client RBAC', () => {
 
   describe('requireRoleGuard – client_admin only', () => {
     it('should allow client_admin', async () => {
-      const guard = requireRoleGuard('client_admin');
+      const guard = requireRoleGuard('org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client_admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_admin'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       let nextCalled = false;
@@ -378,9 +378,9 @@ describe('Route Guards – Client RBAC', () => {
     });
 
     it('should deny regular client from admin write routes', async () => {
-      const guard = requireRoleGuard('client_admin');
+      const guard = requireRoleGuard('org_admin');
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_viewer'], tenantId: 'tenant-1' } as AuthenticatedUserPayload,
       });
       const res = mockRes();
       const next: NextFunction = () => {};
@@ -393,7 +393,7 @@ describe('Route Guards – Client RBAC', () => {
   describe('requireTenantScopeGuard', () => {
     it('should set tenantScope when tenantId exists', async () => {
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client'], tenantId: 'tenant-abc' } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_viewer'], tenantId: 'tenant-abc' } as AuthenticatedUserPayload,
       }) as TenantScopedRequest;
       const res = mockRes();
       let nextCalled = false;
@@ -407,7 +407,7 @@ describe('Route Guards – Client RBAC', () => {
 
     it('should deny requests without tenantId', async () => {
       const req = mockReq({
-        user: { sub: 'u1', type: 'user', roles: ['client'] } as AuthenticatedUserPayload,
+        user: { sub: 'u1', type: 'user', roles: ['org_viewer'] } as AuthenticatedUserPayload,
       }) as TenantScopedRequest;
       const res = mockRes();
       const next: NextFunction = () => {};

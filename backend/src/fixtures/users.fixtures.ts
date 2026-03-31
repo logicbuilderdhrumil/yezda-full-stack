@@ -12,6 +12,7 @@ export interface MockUserProfile {
   avatar?: string;
   tenantId: string;
   roles: string[];
+  userSpace?: 'platform' | 'organisation';
   preferences: {
     theme: 'light' | 'dark' | 'system';
     language: string;
@@ -38,7 +39,8 @@ export const mockUserProfiles: MockUserProfile[] = [
     phone: '+1-555-MOCK-001',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
     tenantId: 'mock-tenant-001',
-    roles: ['admin', 'manager'],
+    roles: ['platform_admin', 'platform_manager'],
+    userSpace: 'platform',
     preferences: {
       theme: 'system',
       language: 'en-US',
@@ -59,7 +61,8 @@ export const mockUserProfiles: MockUserProfile[] = [
     lastName: 'Agent',
     phone: '+1-555-MOCK-002',
     tenantId: 'mock-tenant-001',
-    roles: ['agent'],
+    roles: ['platform_agent'],
+    userSpace: 'platform',
     preferences: {
       theme: 'light',
       language: 'en-US',

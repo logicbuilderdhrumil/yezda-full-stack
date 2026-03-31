@@ -32,9 +32,9 @@ export function AdminGuard(): ReactNode {
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
-  // Check if user has admin or manager role
-  if (!hasRole(user, 'admin', 'manager')) {
-    // Non-admin users (viewer, etc.) are redirected to client portal
+  // Check if user has platform admin or manager role
+  if (!hasRole(user, 'platform_admin', 'platform_manager')) {
+    // Non-admin users are redirected to client portal
     return <Navigate to="/" replace />;
   }
 

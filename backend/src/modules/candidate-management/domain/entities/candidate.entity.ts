@@ -105,7 +105,7 @@ export interface CandidateManagementResult<T = void> {
   errorCode?: string;
 }
 
-export type UserRole = 'admin' | 'manager' | 'agent' | 'viewer' | 'client' | 'client_admin';
+export type UserRole = 'platform_admin' | 'platform_manager' | 'platform_agent' | 'platform_viewer' | 'org_admin' | 'org_manager' | 'org_viewer';
 
 export interface CandidateManagementContext {
   actorId: string;

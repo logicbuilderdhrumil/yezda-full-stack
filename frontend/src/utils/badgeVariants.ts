@@ -44,9 +44,9 @@ export function getUserRoleVariant(
   role: UserRole,
 ): 'default' | 'secondary' | 'outline' {
   switch (role) {
-    case 'admin':
+    case 'platform_admin':
       return 'default';
-    case 'manager':
+    case 'platform_manager':
       return 'secondary';
     default:
       return 'outline';

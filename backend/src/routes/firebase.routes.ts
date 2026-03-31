@@ -56,7 +56,7 @@ router.get(
 router.post(
   '/notifications/dispatch',
   requireAuth,
-  requireRoleGuard('admin'),
+  requireRoleGuard('platform_admin'),
   firebaseDispatchRateLimiter,
   validateBody(notificationDispatchSchema),
   firebaseController.dispatchNotification

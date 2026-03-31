@@ -308,7 +308,7 @@ export async function getCurrentUser(req: AuthenticatedRequest, res: Response): 
       firstName: managedUser.firstName,
       lastName: managedUser.lastName,
       displayName: managedUser.displayName,
-      role: managedUser.roles[0] ?? 'viewer', // Primary role
+      role: managedUser.roles[0] ?? 'platform_viewer', // Primary role
       roles: managedUser.roles,
       userType: 'user',
       mfaEnabled: managedUser.mfaEnabled,

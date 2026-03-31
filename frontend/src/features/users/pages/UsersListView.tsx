@@ -209,9 +209,13 @@ export function UsersListView(): ReactNode {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('users.role.all')}</SelectItem>
-              <SelectItem value="admin">{t('users.role.admin')}</SelectItem>
-              <SelectItem value="manager">{t('users.role.manager')}</SelectItem>
-              <SelectItem value="user">{t('users.role.user')}</SelectItem>
+              <SelectItem value="platform_admin">{t('users.role.platform_admin')}</SelectItem>
+              <SelectItem value="platform_manager">{t('users.role.platform_manager')}</SelectItem>
+              <SelectItem value="platform_agent">{t('users.role.platform_agent')}</SelectItem>
+              <SelectItem value="platform_viewer">{t('users.role.platform_viewer')}</SelectItem>
+              <SelectItem value="org_admin">{t('users.role.org_admin')}</SelectItem>
+              <SelectItem value="org_manager">{t('users.role.org_manager')}</SelectItem>
+              <SelectItem value="org_viewer">{t('users.role.org_viewer')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -280,8 +284,8 @@ export function UsersListView(): ReactNode {
                     <TableCell className="font-medium">{getUserFullName(user)}</TableCell>
                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
-                      <Badge variant={getUserRoleVariant(user.roles?.[0] || 'viewer')}>
-                        {t(`users.role.${user.roles?.[0] || 'viewer'}`)}
+                      <Badge variant={getUserRoleVariant(user.roles?.[0] || 'platform_viewer')}>
+                        {t(`users.role.${user.roles?.[0] || 'platform_viewer'}`)}
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -8,7 +8,7 @@ import { userManagementService } from '../services/user-management.service.js';
 import { getClientIp } from '../utils/ip.util.js';
 import type { AuthenticatedRoleRequest } from '../middleware/route-guards.middleware.js';
 import type { UserSearchParams, UserStatus } from '../models/user-management.model.js';
-import type { UserRole } from '../middleware/route-guards.middleware.js';
+import type { UserRole, UserSpace } from '../middleware/route-guards.middleware.js';
 
 /**
  * Extract management context from request
@@ -48,6 +48,7 @@ export async function listUsers(req: AuthenticatedRoleRequest, res: Response): P
     query: req.query.q as string | undefined,
     status: req.query.status as UserStatus | undefined,
     role: req.query.role as UserRole | undefined,
+    userSpace: req.query.userSpace as UserSpace | undefined,
     page: req.query.page ? parseInt(req.query.page as string, 10) : undefined,
     limit: req.query.limit ? parseInt(req.query.limit as string, 10) : undefined,
     sortBy: req.query.sortBy as UserSearchParams['sortBy'],
@@ -103,10 +104,10 @@ export async function createUser(req: AuthenticatedRoleRequest, res: Response): 
     return;
   }
 
-  const { email, displayName, firstName, lastName, status, roles, password } = req.body;
+  const { email, displayName, firstName, lastName, status, roles, password, userSpace } = req.body;
 
   const result = await userManagementService.createUser(
-    { email, displayName, firstName, lastName, status, roles, password },
+    { email, displayName, firstName, lastName, status, roles, password, userSpace: userSpace ?? 'platform' },
     ctx
   );
 

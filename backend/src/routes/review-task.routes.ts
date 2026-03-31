@@ -15,12 +15,12 @@ const router = Router();
 // Guards shared across endpoints
 const authAndViewGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager', 'agent'),
+  requireRoleGuard('platform_admin', 'platform_manager', 'platform_agent'),
 ];
 
 const authAndManageGuards = [
   requireAuthGuard,
-  requireRoleGuard('admin', 'manager'),
+  requireRoleGuard('platform_admin', 'platform_manager'),
 ];
 
 // GET /api/v1/reviews — list review tasks (query: status, assigneeRole)
